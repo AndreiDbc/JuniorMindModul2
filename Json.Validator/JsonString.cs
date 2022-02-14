@@ -15,6 +15,7 @@ namespace Json
             isValid &= HasStartAndEndQuotes(input);
             isValid &= DoesNotContainControlCharacters(input);
             isValid &= ContainsRecognisedEscapeCharacters(input);
+            isValid &= !EndsWithReverseSolidus(input);
             return isValid;
         }
 
@@ -87,6 +88,11 @@ namespace Json
             isValid &= !input.Contains("\t") || input.Contains("\t");
 
             return isValid;
+        }
+
+        private static bool EndsWithReverseSolidus(string input)
+        {
+            return input.Length > 1 && input[input.Length - 1 - 1] == '\\' && !input.Equals('\\');
         }
     }
 }
