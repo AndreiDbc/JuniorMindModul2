@@ -13,7 +13,7 @@ namespace Json
             }
 
             isValid &= HasStartAndEndQuotes(input);
-            isValid &= DoesNotContainControlCharacters(input);
+            isValid &= !ContainsControlCharacters(input);
             isValid &= ContainsRecognisedEscapeCharacters(input);
             isValid &= !EndsWithReverseSolidus(input);
             isValid &= GetHexadecimalUnicodeNumber(input);
@@ -34,9 +34,9 @@ namespace Json
             return true;
         }
 
-        private static bool DoesNotContainControlCharacters(string input)
+        private static bool ContainsControlCharacters(string input)
         {
-            return !input.Contains("\r") || !input.Contains("\n");
+            return input.Contains("\r") || input.Contains("\n");
         }
 
         private static bool ContainsRecognisedEscapeCharacters(string input)
@@ -93,7 +93,7 @@ namespace Json
 
         private static bool EndsWithReverseSolidus(string input)
         {
-            return input.Length > 1 && input[input.Length - 1 - 1] == '\\' && !input.Equals('\\');
+            return input.Length > 1 && input[input.Length - 1 - 1].Equals('\\');
         }
 
         private static bool GetHexadecimalUnicodeNumber(string input)
