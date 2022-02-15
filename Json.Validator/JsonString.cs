@@ -16,6 +16,7 @@ namespace Json
             isValid &= DoesNotContainControlCharacters(input);
             isValid &= ContainsRecognisedEscapeCharacters(input);
             isValid &= !EndsWithReverseSolidus(input);
+            isValid &= GetHexadecimalUnicodeNumber(input);
             return isValid;
         }
 
@@ -93,6 +94,62 @@ namespace Json
         private static bool EndsWithReverseSolidus(string input)
         {
             return input.Length > 1 && input[input.Length - 1 - 1] == '\\' && !input.Equals('\\');
+        }
+
+        private static bool GetHexadecimalUnicodeNumber(string input)
+        {
+            const int two = 2;
+            int index = 0;
+            string temp = input + " ";
+            string number = "";
+            for (int i = 0; i < temp.Length; i++)
+            {
+                if (temp[i] == '\\' && (temp[i + 1] == 'u' || temp[i + 1] == 'U'))
+                {
+                    index = i + two;
+
+                    if (index >= temp.Length - two)
+                    {
+                        return false;
+                    }
+
+                    do
+                    {
+                        number += temp[index];
+                        index++;
+                    }
+                    while (char.IsLetterOrDigit(temp[index]));
+                    number += " ";
+                }
+            }
+
+            if (string.IsNullOrEmpty(number))
+            {
+                return true;
+            }
+
+            return ContainsFinishedHexadecimalUnicodeNumber(number);
+        }
+
+        private static bool ContainsFinishedHexadecimalUnicodeNumber(string number)
+        {
+            const int minimumCharacters = 4;
+            int countCharacters = 0;
+            for (int i = 0; i < number.Length; i++)
+            {
+                if (countCharacters < minimumCharacters && number[i].Equals(' '))
+                {
+                    return false;
+                }
+                else if (number[i].Equals(' '))
+                {
+                    countCharacters = -1;
+                }
+
+                countCharacters++;
+            }
+
+            return true;
         }
     }
 }
