@@ -22,16 +22,7 @@ namespace Json
 
         private static bool HasStartAndEndQuotes(string input)
         {
-            if (input.StartsWith("\"") && input.EndsWith("\"") && input.Length != 1)
-            {
-                return true;
-            }
-            else if (input.StartsWith("\"") || input.EndsWith("\""))
-            {
-                return false;
-            }
-
-            return true;
+            return input.StartsWith("\"") && input.EndsWith("\"") && input.Length != 1;
         }
 
         private static bool ContainsControlCharacters(string input)
