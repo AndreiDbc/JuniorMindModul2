@@ -79,25 +79,24 @@ namespace Json
             const int minimumCharacters = 4;
             bool containsMinimumCharacters = true;
             int index = 0;
-            string temp = input + " ";
             string number = "";
-            for (int i = 0; i < temp.Length; i++)
+            for (int i = 0; i < input.Length - 1; i++)
             {
-                if (temp[i] == '\\' && (temp[i + 1] == 'u'))
+                if (input[i] == '\\' && (input[i + 1] == 'u'))
                 {
                     index = i + two;
 
-                    if (index >= temp.Length - two)
+                    if (index >= input.Length - 1)
                     {
                         return false;
                     }
 
                     do
                     {
-                        number += temp[index];
+                        number += input[index];
                         index++;
                     }
-                    while (char.IsLetterOrDigit(temp[index]));
+                    while (char.IsLetterOrDigit(input[index]));
                     containsMinimumCharacters = number.Length >= minimumCharacters;
                 }
             }
