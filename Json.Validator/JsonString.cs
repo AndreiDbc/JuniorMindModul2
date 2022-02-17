@@ -76,12 +76,14 @@ namespace Json
         private static bool GetHexadecimalUnicodeNumber(string input)
         {
             const int two = 2;
+            const int minimumCharacters = 4;
+            bool containsMinimumCharacters = true;
             int index = 0;
             string temp = input + " ";
             string number = "";
             for (int i = 0; i < temp.Length; i++)
             {
-                if (temp[i] == '\\' && (temp[i + 1] == 'u' || temp[i + 1] == 'U'))
+                if (temp[i] == '\\' && (temp[i + 1] == 'u'))
                 {
                     index = i + two;
 
@@ -96,7 +98,7 @@ namespace Json
                         index++;
                     }
                     while (char.IsLetterOrDigit(temp[index]));
-                    number += " ";
+                    containsMinimumCharacters = number.Length >= minimumCharacters;
                 }
             }
 
@@ -105,7 +107,7 @@ namespace Json
                 return true;
             }
 
-            return ContainsFinishedHexadecimalUnicodeNumber(number);
+            return containsMinimumCharacters;
         }
 
         private static bool ContainsFinishedHexadecimalUnicodeNumber(string number)
