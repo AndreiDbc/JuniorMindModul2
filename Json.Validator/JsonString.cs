@@ -16,7 +16,7 @@ namespace Json
             isValid &= !ContainsControlCharacters(input);
             isValid &= ContainsRecognisedEscapeCharacters(input);
             isValid &= !EndsWithReverseSolidus(input);
-            isValid &= GetHexadecimalUnicodeNumber(input);
+            isValid &= EndsWithFinishedHexNumber(input);
             return isValid;
         }
 
@@ -73,7 +73,7 @@ namespace Json
             return input.Length > 1 && input[input.Length - 1 - 1].Equals('\\');
         }
 
-        private static bool GetHexadecimalUnicodeNumber(string input)
+        private static bool EndsWithFinishedHexNumber(string input)
         {
             const int two = 2;
             const int minimumCharacters = 4;
