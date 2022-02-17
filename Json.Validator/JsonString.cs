@@ -68,20 +68,6 @@ namespace Json
             return containsRecognisedCharacter;
         }
 
-        private static bool CanContainEscapedCharacters(string input)
-        {
-            bool isValid = !input.Contains("\"") || input.Contains("\"");
-            isValid &= !input.Contains("\\") || input.Contains("\\");
-            isValid &= !input.Contains("/") || input.Contains("/");
-            isValid &= !input.Contains("\b") || input.Contains("\b");
-            isValid &= !input.Contains("\f") || input.Contains("\f");
-            isValid &= !input.Contains("\n") || input.Contains("\n");
-            isValid &= !input.Contains("\r") || input.Contains("\r");
-            isValid &= !input.Contains("\t") || input.Contains("\t");
-
-            return isValid;
-        }
-
         private static bool EndsWithReverseSolidus(string input)
         {
             return input.Length > 1 && input[input.Length - 1 - 1].Equals('\\');
