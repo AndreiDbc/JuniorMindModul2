@@ -33,39 +33,39 @@ namespace Json
         private static bool ContainsRecognisedEscapeCharacters(string input)
         {
             int j = 0;
-            int count = 0;
-            int countSolidus = 0;
-            char[] recognisedCharacters = { 'a', 'b', 't', 'r', 'f', 'n', '\"', '\\', '/', 'u', 'U' };
+            bool containsRecognisedCharacter = true;
+            string[] recognisedCharacters = { "a", "b", "t", "r", "f", "n", "\"", "\\", "/", "u" };
             for (int i = 0; i < input.Length - 1; i++)
             {
-                if (input[i].Equals('\\'))
+                if (input[i].Equals('\\') && input[i - 1].Equals('\\'))
                 {
-                    countSolidus++;
+                    containsRecognisedCharacter = true;
+                }
+                else if (input[i].Equals('\\'))
+                {
+                    containsRecognisedCharacter = false;
                 }
 
                 do
                 {
-                    if (input[i].Equals('\\') && input[i + 1].Equals(recognisedCharacters[j]))
+                    if (input[i].Equals('\\') && input[i + 1].Equals(Convert.ToChar(recognisedCharacters[j])))
                     {
-                        count++;
+                        containsRecognisedCharacter = true;
+                        break;
                     }
 
                     j++;
                 }
                 while (j < recognisedCharacters.Length);
-                j = 0;
-                if (input[i].Equals('\\') && input[i + 1].Equals('\\'))
+                if (!containsRecognisedCharacter)
                 {
-                    countSolidus--;
+                    return containsRecognisedCharacter;
                 }
+
+                j = 0;
             }
 
-            if (count != countSolidus)
-            {
-                return false;
-            }
-
-            return CanContainEscapedCharacters(input);
+            return containsRecognisedCharacter;
         }
 
         private static bool CanContainEscapedCharacters(string input)
