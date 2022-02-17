@@ -27,7 +27,9 @@ namespace Json
 
         private static bool ContainsControlCharacters(string input)
         {
-            return input.Contains("\r") || input.Contains("\n");
+            bool isValid = input.Contains("\r");
+            isValid &= input.Contains("\n");
+            return isValid;
         }
 
         private static bool ContainsRecognisedEscapeCharacters(string input)
