@@ -109,26 +109,5 @@ namespace Json
 
             return containsMinimumCharacters;
         }
-
-        private static bool ContainsFinishedHexadecimalUnicodeNumber(string number)
-        {
-            const int minimumCharacters = 4;
-            int countCharacters = 0;
-            for (int i = 0; i < number.Length; i++)
-            {
-                if (countCharacters < minimumCharacters && number[i].Equals(' '))
-                {
-                    return false;
-                }
-                else if (number[i].Equals(' '))
-                {
-                    countCharacters = -1;
-                }
-
-                countCharacters++;
-            }
-
-            return true;
-        }
     }
 }
