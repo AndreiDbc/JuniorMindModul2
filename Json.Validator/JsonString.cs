@@ -34,40 +34,32 @@ namespace Json
 
         private static bool ContainsRecognisedEscapeCharacters(string input)
         {
-            int j = 0;
             bool containsRecognisedCharacter = true;
-            string[] recognisedCharacters = { "a", "b", "t", "r", "f", "n", "\"", "\\", "/", "u" };
-            for (int i = 0; i < input.Length - 1; i++)
+            const string recognisedCharacters = "\"btrfnu/\u005c";
+            for (int i = 0; i < input.Length - 1 && input.Contains("\\"); i++)
             {
-                if (input[i].Equals('\\') && input[i - 1].Equals('\\'))
-                {
-                    containsRecognisedCharacter = true;
-                }
-                else if (input[i].Equals('\\'))
-                {
-                    containsRecognisedCharacter = false;
-                }
+                containsRecognisedCharacter = VerifyIfContainsRecognisedCharacter(input, i, recognisedCharacters);
 
-                do
-                {
-                    if (input[i].Equals('\\') && input[i + 1].Equals(Convert.ToChar(recognisedCharacters[j])))
-                    {
-                        containsRecognisedCharacter = true;
-                        break;
-                    }
-
-                    j++;
-                }
-                while (j < recognisedCharacters.Length);
                 if (!containsRecognisedCharacter)
                 {
                     return containsRecognisedCharacter;
                 }
-
-                j = 0;
             }
 
             return containsRecognisedCharacter;
+        }
+
+        private static bool VerifyIfContainsRecognisedCharacter(string input, int index, string recognisedCharacters)
+        {
+            for (int i = 0; i < recognisedCharacters.Length; i++)
+            {
+                if ((input[index].Equals('\\') && input[index + 1].Equals(Convert.ToChar(recognisedCharacters[i]))) || (input[index].Equals('\\') && input[index - 1].Equals('\\')))
+                {
+                    return true;
+                }
+            }
+
+            return !input[index].Equals('\\');
         }
 
         private static bool EndsWithReverseSolidus(string input)
