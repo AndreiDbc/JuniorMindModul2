@@ -27,8 +27,18 @@ namespace Json
 
         private static bool ContainsControlCharacters(string input)
         {
-            bool isValid = input.Contains("\r");
-            isValid &= input.Contains("\n");
+            bool isValid = false;
+            const string controlCharacters = "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u000D\u000E\u000F\u0010\u0011" +
+                "\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F";
+            for (int i = 0; i < controlCharacters.Length; i++)
+            {
+                if (input.Contains(controlCharacters[i]))
+                {
+                    isValid = true;
+                    break;
+                }
+            }
+
             return isValid;
         }
 
