@@ -51,9 +51,10 @@ namespace Json
 
         private static bool VerifyIfContainsRecognisedCharacter(string input, int index, string recognisedCharacters)
         {
-            for (int i = 0; i < recognisedCharacters.Length; i++)
+            string temp = " " + input;
+            for (int i = 0; i < recognisedCharacters.Length && temp[index + 1].Equals('\\'); i++)
             {
-                if ((input[index].Equals('\\') && input[index + 1].Equals(Convert.ToChar(recognisedCharacters[i]))) || (input[index].Equals('\\') && input[index - 1].Equals('\\')))
+                if (temp[index + 1 + 1].Equals(Convert.ToChar(recognisedCharacters[i])) || (temp[index + 1].Equals('\\') && temp[index].Equals('\\')))
                 {
                     return true;
                 }
