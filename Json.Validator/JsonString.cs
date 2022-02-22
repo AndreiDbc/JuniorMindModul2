@@ -70,37 +70,65 @@ namespace Json
         private static bool EndsWithFinishedHexNumber(string input)
         {
             const int two = 2;
-            const int minimumCharacters = 4;
-            bool containsMinimumCharacters = true;
+            const int requiredCharacters = 4;
+            bool isValid = true;
             int index = 0;
-            string number = "";
             for (int i = 0; i < input.Length - 1; i++)
             {
-                if (input[i] == '\\' && (input[i + 1] == 'u'))
+                string number = "";
+                if (input[i] == '\\' && input[i + 1] == 'u')
                 {
                     index = i + two;
 
-                    if (index >= input.Length - 1)
-                    {
-                        return false;
-                    }
-
-                    do
-                    {
-                        number += input[index];
-                        index++;
-                    }
-                    while (char.IsLetterOrDigit(input[index]));
-                    containsMinimumCharacters = number.Length >= minimumCharacters;
+                    number = GetUnicodeCharacters(input, index);
+                    isValid &= IsNumberHexadecimal(number) && number.Length == requiredCharacters + 1;
                 }
             }
 
-            if (string.IsNullOrEmpty(number))
+            return isValid;
+        }
+
+        private static string GetUnicodeCharacters(string input, int index)
+        {
+            string number = " ";
+            for (int i = 0; i < input.Length && index < input.Length; i++)
             {
-                return true;
+                number += input[index];
+                index++;
+                if (index == input.Length || !char.IsLetterOrDigit(input[index]))
+                {
+                    return number.ToLower();
+                }
             }
 
-            return containsMinimumCharacters;
+            return number.ToLower();
+        }
+
+        private static bool IsNumberHexadecimal(string number)
+        {
+            bool isValid = true;
+            for (int i = 1; i < number.Length && isValid; i++)
+            {
+                isValid &= false;
+                isValid = CompareCharactersToHexadecimalDigits(number, i, isValid);
+            }
+
+            return isValid;
+        }
+
+        private static bool CompareCharactersToHexadecimalDigits(string number, int index, bool isValid)
+        {
+            const string hexadecimalDiggits = "abcdef";
+            for (int j = 0; j < hexadecimalDiggits.Length; j++)
+            {
+                if ((char.IsLetter(number[index]) && number[index].Equals(hexadecimalDiggits[j])) || char.IsDigit(number[index]))
+                {
+                    isValid ^= true;
+                    return isValid;
+                }
+            }
+
+            return isValid;
         }
     }
 }
