@@ -87,23 +87,23 @@ namespace Json
             return isValid;
         }
 
-        private static bool IsHexNumberValid(string input, int i, bool isValid)
+        private static bool IsHexNumberValid(string input, int index, bool isValid)
         {
-            if (i + Five >= input.Length)
+            if (index + Five >= input.Length)
             {
                 return false;
             }
 
-            isValid &= CompareCharactersToHexadecimalDigits(input, i + Two, isValid);
-            isValid &= CompareCharactersToHexadecimalDigits(input, i + Three, isValid);
-            isValid &= CompareCharactersToHexadecimalDigits(input, i + Four, isValid);
-            isValid &= CompareCharactersToHexadecimalDigits(input, i + Five, isValid);
-            if (i + Six >= input.Length)
+            isValid &= CompareCharactersToHexadecimalDigits(input, index + Two, isValid);
+            isValid &= CompareCharactersToHexadecimalDigits(input, index + Three, isValid);
+            isValid &= CompareCharactersToHexadecimalDigits(input, index + Four, isValid);
+            isValid &= CompareCharactersToHexadecimalDigits(input, index + Five, isValid);
+            if (index + Six >= input.Length)
             {
                 return isValid;
             }
 
-            isValid &= !char.IsLetterOrDigit(input[i + Six]);
+            isValid &= !char.IsLetterOrDigit(input[index + Six]);
 
             return isValid;
         }
