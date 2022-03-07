@@ -4,6 +4,12 @@ namespace Json
 {
     public static class JsonString
     {
+        const int Two = 2;
+        const int Three = 3;
+        const int Four = 4;
+        const int Five = 5;
+        const int Six = 6;
+
         public static bool IsJsonString(string input)
         {
             bool isValid = true;
@@ -15,7 +21,7 @@ namespace Json
             isValid &= HasStartAndEndQuotes(input);
             isValid &= !ContainsControlCharacters(input);
             isValid &= ContainsRecognisedEscapeCharacters(input);
-            isValid &= EndsWithFinishedHexNumber(input);
+            isValid &= CanContainUnicode(input);
             return isValid;
         }
 
@@ -56,7 +62,7 @@ namespace Json
 
         private static bool VerifyIfContainsRecognisedCharacter(string input, int index, string recognisedCharacters)
         {
-            for (int i = 0; i < recognisedCharacters.Length && input[index].Equals('\\') && !input[input.Length - 1 - 1].Equals('\\'); i++)
+            for (int i = 0; i < recognisedCharacters.Length && input[index].Equals('\\') && !input[input.Length - Two].Equals('\\'); i++)
             {
                 if (input[index + 1].Equals(recognisedCharacters[i]) || (input[index].Equals('\\') && input[index - 1].Equals('\\')))
                 {
@@ -67,68 +73,54 @@ namespace Json
             return !input[index].Equals('\\');
         }
 
-        private static bool EndsWithFinishedHexNumber(string input)
+        private static bool CanContainUnicode(string input)
         {
-            const int two = 2;
-            const int requiredCharacters = 4;
             bool isValid = true;
-            int index = 0;
-            for (int i = 0; i < input.Length - 1; i++)
+            for (int i = 0; i < input.Length && isValid; i++)
             {
-                string number = "";
                 if (input[i] == '\\' && input[i + 1] == 'u')
                 {
-                    index = i + two;
-
-                    number = GetUnicodeCharacters(input, index);
-                    isValid &= IsNumberHexadecimal(number) && number.Length == requiredCharacters + 1;
+                    isValid &= IsHexNumberValid(input, i, isValid);
                 }
             }
 
             return isValid;
         }
 
-        private static string GetUnicodeCharacters(string input, int index)
+        private static bool IsHexNumberValid(string input, int i, bool isValid)
         {
-            string number = " ";
-            for (int i = 0; i < input.Length && index < input.Length; i++)
+            if (i + Five >= input.Length)
             {
-                number += input[index];
-                index++;
-                if (index == input.Length || !char.IsLetterOrDigit(input[index]))
-                {
-                    return number.ToLower();
-                }
+                return false;
             }
 
-            return number.ToLower();
-        }
-
-        private static bool IsNumberHexadecimal(string number)
-        {
-            bool isValid = true;
-            for (int i = 1; i < number.Length && isValid; i++)
+            isValid &= CompareCharactersToHexadecimalDigits(input, i + Two, isValid);
+            isValid &= CompareCharactersToHexadecimalDigits(input, i + Three, isValid);
+            isValid &= CompareCharactersToHexadecimalDigits(input, i + Four, isValid);
+            isValid &= CompareCharactersToHexadecimalDigits(input, i + Five, isValid);
+            if (i + Six >= input.Length)
             {
-                isValid &= false;
-                isValid = CompareCharactersToHexadecimalDigits(number, i, isValid);
+                return isValid;
             }
+
+            isValid &= !char.IsLetterOrDigit(input[i + Six]);
 
             return isValid;
         }
 
-        private static bool CompareCharactersToHexadecimalDigits(string number, int index, bool isValid)
+        private static bool CompareCharactersToHexadecimalDigits(string input, int index, bool isValid)
         {
-            const string hexadecimalDiggits = "abcdef";
-            for (int j = 0; j < hexadecimalDiggits.Length; j++)
+            const string hexadecimalDiggits = "abcdefABCDEF";
+            for (int i = 0; i < hexadecimalDiggits.Length; i++)
             {
-                if ((char.IsLetter(number[index]) && number[index].Equals(hexadecimalDiggits[j])) || char.IsDigit(number[index]))
+                if (char.IsDigit(input[index]) || input[index].Equals(hexadecimalDiggits[i]))
                 {
-                    isValid ^= true;
+                    isValid &= true;
                     return isValid;
                 }
             }
 
-            return isValid;
+            return false;
         }
     }
 }
