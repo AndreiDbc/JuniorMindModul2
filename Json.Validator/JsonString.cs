@@ -15,7 +15,6 @@ namespace Json
             isValid &= HasStartAndEndQuotes(input);
             isValid &= !ContainsControlCharacters(input);
             isValid &= ContainsRecognisedEscapeCharacters(input);
-            isValid &= !EndsWithReverseSolidus(input);
             isValid &= EndsWithFinishedHexNumber(input);
             return isValid;
         }
@@ -41,7 +40,7 @@ namespace Json
         private static bool ContainsRecognisedEscapeCharacters(string input)
         {
             bool containsRecognisedCharacter = true;
-            const string recognisedCharacters = "\"btrfnu/\u005c";
+            const string recognisedCharacters = "\"btrfnu/\\";
             for (int i = 0; i < input.Length - 1 && input.Contains("\\"); i++)
             {
                 containsRecognisedCharacter = VerifyIfContainsRecognisedCharacter(input, i, recognisedCharacters);
@@ -57,21 +56,15 @@ namespace Json
 
         private static bool VerifyIfContainsRecognisedCharacter(string input, int index, string recognisedCharacters)
         {
-            string temp = " " + input;
-            for (int i = 0; i < recognisedCharacters.Length && temp[index + 1].Equals('\\'); i++)
+            for (int i = 0; i < recognisedCharacters.Length && input[index].Equals('\\') && !input[input.Length - 1 - 1].Equals('\\'); i++)
             {
-                if (temp[index + 1 + 1].Equals(Convert.ToChar(recognisedCharacters[i])) || (temp[index + 1].Equals('\\') && temp[index].Equals('\\')))
+                if (input[index + 1].Equals(recognisedCharacters[i]) || (input[index].Equals('\\') && input[index - 1].Equals('\\')))
                 {
                     return true;
                 }
             }
 
             return !input[index].Equals('\\');
-        }
-
-        private static bool EndsWithReverseSolidus(string input)
-        {
-            return input.Length > 1 && input[input.Length - 1 - 1].Equals('\\');
         }
 
         private static bool EndsWithFinishedHexNumber(string input)
