@@ -67,17 +67,18 @@ namespace Json
             return containsRecognisedCharacter;
         }
 
-        private static bool VerifyIfContainsRecognisedCharacter(string input, int index, string recognisedCharacters)
+        private static bool VerifyIfContainsRecognisedCharacter(char character)
         {
-            for (int i = 0; i < recognisedCharacters.Length && input[index].Equals('\\') && !input[input.Length - Two].Equals('\\'); i++)
+            const string recognisedCharacters = "\"btrfnu/\\";
+            for (int i = 0; i < recognisedCharacters.Length; i++)
             {
-                if (input[index + 1].Equals(recognisedCharacters[i]) || (input[index].Equals('\\') && input[index - 1].Equals('\\')))
+                if (character.Equals(recognisedCharacters[i]))
                 {
                     return true;
                 }
             }
 
-            return !input[index].Equals('\\');
+            return false;
         }
 
         private static bool CanContainUnicode(string input)
