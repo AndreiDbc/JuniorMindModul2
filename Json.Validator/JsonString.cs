@@ -32,9 +32,10 @@ namespace Json
 
         private static bool ContainsControlCharacters(string input)
         {
+            const int asciiCodeOfLastControlCharacter = 31;
             for (int i = 0; i < input.Length; i++)
             {
-                if (char.IsControl(Convert.ToChar(char.ConvertFromUtf32(input[i]))))
+                if ((int)input[i] <= asciiCodeOfLastControlCharacter)
                 {
                     return true;
                 }
