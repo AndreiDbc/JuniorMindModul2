@@ -112,19 +112,12 @@ namespace Json
             return isValid && !char.IsLetterOrDigit(input[HexNoLength + 1]);
         }
 
-        private static bool CompareCharactersToHexadecimalDigits(string input, int index, bool isValid)
+        private static bool CompareCharactersToHexadecimalDigits(char digit)
         {
-            const string hexadecimalDiggits = "abcdefABCDEF";
-            for (int i = 0; i < hexadecimalDiggits.Length; i++)
-            {
-                if (char.IsDigit(input[index]) || input[index].Equals(hexadecimalDiggits[i]))
-                {
-                    isValid &= true;
-                    return isValid;
-                }
-            }
+            const int asciiValueOfLetterA = 97;
+            const int asciiValueOfLetterF = 102;
 
-            return false;
+            return char.IsDigit(digit) || ((int)digit >= asciiValueOfLetterA && (int)digit <= asciiValueOfLetterF);
         }
     }
 }
