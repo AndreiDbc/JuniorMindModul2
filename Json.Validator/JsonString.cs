@@ -96,25 +96,20 @@ namespace Json
             return isValid;
         }
 
-        private static bool IsHexNumberValid(string input, int index, bool isValid)
+        private static bool IsHexNumberValid(string input)
         {
-            if (index + Five >= input.Length)
+            bool isValid = true;
+            for (int i = 1; i < HexNoLength; i++)
             {
-                return false;
+                if (i == input.Length - 1)
+                {
+                    return true;
+                }
+
+                isValid &= CompareCharactersToHexadecimalDigits(input[i]);
             }
 
-            isValid &= CompareCharactersToHexadecimalDigits(input, index + Two, isValid);
-            isValid &= CompareCharactersToHexadecimalDigits(input, index + Three, isValid);
-            isValid &= CompareCharactersToHexadecimalDigits(input, index + Four, isValid);
-            isValid &= CompareCharactersToHexadecimalDigits(input, index + Five, isValid);
-            if (index + Six >= input.Length)
-            {
-                return isValid;
-            }
-
-            isValid &= !char.IsLetterOrDigit(input[index + Six]);
-
-            return isValid;
+            return isValid && !char.IsLetterOrDigit(input[HexNoLength + 1]);
         }
 
         private static bool CompareCharactersToHexadecimalDigits(string input, int index, bool isValid)
