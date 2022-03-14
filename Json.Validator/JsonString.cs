@@ -46,17 +46,23 @@ namespace Json
 
         private static bool ContainsRecognisedEscapeCharacters(string input)
         {
-            bool containsRecognisedCharacter = true;
-            const string recognisedCharacters = "\"btrfnu/\\";
-            for (int i = 0; i < input.Length - 1 && input.Contains("\\"); i++)
+            int i = 0;
+            bool containsRecognisedCharacter = !input.EndsWith("\\\"");
+            do
             {
-                containsRecognisedCharacter = VerifyIfContainsRecognisedCharacter(input, i, recognisedCharacters);
-
-                if (!containsRecognisedCharacter)
+                if (input[i].Equals('\\') && input[i + 1].Equals('\\'))
                 {
-                    return containsRecognisedCharacter;
+                    i++;
                 }
+                else if (input[i].Equals('\\'))
+                {
+                    containsRecognisedCharacter &= VerifyIfContainsRecognisedCharacter(input[i + 1]);
+                    containsRecognisedCharacter &= CanContainUnicode(input.Substring(i + 1));
+                }
+
+                i++;
             }
+            while (i < input.Length - 1 && containsRecognisedCharacter);
 
             return containsRecognisedCharacter;
         }
