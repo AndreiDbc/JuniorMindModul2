@@ -4,11 +4,7 @@ namespace Json
 {
     public static class JsonString
     {
-        const int Two = 2;
-        const int Three = 3;
-        const int Four = 4;
-        const int Five = 5;
-        const int Six = 6;
+        const int HexNoLength = 4;
 
         public static bool IsJsonString(string input)
         {
@@ -84,12 +80,17 @@ namespace Json
         private static bool CanContainUnicode(string input)
         {
             bool isValid = true;
-            for (int i = 0; i < input.Length && isValid; i++)
+            if (input[0] != 'u')
             {
-                if (input[i] == '\\' && input[i + 1] == 'u')
-                {
-                    isValid &= IsHexNumberValid(input, i, isValid);
-                }
+                isValid = true;
+            }
+            else if (input.Length < HexNoLength + 1)
+            {
+                isValid = false;
+            }
+            else
+            {
+                isValid &= IsHexNumberValid(input.ToLower());
             }
 
             return isValid;
