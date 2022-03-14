@@ -99,14 +99,13 @@ namespace Json
         private static bool IsHexNumberValid(string input)
         {
             bool isValid = true;
-            for (int i = 1; i < HexNoLength; i++)
+            for (int i = 1; i < HexNoLength + 1; i++)
             {
+                isValid &= CompareCharactersToHexadecimalDigits(input[i]);
                 if (i == input.Length - 1)
                 {
                     return true;
                 }
-
-                isValid &= CompareCharactersToHexadecimalDigits(input[i]);
             }
 
             return isValid && !char.IsLetterOrDigit(input[HexNoLength + 1]);
