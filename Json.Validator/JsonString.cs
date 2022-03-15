@@ -76,16 +76,7 @@ namespace Json
 
         private static bool CanContainUnicode(string input)
         {
-            if (input[0] != 'u')
-            {
-                return true;
-            }
-            else if (input.Length < HexNoLength + 1)
-            {
-                return false;
-            }
-
-            return IsHexNumberValid(input.ToLower());
+            return (input.StartsWith("u") && input.Length >= HexNoLength && IsHexNumberValid(input.ToLower())) || !input.StartsWith("u");
         }
 
         private static bool IsHexNumberValid(string input)
