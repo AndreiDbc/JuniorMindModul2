@@ -97,17 +97,17 @@ namespace Json
 
         private static bool IsHexNumberValid(string input)
         {
-            bool isValid = true;
+            bool isHexValid = true;
             for (int i = 1; i < HexNoLength + 1; i++)
             {
-                isValid &= CompareCharactersToHexadecimalDigits(input[i]);
+                isHexValid &= CompareCharactersToHexadecimalDigits(input[i]);
                 if (i == input.Length - 1)
                 {
-                    return true;
+                    return isHexValid;
                 }
             }
 
-            return isValid && !char.IsLetterOrDigit(input[HexNoLength + 1]);
+            return isHexValid && !char.IsLetterOrDigit(input[HexNoLength + 1]);
         }
 
         private static bool CompareCharactersToHexadecimalDigits(char digit)
