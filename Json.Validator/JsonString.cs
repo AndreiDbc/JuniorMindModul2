@@ -42,24 +42,22 @@ namespace Json
         private static bool ContainsRecognisedEscapeCharacters(string input)
         {
             int i = 0;
-            bool containsRecognisedCharacter = !input.EndsWith("\\\"");
             do
             {
                 if (input[i].Equals('\\') && input[i + 1].Equals('\\'))
                 {
                     i++;
                 }
-                else if (input[i].Equals('\\'))
+                else if (input[i].Equals('\\') && (!VerifyIfContainsRecognisedCharacter(input[i + 1]) || !CanContainUnicode(input.Substring(i + 1))))
                 {
-                    containsRecognisedCharacter &= VerifyIfContainsRecognisedCharacter(input[i + 1]);
-                    containsRecognisedCharacter &= CanContainUnicode(input.Substring(i + 1));
+                    return false;
                 }
 
                 i++;
             }
-            while (i < input.Length - 1 && containsRecognisedCharacter);
+            while (i < input.Length - 1);
 
-            return containsRecognisedCharacter;
+            return !input.EndsWith("\\\"");
         }
 
         private static bool VerifyIfContainsRecognisedCharacter(char character)
@@ -88,7 +86,6 @@ namespace Json
             }
 
             return IsHexNumberValid(input.ToLower());
-
         }
 
         private static bool IsHexNumberValid(string input)
