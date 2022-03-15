@@ -30,7 +30,7 @@ namespace Json
         {
             for (int i = 0; i < input.Length; i++)
             {
-                if (input[i] < ' ')
+                if ((int)input[i] < (int)' ')
                 {
                     return true;
                 }
@@ -105,7 +105,7 @@ namespace Json
 
         private static bool CompareCharactersToHexadecimalDigits(char digit)
         {
-            return char.IsDigit(digit) || ((int)digit >= 'a' && digit <= 'f');
+            return char.IsDigit(digit) || ((int)digit >= (int)'a' && (int)digit <= 'f');
         }
     }
 }
