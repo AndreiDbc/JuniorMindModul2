@@ -28,10 +28,9 @@ namespace Json
 
         private static bool ContainsControlCharacters(string input)
         {
-            const int asciiCodeOfLastControlCharacter = 31;
             for (int i = 0; i < input.Length; i++)
             {
-                if ((int)input[i] <= asciiCodeOfLastControlCharacter)
+                if ((int)input[i] < (int)' ')
                 {
                     return true;
                 }
@@ -113,10 +112,7 @@ namespace Json
 
         private static bool CompareCharactersToHexadecimalDigits(char digit)
         {
-            const int asciiValueOfLetterA = 97;
-            const int asciiValueOfLetterF = 102;
-
-            return char.IsDigit(digit) || ((int)digit >= asciiValueOfLetterA && (int)digit <= asciiValueOfLetterF);
+            return char.IsDigit(digit) || ((int)digit >= (int)'a' && (int)digit <= 'f');
         }
     }
 }
