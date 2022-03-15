@@ -91,16 +91,12 @@ namespace Json
         private static bool IsHexNumberValid(string input)
         {
             bool isHexValid = true;
-            for (int i = 1; i < HexNoLength + 1; i++)
+            for (int i = 1; i < HexNoLength + 1 && i < input.Length; i++)
             {
                 isHexValid &= CompareCharactersToHexadecimalDigits(input[i]);
-                if (i == input.Length - 1)
-                {
-                    return isHexValid;
-                }
             }
 
-            return isHexValid && !char.IsLetterOrDigit(input[HexNoLength + 1]);
+            return isHexValid;
         }
 
         private static bool CompareCharactersToHexadecimalDigits(char digit)
