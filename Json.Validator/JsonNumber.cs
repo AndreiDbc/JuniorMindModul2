@@ -4,47 +4,44 @@ namespace Json
 {
     public static class JsonNumber
     {
-        const int Ten = 10;
-        const int Two = 2;
-
         public static bool IsJsonNumber(string input)
         {
             bool isValid = true;
-            if (!double.TryParse(Convert.ToString(input), out double number) || string.IsNullOrEmpty(input))
+            if (string.IsNullOrEmpty(input))
             {
                 return false;
             }
 
-            isValid &= CanHaveASingleDigit(input);
-            isValid &= StartsWithZero(input);
-            isValid &= !EndsWithDot(input);
+            isValid &= IsDigits(input);
             return isValid;
         }
 
-        private static bool CanHaveASingleDigit(string input)
+        private static bool IsDigits(string input)
         {
-            return input.Length == 1 || input.Length != 1;
+            bool isDiggits = true;
+            isDiggits &= !(input.StartsWith("0") && input.Length > 1);
+            isDiggits &= input.Equals("0") || !input.Equals("0");
+            isDiggits &= input.Equals("-") || !input.Equals("-");
+            isDiggits &= InputIsNegativeOrPositiveNumber(input);
+            return isDiggits;
         }
 
-        private static bool StartsWithZero(string input)
+        private static bool InputIsNegativeOrPositiveNumber(string input)
         {
-            if (input.Length == 1 && input == "0")
-            {
-                return true;
-            }
-            else if (input.StartsWith("0") && !input.Contains("."))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return input.StartsWith("-") ? ContainsDiggits(input.Substring(1)) : ContainsDiggits(input);
         }
 
-        private static bool EndsWithDot(string input)
+        private static bool ContainsDiggits(string input)
         {
-            return input.EndsWith(".");
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (!char.IsDigit(input[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
