@@ -6,42 +6,51 @@ namespace Json
     {
         public static bool IsJsonNumber(string input)
         {
-            bool isValid = true;
             if (string.IsNullOrEmpty(input))
             {
                 return false;
             }
 
-            isValid &= IsDigits(input);
-            return isValid;
+            int dotIndex = input.IndexOf('.');
+            int exponentIndex = input.IndexOfAny(new[] { 'e', 'E' });
+
+            return IsValidInteger(input, dotIndex, exponentIndex);
         }
 
-        private static bool IsDigits(string input)
+        private static bool IsValidInteger(string input, int dotIndex, int exponentIndex)
         {
-            bool isDiggits = true;
-            isDiggits &= !(input.StartsWith("0") && input.Length > 1);
-            isDiggits &= input.Equals("0") || !input.Equals("0");
-            isDiggits &= input.Equals("-") || !input.Equals("-");
-            isDiggits &= InputIsNegativeOrPositiveNumber(input);
-            return isDiggits;
+            bool isValidInteger = true;
+            isValidInteger &= !(input.StartsWith("0") && !input.Contains(".") && input.Length > 1);
+            isValidInteger &= !input.EndsWith(".");
+            if (dotIndex != -1 || exponentIndex != -1)
+            {
+                isValidInteger &= ContainsDigitsOrSigns(GetNumberPart(input, dotIndex)) || ContainsDigitsOrSigns(GetNumberPart(input, exponentIndex));
+            }
+
+            return isValidInteger;
         }
 
-        private static bool InputIsNegativeOrPositiveNumber(string input)
-        {
-            return input.StartsWith("-") ? ContainsDiggits(input.Substring(1)) : ContainsDiggits(input);
-        }
-
-        private static bool ContainsDiggits(string input)
+        private static bool ContainsDigitsOrSigns(string input)
         {
             for (int i = 0; i < input.Length; i++)
             {
-                if (!char.IsDigit(input[i]))
+                if (!(char.IsDigit(input[i]) || input[i].Equals('-') || input[i].Equals('+')))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private static string GetNumberPart(string input, int index)
+        {
+            if (index != -1)
+            {
+                return input.Substring(index + 1);
+            }
+
+            return input;
         }
     }
 }
