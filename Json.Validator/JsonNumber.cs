@@ -14,7 +14,15 @@ namespace Json
             int dotIndex = input.IndexOf('.');
             int exponentIndex = input.IndexOfAny(new[] { 'e', 'E' });
 
-            return IsValidInteger(input, dotIndex, exponentIndex);
+            return GetJsonNumberValidity(input, dotIndex, exponentIndex);
+        }
+
+        private static bool GetJsonNumberValidity(string input, int dotIndex, int exponentIndex)
+        {
+            bool isValid = IsValidInteger(input, dotIndex, exponentIndex);
+            isValid &= IsValidFraction(input, dotIndex, exponentIndex);
+            isValid &= IsValidExponent(input, dotIndex, exponentIndex);
+            return isValid;
         }
 
         private static bool IsValidInteger(string input, int dotIndex, int exponentIndex)
