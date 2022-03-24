@@ -19,17 +19,39 @@ namespace Json
              IsValidExponent(input, dotIndex, exponentIndex);
         }
 
-        private static bool IsValidInteger(string input, int dotIndex, int exponentIndex)
+        private static string GetInteger(string input, int index)
         {
-            bool isValidInteger = true;
-            isValidInteger &= !(input.StartsWith("0") && !input.Contains(".") && input.Length > 1);
-            isValidInteger &= !input.EndsWith(".");
-            if (dotIndex != -1 || exponentIndex != -1)
+            if (index != -1)
             {
-                isValidInteger &= ContainsDigitsOrSigns(GetNumberPart(input, dotIndex)) || ContainsDigitsOrSigns(GetNumberPart(input, exponentIndex));
+                return input.Substring(0, index - 1);
             }
 
-            return isValidInteger;
+            return input;
+        }
+
+        private static string GetFraction(string input, int dotIndex, int exponentIndex)
+        {
+            if (dotIndex != -1)
+            {
+                if (exponentIndex != -1 && dotIndex < exponentIndex)
+                {
+                    return input.Substring(dotIndex + 1, input.Length - 1 - exponentIndex - 1);
+                }
+
+                return input.Substring(dotIndex + 1);
+            }
+
+            return string.Empty;
+        }
+
+        private static string GetExponent(string input, int exponentIndex)
+        {
+            if (exponentIndex != -1)
+            {
+                return input.Substring(exponentIndex + 1);
+            }
+
+            return string.Empty;
         }
 
         private static bool ContainsDigitsOrSigns(string input)
@@ -45,23 +67,29 @@ namespace Json
             return true;
         }
 
-        private static string GetNumberPart(string input, int index)
+        private static bool IsValidInteger(string input, int dotIndex, int exponentIndex)
         {
-            if (index != -1)
-            {
-                return input.Substring(index + 1);
-            }
+            bool isValidInteger = true;
+            isValidInteger &= !(input.StartsWith("0") && !input.Contains(".") && input.Length > 1);
+            isValidInteger &= !input.EndsWith(".");
+            isValidInteger &= ContainsDigitsOrSigns(GetInteger(input, dotIndex)) || ContainsDigitsOrSigns(GetInteger(input, exponentIndex));
 
-            return input;
+            return isValidInteger;
         }
 
         private static bool IsValidExponent(string input, int dotIndex, int exponentIndex)
         {
             bool isValidExponent = exponentIndex == -1;
-            if (!string.IsNullOrEmpty(GetNumberPart(input, exponentIndex)) && exponentIndex != -1 && dotIndex < exponentIndex)
+            string exponent = GetExponent(input, exponentIndex);
+            if (exponentIndex != -1)
             {
-                isValidExponent = ContainsDigitsOrSigns(input.Substring(dotIndex + 1, input.Length - 1 - exponentIndex - 1));
-                isValidExponent &= !(GetNumberPart(input, exponentIndex).EndsWith("+") || GetNumberPart(input, exponentIndex).EndsWith("-"));
+                if (string.IsNullOrEmpty(exponent))
+                {
+                    return false;
+                }
+
+                isValidExponent = ContainsDigitsOrSigns(exponent);
+                isValidExponent &= !exponent.EndsWith("+") && !exponent.EndsWith("-");
             }
 
             return isValidExponent;
@@ -70,15 +98,15 @@ namespace Json
         private static bool IsValidFraction(string input, int dotIndex, int exponentIndex)
         {
             bool isValidInteger = true;
-            if (!string.IsNullOrEmpty(GetNumberPart(input, dotIndex)))
+            string fraction = GetFraction(input, dotIndex, exponentIndex);
+            if (!string.IsNullOrEmpty(fraction))
             {
-                if (exponentIndex != -1 && dotIndex < exponentIndex)
+                if (exponentIndex != -1)
                 {
                     isValidInteger &= IsValidExponent(input, dotIndex, exponentIndex);
-                    return isValidInteger;
                 }
 
-                isValidInteger &= ContainsDigitsOrSigns(GetNumberPart(input, dotIndex));
+                isValidInteger &= ContainsDigitsOrSigns(fraction);
             }
 
             return isValidInteger;
