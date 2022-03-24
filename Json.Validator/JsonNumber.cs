@@ -64,5 +64,22 @@ namespace Json
 
             return isValidExponent;
         }
+
+        private static bool IsValidFraction(string input, int dotIndex, int exponentIndex)
+        {
+            bool isValidInteger = true;
+            if (!string.IsNullOrEmpty(GetNumberPart(input, dotIndex)))
+            {
+                if (exponentIndex != -1 && dotIndex < exponentIndex)
+                {
+                    isValidInteger &= IsValidExponent(input, dotIndex, exponentIndex);
+                    return isValidInteger;
+                }
+
+                isValidInteger &= ContainsDigitsOrSigns(GetNumberPart(input, dotIndex));
+            }
+
+            return isValidInteger;
+        }
     }
 }
