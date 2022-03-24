@@ -16,7 +16,7 @@ namespace Json
 
             return IsValidInteger(input, dotIndex, exponentIndex) &&
              IsValidFraction(input, dotIndex, exponentIndex) &&
-             IsValidExponent(input, dotIndex, exponentIndex);
+             IsValidExponent(input, exponentIndex);
         }
 
         private static string GetInteger(string input, int index)
@@ -77,7 +77,7 @@ namespace Json
             return isValidInteger;
         }
 
-        private static bool IsValidExponent(string input, int dotIndex, int exponentIndex)
+        private static bool IsValidExponent(string input, int exponentIndex)
         {
             bool isValidExponent = exponentIndex == -1;
             string exponent = GetExponent(input, exponentIndex);
@@ -103,7 +103,7 @@ namespace Json
             {
                 if (exponentIndex != -1)
                 {
-                    isValidInteger &= IsValidExponent(input, dotIndex, exponentIndex);
+                    isValidInteger &= IsValidExponent(input, exponentIndex);
                 }
 
                 isValidInteger &= ContainsDigitsOrSigns(fraction);
