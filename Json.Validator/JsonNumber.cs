@@ -52,5 +52,17 @@ namespace Json
 
             return input;
         }
+
+        private static bool IsValidExponent(string input, int dotIndex, int exponentIndex)
+        {
+            bool isValidExponent = exponentIndex == -1;
+            if (!string.IsNullOrEmpty(GetNumberPart(input, exponentIndex)) && exponentIndex != -1 && dotIndex < exponentIndex)
+            {
+                isValidExponent = ContainsDigitsOrSigns(input.Substring(dotIndex + 1, input.Length - 1 - exponentIndex - 1));
+                isValidExponent &= !(GetNumberPart(input, exponentIndex).EndsWith("+") || GetNumberPart(input, exponentIndex).EndsWith("-"));
+            }
+
+            return isValidExponent;
+        }
     }
 }
