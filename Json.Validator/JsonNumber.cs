@@ -13,11 +13,11 @@ namespace Json
 
             int dotIndex = input.IndexOf('.');
             int exponentIndex = input.IndexOfAny(new[] { 'e', 'E' });
-            bool doesNotEndWithDot = !input.EndsWith(".");
+            bool endsWithDot = input.EndsWith(".");
             bool isJsonValid = (IsValidInteger(GetInteger(input, dotIndex)) || IsValidInteger(GetInteger(input, exponentIndex))) &&
                 IsValidFraction(GetFraction(input, dotIndex, exponentIndex)) &&
                 IsValidExponent(GetExponent(input, exponentIndex));
-            return doesNotEndWithDot && isJsonValid;
+            return !endsWithDot && isJsonValid;
         }
 
         private static string GetInteger(string input, int index)
