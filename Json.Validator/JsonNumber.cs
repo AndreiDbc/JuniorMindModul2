@@ -62,22 +62,22 @@ namespace Json
             return string.Empty;
         }
 
-        private static bool ContainsDigitsOrSigns(string input)
+        private static bool ContainsDigits(string input)
         {
             for (int i = 0; i < input.Length; i++)
             {
-                if (!(char.IsDigit(input[i]) || input[i].Equals('-') || input[i].Equals('+')))
+                if (!char.IsDigit(input[i]))
                 {
                     return false;
                 }
             }
 
-            return true;
+            return input.Length > 0;
         }
 
         private static bool IsValidInteger(string integer)
         {
-            return !(integer.StartsWith("0") && !integer.Contains(".") && integer.Length > 1) && ContainsDigitsOrSigns(integer);
+            return !(integer.StartsWith("0") && !integer.Contains(".") && integer.Length > 1) && ContainsDigits(integer);
         }
 
         private static bool IsValidExponent(string exponent)
@@ -87,7 +87,7 @@ namespace Json
                 return false;
             }
 
-            return ContainsDigitsOrSigns(exponent) && !exponent.EndsWith("+") && !exponent.EndsWith("-");
+            return ContainsDigits(exponent) && !exponent.EndsWith("+") && !exponent.EndsWith("-");
         }
 
         private static bool IsValidFraction(string fraction)
@@ -97,7 +97,7 @@ namespace Json
                 return false;
             }
 
-            return ContainsDigitsOrSigns(fraction);
+            return ContainsDigits(fraction);
         }
     }
 }
