@@ -75,14 +75,15 @@ namespace Json
             return isValidInteger;
         }
 
-        private static bool IsValidExponent(string exponent)
+        private static bool IsValidExponent(string exponent, int exponentIndex)
         {
             if (exponent == null)
             {
                 return false;
             }
 
-            return ContainsOnlyDigits(exponent) && !exponent.EndsWith("+") && !exponent.EndsWith("-");
+            bool isValidExponent = NumberHasSign(exponent) ? ContainsOnlyDigits(exponent[1..]) : ContainsOnlyDigits(exponent);
+            return isValidExponent || exponentIndex == -1;
         }
 
         private static bool IsValidFraction(string fraction)
