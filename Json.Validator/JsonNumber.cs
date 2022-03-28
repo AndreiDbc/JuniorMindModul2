@@ -63,9 +63,16 @@ namespace Json
             return input.Length > 0;
         }
 
+        private static bool NumberHasSign(string input)
+        {
+            return input.StartsWith("+") || input.StartsWith("-");
+        }
+
         private static bool IsValidInteger(string integer)
         {
-            return !(integer.StartsWith("0") && !integer.Contains(".") && integer.Length > 1) && ContainsOnlyDigits(integer);
+            bool isValidInteger = !(integer.StartsWith("0") && integer.Length > 1);
+            isValidInteger &= NumberHasSign(integer) ? ContainsOnlyDigits(integer[1..]) : ContainsOnlyDigits(integer);
+            return isValidInteger;
         }
 
         private static bool IsValidExponent(string exponent)
