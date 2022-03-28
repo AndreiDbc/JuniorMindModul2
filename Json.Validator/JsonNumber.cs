@@ -42,19 +42,12 @@ namespace Json
 
         private static string GetExponent(string input, int exponentIndex)
         {
-            if (exponentIndex != -1)
+            if (exponentIndex == -1)
             {
-                string exponent = input.Substring(exponentIndex + 1);
-
-                if (exponent == string.Empty)
-                {
-                    return null;
-                }
-
-                return exponent;
+                return string.Empty;
             }
 
-            return string.Empty;
+            return input[(exponentIndex + 1)..];
         }
 
         private static bool ContainsDigits(string input)
