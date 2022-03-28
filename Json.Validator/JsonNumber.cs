@@ -20,14 +20,14 @@ namespace Json
             return !endsWithDot && isJsonValid;
         }
 
-        private static string GetInteger(string input, int index)
+        private static string GetInteger(string input, int dotIndex, int exponentIndex)
         {
-            if (index != -1)
+            if (dotIndex == exponentIndex)
             {
-                return input.Substring(0, index);
+                return input;
             }
 
-            return input;
+            return exponentIndex > dotIndex && dotIndex == -1 ? input[0..exponentIndex] : input[0..dotIndex];
         }
 
         private static string GetFraction(string input, int dotIndex, int exponentIndex)
