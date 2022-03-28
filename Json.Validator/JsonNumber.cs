@@ -14,8 +14,8 @@ namespace Json
             int dotIndex = input.IndexOf('.');
             int exponentIndex = input.IndexOfAny(new[] { 'e', 'E' });
             return IsValidInteger(GetInteger(input, dotIndex, exponentIndex)) &&
-                IsValidFraction(GetFraction(input, dotIndex, exponentIndex), dotIndex) &&
-                IsValidExponent(GetExponent(input, exponentIndex), exponentIndex);
+                IsValidFraction(GetFraction(input, dotIndex, exponentIndex)) &&
+                IsValidExponent(GetExponent(input, exponentIndex));
         }
 
         private static string GetInteger(string input, int dotIndex, int exponentIndex)
@@ -35,7 +35,7 @@ namespace Json
                 return string.Empty;
             }
 
-            return exponentIndex == -1 ? input[(dotIndex + 1) ..] : input[(dotIndex + 1) ..exponentIndex];
+            return exponentIndex == -1 ? input[dotIndex ..] : input[dotIndex ..exponentIndex];
         }
 
         private static string GetExponent(string input, int exponentIndex)
@@ -45,7 +45,7 @@ namespace Json
                 return string.Empty;
             }
 
-            return input[(exponentIndex + 1) ..];
+            return input[exponentIndex ..];
         }
 
         private static bool ContainsOnlyDigits(string input)
@@ -73,25 +73,29 @@ namespace Json
             return isValidInteger;
         }
 
-        private static bool IsValidExponent(string exponent, int exponentIndex)
+        private static bool IsValidExponent(string exponent)
         {
-            if (exponent == null)
+            if (exponent == string.Empty)
             {
-                return false;
+                return true;
             }
 
-            bool isValidExponent = NumberHasSign(exponent) ? ContainsOnlyDigits(exponent[1..]) : ContainsOnlyDigits(exponent);
-            return isValidExponent || exponentIndex == -1;
+            return NumberHasSign(exponent[1 ..]) ? ContainsOnlyDigits(exponent[(1 + 1) ..]) : ContainsOnlyDigits(exponent[1..]);
         }
 
-        private static bool IsValidFraction(string fraction, int dotIndex)
+        private static bool IsValidFraction(string fraction)
         {
-            if (fraction == null)
+            if (fraction == string.Empty)
+            {
+                return true;
+            }
+
+            if (fraction.StartsWith(".") && fraction.Length == 1)
             {
                 return false;
             }
 
-            return ContainsOnlyDigits(fraction) || dotIndex == -1;
+            return ContainsOnlyDigits(fraction[1..]);
         }
     }
 }
