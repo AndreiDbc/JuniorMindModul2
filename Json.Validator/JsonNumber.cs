@@ -50,11 +50,11 @@ namespace Json
             return input[(exponentIndex + 1)..];
         }
 
-        private static bool ContainsDigits(string input)
+        private static bool ContainsOnlyDigits(string input)
         {
-            for (int i = 0; i < input.Length; i++)
+            foreach (char character in input)
             {
-                if (!char.IsDigit(input[i]))
+                if (!char.IsDigit(character))
                 {
                     return false;
                 }
@@ -65,7 +65,7 @@ namespace Json
 
         private static bool IsValidInteger(string integer)
         {
-            return !(integer.StartsWith("0") && !integer.Contains(".") && integer.Length > 1) && ContainsDigits(integer);
+            return !(integer.StartsWith("0") && !integer.Contains(".") && integer.Length > 1) && ContainsOnlyDigits(integer);
         }
 
         private static bool IsValidExponent(string exponent)
@@ -75,7 +75,7 @@ namespace Json
                 return false;
             }
 
-            return ContainsDigits(exponent) && !exponent.EndsWith("+") && !exponent.EndsWith("-");
+            return ContainsOnlyDigits(exponent) && !exponent.EndsWith("+") && !exponent.EndsWith("-");
         }
 
         private static bool IsValidFraction(string fraction)
@@ -85,7 +85,7 @@ namespace Json
                 return false;
             }
 
-            return ContainsDigits(fraction);
+            return ContainsOnlyDigits(fraction);
         }
     }
 }
