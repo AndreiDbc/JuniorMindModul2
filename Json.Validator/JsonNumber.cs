@@ -68,8 +68,8 @@ namespace Json
 
         private static bool IsValidInteger(string integer)
         {
-            bool isValidInteger = !(integer.StartsWith("0") && integer.Length > 1);
-            isValidInteger &= HasSign(integer) ? ContainsOnlyDigits(integer[1..]) : ContainsOnlyDigits(integer);
+            bool isValidInteger = !integer.StartsWith("0") || integer.Length <= 1;
+            isValidInteger &= ContainsOnlyDigits(integer.StartsWith('-') ? integer[1..] : integer);
             return isValidInteger;
         }
 
