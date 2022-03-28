@@ -13,11 +13,9 @@ namespace Json
 
             int dotIndex = input.IndexOf('.');
             int exponentIndex = input.IndexOfAny(new[] { 'e', 'E' });
-            bool endsWithDot = input.EndsWith(".");
-            bool isJsonValid = (IsValidInteger(GetInteger(input, dotIndex)) || IsValidInteger(GetInteger(input, exponentIndex))) &&
-                IsValidFraction(GetFraction(input, dotIndex, exponentIndex)) &&
-                IsValidExponent(GetExponent(input, exponentIndex));
-            return !endsWithDot && isJsonValid;
+            return IsValidInteger(GetInteger(input, dotIndex, exponentIndex)) &&
+                IsValidFraction(GetFraction(input, dotIndex, exponentIndex), dotIndex) &&
+                IsValidExponent(GetExponent(input, exponentIndex), exponentIndex);
         }
 
         private static string GetInteger(string input, int dotIndex, int exponentIndex)
@@ -37,7 +35,7 @@ namespace Json
                 return string.Empty;
             }
 
-            return exponentIndex == -1 ? input[(dotIndex + 1)..] : input[(dotIndex + 1)..exponentIndex];
+            return exponentIndex == -1 ? input[(dotIndex + 1) ..] : input[(dotIndex + 1) ..exponentIndex];
         }
 
         private static string GetExponent(string input, int exponentIndex)
@@ -47,7 +45,7 @@ namespace Json
                 return string.Empty;
             }
 
-            return input[(exponentIndex + 1)..];
+            return input[(exponentIndex + 1) ..];
         }
 
         private static bool ContainsOnlyDigits(string input)
@@ -86,14 +84,14 @@ namespace Json
             return isValidExponent || exponentIndex == -1;
         }
 
-        private static bool IsValidFraction(string fraction)
+        private static bool IsValidFraction(string fraction, int dotIndex)
         {
             if (fraction == null)
             {
                 return false;
             }
 
-            return ContainsOnlyDigits(fraction);
+            return ContainsOnlyDigits(fraction) || dotIndex == -1;
         }
     }
 }
