@@ -90,12 +90,7 @@ namespace Json
                 return true;
             }
 
-            if (fraction.StartsWith(".") && fraction.Length == 1)
-            {
-                return false;
-            }
-
-            return ContainsOnlyDigits(fraction[1..]);
+            return ContainsOnlyDigits(fraction[1..]) && !(fraction.StartsWith(".") && fraction.Length == 1);
         }
     }
 }
