@@ -61,7 +61,7 @@ namespace Json
             return input.Length > 0;
         }
 
-        private static bool NumberHasSign(string input)
+        private static bool HasSign(string input)
         {
             return input.StartsWith("+") || input.StartsWith("-");
         }
@@ -69,7 +69,7 @@ namespace Json
         private static bool IsValidInteger(string integer)
         {
             bool isValidInteger = !(integer.StartsWith("0") && integer.Length > 1);
-            isValidInteger &= NumberHasSign(integer) ? ContainsOnlyDigits(integer[1..]) : ContainsOnlyDigits(integer);
+            isValidInteger &= HasSign(integer) ? ContainsOnlyDigits(integer[1..]) : ContainsOnlyDigits(integer);
             return isValidInteger;
         }
 
@@ -80,7 +80,9 @@ namespace Json
                 return true;
             }
 
-            return NumberHasSign(exponent[1 ..]) ? ContainsOnlyDigits(exponent[(1 + 1) ..]) : ContainsOnlyDigits(exponent[1..]);
+            exponent = exponent[1..];
+            exponent = HasSign(exponent) ? exponent[1..] : exponent;
+            return ContainsOnlyDigits(exponent);
         }
 
         private static bool IsValidFraction(string fraction)
