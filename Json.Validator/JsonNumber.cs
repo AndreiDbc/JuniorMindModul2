@@ -32,17 +32,12 @@ namespace Json
 
         private static string GetFraction(string input, int dotIndex, int exponentIndex)
         {
-            if (dotIndex != -1)
+            if (dotIndex == -1)
             {
-                if (exponentIndex != -1 && dotIndex < exponentIndex)
-                {
-                    return input.Substring(dotIndex + 1, input.Length - 1 - exponentIndex);
-                }
-
-                return input.Substring(dotIndex + 1);
+                return string.Empty;
             }
 
-            return string.Empty;
+            return exponentIndex == -1 ? input[(dotIndex + 1)..] : input[(dotIndex + 1)..exponentIndex];
         }
 
         private static string GetExponent(string input, int exponentIndex)
