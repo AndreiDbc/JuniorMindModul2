@@ -63,9 +63,13 @@ namespace Json
 
         private static bool IsValidInteger(string integer)
         {
-            bool isValidInteger = !integer.StartsWith("0") || integer.Length <= 1;
-            isValidInteger &= ContainsOnlyDigits(integer.StartsWith('-') ? integer[1..] : integer);
-            return isValidInteger;
+            integer = integer.StartsWith('-') ? integer[1..] : integer;
+            if (integer.Length >= 1 && integer.StartsWith("0"))
+            {
+                return integer == "0";
+            }
+
+            return ContainsOnlyDigits(integer);
         }
 
         private static bool IsValidExponent(string exponent)
