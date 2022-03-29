@@ -20,12 +20,12 @@ namespace Json
 
         private static string GetInteger(string input, int dotIndex, int exponentIndex)
         {
-            if (dotIndex == exponentIndex)
+            if (dotIndex != -1)
             {
-                return input;
+                return input[..dotIndex];
             }
 
-            return exponentIndex > dotIndex && dotIndex == -1 ? input[0..exponentIndex] : input[0..dotIndex];
+            return exponentIndex != -1 ? input[..exponentIndex] : input;
         }
 
         private static string GetFraction(string input, int dotIndex, int exponentIndex)
@@ -45,7 +45,7 @@ namespace Json
                 return string.Empty;
             }
 
-            return input[exponentIndex ..];
+            return input[exponentIndex..];
         }
 
         private static bool ContainsOnlyDigits(string input)
