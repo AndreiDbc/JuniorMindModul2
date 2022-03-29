@@ -87,7 +87,7 @@ namespace Json
                 return true;
             }
 
-            return ContainsOnlyDigits(fraction[1..]) && !(fraction.StartsWith(".") && fraction.Length == 1);
+            return ContainsOnlyDigits(fraction[1..]);
         }
     }
 }
