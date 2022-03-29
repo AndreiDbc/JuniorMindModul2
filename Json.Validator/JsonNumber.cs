@@ -40,12 +40,7 @@ namespace Json
 
         private static string GetExponent(string input, int exponentIndex)
         {
-            if (exponentIndex == -1)
-            {
-                return string.Empty;
-            }
-
-            return input[exponentIndex..];
+            return exponentIndex != -1 ? input[exponentIndex..] : string.Empty;
         }
 
         private static bool ContainsOnlyDigits(string input)
