@@ -10,64 +10,89 @@ namespace Ranks.Facts
     {
         private Team[] teams;
 
-        public Ranking(Team[] teams)
+        public Ranking()
         {
-            this.teams = teams;
+            this.teams = new Team[0];
         }
 
-        public void AddTeamToRanks(Team newTeam)
+        public void Add(Team newTeam)
         {
             Array.Resize(ref teams, teams.Length + 1);
             teams[^1] = newTeam;
+            ShellSort();
         }
 
-        public Team GetTeamAtRank(int index)
+        public Team GetTeamAt(int index)
         {
-            BubbleSort();
-            return teams[index];
+            return teams[index].Clone();
         }
 
-        public int GetTeamScore(string teamName)
+        public int RankOf(Team team)
         {
             for (int i = 0; i < teams.Length; i++)
             {
-                if (teams[i].GetName() == teamName)
+                if (teams[i].DoNamesMatch(team))
                 {
-                    return teams[i].GetPoints();
+                    return i + 1;
                 }
             }
 
             return 0;
         }
 
-        public void UpdateRankScores(Team team, int points)
+        public void Update(Match match)
         {
-            team.AddPoints(points);
-
-            BubbleSort();
+            AddPoints(match);
+            ShellSort();
         }
 
-        private void BubbleSort()
+        private void AddPoints(Match match)
         {
-            for (int j = 0; j < teams.Length - 1; j++)
+            foreach (Team team in teams)
             {
-                for (int i = 0; i < teams.Length - 1; i++)
+                if (match.GetHomeTeamGoals() > match.GetAwayTeamGoals() && team.DoNamesMatch(match.GetHomeTeam()))
                 {
-                    Swap(i, i + 1);
+                    team.AddWin();
+                }
+                else if (match.GetHomeTeamGoals() < match.GetAwayTeamGoals() && team.DoNamesMatch(match.GetAwayTeam()))
+                {
+                    team.AddWin();
+                }
+                else if (match.GetHomeTeamGoals() == match.GetAwayTeamGoals() && (team.DoNamesMatch(match.GetHomeTeam()) || team.DoNamesMatch(match.GetAwayTeam())))
+                {
+                    team.AddDraw();
                 }
             }
         }
 
-        private void Swap(int firstValue, int secondValue)
+        private void ShellSort()
         {
-            if (teams[firstValue].GetPoints() >= teams[secondValue].GetPoints())
+            const int two = 2;
+            int i;
+            int j;
+            Team temp;
+            int distance = 3;
+            while (distance > 0)
             {
-                return;
-            }
+                for (i = 0; i < teams.Length; i++)
+                {
+                    j = i;
+                    temp = teams[i];
+                    Swap(temp, ref j, distance);
+                    teams[j] = temp;
+                }
 
-            Team temp = teams[firstValue];
-            teams[firstValue] = teams[secondValue];
-            teams[secondValue] = temp;
+                distance /= two;
+            }
+        }
+
+        private void Swap(Team temp, ref int j, int distance)
+        {
+            while ((j >= distance) && temp.HasMorePoints(teams[j - distance]))
+            {
+                teams[j] = teams[j - distance];
+                j -= distance;
+            }
         }
     }
 }

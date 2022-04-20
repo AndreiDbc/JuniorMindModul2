@@ -17,19 +17,44 @@ namespace Ranks.Facts
             this.points = points;
         }
 
-        public string GetName()
+        public Team Clone()
         {
-            return this.name;
+            return new Team(name, points);
         }
 
-        public int GetPoints()
+        public bool DoNamesMatch(Team toMatch)
         {
-            return this.points;
+            return this.name == toMatch.name;
         }
 
-        public void AddPoints(int points)
+        public bool HasMorePoints(Team secondTeam)
         {
-            this.points += points;
+            return this.points > secondTeam.points;
+        }
+
+        public bool HasEqualPoints(Team secondTeam)
+        {
+            return this.points == secondTeam.points;
+        }
+
+        public void AddWin()
+        {
+            if (points < 0)
+            {
+                return;
+            }
+
+            points += 3;
+        }
+
+        public void AddDraw()
+        {
+            if (points < 0)
+            {
+                return;
+            }
+
+            points++;
         }
     }
 }
