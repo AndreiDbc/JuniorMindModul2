@@ -42,7 +42,7 @@ namespace Ranks.Facts
 
         public void Update(Match match)
         {
-            match.AddPoints(match);
+            match.AddPoints();
             ShellSort();
         }
 
