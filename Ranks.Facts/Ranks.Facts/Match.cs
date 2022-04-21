@@ -25,7 +25,7 @@ namespace Ranks.Facts
             {
                 awayTeam.AddWin();
             }
-            else if (match.GetHomeTeamGoals() == match.GetAwayTeamGoals() && (homeTeam.DoNamesMatch(match.GetHomeTeam()) || awayTeam.DoNamesMatch(match.GetAwayTeam())))
+            else if (match.GetHomeTeamGoals() == match.GetAwayTeamGoals() && homeTeam.DoNamesMatch(match.GetHomeTeam()) && awayTeam.DoNamesMatch(match.GetAwayTeam()))
             {
                 awayTeam.AddDraw();
                 homeTeam.AddDraw();
