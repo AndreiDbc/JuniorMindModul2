@@ -31,7 +31,7 @@ namespace Ranks.Facts
         {
             for (int i = 0; i < teams.Length; i++)
             {
-                if (teams[i].DoNamesMatch(team))
+                if (teams[i].Equals(team))
                 {
                     return i + 1;
                 }
