@@ -17,7 +17,6 @@ namespace Ranks.Facts
             Match match = new Match(homeTeam, awayTeam, 1, 2);
             Assert.False(match.GetHomeTeam().Equals(homeTeam));
             Assert.True(match.GetHomeTeam().DoNamesMatch(homeTeam));
-            Assert.True(match.GetHomeTeam().HasEqualPoints(homeTeam));
         }
 
         [Fact]
@@ -28,7 +27,6 @@ namespace Ranks.Facts
             Match match = new Match(homeTeam, awayTeam, 1, 2);
             Assert.False(match.GetAwayTeam().Equals(awayTeam));
             Assert.True(match.GetAwayTeam().DoNamesMatch(awayTeam));
-            Assert.True(match.GetAwayTeam().HasEqualPoints(awayTeam));
         }
 
         [Fact]

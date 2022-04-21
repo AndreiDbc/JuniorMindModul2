@@ -10,15 +10,6 @@ namespace Ranks.Facts
     public class TeamFacts
     {
         [Fact]
-        public void CloneIsCalledSouldReturnNewObjectWithSameData()
-        {
-            Team team = new Team("FC SB", 12);
-            Assert.False(team.Clone().Equals(team));
-            Assert.True(team.Clone().DoNamesMatch(team));
-            Assert.True(team.Clone().HasEqualPoints(team));
-        }
-
-        [Fact]
         public void DoNamesMatchIsGivenOneObjectToCompareShouldReturnTrue()
         {
             Team team = new Team("FC SB", 12);
@@ -75,15 +66,6 @@ namespace Ranks.Facts
             Team testTeam = new Team("U Cluj", 14);
             team.AddDraw();
             Assert.True(team.HasMorePoints(testTeam));
-        }
-
-        [Fact]
-        public void AddDrawIsGivenNegativeValueShouldReturnSameValue()
-        {
-            Team team = new Team("FC SB", -14);
-            Team testTeam = new Team("U Cluj", -14);
-            team.AddDraw();
-            Assert.True(team.HasEqualPoints(testTeam));
         }
     }
 }

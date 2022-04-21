@@ -17,12 +17,12 @@ namespace Ranks.Facts
 
         public Team GetHomeTeam()
         {
-            return homeTeam.Clone();
+            return homeTeam;
         }
 
         public Team GetAwayTeam()
         {
-            return awayTeam.Clone();
+            return awayTeam;
         }
 
         public int GetHomeTeamGoals()

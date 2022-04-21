@@ -122,21 +122,6 @@ namespace Ranks.Facts
         }
 
         [Fact]
-        public void UpdateIsGivenADrawShouldReturnNewPositions()
-        {
-            Team team1 = new Team("FC SB", 12);
-            Team team2 = new Team("U Cluj", 5);
-            Team team3 = new Team("Dinamo", 5);
-            Ranking ranking = new Ranking();
-            ranking.Add(team1);
-            ranking.Add(team2);
-            ranking.Add(team3);
-            Match match = new Match(team2, team3, 1, 1);
-            ranking.Update(match);
-            Assert.True(team2.HasEqualPoints(team3));
-        }
-
-        [Fact]
         public void UpdateIsGivenADrawHomeTeamLeadsShouldReturnNewPositions()
         {
             Team team1 = new Team("FC SB", 12);

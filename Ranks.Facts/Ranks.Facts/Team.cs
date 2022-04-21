@@ -17,11 +17,6 @@ namespace Ranks.Facts
             this.points = points;
         }
 
-        public Team Clone()
-        {
-            return new Team(name, points);
-        }
-
         public bool DoNamesMatch(Team toMatch)
         {
             return this.name == toMatch.name;
@@ -30,11 +25,6 @@ namespace Ranks.Facts
         public bool HasMorePoints(Team secondTeam)
         {
             return this.points > secondTeam.points;
-        }
-
-        public bool HasEqualPoints(Team secondTeam)
-        {
-            return this.points == secondTeam.points;
         }
 
         public void AddWin()

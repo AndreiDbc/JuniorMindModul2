@@ -24,7 +24,7 @@ namespace Ranks.Facts
 
         public Team GetTeamAt(int index)
         {
-            return teams[index].Clone();
+            return teams[index];
         }
 
         public int RankOf(Team team)
