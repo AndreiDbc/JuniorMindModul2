@@ -15,14 +15,21 @@ namespace Ranks.Facts
             this.awayTeamGoals = awayTeamGoals;
         }
 
-        public Team GetHomeTeam()
+        public void AddPoints(Match match)
         {
-            return homeTeam;
-        }
-
-        public Team GetAwayTeam()
-        {
-            return awayTeam;
+            if (match.GetHomeTeamGoals() > match.GetAwayTeamGoals() && homeTeam.DoNamesMatch(match.GetHomeTeam()))
+            {
+                homeTeam.AddWin();
+            }
+            else if (match.GetHomeTeamGoals() < match.GetAwayTeamGoals() && awayTeam.DoNamesMatch(match.GetAwayTeam()))
+            {
+                awayTeam.AddWin();
+            }
+            else if (match.GetHomeTeamGoals() == match.GetAwayTeamGoals() && (homeTeam.DoNamesMatch(match.GetHomeTeam()) || awayTeam.DoNamesMatch(match.GetAwayTeam())))
+            {
+                awayTeam.AddDraw();
+                homeTeam.AddDraw();
+            }
         }
 
         public int GetHomeTeamGoals()
@@ -33,6 +40,16 @@ namespace Ranks.Facts
         public int GetAwayTeamGoals()
         {
             return awayTeamGoals;
+        }
+
+        private Team GetHomeTeam()
+        {
+            return this.homeTeam;
+        }
+
+        private Team GetAwayTeam()
+        {
+            return this.awayTeam;
         }
     }
 }

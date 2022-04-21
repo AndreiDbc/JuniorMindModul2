@@ -42,27 +42,8 @@ namespace Ranks.Facts
 
         public void Update(Match match)
         {
-            AddPoints(match);
+            match.AddPoints(match);
             ShellSort();
-        }
-
-        private void AddPoints(Match match)
-        {
-            foreach (Team team in teams)
-            {
-                if (match.GetHomeTeamGoals() > match.GetAwayTeamGoals() && team.DoNamesMatch(match.GetHomeTeam()))
-                {
-                    team.AddWin();
-                }
-                else if (match.GetHomeTeamGoals() < match.GetAwayTeamGoals() && team.DoNamesMatch(match.GetAwayTeam()))
-                {
-                    team.AddWin();
-                }
-                else if (match.GetHomeTeamGoals() == match.GetAwayTeamGoals() && (team.DoNamesMatch(match.GetHomeTeam()) || team.DoNamesMatch(match.GetAwayTeam())))
-                {
-                    team.AddDraw();
-                }
-            }
         }
 
         private void ShellSort()
