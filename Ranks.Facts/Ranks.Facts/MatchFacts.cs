@@ -38,7 +38,7 @@ namespace Ranks.Facts
         }
 
         [Fact]
-        public void AddResult()
+        public void AddResultIsGivenADrawSouldUpdatePositionsAccordingly()
         {
             Team testTeam = new Team("Dinamo", 12);
             Team homeTeam = new Team("FC SB", 12);
