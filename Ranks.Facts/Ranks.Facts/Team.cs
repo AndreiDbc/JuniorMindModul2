@@ -29,21 +29,11 @@ namespace Ranks.Facts
 
         public void AddWin()
         {
-            if (points < 0)
-            {
-                return;
-            }
-
             points += 3;
         }
 
         public void AddDraw()
         {
-            if (points < 0)
-            {
-                return;
-            }
-
             points++;
         }
     }

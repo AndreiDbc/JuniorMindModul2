@@ -51,15 +51,6 @@ namespace Ranks.Facts
         }
 
         [Fact]
-        public void AddWinIsGivenNegativeValueShouldReturnSameValue()
-        {
-            Team team = new Team("FC SB", -2);
-            Team testTeam = new Team("U Cluj", -1);
-            team.AddWin();
-            Assert.False(team.HasMorePoints(testTeam));
-        }
-
-        [Fact]
         public void AddDrawIsCalledShouldAddOnePoint()
         {
             Team team = new Team("FC SB", 14);
