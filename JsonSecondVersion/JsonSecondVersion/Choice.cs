@@ -22,11 +22,6 @@ namespace JsonSecondVersion
 
         public bool Match(string text)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                return false;
-            }
-
             foreach (var pattern in patterns)
             {
                 if (!pattern.Match(text))
