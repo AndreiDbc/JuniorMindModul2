@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonSecondVersion
 {
-    public class Range : IPattern
+    public class Range : IMatch
     {
         private readonly char start;
         private readonly char end;
@@ -17,7 +17,7 @@ namespace JsonSecondVersion
             this.end = end;
         }
 
-        public bool Match(string text)
+        public bool Success(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -25,6 +25,16 @@ namespace JsonSecondVersion
             }
 
             return text[0] >= start && text[0] <= end;
+        }
+
+        public string RemainingText(string text)
+        {
+            if (Success(text))
+            {
+                return text[1..];
+            }
+
+            return text;
         }
     }
 }
