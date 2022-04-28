@@ -8,18 +8,35 @@ namespace JsonSecondVersion
 {
     interface IMatch
     {
-        bool Success();
+        bool Success(string text);
 
-        string RemainingText();
+        string RemainingText(string text);
     }
 
-    public class Match
+    class Match : IMatch
     {
         private readonly string text;
+        private readonly IMatch pattern;
 
-        public Match(string text)
+        public Match(string text, IMatch pattern)
         {
             this.text = text;
+            this.pattern = pattern;
+        }
+
+        public bool Success(string text)
+        {
+            return pattern.Success(text);
+        }
+
+        public string RemainingText(string text)
+        {
+            if (Success(text))
+            {
+                pattern.RemainingText(text);
+            }
+
+            return text;
         }
     }
 }
