@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonSecondVersion
 {
-    class Character : IPattern
+    class Character : IMatch
     {
         readonly char pattern;
 
@@ -15,7 +15,7 @@ namespace JsonSecondVersion
             this.pattern = pattern;
         }
 
-        public bool Match(string text)
+        public bool Success(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -23,6 +23,16 @@ namespace JsonSecondVersion
             }
 
             return text[0] == pattern;
+        }
+
+        public string RemainingText(string text)
+        {
+            if (Success(text))
+            {
+                return text[1..];
+            }
+
+            return text;
         }
     }
 }
