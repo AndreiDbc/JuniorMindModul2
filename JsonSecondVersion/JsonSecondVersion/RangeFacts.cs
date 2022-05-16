@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace JsonSecondVersion
@@ -5,13 +10,13 @@ namespace JsonSecondVersion
     public class RangeFacts
     {
         [Fact]
-        public void SuccessIsGivenACharacterOutsideTheIntervalShouldReturnFalse()
+        public void MatchIsGivenACharacterOutsideTheIntervalShouldReturnFalse()
         {
             const char start = 'a';
             const char end = 'f';
             const string text = "1ab";
             Range range = new Range(start, end);
-            Assert.False(range.Success(text));
+            Assert.False(range.Match(text).Success());
         }
 
         [Fact]
@@ -21,7 +26,7 @@ namespace JsonSecondVersion
             const char end = 'f';
             const string text = "abc";
             Range range = new Range(start, end);
-            Assert.True(range.Success(text));
+            Assert.True(range.Match(text).Success());
         }
 
         [Fact]
@@ -31,7 +36,7 @@ namespace JsonSecondVersion
             const char end = 'f';
             const string text = "abc";
             Range range = new Range(start, end);
-            Assert.Equal("bc", range.RemainingText(text));
+            Assert.Equal("", range.Match(text).RemainingText());
         }
 
         [Fact]
@@ -41,7 +46,7 @@ namespace JsonSecondVersion
             const char end = 'f';
             const string text = "lbc";
             Range range = new Range(start, end);
-            Assert.Equal("lbc", range.RemainingText(text));
+            Assert.Equal("bc", range.Match(text).RemainingText());
         }
     }
 }
