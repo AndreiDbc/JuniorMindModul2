@@ -6,25 +6,23 @@ using System.Threading.Tasks;
 
 namespace JsonSecondVersion
 {
-    interface IMatch
+    public interface IMatch
     {
-        bool Success(string text);
+        bool Success();
 
-        string RemainingText(string text);
+        string RemainingText();
     }
 
     class Match : IMatch
     {
         private readonly string text;
-        private readonly IMatch pattern;
 
-        public Match(string text, IMatch pattern)
+        public Match(string text)
         {
             this.text = text;
-            this.pattern = pattern;
         }
 
-        public bool Success(string text)
+        public bool Success()
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -34,7 +32,7 @@ namespace JsonSecondVersion
             return text.Length == 1;
         }
 
-        public string RemainingText(string text)
+        public string RemainingText()
         {
             return text[1..];
         }
