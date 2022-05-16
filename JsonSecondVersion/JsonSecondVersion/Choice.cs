@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace JsonSecondVersion
 {
-    class Choice : IMatch
+    interface IPattern
     {
-        private readonly IMatch[] patterns;
+        IMatch Match(string text);
+    }
 
-        public Choice(params IMatch[] patterns)
+    class Choice : IPattern
+    {
+        private readonly IPattern[] patterns;
+
+        public Choice(params IPattern[] patterns)
         {
             this.patterns = patterns;
         }
