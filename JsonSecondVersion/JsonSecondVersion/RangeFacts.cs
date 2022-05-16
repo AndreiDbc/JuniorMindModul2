@@ -30,7 +30,7 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void RemainingTextIsGivenAcharacterInsideTheIntervalShouldReturnRange()
+        public void RemainingTextIsGivenAcharacterInsideTheIntervalShouldReturnEmptyString()
         {
             const char start = 'a';
             const char end = 'f';
@@ -40,7 +40,7 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void RemainingTextIsGivenAcharacterOutsideTheIntervalShouldReturnText()
+        public void RemainingTextIsGivenAcharacterOutsideTheIntervalShouldReturnRange()
         {
             const char start = 'a';
             const char end = 'f';

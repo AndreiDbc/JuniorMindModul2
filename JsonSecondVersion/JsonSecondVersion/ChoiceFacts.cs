@@ -40,7 +40,7 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void RemainingTextIsGivenACharacterAndTwoRangesThatMatchShouldReturnEmptyString()
+        public void RemainingTextIsGivenACharacterAndTwoRangesThatMatchShouldReturnEmptyRange()
         {
             var digit = new Choice(new Character('0'), new Range('1', '9'));
             var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));
@@ -48,7 +48,7 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void RemainingTextIsGivenACharacterAndTwoRangesThatDontMatchShouldReturnText()
+        public void RemainingTextIsGivenACharacterAndTwoRangesThatDontMatchShouldReturnRange()
         {
             var digit = new Choice(new Character('0'), new Range('1', '9'));
             var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));

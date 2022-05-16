@@ -26,7 +26,7 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void RemainingTextIsGivenCCharToMatchShouldReturnRange()
+        public void RemainingTextIsGivenCCharToMatchShouldReturnEmptyString()
         {
             Character character = new Character('c');
             const string text = "csd";
@@ -34,7 +34,7 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void RemainingTextIsGivenARandomCharToMatchShouldReturnText()
+        public void RemainingTextIsGivenARandomCharToMatchShouldReturnRange()
         {
             Character character = new Character('n');
             const string text = "bfg";
