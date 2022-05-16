@@ -36,12 +36,7 @@ namespace JsonSecondVersion
 
         public string RemainingText(string text)
         {
-            if (Success(text))
-            {
-                pattern.RemainingText(text);
-            }
-
-            return text;
+            return text[1..];
         }
     }
 }
