@@ -20,27 +20,17 @@ namespace JsonSecondVersion
             this.patterns = patterns;
         }
 
-        public bool Success(string text)
+        public IMatch Match(string text)
         {
             foreach (var pattern in patterns)
             {
-                if (!pattern.Success(text))
+                if (pattern.Match(text).Success())
                 {
-                    return false;
+                    return new Match(pattern.Match(text).RemainingText());
                 }
             }
 
-            return true;
-        }
-
-        public string RemainingText(string text)
-        {
-            if (Success(text))
-            {
-                return RemainingText(text[1..]);
-            }
-
-            return text;
+            return new Match(text);
         }
     }
 }

@@ -10,61 +10,49 @@ namespace JsonSecondVersion
     public class ChoiceFacts
     {
         [Fact]
-        public void ChoiceIsGivenACharacterAndARangeThatMatchShouldReturnTrue()
+        public void SuccessIsGivenACharacterAndARangeThatMatchShouldReturnTrue()
         {
-            Character character = new Character('1');
-            Range range = new Range('1', '9');
-            Choice choice = new Choice(character, range);
-            Assert.True(choice.Success("1as"));
+            var digit = new Choice(new Character('0'), new Range('1', '9'));
+            Assert.True(digit.Match("012").Success());
         }
 
         [Fact]
-        public void ChoiceIsGivenACharacterAndARangeThatDontMatchShouldReturnFalse()
+        public void SuccessIsGivenACharacterAndARangeThatDontMatchShouldReturnFalse()
         {
-            Character character = new Character('b');
-            Range range = new Range('1', '9');
-            Choice choice = new Choice(character, range);
-            Assert.False(choice.Success("1as"));
+            var digit = new Choice(new Character('0'), new Range('1', '9'));
+            Assert.False(digit.Match("dab").Success());
         }
 
         [Fact]
         public void SuccessIsGivenACharacterAndTwoRangesThatMatchShouldReturnTrue()
         {
-            Character character = new Character('2');
-            Range range = new Range('1', '9');
-            var hex = new Choice(character, new Choice(new Range('a', 'f'), new Range('A', 'F')));
-            Choice choice = new Choice(character, range);
-            Assert.True(choice.Success("278"));
+            var digit = new Choice(new Character('0'), new Range('1', '9'));
+            var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));
+            Assert.True(hex.Match("afb").Success());
         }
 
         [Fact]
         public void SuccessIsGivenACharacterAndTwoRangesThatDontMatchShouldReturnFalse()
         {
-            Character character = new Character('0');
-            Range range = new Range('1', '9');
-            var hex = new Choice(character, new Choice(new Range('a', 'f'), new Range('A', 'F')));
-            Choice choice = new Choice(character, range);
-            Assert.False(choice.Success("h78"));
+            var digit = new Choice(new Character('0'), new Range('1', '9'));
+            var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));
+            Assert.False(hex.Match("vfb").Success());
         }
 
         [Fact]
-        public void SuccessIsGivenACharacterAndTwoRangesThatMatchShouldReturnRange()
+        public void RemainingTextIsGivenACharacterAndTwoRangesThatMatchShouldReturnEmptyString()
         {
-            Character character = new Character('1');
-            Range range = new Range('1', '9');
-            var hex = new Choice(character, new Choice(new Range('a', 'f'), new Range('A', 'F')));
-            Choice choice = new Choice(character, range);
-            Assert.Equal("ab", choice.RemainingText("1ab"));
+            var digit = new Choice(new Character('0'), new Range('1', '9'));
+            var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));
+            Assert.Equal("v", hex.Match("1bv").RemainingText());
         }
 
         [Fact]
-        public void SuccessIsGivenACharacterAndTwoRangesThatDontMatchShouldReturnText()
+        public void RemainingTextIsGivenACharacterAndTwoRangesThatDontMatchShouldReturnText()
         {
-            Character character = new Character('0');
-            Range range = new Range('1', '9');
-            var hex = new Choice(character, new Choice(new Range('a', 'f'), new Range('A', 'F')));
-            Choice choice = new Choice(character, range);
-            Assert.Equal("278", choice.RemainingText("278"));
+            var digit = new Choice(new Character('0'), new Range('1', '9'));
+            var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));
+            Assert.Equal("278", hex.Match("v278").RemainingText());
         }
     }
 }
