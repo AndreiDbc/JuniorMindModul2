@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace JsonSecondVersion
 {
-    class Character : IMatch
+    class Character : IPattern
     {
         readonly char pattern;
 
@@ -15,24 +14,19 @@ namespace JsonSecondVersion
             this.pattern = pattern;
         }
 
-        public bool Success(string text)
+        public IMatch Match(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
-                return false;
+                return new Match("");
             }
 
-            return text[0] == pattern;
-        }
-
-        public string RemainingText(string text)
-        {
-            if (Success(text))
+            if (text[0] == pattern)
             {
-                return text[1..];
+                return new Match(text[0].ToString());
             }
 
-            return text;
+            return new Match(text);
         }
     }
 }

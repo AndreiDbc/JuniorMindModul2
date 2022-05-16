@@ -14,15 +14,15 @@ namespace JsonSecondVersion
         {
             Character character = new Character('c');
             const string text = "csd";
-            Assert.True(character.Success(text));
+            Assert.True(character.Match(text).Success());
         }
 
         [Fact]
         public void SuccessIsGivenARandomCharToMatchShouldReturnFalse()
         {
             Character character = new Character('a');
-            const string text = "hsd";
-            Assert.False(character.Success(text));
+            const string text = "has";
+            Assert.False(character.Match(text).Success());
         }
 
         [Fact]
@@ -30,15 +30,15 @@ namespace JsonSecondVersion
         {
             Character character = new Character('c');
             const string text = "csd";
-            Assert.Equal("sd", character.RemainingText(text));
+            Assert.Equal("", character.Match(text).RemainingText());
         }
 
         [Fact]
         public void RemainingTextIsGivenARandomCharToMatchShouldReturnText()
         {
             Character character = new Character('n');
-            const string text = "csd";
-            Assert.Equal(text, character.RemainingText(text));
+            const string text = "bfg";
+            Assert.Equal("fg", character.Match(text).RemainingText());
         }
     }
 }
