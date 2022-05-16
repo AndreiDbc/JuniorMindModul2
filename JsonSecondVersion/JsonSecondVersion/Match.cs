@@ -26,7 +26,12 @@ namespace JsonSecondVersion
 
         public bool Success(string text)
         {
-            return pattern.Success(text);
+            if (string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+
+            return text.Length == 1;
         }
 
         public string RemainingText(string text)
