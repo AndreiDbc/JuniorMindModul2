@@ -21,15 +21,10 @@ namespace JsonSecondVersion
         {
             if (string.IsNullOrEmpty(text))
             {
-                return new Match("");
+                return new FailedMatch(text);
             }
 
-            if (text[0] >= start && text[0] <= end)
-            {
-                return new Match(text[0].ToString());
-            }
-
-            return new Match(text);
+            return text[0] >= start && text[0] <= end ? new SuccessMatch(text) : new FailedMatch(text);
         }
     }
 }
