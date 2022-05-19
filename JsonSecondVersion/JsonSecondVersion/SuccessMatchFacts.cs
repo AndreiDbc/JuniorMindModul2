@@ -10,14 +10,14 @@ namespace JsonSecondVersion
     public class SuccessMatchFacts
     {
         [Fact]
-        public void TextLengthIsGivenOneCharacterShouldReturnTrue()
+        public void TextLengthIsGivenOneCharacterShouldReturnEmptyString()
         {
             SuccessMatch match = new SuccessMatch("c");
             Assert.Equal("", match.RemainingText("c"));
         }
 
         [Fact]
-        public void TextLengthIsGivenMultipleCharactersShouldReturnFalse()
+        public void TextLengthIsGivenMultipleCharactersShouldReturnRange()
         {
             SuccessMatch match = new SuccessMatch("csada");
             Assert.Equal("sada", match.RemainingText("csada"));

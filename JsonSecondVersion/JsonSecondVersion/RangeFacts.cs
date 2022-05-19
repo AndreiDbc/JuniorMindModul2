@@ -10,7 +10,7 @@ namespace JsonSecondVersion
     public class RangeFacts
     {
         [Fact]
-        public void TextLengthIsGivenACharacterOutsideTheIntervalShouldReturnFalse()
+        public void TextLengthIsGivenACharacterOutsideTheIntervalShouldReturnFailedMatch()
         {
             const char start = 'a';
             const char end = 'f';
@@ -20,7 +20,7 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void TextLengthIsGivenAcharacterInsideTheIntervalShouldReturnTrue()
+        public void TextLengthIsGivenAcharacterInsideTheIntervalShouldReturnSuccessMatch()
         {
             const char start = 'a';
             const char end = 'f';
