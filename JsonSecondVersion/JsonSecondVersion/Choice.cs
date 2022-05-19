@@ -24,13 +24,13 @@ namespace JsonSecondVersion
         {
             foreach (var pattern in patterns)
             {
-                if (pattern.Match(text).Success())
+                if (pattern.Match(text).RemainingText(text) != text)
                 {
-                    return new Match(pattern.Match(text).RemainingText());
+                    return new SuccessMatch(text[1..]);
                 }
             }
 
-            return new Match(text);
+            return new FailedMatch(text);
         }
     }
 }
