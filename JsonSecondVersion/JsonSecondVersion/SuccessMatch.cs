@@ -15,6 +15,11 @@ namespace JsonSecondVersion
             this.text = text;
         }
 
+        public bool Success(string text)
+        {
+            return this.text != text;
+        }
+
         public string RemainingText(string text)
         {
             return text[1..];

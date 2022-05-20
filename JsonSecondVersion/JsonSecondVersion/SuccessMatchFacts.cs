@@ -22,5 +22,19 @@ namespace JsonSecondVersion
             SuccessMatch match = new SuccessMatch("csada");
             Assert.Equal("sada", match.RemainingText("csada"));
         }
+
+        [Fact]
+        public void SuccessIsGivenANonMatchShouldReturnFalse()
+        {
+            SuccessMatch text = new SuccessMatch("ASD");
+            Assert.True(text.Success("SD"));
+        }
+
+        [Fact]
+        public void SuccessIsGivenAMatchShouldReturnTrue()
+        {
+            SuccessMatch text = new SuccessMatch("ASD");
+            Assert.False(text.Success("ASD"));
+        }
     }
 }
