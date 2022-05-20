@@ -15,14 +15,14 @@ namespace JsonSecondVersion
             this.text = text;
         }
 
-        public bool Success(string text)
+        public bool Success()
         {
-            return this.text != text;
+            return true;
         }
 
-        public string RemainingText(string text)
+        public string RemainingText()
         {
-            return text[1..];
+            return text;
         }
     }
 }

@@ -13,21 +13,14 @@ namespace JsonSecondVersion
         public void RemainingTextIsGivenAStringShouldReturnFullText()
         {
             FailedMatch text = new FailedMatch("ASDF");
-            Assert.Equal("ASDF", text.RemainingText("ASDF"));
+            Assert.Equal("ASDF", text.RemainingText());
         }
 
         [Fact]
         public void SuccessIsGivenANonMatchShouldReturnFalse()
         {
             FailedMatch text = new FailedMatch("ASD");
-            Assert.False(text.Success("SD"));
-        }
-
-        [Fact]
-        public void SuccessIsGivenAMatchShouldReturnTrue()
-        {
-            FailedMatch text = new FailedMatch("ASD");
-            Assert.True(text.Success("ASD"));
+            Assert.False(text.Success());
         }
     }
 }

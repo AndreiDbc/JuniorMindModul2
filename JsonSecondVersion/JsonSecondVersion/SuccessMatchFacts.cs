@@ -13,28 +13,21 @@ namespace JsonSecondVersion
         public void TextLengthIsGivenOneCharacterShouldReturnEmptyString()
         {
             SuccessMatch match = new SuccessMatch("c");
-            Assert.Equal("", match.RemainingText("c"));
+            Assert.Equal("c", match.RemainingText());
         }
 
         [Fact]
         public void TextLengthIsGivenMultipleCharactersShouldReturnRange()
         {
             SuccessMatch match = new SuccessMatch("csada");
-            Assert.Equal("sada", match.RemainingText("csada"));
+            Assert.Equal("csada", match.RemainingText());
         }
 
         [Fact]
         public void SuccessIsGivenANonMatchShouldReturnFalse()
         {
             SuccessMatch text = new SuccessMatch("ASD");
-            Assert.True(text.Success("SD"));
-        }
-
-        [Fact]
-        public void SuccessIsGivenAMatchShouldReturnTrue()
-        {
-            SuccessMatch text = new SuccessMatch("ASD");
-            Assert.False(text.Success("ASD"));
+            Assert.True(text.Success());
         }
     }
 }

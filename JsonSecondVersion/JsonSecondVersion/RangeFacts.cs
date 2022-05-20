@@ -15,7 +15,7 @@ namespace JsonSecondVersion
             const char end = 'f';
             const string text = "1ab";
             Range range = new Range(start, end);
-            Assert.Equal("1ab", range.Match(text).RemainingText(text));
+            Assert.Equal("1ab", range.Match(text).RemainingText());
         }
 
         [Fact]
@@ -25,23 +25,23 @@ namespace JsonSecondVersion
             const char end = 'f';
             const string text = "abc";
             Range range = new Range(start, end);
-            Assert.Equal("bc", range.Match(text).RemainingText(text));
+            Assert.Equal("bc", range.Match(text).RemainingText());
         }
 
         [Fact]
         public void SuccessIsGivenAMatchShouldReturnSuccessMatch()
         {
             Range range = new Range('a', 'f');
-            Assert.True(range.Match("cdf").Success("cdf"));
-            Assert.Equal("df", range.Match("cdf").RemainingText("cdf"));
+            Assert.True(range.Match("cdf").Success());
+            Assert.Equal("df", range.Match("cdf").RemainingText());
         }
 
         [Fact]
         public void SuccessIsGivenANonMatchShouldReturnFailedMatch()
         {
             Range range = new Range('a', 'f');
-            Assert.True(range.Match("523").Success("523"));
-            Assert.Equal("523", range.Match("523").RemainingText("523"));
+            Assert.False(range.Match("523").Success());
+            Assert.Equal("523", range.Match("523").RemainingText());
         }
     }
 }

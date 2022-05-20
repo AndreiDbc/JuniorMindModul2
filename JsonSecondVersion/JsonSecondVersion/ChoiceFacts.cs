@@ -13,14 +13,14 @@ namespace JsonSecondVersion
         public void TextLengthIsGivenACharacterAndARangeThatMatchShouldReturnSuccesMatch()
         {
             var digit = new Choice(new Character('0'), new Range('1', '9'));
-            Assert.Equal("12", digit.Match("012").RemainingText("012"));
+            Assert.Equal("12", digit.Match("012").RemainingText());
         }
 
         [Fact]
         public void TextLengthIsGivenACharacterAndARangeThatDontMatchShouldReturnFailedMatch()
         {
             var digit = new Choice(new Character('0'), new Range('1', '9'));
-            Assert.Equal("dab", digit.Match("dab").RemainingText("dab"));
+            Assert.Equal("dab", digit.Match("dab").RemainingText());
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace JsonSecondVersion
         {
             var digit = new Choice(new Character('0'), new Range('1', '9'));
             var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));
-            Assert.Equal("fb", hex.Match("afb").RemainingText("afb"));
+            Assert.Equal("fb", hex.Match("afb").RemainingText());
         }
 
         [Fact]
@@ -36,8 +36,8 @@ namespace JsonSecondVersion
         {
             var digit = new Choice(new Character('0'), new Range('1', '9'));
             var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));
-            Assert.True(hex.Match("afb").Success("afb"));
-            Assert.Equal("fb", hex.Match("afb").RemainingText("afb"));
+            Assert.True(hex.Match("afb").Success());
+            Assert.Equal("fb", hex.Match("afb").RemainingText());
         }
 
         [Fact]
@@ -45,8 +45,8 @@ namespace JsonSecondVersion
         {
             var digit = new Choice(new Character('0'), new Range('1', '9'));
             var hex = new Choice(digit, new Range('a', 'f'), new Range('A', 'F'));
-            Assert.True(hex.Match("lfb").Success("lfb"));
-            Assert.Equal("lfb", hex.Match("lfb").RemainingText("lfb"));
+            Assert.False(hex.Match("lfb").Success());
+            Assert.Equal("lfb", hex.Match("lfb").RemainingText());
         }
     }
 }
