@@ -19,12 +19,7 @@ namespace JsonSecondVersion
 
         public IMatch Match(string text)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                return new FailedMatch(text);
-            }
-
-            return text[0] >= start && text[0] <= end ? new SuccessMatch(text) : new FailedMatch(text);
+            return !string.IsNullOrEmpty(text) && text[0] >= start && text[0] <= end ? new SuccessMatch(text[1..]) : new FailedMatch(text);
         }
     }
 }
