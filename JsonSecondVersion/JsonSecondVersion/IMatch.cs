@@ -9,5 +9,7 @@ namespace JsonSecondVersion
     public interface IMatch
     {
         string RemainingText(string text);
+
+        bool Success(string text);
     }
 }
