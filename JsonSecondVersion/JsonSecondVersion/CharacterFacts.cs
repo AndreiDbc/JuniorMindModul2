@@ -24,5 +24,23 @@ namespace JsonSecondVersion
             const string text = "has";
             Assert.Equal("has", character.Match(text).RemainingText(text));
         }
+
+        [Fact]
+        public void SuccessIsGivenAMatchShouldReturnSuccessMatch()
+        {
+            Character character = new Character('a');
+            const string text = "asdf";
+            Assert.True(character.Match(text).Success(text));
+            Assert.Equal("sdf", character.Match(text).RemainingText(text));
+        }
+
+        [Fact]
+        public void SuccessIsGivenARandomCharacterShouldReturnFailedMatch()
+        {
+            Character character = new Character('a');
+            const string text = "csdf";
+            Assert.True(character.Match(text).Success(text));
+            Assert.Equal("csdf", character.Match(text).RemainingText(text));
+        }
     }
 }
