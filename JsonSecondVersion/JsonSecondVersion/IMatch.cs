@@ -8,8 +8,8 @@ namespace JsonSecondVersion
 {
     public interface IMatch
     {
-        string RemainingText(string text);
+        string RemainingText();
 
-        bool Success(string text);
+        bool Success();
     }
 }
