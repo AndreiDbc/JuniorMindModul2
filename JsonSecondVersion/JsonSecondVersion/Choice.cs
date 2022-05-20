@@ -19,7 +19,8 @@ namespace JsonSecondVersion
         {
             foreach (var pattern in patterns)
             {
-                if (pattern.Match(text).RemainingText(text) != text)
+                string temp = pattern.Match(text).RemainingText(text);
+                if (pattern.Match(temp).Success(text[1..]))
                 {
                     return new SuccessMatch(text[1..]);
                 }
