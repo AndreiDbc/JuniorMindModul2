@@ -21,7 +21,7 @@ namespace JsonSecondVersion
             {
                 if (pattern.Match(text).Success())
                 {
-                    return new SuccessMatch(text[1..]);
+                    return new SuccessMatch(pattern.Match(text).RemainingText());
                 }
             }
 
