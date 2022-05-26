@@ -28,7 +28,7 @@ namespace JsonSecondVersion
                 }
             }
 
-            return new SuccessMatch(match.RemainingText());
+            return match;
         }
     }
 }
