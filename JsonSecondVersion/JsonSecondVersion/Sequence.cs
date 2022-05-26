@@ -17,17 +17,18 @@ namespace JsonSecondVersion
 
         public IMatch Match(string text)
         {
-            string temp = text;
-            string textCopy = text;
+            string failedText = text;
             foreach (var pattern in patterns)
             {
-                text = pattern.Match(text).RemainingText();
-                if (text == temp)
+                var match = pattern.Match(failedText);
+                if (pattern.Match(text).Success())
                 {
-                    return new FailedMatch(textCopy);
+                    text = pattern.Match(text).RemainingText();
                 }
-
-                temp = text;
+                else
+                {
+                    return new FailedMatch(failedText);
+                }
             }
 
             return new SuccessMatch(text);
