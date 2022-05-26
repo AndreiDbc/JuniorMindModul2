@@ -18,12 +18,13 @@ namespace JsonSecondVersion
         public IMatch Match(string text)
         {
             string failedText = text;
+            IMatch match = new SuccessMatch(text);
             foreach (var pattern in patterns)
             {
-                var match = pattern.Match(failedText);
-                if (pattern.Match(text).Success())
+                match = pattern.Match(text);
+                if (match.Success())
                 {
-                    text = pattern.Match(text).RemainingText();
+                    text = match.RemainingText();
                 }
                 else
                 {
@@ -31,7 +32,7 @@ namespace JsonSecondVersion
                 }
             }
 
-            return new SuccessMatch(text);
+            return match;
         }
     }
 }
