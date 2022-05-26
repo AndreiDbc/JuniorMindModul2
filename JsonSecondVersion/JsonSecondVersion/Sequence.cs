@@ -20,7 +20,7 @@ namespace JsonSecondVersion
             IMatch match = new SuccessMatch(text);
             foreach (var pattern in patterns)
             {
-                match = pattern.Match(text);
+                match = pattern.Match(match.RemainingText());
                 if (match.Success())
                 {
                     match.RemainingText();
@@ -31,7 +31,7 @@ namespace JsonSecondVersion
                 }
             }
 
-            return match;
+            return new SuccessMatch(match.RemainingText());
         }
     }
 }
