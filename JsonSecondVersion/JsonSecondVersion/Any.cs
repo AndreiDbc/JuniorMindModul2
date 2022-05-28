@@ -19,7 +19,7 @@ namespace JsonSecondVersion
         {
             foreach (char c in accepted)
             {
-                if (c == text[0])
+                if (!string.IsNullOrEmpty(text) && c == text[0])
                 {
                     return new SuccessMatch(text[1..]);
                 }
