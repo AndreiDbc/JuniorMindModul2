@@ -12,19 +12,17 @@ namespace JsonSecondVersion
         [Fact]
         public void TextIsGivenAMatchShouldReturnTrue()
         {
-            var text1 = new Text("false");
-            var text2 = new Text("falseX");
-            Assert.True(text1.Match("false").Success());
-            Assert.True(text1.Match("falseX").Success());
+            var text = new Text("false");
+            Assert.True(text.Match("false").Success());
+            Assert.True(text.Match("falseX").Success());
         }
 
         [Fact]
         public void TextIsGivenAMatchShouldReturnRemainingText()
         {
-            var text1 = new Text("false");
-            var text2 = new Text("falseX");
-            Assert.Equal("", text1.Match("false").RemainingText());
-            Assert.Equal("X", text1.Match("falseX").RemainingText());
+            var text = new Text("false");
+            Assert.Equal("", text.Match("false").RemainingText());
+            Assert.Equal("X", text.Match("falseX").RemainingText());
         }
     }
 }
