@@ -17,10 +17,7 @@ namespace JsonSecondVersion
 
         public IMatch Match(string text)
         {
-            var match = pattern.Match(text);
-            return match.Success()
-                ? new SuccessMatch(match.RemainingText())
-                : new SuccessMatch(text);
+            return new SuccessMatch(pattern.Match(text).RemainingText());
         }
     }
 }
