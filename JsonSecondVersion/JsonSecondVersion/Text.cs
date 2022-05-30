@@ -22,9 +22,7 @@ namespace JsonSecondVersion
                 return new FailedMatch(text);
             }
 
-            return text.StartsWith(prefix) && text.Length == prefix.Length
-                ? new SuccessMatch("")
-                : new SuccessMatch(text[^1..]);
+            return new SuccessMatch(text[prefix.Length..]);
         }
     }
 }
