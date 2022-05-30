@@ -20,7 +20,7 @@ namespace JsonSecondVersion
             foreach (char c in accepted)
             {
                 Character character = new (c);
-                if (!string.IsNullOrEmpty(text) && character.Match(text).Success())
+                if (character.Match(text).Success())
                 {
                     return new SuccessMatch(text[1..]);
                 }

@@ -26,7 +26,7 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void AnyIsGivenPlusAndMinusSIgnsToMatchShouldReturnTrue()
+        public void AnyIsGivenPlusAndMinusSignsToMatchShouldReturnTrue()
         {
             var sign = new Any("+-");
             Assert.True(sign.Match("+3").Success());
@@ -34,11 +34,39 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void AnyIsGivenPlusAndMinusSIgnsToMatchShouldReturnRemainingText()
+        public void AnyIsGivenPlusAndMinusSignsToMatchShouldReturnRemainingText()
         {
             var sign = new Any("+-");
             Assert.Equal("3", sign.Match("+3").RemainingText());
             Assert.Equal("2", sign.Match("-2").RemainingText());
+        }
+
+        [Fact]
+        public void AnyIsGivenEmptyStringToMatchShouldReturnEmptyString()
+        {
+            var sign = new Any("+-");
+            Assert.Equal("", sign.Match("").RemainingText());
+        }
+
+        [Fact]
+        public void AnyIsGivenEmptyStringToMatchShouldReturnFalse()
+        {
+            var sign = new Any("+-");
+            Assert.False(sign.Match("").Success());
+        }
+
+        [Fact]
+        public void AnyIsGivennullToMatchShouldReturnEmptyString()
+        {
+            var sign = new Any("+-");
+            Assert.Equal(null, sign.Match(null).RemainingText());
+        }
+
+        [Fact]
+        public void AnyIsGivenNullToMatchShouldReturnFalse()
+        {
+            var sign = new Any("+-");
+            Assert.False(sign.Match(null).Success());
         }
     }
 }
