@@ -21,15 +21,14 @@ namespace JsonSecondVersion
             foreach (char c in text)
             {
                 var toMatch = pattern.Match(c.ToString());
-                if (toMatch.Success())
+                match = pattern.Match(match.RemainingText());
+                if (!toMatch.Success())
                 {
-                    match = pattern.Match(match.RemainingText());
+                    return new SuccessMatch(match.RemainingText());
                 }
             }
 
-            return match.RemainingText() == text
-                ? new FailedMatch(text)
-                : new SuccessMatch(match.RemainingText());
+            return new SuccessMatch(text);
         }
     }
 }

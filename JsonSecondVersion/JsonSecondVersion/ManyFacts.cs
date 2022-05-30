@@ -36,5 +36,19 @@ namespace JsonSecondVersion
             var digits = new Many(new Range('0', '9'));
             Assert.True(digits.Match("12345ab123").Success());
         }
+
+        [Fact]
+        public void ManyIsGivenAEmptyStringShouldReturnEmptyStringInterface()
+        {
+            var digits = new Many(new Range('0', '9'));
+            Assert.Equal("", digits.Match("").RemainingText());
+        }
+
+        [Fact]
+        public void ManyIsGivenAEmptyStringShouldReturnTrue()
+        {
+            var digits = new Many(new Range('0', '9'));
+            Assert.True(digits.Match("").Success());
+        }
     }
 }
