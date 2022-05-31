@@ -9,18 +9,23 @@ namespace JsonSecondVersion
     class Any : IPattern
     {
         readonly string accepted;
+        readonly IPattern[] patterns;
 
         public Any(string accepted)
         {
             this.accepted = accepted;
+            patterns = new Character[accepted.Length];
+            for (int i = 0; i < patterns.Length; i++)
+            {
+                patterns[i] = new Character(accepted[i]);
+            }
         }
 
         public IMatch Match(string text)
         {
-            foreach (char c in accepted)
+            foreach (var pattern in patterns)
             {
-                Character character = new (c);
-                if (character.Match(text).Success())
+                if (pattern.Match(text).Success())
                 {
                     return new SuccessMatch(text[1..]);
                 }
