@@ -50,5 +50,19 @@ namespace JsonSecondVersion
             var digits = new Many(new Range('0', '9'));
             Assert.True(digits.Match("").Success());
         }
+
+        [Fact]
+        public void ManyIsGivenATextShouldReturneRemainingText()
+        {
+            var v = new Many(new Text("aa"));
+            Assert.Equal("sd", v.Match("aaaasd").RemainingText());
+        }
+
+        [Fact]
+        public void ManyIsGivenATextShouldReturnTrue()
+        {
+            var v = new Many(new Text("aa"));
+            Assert.True(v.Match("aaaasd").Success());
+        }
     }
 }
