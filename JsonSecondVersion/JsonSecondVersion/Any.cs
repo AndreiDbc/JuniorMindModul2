@@ -10,6 +10,7 @@ namespace JsonSecondVersion
     {
         readonly string accepted;
         readonly IPattern[] patterns;
+        readonly Choice choice;
 
         public Any(string accepted)
         {
@@ -19,19 +20,13 @@ namespace JsonSecondVersion
             {
                 patterns[i] = new Character(accepted[i]);
             }
+
+            choice = new (patterns);
         }
 
         public IMatch Match(string text)
         {
-            foreach (var pattern in patterns)
-            {
-                if (pattern.Match(text).Success())
-                {
-                    return new SuccessMatch(text[1..]);
-                }
-            }
-
-            return new FailedMatch(text);
+            return choice.Match(text);
         }
     }
 }
