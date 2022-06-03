@@ -24,10 +24,31 @@ namespace JsonSecondVersion
         }
 
         [Fact]
-        public void OneOrMoreIsGivenACharacterShouldReturnRemainingText()
+        public void OneOrMoreIsGivenARangeShouldReturnRemainingText()
         {
-            var digits = new Many(new Range('0', '9'));
-            Assert.Equal("ab", digits.Match("12345ab123").RemainingText());
+            var digits = new OneOrMore(new Range('0', '9'));
+            Assert.Equal("ab123", digits.Match("12345ab123").RemainingText());
+        }
+
+        [Fact]
+        public void OneOrMoreIsGivenARangeShouldReturnFalse()
+        {
+            var digits = new OneOrMore(new Range('0', '9'));
+            Assert.False(digits.Match("a2345ab123").Success());
+        }
+
+        [Fact]
+        public void OneOrMoreIsGivenATextShouldReturnRemainingText()
+        {
+            var text = new OneOrMore(new Text("as"));
+            Assert.Equal("avg", text.Match("asasasavg").RemainingText());
+        }
+
+        [Fact]
+        public void OneOrMoreIsGivenATextShouldReturnTrue()
+        {
+            var text = new OneOrMore(new Text("as"));
+            Assert.True(text.Match("asasasavg").Success());
         }
     }
 }

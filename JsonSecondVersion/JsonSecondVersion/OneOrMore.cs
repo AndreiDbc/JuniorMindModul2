@@ -12,7 +12,7 @@ namespace JsonSecondVersion
 
         public OneOrMore(IPattern pattern)
         {
-            this.pattern = pattern;
+            this.pattern = new Many(pattern);
         }
 
         public IMatch Match(string text)
