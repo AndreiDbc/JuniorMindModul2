@@ -12,7 +12,7 @@ namespace JsonSecondVersion
 
         public List(IPattern element, IPattern separator)
         {
-            this.pattern = new OneOrMore(new Choice(element, separator));
+            this.pattern = new Optional(new OneOrMore(new Choice(new Sequence(element, separator), new Sequence(element))));
         }
 
         public IMatch Match(string text)
