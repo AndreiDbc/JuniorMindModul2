@@ -30,7 +30,7 @@ namespace JsonSecondVersion
             var whitespace = new Many(new Any(" \r\n\t"));
             var separator = new Sequence(whitespace, new Character(';'), whitespace);
             var list = new List(digits, separator);
-            Assert.Equal("", list.Match("1; 22  ;\n 333 \t; 22").RemainingText());
+            Assert.Equal(";", list.Match("1 ; 2;").RemainingText());
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace JsonSecondVersion
             var whitespace = new Many(new Any(" \r\n\t"));
             var separator = new Sequence(whitespace, new Character(';'), whitespace);
             var list = new List(digits, separator);
-            Assert.Equal("; 333 \t; 22", list.Match("1; 22 ;; 333 \t; 22").RemainingText());
+            Assert.Equal(" ;; 333 \t; 22", list.Match("1; 22 ;; 333 \t; 22").RemainingText());
         }
 
         [Fact]
