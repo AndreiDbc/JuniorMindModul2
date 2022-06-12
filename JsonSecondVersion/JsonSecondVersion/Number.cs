@@ -12,8 +12,8 @@ namespace JsonSecondVersion
 
         public Number()
         {
-            Any minus = new ("-");
-            Any dot = new (".");
+            Character minus = new ('-');
+            Character dot = new ('.');
             Any exponent = new ("eE");
             Any signs = new ("+-");
             Many positiveNumber = new (new Range('1', '0'));
