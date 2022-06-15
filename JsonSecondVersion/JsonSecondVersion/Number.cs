@@ -12,17 +12,14 @@ namespace JsonSecondVersion
 
         public Number()
         {
-            Character minus = new ('-');
-            Character dot = new ('.');
-            Any exponent = new ("eE");
-            Any signs = new ("+-");
-            Many positiveNumber = new (new Range('1', '0'));
-            Sequence negativeNumber = new (minus, positiveNumber);
-            Sequence fractionalPart = new (dot, positiveNumber);
-            Choice exponentPart = new (new Sequence(exponent, positiveNumber, new Sequence(exponent, signs, positiveNumber)));
-            Sequence hasFractionAndExponent = new (new Choice(positiveNumber, negativeNumber), fractionalPart, exponentPart);
-            Sequence hasFractionOrExponent = new (new Choice(positiveNumber, negativeNumber), new Choice(fractionalPart, exponentPart));
-            this.pattern = new Choice(hasFractionAndExponent, hasFractionOrExponent, new Choice(positiveNumber, negativeNumber));
+            Choice signs = new (new Character('\0'), new Any("+-"));
+            Range oneNine = new ('1', '9');
+            Choice digit = new (new Character('0'), oneNine);
+            Choice digits = new (digit, new Many(digit));
+            Choice integer = new (digit, oneNine, new Sequence(new Character('-'), digit), new Sequence(new Character('-'), oneNine));
+            Choice exponent = new (new Character('\0'), new Sequence(new Any("e"), signs, digits), new Sequence(new Any("E"), signs, digits));
+            Choice fraction = new (new Character('\0'), new Sequence(new Any("."), digits));
+            this.pattern = new Sequence(integer, fraction, exponent);
         }
 
         public IMatch Match(string text)
