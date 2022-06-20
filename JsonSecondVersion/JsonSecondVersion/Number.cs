@@ -18,7 +18,7 @@ namespace JsonSecondVersion
             Sequence integer = new (new Optional(new Character('-')), digits);
             Sequence exponent = new (new Any("Ee"), new Sequence(new Optional(signs), digits));
             Sequence fraction = new (new Character('.'), digits);
-            this.pattern = new Sequence(integer, new Sequence(new Optional(fraction), new Optional(exponent)));
+            this.pattern = new Sequence(integer, new Optional(fraction), new Optional(exponent));
         }
 
         public IMatch Match(string text)
