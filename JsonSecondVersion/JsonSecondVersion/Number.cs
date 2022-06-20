@@ -16,7 +16,7 @@ namespace JsonSecondVersion
             Range digit = new ('0', '9');
             OneOrMore digits = new (digit);
             Sequence integer = new (new Optional(new Character('-')), digits);
-            Sequence exponent = new (new Any("Ee"), new Sequence(new Optional(signs), digits));
+            Sequence exponent = new (new Any("Ee"), new Optional(signs), digits);
             Sequence fraction = new (new Character('.'), digits);
             this.pattern = new Sequence(integer, new Optional(fraction), new Optional(exponent));
         }
