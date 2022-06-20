@@ -52,6 +52,20 @@ namespace JsonSecondVersion
         }
 
         [Fact]
+        public void DoesNotStartWithZeroShouldReturnRemainingText()
+        {
+            var number = new Number();
+            Assert.Equal("7", number.Match("07").RemainingText());
+        }
+
+        [Fact]
+        public void NumberContainsMultipleZerosShouldEmptyString()
+        {
+            var number = new Number();
+            Assert.Equal("", number.Match("703203203").RemainingText());
+        }
+
+        [Fact]
         public void CanBeNegative()
         {
             var number = new Number();
