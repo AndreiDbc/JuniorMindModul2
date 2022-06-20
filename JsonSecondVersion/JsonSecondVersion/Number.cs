@@ -12,14 +12,15 @@ namespace JsonSecondVersion
 
         public Number()
         {
-            Choice signs = new (new Character('\0'), new Any("+-"));
+            Choice signs = new (new Any("+-"));
             Range oneNine = new ('1', '9');
+            Choice zero = new (new Sequence(new Character('-'), new Character('0')), new Character('0'));
             Choice digit = new (new Character('0'), oneNine);
-            Choice digits = new (digit, new Many(digit));
-            Choice integer = new (digit, oneNine, new Sequence(new Character('-'), digit), new Sequence(new Character('-'), oneNine));
-            Choice exponent = new (new Character('\0'), new Sequence(new Any("e"), signs, digits), new Sequence(new Any("E"), signs, digits));
-            Choice fraction = new (new Character('\0'), new Sequence(new Any("."), digits));
-            this.pattern = new Sequence(integer, fraction, exponent);
+            Sequence digits = new (new Choice(new OneOrMore(digit), digit));
+            Choice integer = new (new Sequence(new Character('-'), digits), digits);
+            Sequence exponent = new (new Any("Ee"), new Choice(new Sequence(signs, digits), digits));
+            Sequence fraction = new (integer, new Character('.'), digits);
+            this.pattern = new Choice(new Sequence(fraction, exponent), new Sequence(integer, exponent), fraction, new Choice(integer, zero));
         }
 
         public IMatch Match(string text)
