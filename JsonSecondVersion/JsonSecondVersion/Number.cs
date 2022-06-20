@@ -12,7 +12,7 @@ namespace JsonSecondVersion
 
         public Number()
         {
-            Choice signs = new (new Any("+-"));
+            Any signs = new ("+-");
             Range oneNine = new ('1', '9');
             Choice zero = new (new Sequence(new Character('-'), new Character('0')), new Character('0'));
             Choice digit = new (new Character('0'), oneNine);
