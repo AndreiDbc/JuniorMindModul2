@@ -132,6 +132,13 @@ namespace JsonSecondVersion
         }
 
         [Fact]
+        public void CanContainEscapedUnicodeCharactersShouldReturnEmptyString()
+        {
+            JSONString json = new ();
+            Assert.Equal("", json.Match(Quoted(@"a \u26Be b")).RemainingText());
+        }
+
+        [Fact]
         public void DoesNotContainUnrecognizedExcapceCharacters()
         {
             JSONString json = new ();
