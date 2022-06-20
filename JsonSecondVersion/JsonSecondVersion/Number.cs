@@ -13,9 +13,8 @@ namespace JsonSecondVersion
         public Number()
         {
             Any signs = new ("+-");
-            Range oneNine = new ('1', '9');
             Choice zero = new (new Sequence(new Character('-'), new Character('0')), new Character('0'));
-            Choice digit = new (new Character('0'), oneNine);
+            Range digit = new ('0', '9');
             Sequence digits = new (new Choice(new OneOrMore(digit), digit));
             Choice integer = new (new Sequence(new Character('-'), digits), digits);
             Sequence exponent = new (new Any("Ee"), new Choice(new Sequence(signs, digits), digits));
