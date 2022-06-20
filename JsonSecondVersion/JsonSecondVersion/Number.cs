@@ -18,8 +18,8 @@ namespace JsonSecondVersion
             OneOrMore digits = new (digit);
             Sequence integer = new (new Optional(new Character('-')), digits);
             Sequence exponent = new (new Any("Ee"), new Sequence(new Optional(signs), digits));
-            Sequence fraction = new (integer, new Character('.'), digits);
-            this.pattern = new Choice(new Sequence(fraction, exponent), new Sequence(integer, exponent), fraction, new Choice(integer, zero));
+            Sequence fraction = new (new Character('.'), digits);
+            this.pattern = new Sequence(integer, new Sequence(new Optional(fraction), new Optional(exponent)));
         }
 
         public IMatch Match(string text)
