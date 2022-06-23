@@ -20,18 +20,18 @@ namespace JsonSecondVersion
             new Text("null"));
             var array = new Sequence(
                 new Character('['),
-                new List(new JSONString(), new Sequence(new Character(','), new Character(' '))),
+                new List(value, new Sequence(new Character(','), new Character(' '))),
                 new Character(']'));
             var jsonObject = new Sequence(
                 new Character('{'),
                 new List(
                     new Sequence(
-                        new Choice(value, array),
+                        value,
                         new Character(':'),
-                        new Choice(value, array)),
+                        value),
                     new Sequence(new Character(','), new Character(' '))),
                 new Character('}'));
-            this.pattern = new Choice(value, array, jsonObject);
+            this.pattern = value;
         }
 
         public IMatch Match(string text)
