@@ -31,7 +31,7 @@ namespace JsonSecondVersion
                         new Choice(value, array)),
                     new Sequence(new Character(','), new Character(' '))),
                 new Character('}'));
-            this.pattern = new Choice(array, jsonObject);
+            this.pattern = new Choice(value, array, jsonObject);
         }
 
         public IMatch Match(string text)
