@@ -20,7 +20,7 @@ namespace JsonSecondVersion
             new Text("null"));
             var ws = new Sequence(
                 new Character('['),
-                new Many(new Choice(new Any("\0\n\f\r\t"))),
+                new Many(new Any("\0\n\f\r\t")),
                 new Character(']'));
             var array = new Choice(
                 ws,
