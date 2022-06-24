@@ -29,16 +29,10 @@ namespace JsonSecondVersion
             return new FailedMatch(text);
         }
 
-        public void Add(Sequence toAdd)
+        public void Add(IPattern toAdd)
         {
-            IPattern[] newPatterns = new IPattern[patterns.Length + 1];
-            for (int i = 0; i < patterns.Length; i++)
-            {
-                newPatterns[i] = patterns[i];
-            }
-
-            newPatterns[^1] = toAdd;
-            patterns = newPatterns;
+            Array.Resize(ref patterns, patterns.Length + 1);
+            patterns[^1] = toAdd;
         }
     }
 }
