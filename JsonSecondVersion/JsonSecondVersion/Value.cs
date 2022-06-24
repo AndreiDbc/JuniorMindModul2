@@ -18,7 +18,7 @@ namespace JsonSecondVersion
             new Text("true"),
             new Text("false"),
             new Text("null"));
-            var ws = new Many(new Any("\0\n\f\r\t"));
+            var ws = new Many(new Any(" \0\n\r\t"));
             var array = new Choice(
                 new Sequence(
                     new Character('['),
