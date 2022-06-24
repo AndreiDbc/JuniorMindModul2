@@ -18,18 +18,21 @@ namespace JsonSecondVersion
             new Text("true"),
             new Text("false"),
             new Text("null"));
-            var ws = new Sequence(
-                new Character('['),
-                new Many(new Any("\0\n\f\r\t")),
-                new Character(']'));
+            var ws = new Many(new Any("\0\n\f\r\t"));
             var array = new Choice(
-                ws,
+                new Sequence(
+                    new Character('['),
+                    ws,
+                    new Character(']')),
                 new Sequence(
                 new Character('['),
                 new List(value, new Sequence(new Character(','), new Character(' '))),
                 new Character(']')));
             var jsonObject = new Choice(
-                ws,
+                new Sequence(
+                    new Character('{'),
+                    ws,
+                    new Character('}')),
                 new Sequence(
                 new Character('{'),
                 new List(
