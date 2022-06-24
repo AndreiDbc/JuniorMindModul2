@@ -31,6 +31,8 @@ namespace JsonSecondVersion
                         value),
                     new Sequence(new Character(','), new Character(' '))),
                 new Character('}'));
+            value.Add(array);
+            value.Add(jsonObject);
             this.pattern = value;
         }
 
