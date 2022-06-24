@@ -18,11 +18,19 @@ namespace JsonSecondVersion
             new Text("true"),
             new Text("false"),
             new Text("null"));
-            var array = new Sequence(
+            var ws = new Sequence(
+                new Character('['),
+                new Many(new Choice(new Any("\0\n\f\r\t"))),
+                new Character(']'));
+            var array = new Choice(
+                ws,
+                new Sequence(
                 new Character('['),
                 new List(value, new Sequence(new Character(','), new Character(' '))),
-                new Character(']'));
-            var jsonObject = new Sequence(
+                new Character(']')));
+            var jsonObject = new Choice(
+                ws,
+                new Sequence(
                 new Character('{'),
                 new List(
                     new Sequence(
@@ -30,7 +38,7 @@ namespace JsonSecondVersion
                         new Character(':'),
                         value),
                     new Sequence(new Character(','), new Character(' '))),
-                new Character('}'));
+                new Character('}')));
             value.Add(array);
             value.Add(jsonObject);
             this.pattern = value;

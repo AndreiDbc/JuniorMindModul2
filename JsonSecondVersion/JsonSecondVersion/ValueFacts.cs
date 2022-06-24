@@ -20,7 +20,7 @@ namespace JsonSecondVersion
         public void ValueIsGivenAnObjectShouldReturnEmptyString()
         {
             var value = new Value();
-            Assert.Equal("", value.Match("{\"name\":\"John\", \"age\":30, \"car\": [\"BMW\", \"VW\", \"Mercedes\"]}").RemainingText());
+            Assert.Equal("", value.Match("{\"name\":\"John\", \"age\":30, \"car\":[\"BMW\", \"VW\", \"Mercedes\"]}").RemainingText());
         }
     }
 }
