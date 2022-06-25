@@ -19,29 +19,16 @@ namespace JsonSecondVersion
             new Text("false"),
             new Text("null"));
             var ws = new Many(new Any(" \0\n\r\t"));
+            var element = new Sequence(ws, value, ws);
+            var elements = new Choice(new List(element, new Character(',')), element);
+            var member = new Sequence(ws, new JSONString(), ws, new Character(':'), element);
+            var members = new Choice(new List(member, new Character(',')), member);
             var array = new Choice(
-                new Sequence(
-                    new Character('['),
-                    ws,
-                    new Character(']')),
-                new Sequence(
-                new Character('['),
-                new List(value, new Sequence(new Character(','), new Character(' '))),
-                new Character(']')));
+                new Sequence(new Character('['), ws, new Character(']')),
+                new Sequence(new Character('['), elements, new Character(']')));
             var jsonObject = new Choice(
-                new Sequence(
-                    new Character('{'),
-                    ws,
-                    new Character('}')),
-                new Sequence(
-                new Character('{'),
-                new List(
-                    new Sequence(
-                        value,
-                        new Character(':'),
-                        value),
-                    new Sequence(new Character(','), new Character(' '))),
-                new Character('}')));
+                new Sequence(new Character('{'), ws, new Character('}')),
+                new Sequence(new Character('{'), members, new Character('}')));
             value.Add(array);
             value.Add(jsonObject);
             this.pattern = value;
