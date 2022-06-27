@@ -8,10 +8,14 @@ namespace JsonSecondVersion
 {
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            string path = System.IO.File.ReadAllText(Console.ReadLine());
-            Console.WriteLine(string.IsNullOrEmpty(new Value().Match(path).RemainingText()));
+            Value value = new ();
+            foreach (var arg in args)
+            {
+                Console.WriteLine(value.Match(System.IO.File.ReadAllText(arg)).Success() && string.IsNullOrEmpty(value.Match(System.IO.File.ReadAllText(arg)).RemainingText()));
+            }
+
             Console.Read();
         }
     }

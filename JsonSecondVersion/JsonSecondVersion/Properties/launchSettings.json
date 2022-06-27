@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JsonSecondVersion": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\Andrei\\Desktop\\input.txt"
+    }
+  }
+}
