@@ -10,10 +10,10 @@ namespace JsonSecondVersion
     {
         static void Main(string[] args)
         {
-            Value value = new ();
             foreach (var arg in args)
             {
-                Console.WriteLine(value.Match(System.IO.File.ReadAllText(arg)).Success() && string.IsNullOrEmpty(value.Match(System.IO.File.ReadAllText(arg)).RemainingText()));
+                var result = new Value().Match(System.IO.File.ReadAllText(arg));
+                Console.WriteLine(result.Success() && string.IsNullOrEmpty(result.RemainingText()));
             }
 
             Console.Read();
