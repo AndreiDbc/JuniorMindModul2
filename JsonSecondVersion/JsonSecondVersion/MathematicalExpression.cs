@@ -12,13 +12,11 @@ namespace JsonSecondVersion
 
         public MathematicalExpression()
         {
-            var result = new Choice();
             Any signs = new ("+-/*");
-            Sequence expression = new (new Character('('), new List(result, signs), new Character(')'));
-            Choice operand = new (new Number(), expression);
-            result.Add(operand);
-            result.Add(expression);
-            this.pattern = new List(result, signs);
+            Choice operand = new (new Number());
+            Sequence expression = new (new Character('('), operand, signs, operand, new Character(')'));
+            operand.Add(expression);
+            this.pattern = new Sequence(operand, signs, operand);
         }
 
         public IMatch Match(string text)
