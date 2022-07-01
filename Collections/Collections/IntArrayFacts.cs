@@ -24,5 +24,27 @@ namespace Collections
             array.SetElement(3, 24);
             Assert.Equal(24, array.Element(3));
         }
+
+        [Fact]
+        public void ContainsIsCalledArrayDoesntContainNumberShouldReturnFalse()
+        {
+            IntArray array = new ();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
+            array.Add(4);
+            Assert.False(array.Contains(5));
+        }
+
+        [Fact]
+        public void ContainsIsCalledArrayContainsNumberShouldReturnTrue()
+        {
+            IntArray array = new ();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
+            array.Add(4);
+            Assert.True(array.Contains(3));
+        }
     }
 }
