@@ -57,11 +57,7 @@ namespace Collections
         public void Insert(int index, int element)
         {
             Array.Resize(ref array, array.Length + 1);
-            for (int i = array.Length - 1; i > index; i--)
-            {
-                array[i] = array[i - 1];
-            }
-
+            ShiftToRight(index);
             array[index] = element;
         }
 
@@ -90,6 +86,14 @@ namespace Collections
             }
 
             Array.Resize(ref array, array.Length - 1);
+        }
+
+        public void ShiftToRight(int index)
+        {
+            for (int i = array.Length - 1; i > index; i--)
+            {
+                array[i] = array[i - 1];
+            }
         }
     }
 }
