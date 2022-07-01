@@ -8,7 +8,7 @@ namespace Collections
 {
     class IntArray
     {
-        private readonly int[] array;
+        private int[] array;
 
         public IntArray()
         {
@@ -23,6 +23,12 @@ namespace Collections
         public int Element(int index)
         {
             return array[index];
+        }
+
+        public void Add(int element)
+        {
+            Array.Resize(ref array, array.Length + 1);
+            array[^1] = element;
         }
     }
 }
