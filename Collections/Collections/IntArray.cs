@@ -82,13 +82,11 @@ namespace Collections
             }
 
             ShiftToLeft(index);
-            Array.Resize(ref array, array.Length - 1);
         }
 
         public void RemoveAt(int index)
         {
             ShiftToRight(index);
-            Array.Resize(ref array, array.Length - 1);
         }
 
         public void ShiftToRight(int index)
