@@ -38,15 +38,7 @@ namespace Collections
 
         public bool Contains(int element)
         {
-            foreach (var number in array)
-            {
-                if (number == element)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return IndexOf(element) != -1;
         }
 
         public int IndexOf(int element)
