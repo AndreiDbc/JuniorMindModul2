@@ -99,5 +99,19 @@ namespace Collections
             Assert.Equal('\0', array.Element(0));
             Assert.Equal('\0', array.Element(0));
         }
+
+        [Fact]
+        public void RemoveIsCalledShouldReturnArrayWithRemovedElement()
+        {
+            IntArray array = new ();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
+            array.Add(4);
+            array.Remove(2);
+            Assert.Equal(1, array.Element(0));
+            Assert.Equal(3, array.Element(1));
+            Assert.Equal(4, array.Element(2));
+        }
     }
 }

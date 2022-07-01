@@ -77,5 +77,22 @@ namespace Collections
         {
             array = new int[array.Length];
         }
+
+        public void Remove(int element)
+        {
+            int[] temp = array;
+            int index = IndexOf(element);
+            if (index == -1)
+            {
+                return;
+            }
+
+            for (int i = index; i < array.Length - 1; i++)
+            {
+                array[i] = temp[i + 1];
+            }
+
+            Array.Resize(ref array, array.Length - 1);
+        }
     }
 }
