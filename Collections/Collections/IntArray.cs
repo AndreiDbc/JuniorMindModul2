@@ -30,5 +30,10 @@ namespace Collections
             Array.Resize(ref array, array.Length + 1);
             array[^1] = element;
         }
+
+        public void SetElement(int index, int element)
+        {
+            array[index] = element;
+        }
     }
 }
