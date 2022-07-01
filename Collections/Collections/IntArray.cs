@@ -14,5 +14,10 @@ namespace Collections
         {
             this.array = new int[0];
         }
+
+        public int Count()
+        {
+            return array.Length;
+        }
     }
 }
