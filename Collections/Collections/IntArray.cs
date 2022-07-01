@@ -19,5 +19,10 @@ namespace Collections
         {
             return array.Length;
         }
+
+        public int Element(int index)
+        {
+            return array[index];
+        }
     }
 }
