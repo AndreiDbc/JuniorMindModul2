@@ -80,19 +80,13 @@ namespace Collections
 
         public void Remove(int element)
         {
-            int[] temp = array;
             int index = IndexOf(element);
             if (index == -1)
             {
                 return;
             }
 
-            for (int i = index; i < array.Length - 1; i++)
-            {
-                array[i] = temp[i + 1];
-            }
-
-            Array.Resize(ref array, array.Length - 1);
+            RemoveAt(index);
         }
 
         public void RemoveAt(int index)
