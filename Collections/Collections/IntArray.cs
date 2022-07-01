@@ -27,8 +27,15 @@ namespace Collections
 
         public void Add(int element)
         {
-            Array.Resize(ref array, array.Length + 1);
-            array[^1] = element;
+            Array.Resize(ref array, array.Length * 2);
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == '\0')
+                {
+                    array[i] = element;
+                    break;
+                }
+            }
         }
 
         public void SetElement(int index, int element)
