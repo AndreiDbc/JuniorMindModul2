@@ -63,7 +63,7 @@ namespace Collections
 
         public void Clear()
         {
-            array = new int[array.Length];
+            array = new int[0];
         }
 
         public void Remove(int element)
