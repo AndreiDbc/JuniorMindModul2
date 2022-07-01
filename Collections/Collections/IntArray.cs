@@ -12,7 +12,7 @@ namespace Collections
 
         public IntArray()
         {
-            this.array = new int[0];
+            this.array = new int[4];
         }
 
         public int Count()
@@ -63,7 +63,7 @@ namespace Collections
 
         public void Clear()
         {
-            array = new int[0];
+            array = new int[4];
         }
 
         public void Remove(int element)
