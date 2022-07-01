@@ -61,5 +61,16 @@ namespace Collections
 
             return -1;
         }
+
+        public void Insert(int index, int element)
+        {
+            int[] temp = array;
+            Array.Resize(ref array, array.Length + 1);
+            array[index] = element;
+            for (int i = index + 1; i < array.Length; i++)
+            {
+                array[i] = temp[i - 1];
+            }
+        }
     }
 }
