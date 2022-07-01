@@ -84,5 +84,20 @@ namespace Collections
             Assert.Equal(3, array.Element(3));
             Assert.Equal(4, array.Element(4));
         }
+
+        [Fact]
+        public void ClearIsCalledShouldReturnEmptyArray()
+        {
+            IntArray array = new ();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
+            array.Add(4);
+            array.Clear();
+            Assert.Equal('\0', array.Element(0));
+            Assert.Equal('\0', array.Element(0));
+            Assert.Equal('\0', array.Element(0));
+            Assert.Equal('\0', array.Element(0));
+        }
     }
 }

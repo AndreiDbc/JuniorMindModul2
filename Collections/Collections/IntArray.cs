@@ -72,5 +72,10 @@ namespace Collections
                 array[i] = temp[i - 1];
             }
         }
+
+        public void Clear()
+        {
+            array = new int[array.Length];
+        }
     }
 }
