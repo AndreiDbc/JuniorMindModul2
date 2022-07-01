@@ -79,12 +79,7 @@ namespace Collections
 
         public void RemoveAt(int index)
         {
-            int[] temp = array;
-            for (int i = index; i < array.Length - 1; i++)
-            {
-                array[i] = temp[i + 1];
-            }
-
+            ShiftToRight(index);
             Array.Resize(ref array, array.Length - 1);
         }
 
@@ -95,5 +90,6 @@ namespace Collections
                 array[i] = array[i - 1];
             }
         }
+
     }
 }
