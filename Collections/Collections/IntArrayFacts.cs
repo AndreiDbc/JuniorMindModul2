@@ -113,5 +113,19 @@ namespace Collections
             Assert.Equal(3, array.Element(1));
             Assert.Equal(4, array.Element(2));
         }
+
+        [Fact]
+        public void RemoveAtIsCalledShouldRemoveElementAtIndex()
+        {
+            IntArray array = new ();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
+            array.Add(4);
+            array.RemoveAt(3);
+            Assert.Equal(1, array.Element(0));
+            Assert.Equal(2, array.Element(1));
+            Assert.Equal(3, array.Element(2));
+        }
     }
 }
