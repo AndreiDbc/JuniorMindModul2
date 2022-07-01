@@ -74,7 +74,8 @@ namespace Collections
                 return;
             }
 
-            RemoveAt(index);
+            ShiftToLeft(index);
+            Array.Resize(ref array, array.Length - 1);
         }
 
         public void RemoveAt(int index)
@@ -91,5 +92,12 @@ namespace Collections
             }
         }
 
+        public void ShiftToLeft(int index)
+        {
+            for (int i = index; i < array.Length - 1; i++)
+            {
+                array[i] = array[i + 1];
+            }
+        }
     }
 }
