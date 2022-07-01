@@ -46,5 +46,27 @@ namespace Collections
             array.Add(4);
             Assert.True(array.Contains(3));
         }
+
+        [Fact]
+        public void IndexOfIsCalledArrayContainsTheElementShouldReturnPosition()
+        {
+            IntArray array = new ();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
+            array.Add(4);
+            Assert.Equal(2, array.IndexOf(3));
+        }
+
+        [Fact]
+        public void IndexOfIsCalledArrayDoesntContainTheElementShouldReturnMinusOne()
+        {
+            IntArray array = new ();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
+            array.Add(4);
+            Assert.Equal(-1, array.IndexOf(67));
+        }
     }
 }
