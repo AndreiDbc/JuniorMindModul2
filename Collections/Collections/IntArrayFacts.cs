@@ -12,21 +12,32 @@ namespace Collections
             array.Add(3);
             array.Add(4);
             Assert.Equal(32, array.Count);
-            Assert.Equal(2, array.Element(0));
-            Assert.Equal(3, array.Element(1));
-            Assert.Equal(4, array.Element(2));
+            Assert.Equal(2, array[0]);
+            Assert.Equal(3, array[1]);
+            Assert.Equal(4, array[2]);
         }
 
         [Fact]
-        public void SetElementIsCalledShouldReturnArrayWithChangedElement()
+        public void ElementsIsCalledShouldReturnArrayElement()
         {
             IntArray array = new ();
             array.Add(1);
             array.Add(2);
             array.Add(3);
             array.Add(4);
-            array.SetElement(3, 24);
-            Assert.Equal(24, array.Element(3));
+            Assert.Equal(4, array[3]);
+        }
+
+        [Fact]
+        public void ElementsIsCalledShouldChangeArrayElementValue()
+        {
+            IntArray array = new ();
+            array.Add(1);
+            array.Add(2);
+            array.Add(3);
+            array.Add(4);
+            array[2] = 7;
+            Assert.Equal(7, array[2]);
         }
 
         [Fact]
@@ -82,11 +93,11 @@ namespace Collections
             array.Add(3);
             array.Add(4);
             array.Insert(2, 55);
-            Assert.Equal(1, array.Element(0));
-            Assert.Equal(2, array.Element(1));
-            Assert.Equal(55, array.Element(2));
-            Assert.Equal(3, array.Element(3));
-            Assert.Equal(4, array.Element(4));
+            Assert.Equal(1, array[0]);
+            Assert.Equal(2, array[1]);
+            Assert.Equal(55, array[2]);
+            Assert.Equal(3, array[3]);
+            Assert.Equal(4, array[4]);
         }
 
         [Fact]
@@ -98,10 +109,10 @@ namespace Collections
             array.Add(3);
             array.Add(4);
             array.Clear();
-            Assert.Equal('\0', array.Element(0));
-            Assert.Equal('\0', array.Element(0));
-            Assert.Equal('\0', array.Element(0));
-            Assert.Equal('\0', array.Element(0));
+            Assert.Equal('\0', array[0]);
+            Assert.Equal('\0', array[1]);
+            Assert.Equal('\0', array[2]);
+            Assert.Equal('\0', array[3]);
         }
 
         [Fact]
@@ -113,9 +124,9 @@ namespace Collections
             array.Add(3);
             array.Add(4);
             array.Remove(2);
-            Assert.Equal(1, array.Element(0));
-            Assert.Equal(3, array.Element(1));
-            Assert.Equal(4, array.Element(2));
+            Assert.Equal(1, array[0]);
+            Assert.Equal(3, array[1]);
+            Assert.Equal(4, array[2]);
         }
 
         [Fact]
@@ -127,9 +138,9 @@ namespace Collections
             array.Add(3);
             array.Add(4);
             array.RemoveAt(3);
-            Assert.Equal(1, array.Element(0));
-            Assert.Equal(2, array.Element(1));
-            Assert.Equal(3, array.Element(2));
+            Assert.Equal(1, array[0]);
+            Assert.Equal(2, array[1]);
+            Assert.Equal(3, array[2]);
         }
     }
 }

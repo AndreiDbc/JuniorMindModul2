@@ -17,9 +17,10 @@ namespace Collections
 
         public int Count { get => array.Length; }
 
-        public int Element(int index)
+        public int this[int index]
         {
-            return array[index];
+            get => array[index];
+            set => array[index] = value;
         }
 
         public void Add(int element)
@@ -33,11 +34,6 @@ namespace Collections
                     break;
                 }
             }
-        }
-
-        public void SetElement(int index, int element)
-        {
-            array[index] = element;
         }
 
         public bool Contains(int element)
