@@ -8,7 +8,7 @@ namespace Collections
 {
     class IntArray
     {
-        private int[] array;
+        protected int[] array;
 
         public IntArray()
         {
@@ -96,6 +96,19 @@ namespace Collections
             {
                 array[i] = array[i + 1];
             }
+        }
+
+        protected int GetLastValue()
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == '\0')
+                {
+                    return i - 1;
+                }
+            }
+
+            return '\0';
         }
     }
 }
