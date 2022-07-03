@@ -6,7 +6,21 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    internal class ObjectArray
+    class ObjectArray
     {
+        private readonly object[] array;
+
+        public ObjectArray()
+        {
+            array = new object[4];
+        }
+
+        public int Count { get => array.Length; }
+
+        public object this[int index]
+        {
+            get => array[index];
+            set => array[index] = value;
+        }
     }
 }

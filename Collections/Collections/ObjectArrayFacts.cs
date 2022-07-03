@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Collections
 {
-    internal class ObjectArrayFacts
+    public class ObjectArrayFacts
     {
     }
 }
