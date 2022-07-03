@@ -77,22 +77,6 @@ namespace Collections
             RemoveLastValue();
         }
 
-        public void ShiftToRight(int index)
-        {
-            for (int i = GetLastValue() + 1; i > index; i--)
-            {
-                array[i] = array[i - 1];
-            }
-        }
-
-        public void ShiftToLeft(int index)
-        {
-            for (int i = index; i < GetLastValue(); i++)
-            {
-                array[i] = array[i + 1];
-            }
-        }
-
         protected int GetLastValue()
         {
             for (int i = 0; i < array.Length; i++)
@@ -109,6 +93,22 @@ namespace Collections
         private void RemoveLastValue()
         {
             array[GetLastValue()] = '\0';
+        }
+
+        private void ShiftToRight(int index)
+        {
+            for (int i = GetLastValue() + 1; i > index; i--)
+            {
+                array[i] = array[i - 1];
+            }
+        }
+
+        private void ShiftToLeft(int index)
+        {
+            for (int i = index; i < GetLastValue(); i++)
+            {
+                array[i] = array[i + 1];
+            }
         }
     }
 }
