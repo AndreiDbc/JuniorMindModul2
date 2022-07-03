@@ -30,6 +30,12 @@ namespace Collections
             QuickSort(0, GetLastValue());
         }
 
+        public override void RemoveAt(int index)
+        {
+            base.RemoveAt(index);
+            QuickSort(0, GetLastValue());
+        }
+
         private void QuickSort(int start, int end)
         {
             int i;
