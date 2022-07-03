@@ -24,6 +24,12 @@ namespace Collections
             QuickSort(0, GetLastValue());
         }
 
+        public override void Remove(int element)
+        {
+            base.Remove(element);
+            QuickSort(0, GetLastValue());
+        }
+
         private void QuickSort(int start, int end)
         {
             int i;

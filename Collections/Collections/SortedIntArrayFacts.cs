@@ -42,5 +42,21 @@ namespace Collections
             Assert.Equal(9, array[4]);
             Assert.Equal(11, array[5]);
         }
+
+        [Fact]
+        public void AnInstanceOfSortedArrayIsCreatedRemoveIsCalledShouldReturnElementsInAscendingOrder()
+        {
+            SortedIntArray array = new ();
+            array.Add(8);
+            array.Add(9);
+            array.Add(4);
+            array.Add(9);
+            array.Add(6);
+            array.Remove(3);
+            Assert.Equal(4, array[0]);
+            Assert.Equal(6, array[1]);
+            Assert.Equal(8, array[2]);
+            Assert.Equal(9, array[3]);
+        }
     }
 }
