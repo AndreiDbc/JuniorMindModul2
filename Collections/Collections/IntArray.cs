@@ -110,5 +110,10 @@ namespace Collections
 
             return '\0';
         }
+
+        private void RemoveLastValue()
+        {
+            array[GetLastValue()] = '\0';
+        }
     }
 }
