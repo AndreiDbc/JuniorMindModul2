@@ -77,9 +77,10 @@ namespace Collections
             ShiftToLeft(index);
         }
 
-        public void RemoveAt(int index)
+        public virtual void RemoveAt(int index)
         {
-            ShiftToRight(index);
+            ShiftToLeft(index);
+            RemoveLastValue();
         }
 
         public void ShiftToRight(int index)
