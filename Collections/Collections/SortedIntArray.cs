@@ -12,6 +12,12 @@ namespace Collections
         {
         }
 
+        public override void Add(int element)
+        {
+            base.Add(element);
+            QuickSort(0, GetLastValue());
+        }
+
         private void QuickSort(int start, int end)
         {
             int i;
