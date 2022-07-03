@@ -66,7 +66,7 @@ namespace Collections
             array = new int[4];
         }
 
-        public void Remove(int element)
+        public virtual void Remove(int element)
         {
             int index = IndexOf(element);
             if (index == -1)
@@ -75,6 +75,7 @@ namespace Collections
             }
 
             ShiftToLeft(index);
+            RemoveLastValue();
         }
 
         public virtual void RemoveAt(int index)
