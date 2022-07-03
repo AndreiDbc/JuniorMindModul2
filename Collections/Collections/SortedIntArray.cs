@@ -6,7 +6,47 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    internal class SortedIntArray
+    class SortedIntArray : IntArray
     {
+        public SortedIntArray()
+        {
+        }
+
+        private void QuickSort(int start, int end)
+        {
+            int i;
+            if (start == end + 1)
+            {
+                return;
+            }
+
+            i = Partition(start, end);
+
+            QuickSort(start, i - 1);
+            QuickSort(i + 1, end);
+        }
+
+        private int Partition(int start, int end)
+        {
+            int temp;
+            int endValue = array[end];
+            int i = start - 1;
+
+            for (int j = start; j <= end - 1; j++)
+            {
+                if (array[j] <= endValue)
+                {
+                    i++;
+                    temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+            }
+
+            temp = array[i + 1];
+            array[i + 1] = array[end];
+            array[end] = temp;
+            return i + 1;
+        }
     }
 }
