@@ -29,12 +29,12 @@ namespace Collections
             array[GetLastValue() + 1] = element;
         }
 
-        public bool Contains(int element)
+        public virtual bool Contains(int element)
         {
             return IndexOf(element) != -1;
         }
 
-        public int IndexOf(int element)
+        public virtual int IndexOf(int element)
         {
             for (int i = 0; i < GetLastValue(); i++)
             {
@@ -47,14 +47,14 @@ namespace Collections
             return -1;
         }
 
-        public void Insert(int index, int element)
+        public virtual void Insert(int index, int element)
         {
             Array.Resize(ref array, array.Length + 1);
             ShiftToRight(index);
             array[index] = element;
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             array = new int[4];
         }
