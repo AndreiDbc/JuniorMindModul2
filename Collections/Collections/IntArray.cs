@@ -29,12 +29,12 @@ namespace Collections
             array[GetLastValue() + 1] = element;
         }
 
-        public virtual bool Contains(int element)
+        public bool Contains(int element)
         {
             return IndexOf(element) != -1;
         }
 
-        public virtual int IndexOf(int element)
+        public int IndexOf(int element)
         {
             for (int i = 0; i < GetLastValue(); i++)
             {
@@ -54,7 +54,7 @@ namespace Collections
             array[index] = element;
         }
 
-        public virtual void Clear()
+        public void Clear()
         {
             array = new int[4];
         }
