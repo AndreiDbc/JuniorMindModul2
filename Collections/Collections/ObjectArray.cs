@@ -26,10 +26,10 @@ namespace Collections
         public void Add(object element)
         {
             Array.Resize(ref array, array.Length * 2);
-            array[GetLastValue() + 1] = element;
+            array[GetLastValueIndex() + 1] = element;
         }
 
-        protected int GetLastValue()
+        protected int GetLastValueIndex()
         {
             for (int i = 0; i < array.Length; i++)
             {

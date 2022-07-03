@@ -26,7 +26,7 @@ namespace Collections
         public virtual void Add(int element)
         {
             Array.Resize(ref array, array.Length * 2);
-            array[GetLastValue() + 1] = element;
+            array[GetLastValueIndex() + 1] = element;
         }
 
         public bool Contains(int element)
@@ -36,7 +36,7 @@ namespace Collections
 
         public int IndexOf(int element)
         {
-            for (int i = 0; i < GetLastValue(); i++)
+            for (int i = 0; i < GetLastValueIndex(); i++)
             {
                 if (array[i] == element)
                 {
@@ -77,7 +77,7 @@ namespace Collections
             RemoveLastValue();
         }
 
-        protected int GetLastValue()
+        protected int GetLastValueIndex()
         {
             for (int i = 0; i < array.Length; i++)
             {
@@ -92,12 +92,12 @@ namespace Collections
 
         private void RemoveLastValue()
         {
-            array[GetLastValue()] = '\0';
+            array[GetLastValueIndex()] = '\0';
         }
 
         private void ShiftToRight(int index)
         {
-            for (int i = GetLastValue() + 1; i > index; i--)
+            for (int i = GetLastValueIndex() + 1; i > index; i--)
             {
                 array[i] = array[i - 1];
             }
@@ -105,7 +105,7 @@ namespace Collections
 
         private void ShiftToLeft(int index)
         {
-            for (int i = index; i < GetLastValue(); i++)
+            for (int i = index; i < GetLastValueIndex(); i++)
             {
                 array[i] = array[i + 1];
             }
