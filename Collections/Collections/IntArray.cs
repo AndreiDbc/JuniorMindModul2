@@ -84,7 +84,7 @@ namespace Collections
 
         public void ShiftToRight(int index)
         {
-            for (int i = array.Length - 1; i > index; i--)
+            for (int i = GetLastValue() + 1; i > index; i--)
             {
                 array[i] = array[i - 1];
             }
@@ -92,7 +92,7 @@ namespace Collections
 
         public void ShiftToLeft(int index)
         {
-            for (int i = index; i < array.Length - 1; i++)
+            for (int i = index; i < GetLastValue(); i++)
             {
                 array[i] = array[i + 1];
             }
