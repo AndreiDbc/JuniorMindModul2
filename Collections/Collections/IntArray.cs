@@ -23,17 +23,10 @@ namespace Collections
             set => array[index] = value;
         }
 
-        public void Add(int element)
+        public virtual void Add(int element)
         {
             Array.Resize(ref array, array.Length * 2);
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] == '\0')
-                {
-                    array[i] = element;
-                    break;
-                }
-            }
+            array[GetLastValue() + 1] = element;
         }
 
         public bool Contains(int element)
@@ -43,7 +36,7 @@ namespace Collections
 
         public int IndexOf(int element)
         {
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < GetLastValue(); i++)
             {
                 if (array[i] == element)
                 {
