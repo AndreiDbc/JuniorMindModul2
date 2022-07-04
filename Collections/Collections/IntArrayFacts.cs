@@ -108,10 +108,7 @@ namespace Collections
             array.Add(3);
             array.Add(4);
             array.Clear();
-            Assert.Equal('\0', array[0]);
-            Assert.Equal('\0', array[1]);
-            Assert.Equal('\0', array[2]);
-            Assert.Equal('\0', array[3]);
+            Assert.Equal(0, array.Count);
         }
 
         [Fact]
@@ -126,7 +123,6 @@ namespace Collections
             Assert.Equal(1, array[0]);
             Assert.Equal(3, array[1]);
             Assert.Equal(4, array[2]);
-            Assert.Equal('\0', array[3]);
         }
 
         [Fact]
@@ -141,7 +137,6 @@ namespace Collections
             Assert.Equal(1, array[0]);
             Assert.Equal(2, array[1]);
             Assert.Equal(4, array[2]);
-            Assert.Equal('\0', array[3]);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Collections
 
         public virtual void Add(int element)
         {
-            if (count == array.Length - 1)
+            if (count == array.Length)
             {
                 Array.Resize(ref array, array.Length * 2);
             }
@@ -56,7 +56,7 @@ namespace Collections
 
         public virtual void Insert(int index, int element)
         {
-            if (count == array.Length - 1)
+            if (count == array.Length)
             {
                 Array.Resize(ref array, array.Length * 2);
             }
@@ -80,20 +80,13 @@ namespace Collections
             }
 
             ShiftToLeft(index);
-            RemoveLastValue();
             count--;
         }
 
         public virtual void RemoveAt(int index)
         {
             ShiftToLeft(index);
-            RemoveLastValue();
             count--;
-        }
-
-        private void RemoveLastValue()
-        {
-            array[count - 1] = 0;
         }
 
         private void ShiftToRight(int index)
@@ -106,7 +99,7 @@ namespace Collections
 
         private void ShiftToLeft(int index)
         {
-            for (int i = index; i < count; i++)
+            for (int i = index; i < count - 1; i++)
             {
                 array[i] = array[i + 1];
             }
