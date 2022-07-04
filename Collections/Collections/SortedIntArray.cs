@@ -24,18 +24,6 @@ namespace Collections
             QuickSort(0, Count - 1);
         }
 
-        public override void Remove(int element)
-        {
-            base.Remove(element);
-            QuickSort(0, Count - 1);
-        }
-
-        public override void RemoveAt(int index)
-        {
-            base.RemoveAt(index);
-            QuickSort(0, Count - 1);
-        }
-
         private void QuickSort(int start, int end)
         {
             int i;
