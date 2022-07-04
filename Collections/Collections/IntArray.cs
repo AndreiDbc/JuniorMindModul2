@@ -86,7 +86,7 @@ namespace Collections
 
         private void RemoveLastValue()
         {
-            array[countValues - 1] = '\0';
+            array[countValues - 1] = 0;
         }
 
         private void ShiftToRight(int index)
