@@ -9,10 +9,12 @@ namespace Collections
     class IntArray
     {
         protected int[] array;
+        protected int countValues;
 
         public IntArray()
         {
             this.array = new int[4];
+            this.countValues = 0;
         }
 
         public int Count { get => array.Length; }
@@ -26,7 +28,8 @@ namespace Collections
         public virtual void Add(int element)
         {
             Array.Resize(ref array, array.Length * 2);
-            array[GetLastValueIndex() + 1] = element;
+            array[countValues] = element;
+            countValues++;
         }
 
         public bool Contains(int element)
@@ -36,7 +39,7 @@ namespace Collections
 
         public int IndexOf(int element)
         {
-            for (int i = 0; i < GetLastValueIndex(); i++)
+            for (int i = 0; i < countValues - 1; i++)
             {
                 if (array[i] == element)
                 {
@@ -52,11 +55,13 @@ namespace Collections
             Array.Resize(ref array, array.Length + 1);
             ShiftToRight(index);
             array[index] = element;
+            countValues++;
         }
 
         public void Clear()
         {
             array = new int[4];
+            countValues = 0;
         }
 
         public virtual void Remove(int element)
@@ -69,12 +74,14 @@ namespace Collections
 
             ShiftToLeft(index);
             RemoveLastValue();
+            countValues--;
         }
 
         public virtual void RemoveAt(int index)
         {
             ShiftToLeft(index);
             RemoveLastValue();
+            countValues--;
         }
 
         protected int GetLastValueIndex()
@@ -92,12 +99,12 @@ namespace Collections
 
         private void RemoveLastValue()
         {
-            array[GetLastValueIndex()] = '\0';
+            array[countValues - 1] = '\0';
         }
 
         private void ShiftToRight(int index)
         {
-            for (int i = GetLastValueIndex() + 1; i > index; i--)
+            for (int i = countValues; i > index; i--)
             {
                 array[i] = array[i - 1];
             }
@@ -105,7 +112,7 @@ namespace Collections
 
         private void ShiftToLeft(int index)
         {
-            for (int i = index; i < GetLastValueIndex(); i++)
+            for (int i = index; i < countValues - 1; i++)
             {
                 array[i] = array[i + 1];
             }
