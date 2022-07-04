@@ -27,7 +27,11 @@ namespace Collections
 
         public virtual void Add(int element)
         {
-            Array.Resize(ref array, array.Length * 2);
+            if (count == array.Length - 1)
+            {
+                Array.Resize(ref array, array.Length * 2);
+            }
+
             array[count] = element;
             count++;
         }
@@ -52,7 +56,11 @@ namespace Collections
 
         public virtual void Insert(int index, int element)
         {
-            Array.Resize(ref array, array.Length + 1);
+            if (count == array.Length - 1)
+            {
+                Array.Resize(ref array, array.Length * 2);
+            }
+
             ShiftToRight(index);
             array[index] = element;
             count++;
