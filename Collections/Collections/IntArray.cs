@@ -68,7 +68,6 @@ namespace Collections
 
         public void Clear()
         {
-            array = new int[4];
             count = 0;
         }
 
