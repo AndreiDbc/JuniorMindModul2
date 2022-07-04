@@ -9,15 +9,15 @@ namespace Collections
     class IntArray
     {
         protected int[] array;
-        protected int countValues;
+        private int count;
 
         public IntArray()
         {
             this.array = new int[4];
-            this.countValues = 0;
+            this.count = 0;
         }
 
-        public int Count { get => array.Length; }
+        public int Count { get => count; }
 
         public int this[int index]
         {
@@ -28,8 +28,8 @@ namespace Collections
         public virtual void Add(int element)
         {
             Array.Resize(ref array, array.Length * 2);
-            array[countValues] = element;
-            countValues++;
+            array[count] = element;
+            count++;
         }
 
         public bool Contains(int element)
@@ -39,7 +39,7 @@ namespace Collections
 
         public int IndexOf(int element)
         {
-            for (int i = 0; i < countValues - 1; i++)
+            for (int i = 0; i < count - 1; i++)
             {
                 if (array[i] == element)
                 {
@@ -55,13 +55,13 @@ namespace Collections
             Array.Resize(ref array, array.Length + 1);
             ShiftToRight(index);
             array[index] = element;
-            countValues++;
+            count++;
         }
 
         public void Clear()
         {
             array = new int[4];
-            countValues = 0;
+            count = 0;
         }
 
         public virtual void Remove(int element)
@@ -74,24 +74,24 @@ namespace Collections
 
             ShiftToLeft(index);
             RemoveLastValue();
-            countValues--;
+            count--;
         }
 
         public virtual void RemoveAt(int index)
         {
             ShiftToLeft(index);
             RemoveLastValue();
-            countValues--;
+            count--;
         }
 
         private void RemoveLastValue()
         {
-            array[countValues - 1] = 0;
+            array[count - 1] = 0;
         }
 
         private void ShiftToRight(int index)
         {
-            for (int i = countValues; i > index; i--)
+            for (int i = count; i > index; i--)
             {
                 array[i] = array[i - 1];
             }
@@ -99,7 +99,7 @@ namespace Collections
 
         private void ShiftToLeft(int index)
         {
-            for (int i = index; i < countValues - 1; i++)
+            for (int i = index; i < count; i++)
             {
                 array[i] = array[i + 1];
             }
