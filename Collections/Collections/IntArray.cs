@@ -84,19 +84,6 @@ namespace Collections
             countValues--;
         }
 
-        protected int GetLastValueIndex()
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] == '\0')
-                {
-                    return i - 1;
-                }
-            }
-
-            return '\0';
-        }
-
         private void RemoveLastValue()
         {
             array[countValues - 1] = '\0';
