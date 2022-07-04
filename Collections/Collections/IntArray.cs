@@ -8,7 +8,7 @@ namespace Collections
 {
     class IntArray
     {
-        protected int[] array;
+        private int[] array;
         private int count;
 
         public IntArray()
