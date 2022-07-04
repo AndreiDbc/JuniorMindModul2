@@ -11,7 +11,6 @@ namespace Collections
             array.Add(2);
             array.Add(3);
             array.Add(4);
-            Assert.Equal(32, array.Count);
             Assert.Equal(2, array[0]);
             Assert.Equal(3, array[1]);
             Assert.Equal(4, array[2]);

@@ -15,25 +15,25 @@ namespace Collections
         public override void Add(int element)
         {
             base.Add(element);
-            QuickSort(0, countValues - 1);
+            QuickSort(0, Count - 1);
         }
 
         public override void Insert(int index, int element)
         {
             base.Insert(index, element);
-            QuickSort(0, countValues - 1);
+            QuickSort(0, Count - 1);
         }
 
         public override void Remove(int element)
         {
             base.Remove(element);
-            QuickSort(0, countValues - 1);
+            QuickSort(0, Count - 1);
         }
 
         public override void RemoveAt(int index)
         {
             base.RemoveAt(index);
-            QuickSort(0, countValues - 1);
+            QuickSort(0, Count - 1);
         }
 
         private void QuickSort(int start, int end)
