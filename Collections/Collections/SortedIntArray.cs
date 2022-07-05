@@ -15,50 +15,43 @@ namespace Collections
         public override void Add(int element)
         {
             base.Add(element);
-            QuickSort(0, Count - 1);
+            ShellSort();
         }
 
         public override void Insert(int index, int element)
         {
             base.Insert(index, element);
-            QuickSort(0, Count - 1);
+            ShellSort();
         }
 
-        private void QuickSort(int start, int end)
+        private void ShellSort()
         {
+            const int two = 2;
             int i;
-            if (start == end + 1)
+            int j;
+            int temp;
+            int distance = 3;
+            while (distance > 0)
             {
-                return;
+                for (i = 0; i < this.Count; i++)
+                {
+                    j = i;
+                    temp = this[i];
+                    Swap(temp, ref j, distance);
+                    this[j] = temp;
+                }
+
+                distance /= two;
             }
-
-            i = Partition(start, end);
-
-            QuickSort(start, i - 1);
-            QuickSort(i + 1, end);
         }
 
-        private int Partition(int start, int end)
+        private void Swap(int temp, ref int j, int distance)
         {
-            int temp;
-            int endValue = array[end];
-            int i = start - 1;
-
-            for (int j = start; j <= end - 1; j++)
+            while ((j >= distance) && temp < this[j - distance])
             {
-                if (array[j] <= endValue)
-                {
-                    i++;
-                    temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
-                }
+                this[j] = this[j - distance];
+                j -= distance;
             }
-
-            temp = array[i + 1];
-            array[i + 1] = array[end];
-            array[end] = temp;
-            return i + 1;
         }
     }
 }
