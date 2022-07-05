@@ -42,5 +42,58 @@ namespace Collections
             Assert.Equal(9, array[4]);
             Assert.Equal(11, array[5]);
         }
+
+        [Fact]
+        public void AnInstanceOfSortedArrayIsCreatedInsertIsCalledAndIndexIsZeroShouldReturnElementsInAscendingOrder()
+        {
+            SortedIntArray array = new ();
+            array.Add(8);
+            array.Add(9);
+            array.Add(4);
+            array.Add(11);
+            array.Add(6);
+            array.Insert(0, 2);
+            Assert.Equal(2, array[0]);
+            Assert.Equal(4, array[1]);
+            Assert.Equal(6, array[2]);
+            Assert.Equal(8, array[3]);
+            Assert.Equal(9, array[4]);
+            Assert.Equal(11, array[5]);
+        }
+
+        [Fact]
+        public void AnInstanceOfSortedArrayIsCreatedInsertIsCalledAndIndexIsArrayMinusOneShouldReturnElementsInAscendingOrder()
+        {
+            SortedIntArray array = new ();
+            array.Add(8);
+            array.Add(9);
+            array.Add(4);
+            array.Add(11);
+            array.Add(6);
+            array.Insert(5, 34);
+            Assert.Equal(4, array[0]);
+            Assert.Equal(6, array[1]);
+            Assert.Equal(8, array[2]);
+            Assert.Equal(9, array[3]);
+            Assert.Equal(11, array[4]);
+            Assert.Equal(34, array[5]);
+        }
+
+        [Fact]
+        public void AnInstanceOfSortedArrayIsCreatedInsertIsCalledAndElementIsNotInOrderShouldReturnArray()
+        {
+            SortedIntArray array = new ();
+            array.Add(8);
+            array.Add(9);
+            array.Add(4);
+            array.Add(11);
+            array.Add(6);
+            array.Insert(3, 55);
+            Assert.Equal(4, array[0]);
+            Assert.Equal(6, array[1]);
+            Assert.Equal(8, array[2]);
+            Assert.Equal(9, array[3]);
+            Assert.Equal(11, array[4]);
+        }
     }
 }

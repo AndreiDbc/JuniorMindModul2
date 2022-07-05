@@ -20,7 +20,23 @@ namespace Collections
 
         public override void Insert(int index, int element)
         {
-            base.Insert(index, element);
+            if (index == 0 && this[1] >= element)
+            {
+                base.Insert(index, element);
+            }
+            else if (index == this.Count && element >= this[index - 1])
+            {
+                base.Insert(index, element);
+            }
+            else if (this[index - 1] <= element && this[index + 1] >= element)
+            {
+                base.Insert(index, element);
+            }
+            else
+            {
+                return;
+            }
+
             ShellSort();
         }
 
