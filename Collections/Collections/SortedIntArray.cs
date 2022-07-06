@@ -20,11 +20,12 @@ namespace Collections
 
         public override void Insert(int index, int element)
         {
-            if (ElementAt(index - 1, element) <= element && element <= ElementAt(index, element))
+            if (ElementAt(index - 1, element) > element || element > ElementAt(index, element))
             {
-                base.Insert(index, element);
+                return;
             }
 
+            base.Insert(index, element);
             ShellSort();
         }
 
