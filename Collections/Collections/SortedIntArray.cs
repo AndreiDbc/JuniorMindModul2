@@ -28,6 +28,15 @@ namespace Collections
             base.Insert(index, element);
         }
 
+        public override void Clear()
+        {
+            base.Clear();
+            for (int i = 0; i < Count; i++)
+            {
+                this[i] = 0;
+            }
+        }
+
         private int ElementAt(int index, int defaultValue)
         {
             if (index == this.Count || index == -1)
