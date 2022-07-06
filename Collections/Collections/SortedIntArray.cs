@@ -26,7 +26,6 @@ namespace Collections
             }
 
             base.Insert(index, element);
-            ShellSort();
         }
 
         private int ElementAt(int index, int value)
