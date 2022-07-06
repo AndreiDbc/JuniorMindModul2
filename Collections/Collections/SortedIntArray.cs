@@ -20,7 +20,7 @@ namespace Collections
 
         public override void Insert(int index, int element)
         {
-            if (ElementAt(index - 1, element) > element || element > ElementAt(index, element))
+            if (ElementAt(index - 1, element - 1) > element || element > ElementAt(index, element + 1))
             {
                 return;
             }
@@ -28,15 +28,11 @@ namespace Collections
             base.Insert(index, element);
         }
 
-        private int ElementAt(int index, int value)
+        private int ElementAt(int index, int defaultValue)
         {
-            if (index == this.Count)
+            if (index == this.Count || index == -1)
             {
-                return value + 1;
-            }
-            else if (index == -1)
-            {
-                return value - 1;
+                return defaultValue;
             }
 
             return this[index];
