@@ -27,8 +27,10 @@ namespace Collections
 
         public void Add(object element)
         {
-            Array.Resize(ref array, array.Length * 2);
-            array[GetLastValueIndex() + 1] = element;
+            DoubleTheArraySize();
+
+            array[count] = element;
+            count++;
         }
 
         private void ShiftToRight(int index)
