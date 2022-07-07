@@ -51,6 +51,20 @@ namespace Collections
             return IndexOf(element) != -1;
         }
 
+        public virtual void Insert(int index, object element)
+        {
+            DoubleTheArraySize();
+
+            ShiftToRight(index);
+            array[index] = element;
+            count++;
+        }
+
+        public void Clear()
+        {
+            count = 0;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)

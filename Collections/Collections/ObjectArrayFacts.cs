@@ -64,5 +64,28 @@ namespace Collections
             array.Add(1232.213);
             Assert.False(array.Contains(obj));
         }
+
+        [Fact]
+        public void InsertIsCalledShouldReturnOneMoreElementToArray()
+        {
+            var array = new ObjectArray();
+            object obj = false;
+            array.Add("asd");
+            array.Add(true);
+            array.Add(1232.213);
+            array.Insert(1, obj);
+            Assert.Equal(obj, array[1]);
+        }
+
+        [Fact]
+        public void ClearIsCalledShouldSetCountToZero()
+        {
+            var array = new ObjectArray();
+            array.Add("asd");
+            array.Add(true);
+            array.Add(1232.213);
+            array.Clear();
+            Assert.Equal(0, array.Count);
+        }
     }
 }
