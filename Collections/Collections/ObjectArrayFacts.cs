@@ -42,5 +42,27 @@ namespace Collections
             array.Add(1232.213);
             Assert.Equal(-1, array.IndexOf(obj));
         }
+
+        [Fact]
+        public void ContainsIsCalledShouldReturnTrue()
+        {
+            var array = new ObjectArray();
+            object obj = true;
+            array.Add("asd");
+            array.Add(true);
+            array.Add(1232.213);
+            Assert.True(array.Contains(obj));
+        }
+
+        [Fact]
+        public void ContainsIsCalledShouldReturnFalse()
+        {
+            var array = new ObjectArray();
+            object obj = false;
+            array.Add("asd");
+            array.Add(true);
+            array.Add(1232.213);
+            Assert.False(array.Contains(obj));
+        }
     }
 }

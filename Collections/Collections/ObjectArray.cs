@@ -46,6 +46,11 @@ namespace Collections
             return -1;
         }
 
+        public bool Contains(object element)
+        {
+            return IndexOf(element) != -1;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)
