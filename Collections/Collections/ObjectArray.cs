@@ -30,5 +30,31 @@ namespace Collections
             Array.Resize(ref array, array.Length * 2);
             array[GetLastValueIndex() + 1] = element;
         }
+
+        private void ShiftToRight(int index)
+        {
+            for (int i = count; i > index; i--)
+            {
+                array[i] = array[i - 1];
+            }
+        }
+
+        private void ShiftToLeft(int index)
+        {
+            for (int i = index; i < count - 1; i++)
+            {
+                array[i] = array[i + 1];
+            }
+        }
+
+        private void DoubleTheArraySize()
+        {
+            if (count != array.Length)
+            {
+                return;
+            }
+
+            Array.Resize(ref array, array.Length * 2);
+        }
     }
 }
