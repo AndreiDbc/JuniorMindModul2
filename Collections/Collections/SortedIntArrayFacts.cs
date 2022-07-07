@@ -113,5 +113,22 @@ namespace Collections
             Assert.Equal(9, array[3]);
             Assert.Equal(11, array[4]);
         }
+
+        [Fact]
+        public void AnInstanceOfSortedArrayIsCreatedValuesAreSetUsingTheIndeexerAddIsCalledThreeTimesShouldReturnThreeSortedValues()
+        {
+            SortedIntArray array = new ();
+            array.Add(0);
+            array.Add(32);
+            array.Add(45);
+            array[0] = 1;
+            array[1] = 2;
+            array[2] = 3;
+            array[3] = 4;
+            Assert.Equal(1, array[0]);
+            Assert.Equal(2, array[1]);
+            Assert.Equal(3, array[2]);
+            Assert.Equal(0, array[3]);
+        }
     }
 }

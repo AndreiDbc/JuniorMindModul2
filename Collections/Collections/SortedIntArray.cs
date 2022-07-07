@@ -16,6 +16,11 @@ namespace Collections
         {
             set
             {
+                if (index >= Count)
+                {
+                    return;
+                }
+
                 if (ElementAt(index - 1, value - 1) > value || value > ElementAt(index + 1, value))
                 {
                     return;
