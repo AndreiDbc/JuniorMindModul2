@@ -9,13 +9,15 @@ namespace Collections
     class ObjectArray
     {
         private object[] array;
+        private int count;
 
         public ObjectArray()
         {
             array = new object[4];
+            count = 0;
         }
 
-        public int Count { get => array.Length; }
+        public int Count { get => count; }
 
         public object this[int index]
         {
