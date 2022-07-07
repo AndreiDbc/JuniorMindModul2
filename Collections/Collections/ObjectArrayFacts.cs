@@ -20,5 +20,27 @@ namespace Collections
             Assert.True((bool)array[1]);
             Assert.Equal(1232.213, array[2]);
         }
+
+        [Fact]
+        public void IndexOfIsCalledShouldReturnTheIndexOfAnObject()
+        {
+            var array = new ObjectArray();
+            object obj = 1232.213;
+            array.Add("asd");
+            array.Add(true);
+            array.Add(1232.213);
+            Assert.Equal(2, array.IndexOf(obj));
+        }
+
+        [Fact]
+        public void IndexOfIsCalledShouldReturnMinusOne()
+        {
+            var array = new ObjectArray();
+            object obj = false;
+            array.Add("asd");
+            array.Add(true);
+            array.Add(1232.213);
+            Assert.Equal(-1, array.IndexOf(obj));
+        }
     }
 }
