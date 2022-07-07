@@ -12,6 +12,19 @@ namespace Collections
         {
         }
 
+        public override int this[int index]
+        {
+            set
+            {
+                if (ElementAt(index - 1, value - 1) > value || value > ElementAt(index + 1, value))
+                {
+                    return;
+                }
+
+                base[index] = value;
+            }
+        }
+
         public override void Add(int element)
         {
             base.Add(element);
@@ -20,7 +33,7 @@ namespace Collections
 
         public override void Insert(int index, int element)
         {
-            if (ElementAt(index - 1, element - 1) > element || element > ElementAt(index, element + 1))
+            if (ElementAt(index - 1, element) > element || element > ElementAt(index, element))
             {
                 return;
             }
@@ -39,7 +52,7 @@ namespace Collections
 
         private int ElementAt(int index, int defaultValue)
         {
-            if (index == this.Count || index == -1)
+            if (index == Count || index == -1)
             {
                 return defaultValue;
             }
@@ -56,12 +69,12 @@ namespace Collections
             int distance = 3;
             while (distance > 0)
             {
-                for (i = 0; i < this.Count; i++)
+                for (i = 0; i < Count; i++)
                 {
                     j = i;
-                    temp = this[i];
+                    temp = base[i];
                     Swap(temp, ref j, distance);
-                    this[j] = temp;
+                    base[j] = temp;
                 }
 
                 distance /= two;
@@ -70,9 +83,9 @@ namespace Collections
 
         private void Swap(int temp, ref int j, int distance)
         {
-            while ((j >= distance) && temp < this[j - distance])
+            while ((j >= distance) && temp < base[j - distance])
             {
-                this[j] = this[j - distance];
+                base[j] = base[j - distance];
                 j -= distance;
             }
         }
