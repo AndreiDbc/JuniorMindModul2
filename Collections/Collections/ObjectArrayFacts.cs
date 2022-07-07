@@ -87,5 +87,29 @@ namespace Collections
             array.Clear();
             Assert.Equal(0, array.Count);
         }
+
+        [Fact]
+        public void RemoveIsCalledShouldReturnArrayWithRemovedObject()
+        {
+            var array = new ObjectArray();
+            array.Add("asd");
+            array.Add(true);
+            array.Add(1232.213);
+            array.Remove(true);
+            Assert.Equal("asd", array[0]);
+            Assert.Equal(1232.213, array[2]);
+        }
+
+        [Fact]
+        public void RemoveAtIsCalledShouldReturnArrayWithRemovedObject()
+        {
+            var array = new ObjectArray();
+            array.Add("asd");
+            array.Add(true);
+            array.Add(1232.213);
+            array.RemoveAt(1);
+            Assert.Equal("asd", array[0]);
+            Assert.Equal(1232.213, array[2]);
+        }
     }
 }

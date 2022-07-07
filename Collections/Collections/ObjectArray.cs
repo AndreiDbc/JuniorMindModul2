@@ -65,6 +65,24 @@ namespace Collections
             count = 0;
         }
 
+        public virtual void Remove(object element)
+        {
+            int index = IndexOf(element);
+            if (index == -1)
+            {
+                return;
+            }
+
+            ShiftToLeft(index);
+            count--;
+        }
+
+        public virtual void RemoveAt(int index)
+        {
+            ShiftToLeft(index);
+            count--;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)
