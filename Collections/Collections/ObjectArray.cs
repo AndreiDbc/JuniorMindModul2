@@ -28,18 +28,5 @@ namespace Collections
             Array.Resize(ref array, array.Length * 2);
             array[GetLastValueIndex() + 1] = element;
         }
-
-        protected int GetLastValueIndex()
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] == null)
-                {
-                    return i - 1;
-                }
-            }
-
-            return '\0';
-        }
     }
 }
