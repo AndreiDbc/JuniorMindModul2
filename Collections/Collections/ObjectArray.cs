@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class ObjectArray
+    class ObjectArray : IEnumerable
     {
         private object[] array;
         private int count;
@@ -81,6 +82,19 @@ namespace Collections
         {
             ShiftToLeft(index);
             count--;
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            foreach (object o in array)
+            {
+                if (o == null)
+                {
+                    break;
+                }
+
+                yield return o;
+            }
         }
 
         private void ShiftToRight(int index)
