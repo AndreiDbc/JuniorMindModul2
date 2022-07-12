@@ -7,27 +7,27 @@ using Xunit;
 
 namespace Collections
 {
-    public class ObjectArrayFacts
+    public class ListFacts
     {
         [Fact]
         public void AnInstanceofObjectArrayisCreatedAddIsCalledShouldReturnNewElement()
         {
-            var array = new ObjectArray();
-            array.Add("asd");
-            array.Add(true);
-            array.Add(1232.213);
-            Assert.Equal("asd", array[0]);
-            Assert.True((bool)array[1]);
-            Assert.Equal(1232.213, array[2]);
+            var array = new List<int>();
+            array.Add(23);
+            array.Add(12);
+            array.Add(1232);
+            Assert.Equal(23, array[0]);
+            Assert.Equal(12, array[1]);
+            Assert.Equal(1232, array[2]);
         }
 
         [Fact]
         public void IndexOfIsCalledShouldReturnTheIndexOfAnObject()
         {
-            var array = new ObjectArray();
-            object obj = 1232.213;
-            array.Add("asd");
-            array.Add(true);
+            const double obj = 1232.213;
+            var array = new List<double>();
+            array.Add(23);
+            array.Add(12);
             array.Add(1232.213);
             Assert.Equal(2, array.IndexOf(obj));
         }
@@ -35,44 +35,44 @@ namespace Collections
         [Fact]
         public void IndexOfIsCalledShouldReturnMinusOne()
         {
-            var array = new ObjectArray();
-            object obj = false;
-            array.Add("asd");
+            var array = new List<bool>();
+            const bool obj = false;
             array.Add(true);
-            array.Add(1232.213);
+            array.Add(true);
+            array.Add(true);
             Assert.Equal(-1, array.IndexOf(obj));
         }
 
         [Fact]
         public void ContainsIsCalledShouldReturnTrue()
         {
-            var array = new ObjectArray();
-            object obj = true;
+            var array = new List<string>();
+            const string obj = "vg";
             array.Add("asd");
-            array.Add(true);
-            array.Add(1232.213);
+            array.Add("vg");
+            array.Add("SDA");
             Assert.True(array.Contains(obj));
         }
 
         [Fact]
         public void ContainsIsCalledShouldReturnFalse()
         {
-            var array = new ObjectArray();
-            object obj = false;
-            array.Add("asd");
+            var array = new List<bool>();
+            const bool obj = false;
             array.Add(true);
-            array.Add(1232.213);
+            array.Add(true);
+            array.Add(true);
             Assert.False(array.Contains(obj));
         }
 
         [Fact]
         public void InsertIsCalledShouldReturnOneMoreElementToArray()
         {
-            var array = new ObjectArray();
-            object obj = false;
-            array.Add("asd");
-            array.Add(true);
-            array.Add(1232.213);
+            var array = new List<char>();
+            object obj = 'c';
+            array.Add('1');
+            array.Add('2');
+            array.Add('3');
             array.Insert(1, obj);
             Assert.Equal(obj, array[1]);
         }
@@ -80,10 +80,10 @@ namespace Collections
         [Fact]
         public void ClearIsCalledShouldSetCountToZero()
         {
-            var array = new ObjectArray();
-            array.Add("asd");
-            array.Add(true);
-            array.Add(1232.213);
+            var array = new List<int>();
+            array.Add(67);
+            array.Add(45);
+            array.Add(45);
             array.Clear();
             Assert.Equal(0, array.Count);
         }
@@ -91,25 +91,25 @@ namespace Collections
         [Fact]
         public void RemoveIsCalledShouldReturnArrayWithRemovedObject()
         {
-            var array = new ObjectArray();
+            var array = new List<string>();
             array.Add("asd");
-            array.Add(true);
-            array.Add(1232.213);
-            array.Remove(true);
+            array.Add("gfs");
+            array.Add("AS");
+            array.Remove("gfs");
             Assert.Equal("asd", array[0]);
-            Assert.Equal(1232.213, array[2]);
+            Assert.Equal("AS", array[2]);
         }
 
         [Fact]
         public void RemoveAtIsCalledShouldReturnArrayWithRemovedObject()
         {
-            var array = new ObjectArray();
+            var array = new List<string>();
             array.Add("asd");
-            array.Add(true);
-            array.Add(1232.213);
+            array.Add("gfs");
+            array.Add("AS");
             array.RemoveAt(1);
             Assert.Equal("asd", array[0]);
-            Assert.Equal(1232.213, array[2]);
+            Assert.Equal("AS", array[2]);
         }
     }
 }
