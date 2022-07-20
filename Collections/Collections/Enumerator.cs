@@ -16,5 +16,13 @@ namespace Collections
         {
             array = list;
         }
+
+        object IEnumerator.Current
+        {
+            get
+            {
+                return array[position];
+            }
+        }
     }
 }
