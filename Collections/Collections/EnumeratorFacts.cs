@@ -7,7 +7,14 @@ using Xunit;
 
 namespace Collections
 {
-    class EnumeratorFacts
+    public class EnumeratorFacts
     {
+        [Fact]
+        public void MoveNextIsCalledShouldReturnTrue()
+        {
+            object[] array = new object[] { 1, 2, 3 };
+            Enumerator enumerator = new Enumerator(array);
+            Assert.True(enumerator.MoveNext());
+        }
     }
 }
