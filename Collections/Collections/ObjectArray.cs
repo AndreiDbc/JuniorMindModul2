@@ -89,14 +89,6 @@ namespace Collections
             return array.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            foreach (object o in array)
-            {
-                yield return o;
-            }
-        }
-
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)
