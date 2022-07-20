@@ -9,5 +9,11 @@ namespace Collections
 {
     public class SortedListFacts
     {
+        [Fact]
+        public void SL()
+        {
+            var list = new SortedList<int, int>();
+            list
+        }
     }
 }

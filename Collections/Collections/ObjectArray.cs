@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class List<T> : IEnumerable<T>
+    class ObjectArray : IEnumerable
     {
         private object[] array;
         private int count;
 
-        public List()
+        public ObjectArray()
         {
             array = new object[4];
             count = 0;
@@ -26,7 +26,7 @@ namespace Collections
             set => array[index] = value;
         }
 
-        public void Add(T element)
+        public void Add(object element)
         {
             DoubleTheArraySize();
 
@@ -34,7 +34,7 @@ namespace Collections
             count++;
         }
 
-        public int IndexOf(T element)
+        public int IndexOf(object element)
         {
             for (int i = 0; i < count; i++)
             {
@@ -47,7 +47,7 @@ namespace Collections
             return -1;
         }
 
-        public bool Contains(T element)
+        public bool Contains(object element)
         {
             return IndexOf(element) != -1;
         }
@@ -66,7 +66,7 @@ namespace Collections
             count = 0;
         }
 
-        public virtual void Remove(T element)
+        public virtual void Remove(object element)
         {
             int index = IndexOf(element);
             if (index == -1)
@@ -89,11 +89,11 @@ namespace Collections
             return array.GetEnumerator();
         }
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             foreach (object o in array)
             {
-                yield return (T)o;
+                yield return o;
             }
         }
 

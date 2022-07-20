@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class SortedList
+    class SortedList<T>
+        where T : IComparable<T>
     {
+    }
+
+    public int CompareTo(object obj)
+    {
+
     }
 }
