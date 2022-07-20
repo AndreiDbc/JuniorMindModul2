@@ -24,5 +24,11 @@ namespace Collections
                 return array[position];
             }
         }
+
+        public bool MoveNext()
+        {
+            position++;
+            return position < array.Length;
+        }
     }
 }
