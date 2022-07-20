@@ -16,5 +16,14 @@ namespace Collections
             Enumerator enumerator = new Enumerator(array);
             Assert.True(enumerator.MoveNext());
         }
+
+        [Fact]
+        public void CurrentNextIsCalledShouldReturnTrue()
+        {
+            object[] array = new object[] { 1, 2, 3 };
+            Enumerator enumerator = new Enumerator(array);
+            enumerator.MoveNext();
+            Assert.Equal(1, enumerator.Current);
+        }
     }
 }

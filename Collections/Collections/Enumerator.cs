@@ -21,6 +21,14 @@ namespace Collections
         {
             get
             {
+                return Current;
+            }
+        }
+
+        public object Current
+        {
+            get
+            {
                 return array[position];
             }
         }
