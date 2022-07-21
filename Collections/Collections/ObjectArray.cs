@@ -84,6 +84,14 @@ namespace Collections
             count--;
         }
 
+        public IEnumerable Enumerator()
+        {
+            for (int index = 0; index < count; index++)
+            {
+                yield return array[index];
+            }
+        }
+
         public IEnumerator GetEnumerator()
         {
             return array.GetEnumerator();
