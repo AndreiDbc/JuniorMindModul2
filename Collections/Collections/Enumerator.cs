@@ -9,10 +9,10 @@ namespace Collections
 {
     class Enumerator : IEnumerator
     {
-        private readonly object[] array;
+        private readonly ObjectArray array;
         private int position = -1;
 
-        public Enumerator(object[] list)
+        public Enumerator(ObjectArray list)
         {
             array = list;
         }
@@ -36,7 +36,7 @@ namespace Collections
         public bool MoveNext()
         {
             position++;
-            return position < array.Length;
+            return position < array.Count;
         }
 
         public void Reset()
