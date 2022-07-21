@@ -12,7 +12,7 @@ namespace Collections
         [Fact]
         public void MoveNextIsCalledShouldReturnTrue()
         {
-            ObjectArray array = new () { 1, 2, 3 };
+            List array = new () { 1, 2, 3 };
             Enumerator enumerator = new Enumerator(array);
             Assert.True(enumerator.MoveNext());
         }
@@ -20,7 +20,7 @@ namespace Collections
         [Fact]
         public void CurrentNextIsCalledShouldReturnTrue()
         {
-            ObjectArray array = new () { 1, 2, 3 };
+            List array = new () { 1, 2, 3 };
             Enumerator enumerator = new Enumerator(array);
             enumerator.MoveNext();
             Assert.Equal(1, enumerator.Current);

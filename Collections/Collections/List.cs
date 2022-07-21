@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class ObjectArray : IEnumerable
+    class List : IEnumerable
     {
         private object[] array;
         private int count;
 
-        public ObjectArray()
+        public List()
         {
             array = new object[4];
             count = 0;

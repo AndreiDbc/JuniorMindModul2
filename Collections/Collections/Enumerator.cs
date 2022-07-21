@@ -9,10 +9,10 @@ namespace Collections
 {
     class Enumerator : IEnumerator
     {
-        private readonly ObjectArray array;
+        private readonly List array;
         private int position = -1;
 
-        public Enumerator(ObjectArray list)
+        public Enumerator(List list)
         {
             array = list;
         }
