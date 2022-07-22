@@ -84,22 +84,17 @@ namespace Collections
             count--;
         }
 
-        public IEnumerable<T> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
+        {
+            return (IEnumerator<T>)array.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
             for (int index = 0; index < count; index++)
             {
                 yield return array[index];
             }
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return ((IEnumerable<T>)array).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return array.GetEnumerator();
         }
 
         private void ShiftToRight(int index)
