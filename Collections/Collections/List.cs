@@ -7,26 +7,26 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class List : IEnumerable
+    class List<T> : IEnumerable<T>
     {
-        private object[] array;
+        private T[] array;
         private int count;
 
         public List()
         {
-            array = new object[4];
+            array = new T[4];
             count = 0;
         }
 
         public int Count { get => count; }
 
-        public object this[int index]
+        public T this[int index]
         {
             get => array[index];
             set => array[index] = value;
         }
 
-        public void Add(object element)
+        public void Add(T element)
         {
             DoubleTheArraySize();
 
@@ -34,7 +34,7 @@ namespace Collections
             count++;
         }
 
-        public int IndexOf(object element)
+        public int IndexOf(T element)
         {
             for (int i = 0; i < count; i++)
             {
@@ -47,12 +47,12 @@ namespace Collections
             return -1;
         }
 
-        public bool Contains(object element)
+        public bool Contains(T element)
         {
             return IndexOf(element) != -1;
         }
 
-        public virtual void Insert(int index, object element)
+        public virtual void Insert(int index, T element)
         {
             DoubleTheArraySize();
 
@@ -66,7 +66,7 @@ namespace Collections
             count = 0;
         }
 
-        public virtual void Remove(object element)
+        public virtual void Remove(T element)
         {
             int index = IndexOf(element);
             if (index == -1)
@@ -84,7 +84,7 @@ namespace Collections
             count--;
         }
 
-        public IEnumerable Enumerator()
+        public IEnumerable<T> GetEnumerator()
         {
             for (int index = 0; index < count; index++)
             {
@@ -92,7 +92,12 @@ namespace Collections
             }
         }
 
-        public IEnumerator GetEnumerator()
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return ((IEnumerable<T>)array).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return array.GetEnumerator();
         }

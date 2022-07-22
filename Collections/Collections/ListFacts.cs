@@ -12,7 +12,7 @@ namespace Collections
         [Fact]
         public void AnInstanceofObjectArrayisCreatedAddIsCalledShouldReturnNewElement()
         {
-            var array = new List();
+            var array = new List<int>();
             array.Add(23);
             array.Add(12);
             array.Add(1232);
@@ -25,7 +25,7 @@ namespace Collections
         public void IndexOfIsCalledShouldReturnTheIndexOfAnObject()
         {
             const double obj = 1232.213;
-            var array = new List();
+            var array = new List<double>();
             array.Add(23);
             array.Add(12);
             array.Add(1232.213);
@@ -35,7 +35,7 @@ namespace Collections
         [Fact]
         public void IndexOfIsCalledShouldReturnMinusOne()
         {
-            var array = new List();
+            var array = new List<bool>();
             const bool obj = false;
             array.Add(true);
             array.Add(true);
@@ -46,7 +46,7 @@ namespace Collections
         [Fact]
         public void ContainsIsCalledShouldReturnTrue()
         {
-            var array = new List();
+            var array = new List<string>();
             const string obj = "vg";
             array.Add("asd");
             array.Add("vg");
@@ -57,7 +57,7 @@ namespace Collections
         [Fact]
         public void ContainsIsCalledShouldReturnFalse()
         {
-            var array = new List();
+            var array = new List<bool>();
             const bool obj = false;
             array.Add(true);
             array.Add(true);
@@ -68,8 +68,8 @@ namespace Collections
         [Fact]
         public void InsertIsCalledShouldReturnOneMoreElementToArray()
         {
-            var array = new List();
-            object obj = 'c';
+            var array = new List<char>();
+            const char obj = 'c';
             array.Add('1');
             array.Add('2');
             array.Add('3');
@@ -80,7 +80,7 @@ namespace Collections
         [Fact]
         public void ClearIsCalledShouldSetCountToZero()
         {
-            var array = new List();
+            var array = new List<int>();
             array.Add(67);
             array.Add(45);
             array.Add(45);
@@ -91,7 +91,7 @@ namespace Collections
         [Fact]
         public void RemoveIsCalledShouldReturnArrayWithRemovedObject()
         {
-            var array = new List();
+            var array = new List<string>();
             array.Add("asd");
             array.Add("gfs");
             array.Add("AS");
@@ -103,7 +103,7 @@ namespace Collections
         [Fact]
         public void RemoveAtIsCalledShouldReturnArrayWithRemovedObject()
         {
-            var array = new List();
+            var array = new List<string>();
             array.Add("asd");
             array.Add("gfs");
             array.Add("AS");
