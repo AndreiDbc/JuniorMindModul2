@@ -86,7 +86,7 @@ namespace Collections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return (IEnumerator<T>)array.GetEnumerator();
+            return array.Take(count).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -111,5 +111,39 @@ namespace Collections
             Assert.Equal("asd", array[0]);
             Assert.Equal("AS", array[2]);
         }
+
+        [Fact]
+        public void GetEnumeratorMoveNextIsCalledShouldReturnTrue()
+        {
+            var array = new List<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            IEnumerator<string> test = array.GetEnumerator();
+            Assert.True(test.MoveNext());
+        }
+
+        [Fact]
+        public void GetEnumeratorMoveNextIsCalledShouldReturnNextElement()
+        {
+            var array = new List<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            IEnumerator<string> test = array.GetEnumerator();
+            test.MoveNext();
+            test.MoveNext();
+            Assert.Equal(array[1], test.Current);
+        }
+
+        [Fact]
+        public void GetEnumeratorCleartIsCalledShouldSetCountToZero()
+        {
+            var array = new List<string>();
+            IEnumerator<string> test = array.GetEnumerator();
+            test.MoveNext();
+            test.Reset();
+            Assert.Equal(array[0], test.Current);
+        }
     }
 }
