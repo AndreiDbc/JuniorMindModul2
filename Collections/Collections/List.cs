@@ -94,10 +94,7 @@ namespace Collections
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (int index = 0; index < count; index++)
-            {
-                yield return array[index];
-            }
+            return GetEnumerator();
         }
 
         private void ShiftToRight(int index)

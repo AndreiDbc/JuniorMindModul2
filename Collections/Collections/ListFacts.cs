@@ -134,16 +134,5 @@ namespace Collections
             test.MoveNext();
             Assert.Equal(array[1], test.Current);
         }
-
-        [Fact]
-        public void GetEnumeratorCleartIsCalledShouldSetCountToZero()
-        {
-            var array = new List<string>();
-            IEnumerator<string> test = array.GetEnumerator();
-            test.MoveNext();
-            test.Reset();
-            test.MoveNext();
-            Assert.Equal(array[0], test.Current);
-        }
     }
 }
