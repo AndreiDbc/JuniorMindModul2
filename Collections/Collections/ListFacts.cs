@@ -119,8 +119,7 @@ namespace Collections
             array.Add("asd");
             array.Add("gfs");
             array.Add("AS");
-            IEnumerator<string> test = array.GetEnumerator();
-            Assert.True(test.MoveNext());
+            Assert.True(array.GetEnumerator().MoveNext());
         }
 
         [Fact]
@@ -143,6 +142,7 @@ namespace Collections
             IEnumerator<string> test = array.GetEnumerator();
             test.MoveNext();
             test.Reset();
+            test.MoveNext();
             Assert.Equal(array[0], test.Current);
         }
     }
