@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class SortedList
+    class SortedList<T> : List<T>
+        where T : IComparable<T>
     {
+        public SortedList()
+        {
+        }
     }
 }
