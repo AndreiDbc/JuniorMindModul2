@@ -20,7 +20,7 @@ namespace Collections
 
         public int Count { get => count; }
 
-        public T this[int index]
+        public virtual T this[int index]
         {
             get => array[index];
             set => array[index] = value;
