@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class List<T> : IEnumerable<T>
+    class List<T> : ICollection<T>
     {
         private T[] array;
         private int count;
@@ -20,10 +20,30 @@ namespace Collections
 
         public int Count { get => count; }
 
+        public bool IsReadOnly { get; }
+
         public virtual T this[int index]
         {
             get => array[index];
             set => array[index] = value;
+        }
+
+        public void CopyTo(T[] arrayToAdd, int arrayIndex)
+        {
+            int lengthToCopy = count - 1;
+            do
+            {
+                Array.Resize(ref arrayToAdd, arrayToAdd.Length + 1);
+                for (int i = arrayToAdd.Length - 1; i > arrayIndex; i--)
+                {
+                    arrayToAdd[i] = arrayToAdd[i - 1];
+                }
+
+                lengthToCopy--;
+            }
+            while (lengthToCopy > 0);
+
+            Array.Copy(array, 0, arrayToAdd, arrayIndex, Count);
         }
 
         public virtual void Add(T element)
@@ -66,16 +86,18 @@ namespace Collections
             count = 0;
         }
 
-        public virtual void Remove(T element)
+        public virtual bool Remove(T element)
         {
             int index = IndexOf(element);
             if (index == -1)
             {
-                return;
+                return false;
             }
 
             ShiftToLeft(index);
             count--;
+
+            return true;
         }
 
         public void RemoveAt(int index)

@@ -101,6 +101,26 @@ namespace Collections
         }
 
         [Fact]
+        public void RemoveIsCalledShouldReturnTrue()
+        {
+            var array = new List<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            Assert.True(array.Remove("gfs"));
+        }
+
+        [Fact]
+        public void RemoveIsCalledShouldReturnFalse()
+        {
+            var array = new List<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            Assert.False(array.Remove("s"));
+        }
+
+        [Fact]
         public void RemoveAtIsCalledShouldReturnArrayWithRemovedObject()
         {
             var array = new List<string>();
@@ -133,6 +153,33 @@ namespace Collections
             test.MoveNext();
             test.MoveNext();
             Assert.Equal(array[1], test.Current);
+        }
+
+        [Fact]
+        public void CopyToIsCalledShouldReturnUpdatedArray()
+        {
+            string[] array = new[] { "f", "gs", "ss" };
+            var list = new List<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            list.CopyTo(array, 1);
+            Assert.Equal("f", array[0]);
+            Assert.Equal("asd", array[1]);
+            Assert.Equal("gfs", array[2]);
+            Assert.Equal("AS", array[3]);
+            Assert.Equal("gs", array[4]);
+            Assert.Equal("ss", array[5]);
+        }
+
+        [Fact]
+        public void IsReadOnlyIsCalledShouldReturnFalse()
+        {
+            var list = new List<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.False(list.IsReadOnly);
         }
     }
 }
