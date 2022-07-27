@@ -37,5 +37,19 @@ namespace Collections
             Assert.Equal("av", test[1]);
             Assert.Equal("bc", test[2]);
         }
+
+        [Fact]
+        public void InsertisCalledShouldAddElementToList()
+        {
+            SortedList<string> test = new SortedList<string>();
+            test.Add("av");
+            test.Add("bc");
+            test.Add("ad");
+            test.Insert(1, "af");
+            Assert.Equal("ad", test[0]);
+            Assert.Equal("af", test[1]);
+            Assert.Equal("av", test[2]);
+            Assert.Equal("bc", test[3]);
+        }
     }
 }

@@ -78,7 +78,7 @@ namespace Collections
             count--;
         }
 
-        public virtual void RemoveAt(int index)
+        public void RemoveAt(int index)
         {
             ShiftToLeft(index);
             count--;

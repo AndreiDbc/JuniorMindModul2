@@ -37,6 +37,16 @@ namespace Collections
             ShellSort();
         }
 
+        public override void Insert(int index, T element)
+        {
+            if (ElementAt(index - 1, element).CompareTo(element) > 0 || element.CompareTo(ElementAt(index + 1, element)) > 0)
+            {
+                return;
+            }
+
+            base.Insert(index, element);
+        }
+
         private T ElementAt(int index, T defaultValue)
         {
             if (index == Count || index == -1)
