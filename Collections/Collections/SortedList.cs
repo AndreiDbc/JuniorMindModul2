@@ -31,6 +31,12 @@ namespace Collections
             }
         }
 
+        public override void Add(T element)
+        {
+            base.Add(element);
+            ShellSort();
+        }
+
         private T ElementAt(int index, T defaultValue)
         {
             if (index == Count || index == -1)
@@ -39,6 +45,36 @@ namespace Collections
             }
 
             return this[index];
+        }
+
+        private void ShellSort()
+        {
+            const int two = 2;
+            int i;
+            int j;
+            T temp;
+            int distance = 3;
+            while (distance > 0)
+            {
+                for (i = 0; i < Count; i++)
+                {
+                    j = i;
+                    temp = base[i];
+                    Swap(temp, ref j, distance);
+                    base[j] = temp;
+                }
+
+                distance /= two;
+            }
+        }
+
+        private void Swap(T temp, ref int j, int distance)
+        {
+            while ((j >= distance) && temp.CompareTo(base[j - distance]) < 0)
+            {
+                base[j] = base[j - distance];
+                j -= distance;
+            }
         }
     }
 }

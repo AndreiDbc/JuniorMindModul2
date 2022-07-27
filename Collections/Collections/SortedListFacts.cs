@@ -25,5 +25,17 @@ namespace Collections
             Assert.Equal(7, test[2]);
             Assert.Equal(0, test[3]);
         }
+
+        [Fact]
+        public void AddIsCalledShoudReturnSortedElements()
+        {
+            SortedList<string> test = new SortedList<string>();
+            test.Add("av");
+            test.Add("bc");
+            test.Add("ad");
+            Assert.Equal("ad", test[0]);
+            Assert.Equal("av", test[1]);
+            Assert.Equal("bc", test[2]);
+        }
     }
 }

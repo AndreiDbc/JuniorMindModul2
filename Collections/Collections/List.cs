@@ -26,7 +26,7 @@ namespace Collections
             set => array[index] = value;
         }
 
-        public void Add(T element)
+        public virtual void Add(T element)
         {
             DoubleTheArraySize();
 
