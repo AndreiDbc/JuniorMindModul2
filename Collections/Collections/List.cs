@@ -30,20 +30,7 @@ namespace Collections
 
         public void CopyTo(T[] arrayToAdd, int arrayIndex)
         {
-            int lengthToCopy = count - 1;
-            do
-            {
-                Array.Resize(ref arrayToAdd, arrayToAdd.Length + 1);
-                for (int i = arrayToAdd.Length - 1; i > arrayIndex; i--)
-                {
-                    arrayToAdd[i] = arrayToAdd[i - 1];
-                }
-
-                lengthToCopy--;
-            }
-            while (lengthToCopy > 0);
-
-            Array.Copy(array, 0, arrayToAdd, arrayIndex, Count);
+            Array.Copy(array, 0, arrayToAdd, arrayIndex, count);
         }
 
         public virtual void Add(T element)

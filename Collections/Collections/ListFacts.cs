@@ -158,7 +158,7 @@ namespace Collections
         [Fact]
         public void CopyToIsCalledShouldReturnUpdatedArray()
         {
-            string[] array = new[] { "f", "gs", "ss" };
+            string[] array = new[] { "f", "gs", "ss", "Gf" };
             var list = new List<string>();
             list.Add("asd");
             list.Add("gfs");
@@ -168,8 +168,6 @@ namespace Collections
             Assert.Equal("asd", array[1]);
             Assert.Equal("gfs", array[2]);
             Assert.Equal("AS", array[3]);
-            Assert.Equal("gs", array[4]);
-            Assert.Equal("ss", array[5]);
         }
 
         [Fact]
