@@ -58,7 +58,7 @@ namespace Collections
             }
             catch (NotSupportedException)
             {
-                Console.WriteLine("Array is Read-Only.");
+                throw new NotSupportedException("Array is Read-Only.")
             }
 
             DoubleTheArraySize();
@@ -101,7 +101,7 @@ namespace Collections
             }
             catch (NotSupportedException)
             {
-                Console.WriteLine("Array is Read-Only.");
+                throw new NotSupportedException("Array is Read-Only.");
             }
 
             count = 0;
