@@ -78,6 +78,15 @@ namespace Collections
 
         public void Clear()
         {
+            try
+            {
+                count = 0;
+            }
+            catch (NotSupportedException)
+            {
+                Console.WriteLine("Array is Read-Only.");
+            }
+
             count = 0;
         }
 
