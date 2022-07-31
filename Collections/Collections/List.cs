@@ -30,6 +30,23 @@ namespace Collections
 
         public void CopyTo(T[] arrayToAdd, int arrayIndex)
         {
+            try
+            {
+                Array.Copy(array, 0, arrayToAdd, arrayIndex, count);
+            }
+            catch (ArgumentNullException)
+            {
+                throw new ArgumentException("Array is null.");
+            }
+            catch (IndexOutOfRangeException)
+            {
+                throw new ArgumentException("Index is less than 0.");
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException("The number of elements array is greater than the available space to the end of the destination array.");
+            }
+
             Array.Copy(array, 0, arrayToAdd, arrayIndex, count);
         }
 
