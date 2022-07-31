@@ -35,8 +35,16 @@ namespace Collections
 
         public virtual void Add(T element)
         {
-            DoubleTheArraySize();
+            try
+            {
+                array[count] = element;
+            }
+            catch (NotSupportedException)
+            {
+                Console.WriteLine("Array is Read-Only.");
+            }
 
+            DoubleTheArraySize();
             array[count] = element;
             count++;
         }
