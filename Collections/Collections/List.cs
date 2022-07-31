@@ -58,7 +58,7 @@ namespace Collections
             }
             catch (NotSupportedException)
             {
-                throw new NotSupportedException("Array is Read-Only.")
+                throw new NotSupportedException("Array is Read-Only.");
             }
 
             DoubleTheArraySize();
@@ -110,6 +110,15 @@ namespace Collections
         public virtual bool Remove(T element)
         {
             int index = IndexOf(element);
+            try
+            {
+                ShiftToLeft(index);
+            }
+            catch (NotSupportedException)
+            {
+                throw new NotSupportedException("Array is Read-Only.");
+            }
+
             if (index == -1)
             {
                 return false;
