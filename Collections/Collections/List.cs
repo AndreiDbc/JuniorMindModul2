@@ -36,7 +36,7 @@ namespace Collections
             }
             catch (ArgumentNullException)
             {
-                throw new ArgumentException("Array is null.");
+                throw new ArgumentNullException(nameof(arrayToAdd));
             }
             catch (IndexOutOfRangeException)
             {

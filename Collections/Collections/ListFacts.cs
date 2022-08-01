@@ -179,5 +179,37 @@ namespace Collections
             list.Add("AS");
             Assert.False(list.IsReadOnly);
         }
+
+        [Fact]
+        public void CopyToIsCalledShouldThrowIndexOutOfRangeException()
+        {
+            var list = new List<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            string[] test = new string[4];
+            Assert.Throws<ArgumentException>(() => list.CopyTo(test, -1));
+        }
+
+        [Fact]
+        public void CopyToIsCalledShouldThrowArgumentNullException()
+        {
+            var list = new List<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Throws<ArgumentNullException>(() => list.CopyTo(null, 1));
+        }
+
+        [Fact]
+        public void CopyToIsCalledShouldThrowArgumentException()
+        {
+            var list = new List<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            string[] test = new string[2];
+            Assert.Throws<ArgumentException>(() => list.CopyTo(test, 0));
+        }
     }
 }
