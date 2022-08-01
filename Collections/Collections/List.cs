@@ -25,7 +25,23 @@ namespace Collections
         public virtual T this[int index]
         {
             get => array[index];
-            set => array[index] = value;
+            set
+            {
+                try
+                {
+                    array[index] = value;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new ArgumentException("Index was outside the bounds of the array");
+                }
+                catch (NotSupportedException)
+                {
+                    throw new NotSupportedException("Array is Read-Only.");
+                }
+
+                array[index] = value;
+            }
         }
 
         public void CopyTo(T[] arrayToAdd, int arrayIndex)
