@@ -87,8 +87,20 @@ namespace Collections
         public virtual void Insert(int index, T element)
         {
             DoubleTheArraySize();
-
             ShiftToRight(index);
+            try
+            {
+                array[index] = element;
+            }
+            catch (NotSupportedException)
+            {
+                throw new NotSupportedException("Array is Read-Only.");
+            }
+            catch (IndexOutOfRangeException)
+            {
+                throw new ArgumentException("Index was outside the bounds of the array");
+            }
+
             array[index] = element;
             count++;
         }
@@ -110,6 +122,11 @@ namespace Collections
         public virtual bool Remove(T element)
         {
             int index = IndexOf(element);
+            if (index == -1)
+            {
+                return false;
+            }
+
             try
             {
                 ShiftToLeft(index);
@@ -117,11 +134,6 @@ namespace Collections
             catch (NotSupportedException)
             {
                 throw new NotSupportedException("Array is Read-Only.");
-            }
-
-            if (index == -1)
-            {
-                return false;
             }
 
             ShiftToLeft(index);

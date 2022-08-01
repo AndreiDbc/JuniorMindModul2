@@ -211,5 +211,15 @@ namespace Collections
             string[] test = new string[2];
             Assert.Throws<ArgumentException>(() => list.CopyTo(test, 0));
         }
+
+        [Fact]
+        public void InsertIsCalledShouldThrowArgumentOutOfRangeException()
+        {
+            var list = new List<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Throws<IndexOutOfRangeException>(() => list.Insert(-4, "kfff"));
+        }
     }
 }
