@@ -144,6 +144,19 @@ namespace Collections
 
         public void RemoveAt(int index)
         {
+            try
+            {
+                ShiftToLeft(index);
+            }
+            catch (NotSupportedException)
+            {
+                throw new NotSupportedException("Array is Read-Only.");
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
             ShiftToLeft(index);
             count--;
         }

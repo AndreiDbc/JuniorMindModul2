@@ -221,5 +221,15 @@ namespace Collections
             list.Add("AS");
             Assert.Throws<IndexOutOfRangeException>(() => list.Insert(-4, "kfff"));
         }
+
+        [Fact]
+        public void RemoveAtIsCalledShouldThrowArgumentOutOfRangeException()
+        {
+            var list = new List<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Throws<IndexOutOfRangeException>(() => list.RemoveAt(-4));
+        }
     }
 }
