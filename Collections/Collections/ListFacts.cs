@@ -229,7 +229,7 @@ namespace Collections
             list.Add("asd");
             list.Add("gfs");
             list.Add("AS");
-            Assert.Throws<IndexOutOfRangeException>(() => list.RemoveAt(-4));
+            Assert.Throws<ArgumentOutOfRangeException>(() => list.RemoveAt(-4));
         }
 
         [Fact]

@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class ReadOnlyList
+    class ReadOnlyList<T> : List<T>
     {
+        public override T this[int index]
+        {
+            get => base[index];
+            set
+            {
+                throw new NotSupportedException("List is Readonly.");
+            }
+        }
     }
 }
