@@ -27,17 +27,9 @@ namespace Collections
             get => array[index];
             set
             {
-                try
-                {
-                    array[index] = value;
-                }
-                catch (IndexOutOfRangeException)
+                if (index < 0 || index >= count)
                 {
                     throw new ArgumentException("Index was outside the bounds of the array");
-                }
-                catch (NotSupportedException)
-                {
-                    throw new NotSupportedException("Array is Read-Only.");
                 }
 
                 array[index] = value;
