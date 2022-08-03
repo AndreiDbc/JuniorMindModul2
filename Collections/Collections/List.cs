@@ -94,15 +94,6 @@ namespace Collections
 
         public void Clear()
         {
-            try
-            {
-                count = 0;
-            }
-            catch (NotSupportedException)
-            {
-                throw new NotSupportedException("Array is Read-Only.");
-            }
-
             count = 0;
         }
 
