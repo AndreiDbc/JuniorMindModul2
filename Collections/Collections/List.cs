@@ -83,15 +83,7 @@ namespace Collections
         {
             DoubleTheArraySize();
             ShiftToRight(index);
-            try
-            {
-                array[index] = element;
-            }
-            catch (NotSupportedException)
-            {
-                throw new NotSupportedException("Array is Read-Only.");
-            }
-            catch (IndexOutOfRangeException)
+            if (index < 0 || index > count)
             {
                 throw new ArgumentException("Index was outside the bounds of the array");
             }
