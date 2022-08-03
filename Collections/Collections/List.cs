@@ -111,7 +111,7 @@ namespace Collections
             return true;
         }
 
-        public void RemoveAt(int index)
+        public virtual void RemoveAt(int index)
         {
             if (index < 0 || index >= count)
             {

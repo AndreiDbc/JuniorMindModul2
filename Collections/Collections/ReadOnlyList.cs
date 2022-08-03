@@ -26,5 +26,15 @@ namespace Collections
         {
             throw new NotSupportedException("List is Readonly.");
         }
+
+        public override void RemoveAt(int index)
+        {
+            throw new NotSupportedException("List is Readonly.");
+        }
+
+        public override void Insert(int index, T element)
+        {
+            throw new NotSupportedException("List is Readonly.");
+        }
     }
 }
