@@ -42,10 +42,18 @@ namespace Collections
         }
 
         [Fact]
-        public void AninstanceOfReadOnlyListIsCreatedINsertIsCalledShouldThrowNotSupportedException()
+        public void AninstanceOfReadOnlyListIsCreatedInsertIsCalledShouldThrowNotSupportedException()
         {
             ReadOnlyList<int> test = new ReadOnlyList<int>();
             var message = Assert.Throws<NotSupportedException>(() => test.Insert(0, 1));
+            Assert.Contains("List is Readonly.", message.Message);
+        }
+
+        [Fact]
+        public void AninstanceOfReadOnlyListIsCreatedClearIsCalledShouldThrowNotSupportedException()
+        {
+            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            var message = Assert.Throws<NotSupportedException>(() => test.Clear());
             Assert.Contains("List is Readonly.", message.Message);
         }
     }

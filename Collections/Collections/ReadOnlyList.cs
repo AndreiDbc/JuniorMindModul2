@@ -36,5 +36,10 @@ namespace Collections
         {
             throw new NotSupportedException("List is Readonly.");
         }
+
+        public override void Clear()
+        {
+            throw new NotSupportedException("List is Readonly.");
+        }
     }
 }

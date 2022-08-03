@@ -92,7 +92,7 @@ namespace Collections
             count++;
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             count = 0;
         }
