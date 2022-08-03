@@ -10,9 +10,21 @@ namespace Collections
     public class ReadOnlyListFacts
     {
         [Fact]
+        public void AnInstanceOfReadOnlyListIsCreatedSHouldReturnElements()
+        {
+            List<int> list = new List<int>() { 1, 2, 3, 4 };
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
+            Assert.Equal(1, list[0]);
+            Assert.Equal(2, list[1]);
+            Assert.Equal(3, list[2]);
+            Assert.Equal(4, list[3]);
+        }
+
+        [Fact]
         public void AnInstanceOfReadOnlyListIsCreatedValueIsSetUsingIndeexerShoudThrowNotSupportedException()
         {
-            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            List<int> list = new List<int>() { 1, 2, 3, 4 };
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             var message = Assert.Throws<NotSupportedException>(() => test[0] = 34);
             Assert.Contains("List is Readonly.", message.Message);
         }
@@ -20,7 +32,8 @@ namespace Collections
         [Fact]
         public void AninstanceOfReadOnlyListIsCreatedAddIsCalledShouldThrowNotSupportedException()
         {
-            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            List<int> list = new List<int>() { 1, 2, 3, 4 };
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             var message = Assert.Throws<NotSupportedException>(() => test.Add(5));
             Assert.Contains("List is Readonly.", message.Message);
         }
@@ -28,7 +41,8 @@ namespace Collections
         [Fact]
         public void AninstanceOfReadOnlyListIsCreatedRemoveIsCalledShouldThrowNotSupportedException()
         {
-            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            List<int> list = new List<int>() { 1, 2, 3, 4 };
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             var message = Assert.Throws<NotSupportedException>(() => test.Remove(1));
             Assert.Contains("List is Readonly.", message.Message);
         }
@@ -36,7 +50,8 @@ namespace Collections
         [Fact]
         public void AninstanceOfReadOnlyListIsCreatedRemoveAtIsCalledShouldThrowNotSupportedException()
         {
-            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            List<int> list = new List<int>() { 1, 2, 3, 4 };
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             var message = Assert.Throws<NotSupportedException>(() => test.RemoveAt(0));
             Assert.Contains("List is Readonly.", message.Message);
         }
@@ -44,7 +59,8 @@ namespace Collections
         [Fact]
         public void AninstanceOfReadOnlyListIsCreatedInsertIsCalledShouldThrowNotSupportedException()
         {
-            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            List<int> list = new List<int>() { 1, 2, 3, 4 };
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             var message = Assert.Throws<NotSupportedException>(() => test.Insert(0, 1));
             Assert.Contains("List is Readonly.", message.Message);
         }
@@ -52,7 +68,8 @@ namespace Collections
         [Fact]
         public void AninstanceOfReadOnlyListIsCreatedClearIsCalledShouldThrowNotSupportedException()
         {
-            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            List<int> list = new List<int>() { 1, 2, 3, 4 };
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             var message = Assert.Throws<NotSupportedException>(() => test.Clear());
             Assert.Contains("List is Readonly.", message.Message);
         }

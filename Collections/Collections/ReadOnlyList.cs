@@ -8,6 +8,13 @@ namespace Collections
 {
     class ReadOnlyList<T> : List<T>
     {
+        private readonly List<T> list;
+
+        public ReadOnlyList(List<T> list)
+        {
+            this.list = list;
+        }
+
         public override T this[int index]
         {
             get => base[index];
