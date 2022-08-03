@@ -105,15 +105,6 @@ namespace Collections
                 return false;
             }
 
-            try
-            {
-                ShiftToLeft(index);
-            }
-            catch (NotSupportedException)
-            {
-                throw new NotSupportedException("Array is Read-Only.");
-            }
-
             ShiftToLeft(index);
             count--;
 
