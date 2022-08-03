@@ -56,15 +56,6 @@ namespace Collections
 
         public virtual void Add(T element)
         {
-            try
-            {
-                array[count] = element;
-            }
-            catch (NotSupportedException)
-            {
-                throw new NotSupportedException("Array is Read-Only.");
-            }
-
             DoubleTheArraySize();
             array[count] = element;
             count++;
