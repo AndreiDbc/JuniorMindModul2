@@ -21,5 +21,10 @@ namespace Collections
         {
             throw new NotSupportedException("List is Readonly.");
         }
+
+        public override bool Remove(T element)
+        {
+            throw new NotSupportedException("List is Readonly.");
+        }
     }
 }

@@ -24,5 +24,13 @@ namespace Collections
             var message = Assert.Throws<NotSupportedException>(() => test.Add(5));
             Assert.Contains("List is Readonly.", message.Message);
         }
+
+        [Fact]
+        public void AninstanceOfReadOnlyListIsCreatedRemoveIsCalledShouldThrowNotSupportedException()
+        {
+            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            var message = Assert.Throws<NotSupportedException>(() => test.Remove(1));
+            Assert.Contains("List is Readonly.", message.Message);
+        }
     }
 }
