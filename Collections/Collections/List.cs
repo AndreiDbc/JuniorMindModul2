@@ -83,7 +83,7 @@ namespace Collections
         {
             DoubleTheArraySize();
             ShiftToRight(index);
-            if (index < 0 || index > count)
+            if (index < 0 || index >= count)
             {
                 throw new ArgumentException("Index was outside the bounds of the array");
             }
@@ -113,15 +113,7 @@ namespace Collections
 
         public void RemoveAt(int index)
         {
-            try
-            {
-                ShiftToLeft(index);
-            }
-            catch (NotSupportedException)
-            {
-                throw new NotSupportedException("Array is Read-Only.");
-            }
-            catch (ArgumentOutOfRangeException)
+            if (index < 0 || index >= count)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
