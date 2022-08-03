@@ -16,5 +16,10 @@ namespace Collections
                 throw new NotSupportedException("List is Readonly.");
             }
         }
+
+        public override void Add(T element)
+        {
+            throw new NotSupportedException("List is Readonly.");
+        }
     }
 }

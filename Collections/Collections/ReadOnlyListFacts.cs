@@ -9,5 +9,20 @@ namespace Collections
 {
     public class ReadOnlyListFacts
     {
+        [Fact]
+        public void AnInstanceOfReadOnlyListIsCreatedValueIsSetUsingIndeexerShoudThrowNotSupportedException()
+        {
+            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            var message = Assert.Throws<NotSupportedException>(() => test[0] = 34);
+            Assert.Contains("List is Readonly.", message.Message);
+        }
+
+        [Fact]
+        public void AninstanceOfReadOnlyListIsCreatedAddIsCalledShouldThrowNotSupportedException()
+        {
+            ReadOnlyList<int> test = new ReadOnlyList<int>();
+            var message = Assert.Throws<NotSupportedException>(() => test.Add(5));
+            Assert.Contains("List is Readonly.", message.Message);
+        }
     }
 }
