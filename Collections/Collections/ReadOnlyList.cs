@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class ReadOnlyList<T> : List<T>
+    class ReadOnlyList<T>
     {
         private readonly List<T> list;
 
@@ -15,9 +15,9 @@ namespace Collections
             this.list = list;
         }
 
-        public override int Count => list.Count;
+        public int Count => list.Count;
 
-        public override T this[int index]
+        public T this[int index]
         {
             get => list[index];
             set
@@ -26,47 +26,47 @@ namespace Collections
             }
         }
 
-        public override void CopyTo(T[] arrayToAdd, int arrayIndex)
+        public void CopyTo(T[] arrayToAdd, int arrayIndex)
         {
             list.CopyTo(arrayToAdd, arrayIndex);
         }
 
-        public override bool Contains(T element)
+        public bool Contains(T element)
         {
             return list.Contains(element);
         }
 
-        public override int IndexOf(T element)
+        public int IndexOf(T element)
         {
             return list.IndexOf(element);
         }
 
-        public override IEnumerator<T> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return list.GetEnumerator();
         }
 
-        public override void Add(T element)
+        public void Add(T element)
         {
             throw new NotSupportedException("List is Readonly.");
         }
 
-        public override bool Remove(T element)
+        public bool Remove(T element)
         {
             throw new NotSupportedException("List is Readonly.");
         }
 
-        public override void RemoveAt(int index)
+        public void RemoveAt(int index)
         {
             throw new NotSupportedException("List is Readonly.");
         }
 
-        public override void Insert(int index, T element)
+        public void Insert(int index, T element)
         {
             throw new NotSupportedException("List is Readonly.");
         }
 
-        public override void Clear()
+        public void Clear()
         {
             throw new NotSupportedException("List is Readonly.");
         }

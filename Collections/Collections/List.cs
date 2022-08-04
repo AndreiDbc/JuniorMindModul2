@@ -18,7 +18,7 @@ namespace Collections
             count = 0;
         }
 
-        public virtual int Count { get => count; }
+        public int Count { get => count; }
 
         public bool IsReadOnly { get; }
 
@@ -36,7 +36,7 @@ namespace Collections
             }
         }
 
-        public virtual void CopyTo(T[] arrayToAdd, int arrayIndex)
+        public void CopyTo(T[] arrayToAdd, int arrayIndex)
         {
             if (arrayToAdd == null)
             {
@@ -61,7 +61,7 @@ namespace Collections
             count++;
         }
 
-        public virtual int IndexOf(T element)
+        public int IndexOf(T element)
         {
             for (int i = 0; i < count; i++)
             {
@@ -74,7 +74,7 @@ namespace Collections
             return -1;
         }
 
-        public virtual bool Contains(T element)
+        public bool Contains(T element)
         {
             return IndexOf(element) != -1;
         }
@@ -92,12 +92,12 @@ namespace Collections
             count++;
         }
 
-        public virtual void Clear()
+        public void Clear()
         {
             count = 0;
         }
 
-        public virtual bool Remove(T element)
+        public bool Remove(T element)
         {
             int index = IndexOf(element);
             if (index == -1)
@@ -111,7 +111,7 @@ namespace Collections
             return true;
         }
 
-        public virtual void RemoveAt(int index)
+        public void RemoveAt(int index)
         {
             if (index < 0 || index >= count)
             {
@@ -122,7 +122,7 @@ namespace Collections
             count--;
         }
 
-        public virtual IEnumerator<T> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             for (int index = 0; index < count; index++)
             {
