@@ -18,7 +18,7 @@ namespace Collections
             count = 0;
         }
 
-        public int Count { get => count; }
+        public virtual int Count { get => count; }
 
         public bool IsReadOnly { get; }
 

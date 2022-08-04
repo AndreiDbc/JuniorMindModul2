@@ -73,5 +73,17 @@ namespace Collections
             var message = Assert.Throws<NotSupportedException>(() => test.Clear());
             Assert.Contains("List is Readonly.", message.Message);
         }
+
+        [Fact]
+        public void AnInstanceOfReadOnlyListIsCreatedCountIsCalledShouldReturnNoOfElements()
+        {
+            List<int> list = new List<int>();
+            list.Add(1);
+            list.Add(2);
+            list.Add(3);
+            list.Add(4);
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
+            Assert.Equal(4, test.Count);
+        }
     }
 }
