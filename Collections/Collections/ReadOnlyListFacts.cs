@@ -102,5 +102,17 @@ namespace Collections
             Assert.Equal(3, arr[2]);
             Assert.Equal(4, arr[3]);
         }
+
+        [Fact]
+        public void AnInstanceOfReadOnlyListIsCreatedContainsIsCalledShouldReturnTrue()
+        {
+            List<int> list = new List<int>();
+            list.Add(1);
+            list.Add(2);
+            list.Add(3);
+            list.Add(4);
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
+            Assert.True(test.Contains(2));
+        }
     }
 }

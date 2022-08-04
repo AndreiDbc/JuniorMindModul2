@@ -74,7 +74,7 @@ namespace Collections
             return -1;
         }
 
-        public bool Contains(T element)
+        public virtual bool Contains(T element)
         {
             return IndexOf(element) != -1;
         }

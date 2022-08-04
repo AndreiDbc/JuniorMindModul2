@@ -31,6 +31,11 @@ namespace Collections
             list.CopyTo(arrayToAdd, arrayIndex);
         }
 
+        public override bool Contains(T element)
+        {
+            return list.Contains(element);
+        }
+
         public override void Add(T element)
         {
             throw new NotSupportedException("List is Readonly.");
