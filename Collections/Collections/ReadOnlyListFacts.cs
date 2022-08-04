@@ -116,6 +116,18 @@ namespace Collections
         }
 
         [Fact]
+        public void AnInstanceOfReadOnlyListIsCreatedContainsIsCalledShouldReturnFalse()
+        {
+            List<int> list = new List<int>();
+            list.Add(1);
+            list.Add(2);
+            list.Add(3);
+            list.Add(4);
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
+            Assert.False(test.Contains(34));
+        }
+
+        [Fact]
         public void AnInstanceOfReadOnlyListIsCreatedIndexOfCalledShouldReturnIndex()
         {
             List<int> list = new List<int>();
@@ -125,6 +137,31 @@ namespace Collections
             list.Add(4);
             ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             Assert.Equal(1, test.IndexOf(2));
+        }
+
+        [Fact]
+        public void GetEnumeratorMoveNextIsCalledShouldReturnTrue()
+        {
+            var array = new List<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            ReadOnlyList<string> test = new ReadOnlyList<string>(array);
+            Assert.True(test.GetEnumerator().MoveNext());
+        }
+
+        [Fact]
+        public void GetEnumeratorMoveNextIsCalledShouldReturnNextElement()
+        {
+            var array = new List<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            ReadOnlyList<string> test = new ReadOnlyList<string>(array);
+            IEnumerator<string> enumerator = test.GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            Assert.Equal(test[1], enumerator.Current);
         }
     }
 }

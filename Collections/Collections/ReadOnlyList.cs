@@ -41,6 +41,11 @@ namespace Collections
             return list.IndexOf(element);
         }
 
+        public override IEnumerator<T> GetEnumerator()
+        {
+            return list.GetEnumerator();
+        }
+
         public override void Add(T element)
         {
             throw new NotSupportedException("List is Readonly.");
