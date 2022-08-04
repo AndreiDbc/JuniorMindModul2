@@ -14,10 +14,10 @@ namespace Collections
         {
             List<int> list = new List<int>() { 1, 2, 3, 4 };
             ReadOnlyList<int> test = new ReadOnlyList<int>(list);
-            Assert.Equal(1, list[0]);
-            Assert.Equal(2, list[1]);
-            Assert.Equal(3, list[2]);
-            Assert.Equal(4, list[3]);
+            Assert.Equal(1, test[0]);
+            Assert.Equal(2, test[1]);
+            Assert.Equal(3, test[2]);
+            Assert.Equal(4, test[3]);
         }
 
         [Fact]

@@ -17,7 +17,7 @@ namespace Collections
 
         public override T this[int index]
         {
-            get => base[index];
+            get => list[index];
             set
             {
                 throw new NotSupportedException("List is Readonly.");
