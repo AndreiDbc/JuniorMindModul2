@@ -61,7 +61,7 @@ namespace Collections
             count++;
         }
 
-        public int IndexOf(T element)
+        public virtual int IndexOf(T element)
         {
             for (int i = 0; i < count; i++)
             {

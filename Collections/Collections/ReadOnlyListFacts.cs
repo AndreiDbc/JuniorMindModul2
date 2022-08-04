@@ -114,5 +114,17 @@ namespace Collections
             ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             Assert.True(test.Contains(2));
         }
+
+        [Fact]
+        public void AnInstanceOfReadOnlyListIsCreatedIndexOfCalledShouldReturnIndex()
+        {
+            List<int> list = new List<int>();
+            list.Add(1);
+            list.Add(2);
+            list.Add(3);
+            list.Add(4);
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
+            Assert.Equal(1, test.IndexOf(2));
+        }
     }
 }

@@ -36,6 +36,11 @@ namespace Collections
             return list.Contains(element);
         }
 
+        public override int IndexOf(T element)
+        {
+            return list.IndexOf(element);
+        }
+
         public override void Add(T element)
         {
             throw new NotSupportedException("List is Readonly.");
