@@ -26,6 +26,11 @@ namespace Collections
             }
         }
 
+        public override void CopyTo(T[] arrayToAdd, int arrayIndex)
+        {
+            list.CopyTo(arrayToAdd, arrayIndex);
+        }
+
         public override void Add(T element)
         {
             throw new NotSupportedException("List is Readonly.");

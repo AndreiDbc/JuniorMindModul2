@@ -85,5 +85,22 @@ namespace Collections
             ReadOnlyList<int> test = new ReadOnlyList<int>(list);
             Assert.Equal(4, test.Count);
         }
+
+        [Fact]
+        public void AnInstanceOfReadOnlyListIsCreatedCopyToIsCalledShouldCopyElementsToDestinationTarget()
+        {
+            List<int> list = new List<int>();
+            list.Add(1);
+            list.Add(2);
+            list.Add(3);
+            list.Add(4);
+            ReadOnlyList<int> test = new ReadOnlyList<int>(list);
+            int[] arr = new int[4];
+            test.CopyTo(arr, 0);
+            Assert.Equal(1, arr[0]);
+            Assert.Equal(2, arr[1]);
+            Assert.Equal(3, arr[2]);
+            Assert.Equal(4, arr[3]);
+        }
     }
 }
