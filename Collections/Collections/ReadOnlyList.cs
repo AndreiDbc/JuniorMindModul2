@@ -8,9 +8,9 @@ namespace Collections
 {
     class ReadOnlyList<T>
     {
-        private readonly List<T> list;
+        private readonly IList<T> list;
 
-        public ReadOnlyList(List<T> list)
+        public ReadOnlyList(IList<T> list)
         {
             this.list = list;
         }

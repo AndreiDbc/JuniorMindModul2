@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Collections
 {
-    class List<T> : ICollection<T>
+    class List<T> : IList<T>
     {
         private T[] array;
         private int count;
