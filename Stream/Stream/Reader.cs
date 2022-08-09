@@ -9,5 +9,11 @@ namespace Stream
 {
     class Reader
     {
+        readonly string path;
+
+        public Reader(string path)
+        {
+            this.path = path;
+        }
     }
 }
