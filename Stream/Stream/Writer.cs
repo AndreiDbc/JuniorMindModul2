@@ -8,5 +8,11 @@ namespace Stream
 {
     class Writer
     {
+        readonly string path;
+
+        public Writer(string path)
+        {
+            this.path = path;
+        }
     }
 }
