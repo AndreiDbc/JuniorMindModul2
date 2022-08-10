@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Stream
+namespace Str
 {
     public class WriterFacts
     {

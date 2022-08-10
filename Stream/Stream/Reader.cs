@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stream
+namespace Str
 {
     class Reader
     {
-        readonly string path;
+        readonly Stream stream;
 
-        public Reader(string path)
+        public Reader(Stream stream)
         {
-            this.path = path;
+            this.stream = stream;
         }
 
         public string ReadText()
