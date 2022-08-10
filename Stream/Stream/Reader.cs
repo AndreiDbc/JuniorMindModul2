@@ -18,8 +18,10 @@ namespace Str
 
         public string ReadText()
         {
-            using StreamReader reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            using (StreamReader reader = new (stream, Encoding.Default, true, 512, true))
+            {
+                return reader.ReadToEnd();
+            }
         }
     }
 }
