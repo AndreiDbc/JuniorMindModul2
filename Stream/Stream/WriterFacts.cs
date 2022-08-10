@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,12 +11,14 @@ namespace Str
     public class WriterFacts
     {
         [Fact]
-        public void WriteTextIsCalledSHouldModifyTextWithinFile()
+        public void WriteTextIsCalledShouldModifyTextWithinFile()
         {
-            const string path = @"C:\Users\Andrei\Desktop\Example2.txt";
-            Writer writer = new Writer(path);
+            var stream = new MemoryStream();
+            var writer = new Writer(stream);
             writer.WriteText();
-            Assert.Equal("Junior Mind", System.IO.File.ReadAllText(path));
+            stream.Position = 0;
+            var reader = new Reader(stream);
+            Assert.Equal("Junior Mind", reader.ReadText());
         }
     }
 }

@@ -18,9 +18,10 @@ namespace Str
 
         public void WriteText()
         {
-            using StreamWriter sr = File.AppendText(path);
-            sr.Write("Junior Mind");
-            sr.Close();
+            using (StreamWriter reader = new (stream, Encoding.Default, 512, true))
+            {
+                reader.Write("Junior Mind");
+            }
         }
     }
 }
