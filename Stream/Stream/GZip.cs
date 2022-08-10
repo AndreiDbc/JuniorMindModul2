@@ -10,5 +10,11 @@ namespace Str
 {
     class GZip
     {
+        private readonly Stream stream;
+
+        public GZip(Stream stream)
+        {
+            this.stream = stream;
+        }
     }
 }

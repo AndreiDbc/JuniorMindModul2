@@ -10,6 +10,6 @@ using Xunit;
 namespace Str
 {
      public class GZipFacts
-    {
-    }
+     {
+     }
 }
