@@ -9,11 +9,11 @@ namespace Str
 {
     class Writer
     {
-        readonly string path;
+        readonly Stream stream;
 
-        public Writer(string path)
+        public Writer(Stream stream)
         {
-            this.path = path;
+            this.stream = stream;
         }
 
         public void WriteText()
