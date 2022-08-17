@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,16 +17,27 @@ namespace Str
             this.stream = stream;
         }
 
-        public string ReadText()
+        public string ReadText(bool gzip)
         {
-            return GetText();
-        }
+            if (gzip)
+            {
+                return GetGZipText();
+            }
 
-        public string GetText()
-        {
             using (StreamReader reader = new (stream, Encoding.Default, true, 512, true))
             {
                 return reader.ReadToEnd();
+            }
+        }
+
+        public string GetGZipText()
+        {
+            using (Stream gstream = new GZipStream(stream, CompressionMode.Decompress, true))
+            {
+                using (StreamReader reader = new (gstream, Encoding.Default, true, 512))
+                {
+                    return reader.ReadToEnd();
+                }
             }
         }
     }
