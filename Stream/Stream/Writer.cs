@@ -19,11 +19,11 @@ namespace Str
 
         public void WriteText(string text, bool gzip)
         {
-            using (StreamWriter reader = gzip
+            using (StreamWriter writer = gzip
                 ? new (new GZipStream(stream, CompressionLevel.SmallestSize, true), leaveOpen: true)
                 : new (stream, leaveOpen: true))
             {
-                reader.Write(text);
+                writer.Write(text);
             }
         }
     }
