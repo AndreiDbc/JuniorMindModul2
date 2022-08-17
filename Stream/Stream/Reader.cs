@@ -18,6 +18,11 @@ namespace Str
 
         public string ReadText()
         {
+            return GetText();
+        }
+
+        public string GetText()
+        {
             using (StreamReader reader = new (stream, Encoding.Default, true, 512, true))
             {
                 return reader.ReadToEnd();
