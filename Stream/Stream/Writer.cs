@@ -17,20 +17,11 @@ namespace Str
             this.stream = stream;
         }
 
-        public void WriteText(string text, bool gzipp)
+        public void WriteText(string text, bool gzip)
         {
-            if (gzipp)
-            {
-                byte[] textBytes = Encoding.ASCII.GetBytes(text);
-                using (var compressor = new GZipStream(stream, CompressionLevel.SmallestSize, true))
-                {
-                    compressor.Write(textBytes, 0, textBytes.Length);
-                }
-
-                return;
-            }
-
-            using (StreamWriter reader = new (stream, Encoding.Default, 512, true))
+            using (StreamWriter reader = gzip
+                ? new (new GZipStream(stream, CompressionLevel.SmallestSize, true), leaveOpen: true)
+                : new (stream, leaveOpen: true))
             {
                 reader.Write(text);
             }
