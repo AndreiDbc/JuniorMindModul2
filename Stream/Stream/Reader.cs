@@ -19,25 +19,11 @@ namespace Str
 
         public string ReadText(bool gzip)
         {
-            if (gzip)
-            {
-                return GetGZipText();
-            }
-
-            using (StreamReader reader = new (stream, Encoding.Default, true, 512, true))
+            using (StreamReader reader = gzip
+                ? new (new GZipStream(stream, CompressionMode.Decompress, true), leaveOpen: true)
+                : new (stream, leaveOpen: true))
             {
                 return reader.ReadToEnd();
-            }
-        }
-
-        public string GetGZipText()
-        {
-            using (Stream gstream = new GZipStream(stream, CompressionMode.Decompress, true))
-            {
-                using (StreamReader reader = new (gstream, Encoding.Default, true, 512))
-                {
-                    return reader.ReadToEnd();
-                }
             }
         }
     }
