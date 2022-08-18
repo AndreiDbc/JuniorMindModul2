@@ -15,10 +15,10 @@ namespace Str
         {
             var stream = new MemoryStream();
             var writer = new Writer(stream);
-            writer.WriteText("Junior Mind", false);
+            writer.WriteText("Junior Mind", false, false);
             stream.Seek(0, SeekOrigin.Begin);
             var reader = new Reader(stream);
-            Assert.Equal("Junior Mind", reader.ReadText(false));
+            Assert.Equal("Junior Mind", reader.ReadText(false, false));
         }
 
         [Fact]
@@ -26,10 +26,21 @@ namespace Str
         {
             var stream = new MemoryStream();
             var writer = new Writer(stream);
-            writer.WriteText("abc", true);
+            writer.WriteText("abc", true, false);
             stream.Seek(0, SeekOrigin.Begin);
             var reader = new Reader(stream);
-            Assert.Equal("abc", reader.ReadText(true));
+            Assert.Equal("abc", reader.ReadText(true, false));
+        }
+
+        [Fact]
+        public void WriteTextIsCalledStreamIsCryptedShouldReturnText()
+        {
+            var stream = new MemoryStream();
+            var writer = new Writer(stream);
+            writer.WriteText("abc", false, true);
+            stream.Seek(0, SeekOrigin.Begin);
+            var reader = new Reader(stream);
+            Assert.Equal("abc", reader.ReadText(false, true));
         }
     }
 }
