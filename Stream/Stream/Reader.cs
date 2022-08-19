@@ -11,7 +11,7 @@ namespace Str
 {
     class Reader
     {
-        readonly Stream stream;
+        Stream stream;
 
         public Reader(Stream stream)
         {
@@ -26,19 +26,16 @@ namespace Str
                 {
                     aes.Key = new byte[16];
                     aes.IV = new byte[16];
-                    using (CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true))
-                    {
-                        using (StreamReader reader = new StreamReader(cryptoStream))
-                        {
-                            return reader.ReadToEnd();
-                        }
-                    }
+                    stream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
                 }
             }
 
-            using (StreamReader reader = gzip
-                ? new (new GZipStream(stream, CompressionMode.Decompress, true), leaveOpen: true)
-                : new (stream, leaveOpen: true))
+            if (gzip)
+            {
+                stream = new GZipStream(stream, CompressionMode.Decompress, true);
+            }
+
+            using (StreamReader reader = new (stream, leaveOpen: true))
             {
                 return reader.ReadToEnd();
             }
