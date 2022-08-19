@@ -11,7 +11,7 @@ namespace Str
 {
     class Writer
     {
-        readonly Stream stream;
+        Stream stream;
 
         public Writer(Stream stream)
         {
@@ -26,18 +26,16 @@ namespace Str
                 {
                     aes.Key = new byte[16];
                     aes.IV = new byte[16];
-                    byte[] data = ASCIIEncoding.ASCII.GetBytes(text);
-                    using (CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write, true))
-                    {
-                        cryptoStream.Write(data, 0, data.Length);
-                        return;
-                    }
+                    stream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
                 }
             }
 
-            using (StreamWriter writer = gzip
-                ? new (new GZipStream(stream, CompressionLevel.SmallestSize, true), leaveOpen: true)
-                : new (stream, leaveOpen: true))
+            if (gzip)
+            {
+                stream = new GZipStream(stream, CompressionLevel.SmallestSize, true);
+            }
+
+            using (var writer = new StreamWriter(stream, leaveOpen: true))
             {
                 writer.Write(text);
             }
