@@ -16,8 +16,8 @@ namespace Str
             var stream = new MemoryStream();
             var writer = new Writer(stream);
             writer.WriteText("Junior Mind", false, false);
-            stream.Seek(0, SeekOrigin.Begin);
-            var reader = new Reader(stream);
+            var buffer = stream.ToArray();
+            var reader = new Reader(new MemoryStream(buffer));
             Assert.Equal("Junior Mind", reader.ReadText(false, false));
         }
 

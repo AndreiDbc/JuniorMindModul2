@@ -39,6 +39,8 @@ namespace Str
             {
                 writer.Write(text);
             }
+
+            stream.Dispose();
         }
     }
 }
