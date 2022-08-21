@@ -18,15 +18,13 @@ namespace Str
             this.stream = stream;
         }
 
-        public string ReadText(bool gzip, bool crypto)
+        public string ReadText(bool gzip, bool crypto, byte[] key = null, byte[] iv = null)
         {
             if (crypto)
             {
                 using (Aes aes = Aes.Create())
                 {
-                    aes.Key = new byte[16];
-                    aes.IV = new byte[16];
-                    stream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
+                    stream = new CryptoStream(stream, aes.CreateDecryptor(key, iv), CryptoStreamMode.Read, true);
                 }
             }
 

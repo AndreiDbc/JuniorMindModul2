@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -37,10 +38,16 @@ namespace Str
         {
             var stream = new MemoryStream();
             var writer = new Writer(stream);
-            writer.WriteText("abc", false, true);
+            var aes = Aes.Create();
+            aes.GenerateIV();
+            aes.GenerateKey();
+            byte[] key = aes.Key;
+            byte[] iv = aes.IV;
+            aes.Dispose();
+            writer.WriteText("abc", false, true, key, iv);
             stream.Seek(0, SeekOrigin.Begin);
             var reader = new Reader(stream);
-            Assert.Equal("abc", reader.ReadText(false, true));
+            Assert.Equal("abc", reader.ReadText(false, true, key, iv));
         }
     }
 }
