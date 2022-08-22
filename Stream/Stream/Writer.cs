@@ -33,12 +33,8 @@ namespace Str
                 stream = new GZipStream(stream, CompressionLevel.SmallestSize, true);
             }
 
-            using (var writer = new StreamWriter(stream, leaveOpen: true))
-            {
-                writer.Write(text);
-            }
-
-            stream.Dispose();
+            using var writer = new StreamWriter(stream);
+            writer.Write(text);
         }
     }
 }
