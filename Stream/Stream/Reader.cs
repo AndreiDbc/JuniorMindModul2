@@ -23,6 +23,7 @@ namespace Str
             if (crypto)
             {
                 using Aes aes = Aes.Create();
+                aes.Padding = PaddingMode.None;
                 stream = new CryptoStream(stream, aes.CreateDecryptor(key, iv), CryptoStreamMode.Read, true);
             }
 
@@ -32,7 +33,7 @@ namespace Str
             }
 
             using StreamReader reader = new (stream);
-            return reader.ReadToEnd();
+            return reader.ReadToEnd().Trim();
         }
     }
 }
