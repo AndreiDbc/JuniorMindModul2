@@ -22,10 +22,8 @@ namespace Str
         {
             if (crypto)
             {
-                using (Aes aes = Aes.Create())
-                {
-                    stream = new CryptoStream(stream, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write, true);
-                }
+                using Aes aes = Aes.Create();
+                stream = new CryptoStream(stream, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write, true);
             }
 
             if (gzip)
