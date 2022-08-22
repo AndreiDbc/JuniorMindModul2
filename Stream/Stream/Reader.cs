@@ -33,10 +33,8 @@ namespace Str
                 stream = new GZipStream(stream, CompressionMode.Decompress, true);
             }
 
-            using (StreamReader reader = new (stream, leaveOpen: true))
-            {
-                return reader.ReadToEnd();
-            }
+            using StreamReader reader = new (stream);
+            return reader.ReadToEnd();
         }
     }
 }

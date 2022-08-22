@@ -49,5 +49,22 @@ namespace Str
             var reader = new Reader(stream);
             Assert.Equal("abc", reader.ReadText(false, true, key, iv));
         }
+
+        [Fact]
+        public void WriteTextIsCalledStreamIsCryptedAndGZippedShouldReturnText()
+        {
+            var stream = new MemoryStream();
+            var writer = new Writer(stream);
+            var aes = Aes.Create();
+            aes.GenerateIV();
+            aes.GenerateKey();
+            byte[] key = aes.Key;
+            byte[] iv = aes.IV;
+            aes.Dispose();
+            writer.WriteText("abc", true, true, key, iv);
+            stream.Seek(0, SeekOrigin.Begin);
+            var reader = new Reader(stream);
+            Assert.Equal("abc", reader.ReadText(true, true, key, iv));
+        }
     }
 }
