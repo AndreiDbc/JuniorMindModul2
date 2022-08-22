@@ -20,20 +20,19 @@ namespace Str
 
         public string ReadText(bool gzip, bool crypto, byte[] key = null, byte[] iv = null)
         {
-            if (crypto)
-            {
-                using Aes aes = Aes.Create();
-                aes.Padding = PaddingMode.None;
-                stream = new CryptoStream(stream, aes.CreateDecryptor(key, iv), CryptoStreamMode.Read, true);
-            }
-
             if (gzip)
             {
                 stream = new GZipStream(stream, CompressionMode.Decompress, true);
             }
 
+            if (crypto)
+            {
+                using Aes aes = Aes.Create();
+                stream = new CryptoStream(stream, aes.CreateDecryptor(key, iv), CryptoStreamMode.Read, true);
+            }
+
             using StreamReader reader = new (stream);
-            return reader.ReadToEnd().Trim();
+            return reader.ReadToEnd();
         }
     }
 }
