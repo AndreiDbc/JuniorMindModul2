@@ -9,11 +9,15 @@ namespace LinkedListFacts
     class Node<T>
     {
         private T data;
+        private Node<T> previous;
         private Node<T> next;
         public Node(T d)
         {
             data = d;
+            previous = null;
             next = null;
         }
+
+
     }
 }
