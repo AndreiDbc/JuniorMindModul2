@@ -9,12 +9,12 @@ namespace LinkedListFacts
 {
     class LinkedList<T> : ICollection<T>
     {
-        private T[] array;
+        private readonly Node<T> head;
         private int count;
 
         public LinkedList()
         {
-            array = new T[4];
+            head = null;
             count = 0;
         }
 
