@@ -22,6 +22,8 @@ namespace LinkedListFacts
 
         public bool IsReadOnly { get; }
 
+        public T First { get => array[0]; }
+
         public virtual T this[int index]
         {
             get => array[index];

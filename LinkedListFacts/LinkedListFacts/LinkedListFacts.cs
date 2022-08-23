@@ -241,5 +241,15 @@ namespace LinkedListFacts
             list.Add("AS");
             Assert.Throws<ArgumentException>(() => list[-3] = "gh");
         }
+
+        [Fact]
+        public void FirstIsCalledShouldReturnFirstElementOfTheList()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Equal("asd", list.First);
+        }
     }
 }
