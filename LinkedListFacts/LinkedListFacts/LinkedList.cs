@@ -97,6 +97,20 @@ namespace LinkedListFacts
             count = 0;
         }
 
+        public bool Remove(T element)
+        {
+            int index = IndexOf(element);
+            if (index == -1)
+            {
+                return false;
+            }
+
+            ShiftToLeft(index);
+            count--;
+
+            return true;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)

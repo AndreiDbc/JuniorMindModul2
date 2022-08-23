@@ -96,5 +96,37 @@ namespace LinkedListFacts
             array.Clear();
             Assert.Equal(0, array.Count);
         }
+
+        [Fact]
+        public void RemoveIsCalledShouldReturnArrayWithRemovedObject()
+        {
+            var array = new LinkedList<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            array.Remove("gfs");
+            Assert.Equal("asd", array[0]);
+            Assert.Equal("AS", array[2]);
+        }
+
+        [Fact]
+        public void RemoveIsCalledShouldReturnTrue()
+        {
+            var array = new LinkedList<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            Assert.True(array.Remove("gfs"));
+        }
+
+        [Fact]
+        public void RemoveIsCalledShouldReturnFalse()
+        {
+            var array = new LinkedList<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            Assert.False(array.Remove("s"));
+        }
     }
 }
