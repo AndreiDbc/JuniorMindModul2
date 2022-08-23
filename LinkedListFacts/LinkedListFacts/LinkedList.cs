@@ -22,9 +22,24 @@ namespace LinkedListFacts
 
         public bool IsReadOnly { get; }
 
-        public T First { get => array[0]; }
+        public Node<T> First { get => head; }
 
-        public T Last { get => array[count - 1]; }
+        public Node<T> Last
+        {
+            get
+            {
+                Node<T> result = head;
+                int temp = count;
+                do
+                {
+                    result = result.Next;
+                    temp--;
+                }
+                while (temp > 0);
+
+                return result;
+            }
+        }
 
         public virtual T this[int index]
         {
