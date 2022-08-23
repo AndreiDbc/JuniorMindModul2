@@ -251,5 +251,15 @@ namespace LinkedListFacts
             list.Add("AS");
             Assert.Equal("asd", list.First);
         }
+
+        [Fact]
+        public void LastIsCalledShouldReturnLastElementOfTheList()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Equal("AS", list.Last);
+        }
     }
 }

@@ -24,6 +24,8 @@ namespace LinkedListFacts
 
         public T First { get => array[0]; }
 
+        public T Last { get => array[count - 1]; }
+
         public virtual T this[int index]
         {
             get => array[index];
