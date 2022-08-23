@@ -79,6 +79,19 @@ namespace LinkedListFacts
             return IndexOf(element) != -1;
         }
 
+        public virtual void Insert(int index, T element)
+        {
+            DoubleTheArraySize();
+            ShiftToRight(index);
+            if (index < 0 || index >= count)
+            {
+                throw new ArgumentException("Index was outside the bounds of the array");
+            }
+
+            array[index] = element;
+            count++;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)

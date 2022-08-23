@@ -73,5 +73,17 @@ namespace LinkedListFacts
             array.Add(true);
             Assert.False(array.Contains(obj));
         }
+
+        [Fact]
+        public void InsertIsCalledShouldReturnOneMoreElementToArray()
+        {
+            var array = new LinkedList<char>();
+            const char obj = 'c';
+            array.Add('1');
+            array.Add('2');
+            array.Add('3');
+            array.Insert(1, obj);
+            Assert.Equal(obj, array[1]);
+        }
     }
 }
