@@ -11,6 +11,7 @@ namespace LinkedListFacts
         private T data;
         private Node<T> previous;
         private Node<T> next;
+
         public Node(T d)
         {
             data = d;
@@ -18,8 +19,8 @@ namespace LinkedListFacts
             next = null;
         }
 
-        public Node<T> Next { get { return next; } }
+        public Node<T> Previous { get => previous; }
 
-
+        public Node<T> Next { get => next; }
     }
 }
