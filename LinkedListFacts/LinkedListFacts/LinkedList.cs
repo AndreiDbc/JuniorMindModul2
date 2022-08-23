@@ -21,5 +21,19 @@ namespace LinkedListFacts
         public int Count { get => count; }
 
         public bool IsReadOnly { get; }
+
+        public virtual T this[int index]
+        {
+            get => array[index];
+            set
+            {
+                if (index < 0 || index >= count)
+                {
+                    throw new ArgumentException("Index was outside the bounds of the array");
+                }
+
+                array[index] = value;
+            }
+        }
     }
 }
