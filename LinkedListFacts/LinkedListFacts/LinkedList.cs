@@ -7,7 +7,15 @@ using System.Threading.Tasks;
 
 namespace LinkedListFacts
 {
-    class LinkedList
+    class LinkedList<T>
     {
+        private T[] array;
+        private int count;
+
+        public LinkedList()
+        {
+            array = new T[4];
+            count = 0;
+        }
     }
 }
