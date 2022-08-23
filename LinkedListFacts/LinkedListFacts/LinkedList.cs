@@ -28,16 +28,13 @@ namespace LinkedListFacts
         {
             get
             {
-                Node<T> result = head;
-                int temp = count;
-                do
+                var temp = head;
+                for (int i = 0; i < Count; i++)
                 {
-                    result = result.Next;
-                    temp--;
+                    temp = temp.Next;
                 }
-                while (temp > 0);
 
-                return result;
+                return temp;
             }
         }
 
