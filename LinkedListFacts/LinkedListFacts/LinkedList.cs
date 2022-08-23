@@ -74,6 +74,11 @@ namespace LinkedListFacts
             return -1;
         }
 
+        public bool Contains(T element)
+        {
+            return IndexOf(element) != -1;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)

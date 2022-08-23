@@ -41,5 +41,37 @@ namespace LinkedListFacts
             Assert.Equal(2, array.IndexOf(obj));
         }
 
+        [Fact]
+        public void IndexOfIsCalledShouldReturnMinusOne()
+        {
+            var array = new LinkedList<bool>();
+            const bool obj = false;
+            array.Add(true);
+            array.Add(true);
+            array.Add(true);
+            Assert.Equal(-1, array.IndexOf(obj));
+        }
+
+        [Fact]
+        public void ContainsIsCalledShouldReturnTrue()
+        {
+            var array = new LinkedList<string>();
+            const string obj = "vg";
+            array.Add("asd");
+            array.Add("vg");
+            array.Add("SDA");
+            Assert.True(array.Contains(obj));
+        }
+
+        [Fact]
+        public void ContainsIsCalledShouldReturnFalse()
+        {
+            var array = new LinkedList<bool>();
+            const bool obj = false;
+            array.Add(true);
+            array.Add(true);
+            array.Add(true);
+            Assert.False(array.Contains(obj));
+        }
     }
 }
