@@ -92,6 +92,11 @@ namespace LinkedListFacts
             count++;
         }
 
+        public void Clear()
+        {
+            count = 0;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)

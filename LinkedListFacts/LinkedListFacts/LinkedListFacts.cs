@@ -85,5 +85,16 @@ namespace LinkedListFacts
             array.Insert(1, obj);
             Assert.Equal(obj, array[1]);
         }
+
+        [Fact]
+        public void ClearIsCalledShouldSetCountToZero()
+        {
+            var array = new LinkedList<int>();
+            array.Add(67);
+            array.Add(45);
+            array.Add(45);
+            array.Clear();
+            Assert.Equal(0, array.Count);
+        }
     }
 }
