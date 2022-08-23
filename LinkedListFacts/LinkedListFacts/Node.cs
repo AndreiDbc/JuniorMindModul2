@@ -22,5 +22,7 @@ namespace LinkedListFacts
         public Node<T> Previous { get => previous; }
 
         public Node<T> Next { get => next; }
+
+        public T Data { get => data; }
     }
 }
