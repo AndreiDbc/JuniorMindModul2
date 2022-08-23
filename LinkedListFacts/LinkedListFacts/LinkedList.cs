@@ -111,6 +111,17 @@ namespace LinkedListFacts
             return true;
         }
 
+        public void RemoveAt(int index)
+        {
+            if (index < 0 || index >= count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            ShiftToLeft(index);
+            count--;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)

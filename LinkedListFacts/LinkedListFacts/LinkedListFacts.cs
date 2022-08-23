@@ -128,5 +128,17 @@ namespace LinkedListFacts
             array.Add("AS");
             Assert.False(array.Remove("s"));
         }
+
+        [Fact]
+        public void RemoveAtIsCalledShouldReturnArrayWithRemovedObject()
+        {
+            var array = new LinkedList<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            array.RemoveAt(1);
+            Assert.Equal("asd", array[0]);
+            Assert.Equal("AS", array[2]);
+        }
     }
 }
