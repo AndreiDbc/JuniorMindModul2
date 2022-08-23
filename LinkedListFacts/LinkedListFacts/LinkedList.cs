@@ -19,5 +19,7 @@ namespace LinkedListFacts
         }
 
         public int Count { get => count; }
+
+        public bool IsReadOnly { get; }
     }
 }
