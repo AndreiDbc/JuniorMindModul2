@@ -36,6 +36,14 @@ namespace LinkedListFacts
             }
         }
 
+        private void ShiftToRight(int index)
+        {
+            for (int i = count; i > index; i--)
+            {
+                array[i] = array[i - 1];
+            }
+        }
+
         private void DoubleTheArraySize()
         {
             if (count != array.Length)
