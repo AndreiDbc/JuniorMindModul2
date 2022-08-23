@@ -61,6 +61,19 @@ namespace LinkedListFacts
             Array.Copy(array, 0, arrayToAdd, arrayIndex, Count);
         }
 
+        public int IndexOf(T element)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (array[i].Equals(element))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         private void ShiftToRight(int index)
         {
             for (int i = count; i > index; i--)
