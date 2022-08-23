@@ -45,5 +45,13 @@ namespace LinkedListFacts
 
             Array.Resize(ref array, array.Length * 2);
         }
+
+        private void ShiftToLeft(int index)
+        {
+            for (int i = index; i < count - 1; i++)
+            {
+                array[i] = array[i + 1];
+            }
+        }
     }
 }
