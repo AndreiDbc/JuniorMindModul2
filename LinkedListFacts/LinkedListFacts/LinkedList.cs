@@ -35,11 +35,30 @@ namespace LinkedListFacts
                 array[index] = value;
             }
         }
+
         public virtual void Add(T element)
         {
             DoubleTheArraySize();
             array[count] = element;
             count++;
+        }
+
+        public void CopyTo(T[] arrayToAdd, int arrayIndex)
+        {
+            if (arrayToAdd == null)
+            {
+                throw new ArgumentNullException(nameof(arrayToAdd));
+            }
+            else if (arrayIndex < 0 || arrayIndex >= Count)
+            {
+                throw new ArgumentException("Index is outside of the bounds of the array.");
+            }
+            else if (Count > arrayToAdd.Length - arrayIndex)
+            {
+                throw new ArgumentException("The number of elements array is greater than the available space to the end of the destination array.");
+            }
+
+            Array.Copy(array, 0, arrayToAdd, arrayIndex, Count);
         }
 
         private void ShiftToRight(int index)
