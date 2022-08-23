@@ -18,6 +18,8 @@ namespace LinkedListFacts
             next = null;
         }
 
+        public Node<T> Next { get { return next; } }
+
 
     }
 }
