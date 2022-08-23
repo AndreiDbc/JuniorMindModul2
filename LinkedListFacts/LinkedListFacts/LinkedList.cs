@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LinkedListFacts
 {
-    class LinkedList<T>
+    class LinkedList<T> : ICollection<T>
     {
         private T[] array;
         private int count;
@@ -120,6 +120,19 @@ namespace LinkedListFacts
 
             ShiftToLeft(index);
             count--;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int index = 0; index < count; index++)
+            {
+                yield return array[index];
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private void ShiftToRight(int index)

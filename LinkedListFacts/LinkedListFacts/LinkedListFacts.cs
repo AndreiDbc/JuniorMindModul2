@@ -1,3 +1,9 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace LinkedListFacts
@@ -139,6 +145,101 @@ namespace LinkedListFacts
             array.RemoveAt(1);
             Assert.Equal("asd", array[0]);
             Assert.Equal("AS", array[2]);
+        }
+
+        [Fact]
+        public void GetEnumeratorMoveNextIsCalledShouldReturnTrue()
+        {
+            var array = new LinkedList<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            Assert.True(array.GetEnumerator().MoveNext());
+        }
+
+        [Fact]
+        public void GetEnumeratorMoveNextIsCalledShouldReturnNextElement()
+        {
+            var array = new LinkedList<string>();
+            array.Add("asd");
+            array.Add("gfs");
+            array.Add("AS");
+            IEnumerator<string> test = array.GetEnumerator();
+            test.MoveNext();
+            test.MoveNext();
+            Assert.Equal(array[1], test.Current);
+        }
+
+        [Fact]
+        public void IsReadOnlyIsCalledShouldReturnFalse()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.False(list.IsReadOnly);
+        }
+
+        [Fact]
+        public void CopyToIsCalledShouldThrowIndexOutOfRangeException()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            string[] test = new string[4];
+            Assert.Throws<ArgumentException>(() => list.CopyTo(test, -1));
+        }
+
+        [Fact]
+        public void CopyToIsCalledShouldThrowArgumentNullException()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Throws<ArgumentNullException>(() => list.CopyTo(null, 1));
+        }
+
+        [Fact]
+        public void CopyToIsCalledShouldThrowArgumentException()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            string[] test = new string[2];
+            Assert.Throws<ArgumentException>(() => list.CopyTo(test, 0));
+        }
+
+        [Fact]
+        public void InsertIsCalledShouldThrowArgumentOutOfRangeException()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Throws<IndexOutOfRangeException>(() => list.Insert(-4, "kfff"));
+        }
+
+        [Fact]
+        public void RemoveAtIsCalledShouldThrowArgumentOutOfRangeException()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Throws<ArgumentOutOfRangeException>(() => list.RemoveAt(-4));
+        }
+
+        [Fact]
+        public void ValueIsSetUsingIndeexerShouldThrowArgumentOutOfRangeException()
+        {
+            var list = new LinkedList<string>();
+            list.Add("asd");
+            list.Add("gfs");
+            list.Add("AS");
+            Assert.Throws<ArgumentException>(() => list[-3] = "gh");
         }
     }
 }
