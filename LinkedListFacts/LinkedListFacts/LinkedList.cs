@@ -41,20 +41,6 @@ namespace LinkedListFacts
             }
         }
 
-        public virtual T this[int index]
-        {
-            get => array[index];
-            set
-            {
-                if (index < 0 || index >= count)
-                {
-                    throw new ArgumentException("Index was outside the bounds of the array");
-                }
-
-                array[index] = value;
-            }
-        }
-
         public virtual void Add(T element)
         {
             DoubleTheArraySize();
@@ -80,35 +66,9 @@ namespace LinkedListFacts
             Array.Copy(array, 0, arrayToAdd, arrayIndex, Count);
         }
 
-        public int IndexOf(T element)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                if (array[i].Equals(element))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
         public bool Contains(T element)
         {
             return IndexOf(element) != -1;
-        }
-
-        public virtual void Insert(int index, T element)
-        {
-            DoubleTheArraySize();
-            ShiftToRight(index);
-            if (index < 0 || index >= count)
-            {
-                throw new ArgumentException("Index was outside the bounds of the array");
-            }
-
-            array[index] = element;
-            count++;
         }
 
         public void Clear()
@@ -128,17 +88,6 @@ namespace LinkedListFacts
             count--;
 
             return true;
-        }
-
-        public void RemoveAt(int index)
-        {
-            if (index < 0 || index >= count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
-            ShiftToLeft(index);
-            count--;
         }
 
         public IEnumerator<T> GetEnumerator()
