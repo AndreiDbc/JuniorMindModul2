@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace LinkedListFacts
 {
-    class Node
+    class Node<T>
     {
+        private T data;
+        private Node<T> next;
+        public Node(T d)
+        {
+            data = d;
+            next = null;
+        }
     }
 }
