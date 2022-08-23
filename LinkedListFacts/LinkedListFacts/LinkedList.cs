@@ -35,5 +35,15 @@ namespace LinkedListFacts
                 array[index] = value;
             }
         }
+
+        private void DoubleTheArraySize()
+        {
+            if (count != array.Length)
+            {
+                return;
+            }
+
+            Array.Resize(ref array, array.Length * 2);
+        }
     }
 }
