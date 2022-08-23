@@ -17,5 +17,7 @@ namespace LinkedListFacts
             array = new T[4];
             count = 0;
         }
+
+        public int Count { get => count; }
     }
 }
