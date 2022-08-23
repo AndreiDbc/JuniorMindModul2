@@ -35,6 +35,12 @@ namespace LinkedListFacts
                 array[index] = value;
             }
         }
+        public virtual void Add(T element)
+        {
+            DoubleTheArraySize();
+            array[count] = element;
+            count++;
+        }
 
         private void ShiftToRight(int index)
         {
