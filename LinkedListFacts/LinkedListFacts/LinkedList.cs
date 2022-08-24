@@ -41,8 +41,8 @@ namespace LinkedListFacts
 
         public bool Contains(T data)
         {
-            Node<T> node = Head;
-            for (int i = 1; i < Count; i++)
+            Node<T> node = Head.Next;
+            for (int i = 0; i < Count - 1; i++)
             {
                 if (node.Data.Equals(data))
                 {
@@ -53,6 +53,17 @@ namespace LinkedListFacts
             }
 
             return false;
+        }
+
+        public void CopyTo(T[] array, int location)
+        {
+            Node<T> node = Head.Next;
+            for (int i = 0; i < Count - 1; i++)
+            {
+                array[location] = node.Data;
+                location++;
+                node = node.Next;
+            }
         }
 
         private void InsertFront(T toAdd)
