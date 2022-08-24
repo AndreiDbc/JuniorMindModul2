@@ -19,6 +19,6 @@ namespace LinkedListFacts
 
         public Node<T> Next { get; set; }
 
-        public T Data { get; set; }
+        public T Data { get; }
     }
 }

@@ -9,12 +9,12 @@ namespace LinkedListFacts
 {
     class LinkedList<T>
     {
-        private readonly int count;
+        private int count;
 
         public LinkedList()
         {
-            Head = null;
-            count = 0;
+            Head = new Node<T>(default(T));
+            count = 1;
         }
 
         public int Count { get => count; }
@@ -23,6 +23,6 @@ namespace LinkedListFacts
 
         public Node<T> Head { get; set; }
 
-        public Node<T> Last { get => Head; set => Head = value; }
+        public Node<T> Last { get; set; }
     }
 }
