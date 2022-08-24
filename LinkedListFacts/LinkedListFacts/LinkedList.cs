@@ -39,6 +39,22 @@ namespace LinkedListFacts
             count++;
         }
 
+        public bool Contains(T data)
+        {
+            Node<T> node = Head;
+            for (int i = 1; i < Count; i++)
+            {
+                if (node.Data.Equals(data))
+                {
+                    return true;
+                }
+
+                node = node.Next;
+            }
+
+            return false;
+        }
+
         private void InsertFront(T toAdd)
         {
             Node<T> node = new Node<T>(toAdd);

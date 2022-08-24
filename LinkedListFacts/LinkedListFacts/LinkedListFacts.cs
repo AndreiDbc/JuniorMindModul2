@@ -35,5 +35,31 @@ namespace LinkedListFacts
             Assert.Equal(2, list.Last.Previous.Data);
             Assert.Equal(3, list.Last.Data);
         }
+
+        [Fact]
+        public void ContainsIsCalledShouldReturnFalse()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Assert.False(list.Contains(4));
+        }
+
+        [Fact]
+        public void ContainsIsCalledShouldReturnTrue()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Assert.True(list.Contains(2));
+        }
     }
 }
