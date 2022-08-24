@@ -9,12 +9,11 @@ namespace LinkedListFacts
 {
     class LinkedList<T>
     {
-        private readonly Node<T> head;
         private int count;
 
         public LinkedList()
         {
-            head = null;
+            Head = null;
             count = 0;
         }
 
@@ -22,20 +21,8 @@ namespace LinkedListFacts
 
         public bool IsReadOnly { get; }
 
-        public Node<T> First { get => head; }
+        public Node<T> Head { get; set; }
 
-        public Node<T> Last
-        {
-            get
-            {
-                var temp = head;
-                for (int i = 0; i < Count; i++)
-                {
-                    temp = temp.Next;
-                }
-
-                return temp;
-            }
-        }
+        public Node<T> Last { get => Head; set => Head = value; }
     }
 }
