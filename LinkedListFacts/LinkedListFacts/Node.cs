@@ -8,21 +8,17 @@ namespace LinkedListFacts
 {
     class Node<T>
     {
-        private readonly T data;
-        private readonly Node<T> previous;
-        private readonly Node<T> next;
-
-        public Node(T d)
+        public Node(T data)
         {
-            data = d;
-            previous = null;
-            next = null;
+            this.Data = data;
+            Previous = null;
+            Next = null;
         }
 
-        public Node<T> Previous { get => previous; }
+        public Node<T> Previous { get; set; }
 
-        public Node<T> Next { get => next; }
+        public Node<T> Next { get; set; }
 
-        public T Data { get => data; }
+        public T Data { get; set; }
     }
 }

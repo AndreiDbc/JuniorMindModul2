@@ -9,5 +9,13 @@ namespace LinkedListFacts
 {
     public class NodeFacts
     {
+        [Fact]
+        public void ANodeIsCreatedShouldReturnNodeWithValues()
+        {
+            Node<int> node = new Node<int>(1);
+            Assert.Equal(1, node.Data);
+            Assert.Equal(null, node.Next);
+            Assert.Equal(null, node.Previous);
+        }
     }
 }

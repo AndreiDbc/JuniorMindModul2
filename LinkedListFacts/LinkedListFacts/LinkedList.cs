@@ -9,7 +9,7 @@ namespace LinkedListFacts
 {
     class LinkedList<T>
     {
-        private int count;
+        private readonly int count;
 
         public LinkedList()
         {
