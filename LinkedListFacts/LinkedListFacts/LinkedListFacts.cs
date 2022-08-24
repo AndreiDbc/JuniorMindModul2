@@ -13,25 +13,27 @@ namespace LinkedListFacts
         [Fact]
         public void AddIsCalledShouldUpdateList()
         {
-            Node<int> node = new Node<int>(1);
+            const int test = 1;
             LinkedList<int> list = new LinkedList<int>();
-            list.Add(node);
-            Assert.Equal(node, list.Last);
+            list.Add(test);
+            Assert.Equal(1, list.Last.Data);
+            Assert.Equal(list.Head, list.Last.Previous);
+            Assert.Equal(list.Head, list.Last.Next);
         }
 
         [Fact]
         public void AddIsCalledMultipleTimesShouldReturnNodesOrder()
         {
-            Node<int> node1 = new Node<int>(1);
-            Node<int> node2 = new Node<int>(2);
-            Node<int> node3 = new Node<int>(3);
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
             LinkedList<int> list = new LinkedList<int>();
-            list.Add(node1);
-            list.Add(node2);
-            list.Add(node3);
-            Assert.Equal(node1, list.Head.Next);
-            Assert.Equal(node2, list.Last.Previous);
-            Assert.Equal(node3, list.Last);
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Assert.Equal(1, list.Head.Next.Data);
+            Assert.Equal(2, list.Last.Previous.Data);
+            Assert.Equal(3, list.Last.Data);
         }
     }
 }

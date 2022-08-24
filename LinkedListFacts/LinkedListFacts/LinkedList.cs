@@ -25,7 +25,7 @@ namespace LinkedListFacts
 
         public Node<T> Last { get; set; }
 
-        public void Add(Node<T> toAdd)
+        public void Add(T toAdd)
         {
             if (count == 1)
             {
@@ -39,22 +39,24 @@ namespace LinkedListFacts
             count++;
         }
 
-        private void InsertFront(Node<T> toAdd)
+        private void InsertFront(T toAdd)
         {
-            Head.Next = toAdd;
-            Head.Previous = toAdd;
-            Last = toAdd;
-            toAdd.Previous = Head;
-            toAdd.Next = Head;
+            Node<T> node = new Node<T>(toAdd);
+            Head.Next = node;
+            Head.Previous = node;
+            Last = node;
+            node.Previous = Head;
+            node.Next = Head;
         }
 
-        private void InsertLast(Node<T> toAdd)
+        private void InsertLast(T toAdd)
         {
-            Last.Next = toAdd;
-            Head.Previous = toAdd;
-            toAdd.Previous = Last;
-            Last = toAdd;
-            toAdd.Next = Head;
+            Node<T> node = new Node<T>(toAdd);
+            Last.Next = node;
+            Head.Previous = node;
+            node.Previous = Last;
+            Last = node;
+            node.Next = Head;
         }
     }
 }
