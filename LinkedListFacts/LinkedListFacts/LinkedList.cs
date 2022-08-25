@@ -66,6 +66,13 @@ namespace LinkedListFacts
             }
         }
 
+        public void Clear()
+        {
+            Head.Next = null;
+            Head.Previous = null;
+            count = 0;
+        }
+
         private void InsertFront(T toAdd)
         {
             Node<T> node = new Node<T>(toAdd);

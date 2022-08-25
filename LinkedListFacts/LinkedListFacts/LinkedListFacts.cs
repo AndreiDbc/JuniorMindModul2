@@ -77,5 +77,21 @@ namespace LinkedListFacts
             list.CopyTo(array, 0);
             Assert.Equal(testArray, array);
         }
+
+        [Fact]
+        public void ClearIsCalledShouldReturnListToBasicForm()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            list.Clear();
+            Assert.Equal(0, list.Count);
+            Assert.Equal(null, list.Head.Next);
+            Assert.Equal(null, list.Head.Previous);
+        }
     }
 }
