@@ -14,7 +14,7 @@ namespace LinkedListFacts
         public LinkedList()
         {
             Head = new Node<T>(default(T));
-            count = 1;
+            count = 0;
         }
 
         public int Count { get => count; }
@@ -27,7 +27,7 @@ namespace LinkedListFacts
 
         public void Add(T toAdd)
         {
-            if (count == 1)
+            if (count == 0)
             {
                 InsertFront(toAdd);
             }
@@ -42,7 +42,7 @@ namespace LinkedListFacts
         public bool Contains(T data)
         {
             Node<T> node = Head.Next;
-            for (int i = 0; i < Count - 1; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (node.Data.Equals(data))
                 {
@@ -58,7 +58,7 @@ namespace LinkedListFacts
         public void CopyTo(T[] array, int location)
         {
             Node<T> node = Head.Next;
-            for (int i = 0; i < Count - 1; i++)
+            for (int i = 0; i < Count; i++)
             {
                 array[location] = node.Data;
                 location++;
