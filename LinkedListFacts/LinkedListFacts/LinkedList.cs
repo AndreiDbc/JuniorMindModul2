@@ -41,15 +41,12 @@ namespace LinkedListFacts
 
         public bool Contains(T data)
         {
-            Node<T> node = head.Next;
-            for (int i = 0; i < Count; i++)
+            foreach (var value in this)
             {
-                if (node.Data.Equals(data))
+                if (value.Equals(data))
                 {
                     return true;
                 }
-
-                node = node.Next;
             }
 
             return false;
