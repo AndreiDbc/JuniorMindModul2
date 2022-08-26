@@ -85,7 +85,7 @@ namespace LinkedListFacts
                     Node<T> temp = node;
                     node = node.Next;
                     node.Previous = temp;
-                    Last = i == 0 ? Last : node.Previous;
+                    Last = i == count - 1 ? node.Previous : Last;
                     count--;
                     return true;
                 }
