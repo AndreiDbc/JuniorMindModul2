@@ -95,7 +95,7 @@ namespace LinkedListFacts
         }
 
         [Fact]
-        public void DeleteIsCalledShouldDeleteFirstNode()
+        public void RemoveIsCalledShouldDeleteFirstNode()
         {
             const int test = 1;
             const int test2 = 2;
@@ -104,13 +104,13 @@ namespace LinkedListFacts
             list.Add(test);
             list.Add(test2);
             list.Add(test3);
-            list.Delete(1);
+            list.Remove(1);
             Assert.Equal(2, list.Head.Next.Data);
             Assert.Equal(2, list.Last.Previous.Data);
         }
 
         [Fact]
-        public void DeleteIsCalledShouldDeleteSecondNode()
+        public void RemoveIsCalledShouldDeleteSecondNode()
         {
             const int test = 1;
             const int test2 = 2;
@@ -119,13 +119,13 @@ namespace LinkedListFacts
             list.Add(test);
             list.Add(test2);
             list.Add(test3);
-            list.Delete(2);
+            list.Remove(2);
             Assert.Equal(1, list.Head.Next.Data);
             Assert.Equal(3, list.Last.Data);
         }
 
         [Fact]
-        public void DeleteIsCalledShouldDeleteLastNode()
+        public void RemoveIsCalledShouldDeleteLastNode()
         {
             const int test = 1;
             const int test2 = 2;
@@ -134,9 +134,35 @@ namespace LinkedListFacts
             list.Add(test);
             list.Add(test2);
             list.Add(test3);
-            list.Delete(3);
+            list.Remove(3);
             Assert.Equal(1, list.Head.Next.Data);
             Assert.Equal(2, list.Last.Data);
+        }
+
+        [Fact]
+        public void RemoveIsCalledShouldReturnTrue()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Assert.True(list.Remove(3));
+        }
+
+        [Fact]
+        public void RemoveIsCalledShouldReturnFalse()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Assert.False(list.Remove(4));
         }
     }
 }

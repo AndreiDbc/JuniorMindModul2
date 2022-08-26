@@ -74,7 +74,7 @@ namespace LinkedListFacts
             count = 0;
         }
 
-        public void Delete(T toDelete)
+        public bool Remove(T toDelete)
         {
             Node<T> node = Head;
             for (int i = 0; i < Count + 1; i++)
@@ -87,11 +87,13 @@ namespace LinkedListFacts
                     node.Previous = temp;
                     Last = i == 0 ? Last : node.Previous;
                     count--;
-                    return;
+                    return true;
                 }
 
                 node = node.Next;
             }
+
+            return false;
         }
 
         private int GetPreviousLocation(T data)
