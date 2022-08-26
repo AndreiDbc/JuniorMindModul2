@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LinkedListFacts
 {
-    class LinkedList<T>
+    class LinkedList<T> : ICollection<T>
     {
         private int count;
 
@@ -94,6 +94,21 @@ namespace LinkedListFacts
             }
 
             return false;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            Node<T> node = Head;
+            for (int i = 0; i < Count; i++)
+            {
+                node = node.Next;
+                yield return node.Data;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private int GetPreviousLocation(T data)

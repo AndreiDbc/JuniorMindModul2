@@ -164,5 +164,53 @@ namespace LinkedListFacts
             list.Add(test3);
             Assert.False(list.Remove(4));
         }
+
+        [Fact]
+        public void EnumeratorsMoveNextIsCalledShouldReturnTrue()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            IEnumerator<int> enumerator = list.GetEnumerator();
+            Assert.True(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public void EnumeratorsMoveNextIsCalledShouldReturnFalse()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            IEnumerator<int> enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            Assert.False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public void EnumeratorsCurrentIsCalledShouldReturnLastNodeData()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            IEnumerator<int> enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            Assert.Equal(3, enumerator.Current);
+        }
     }
 }
