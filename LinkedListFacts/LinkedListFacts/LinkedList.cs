@@ -9,19 +9,20 @@ namespace LinkedListFacts
 {
     class LinkedList<T> : ICollection<T>
     {
+        private readonly Node<T> head;
         private int count;
 
         public LinkedList()
         {
-            Head = new Node<T>(default(T));
+            head = new Node<T>(default(T));
+            head.Next = null;
+            head.Previous = null;
             count = 0;
         }
 
         public int Count { get => count; }
 
         public bool IsReadOnly { get; }
-
-        public Node<T> Head { get; set; }
 
         public Node<T> Last { get; set; }
 
@@ -41,7 +42,7 @@ namespace LinkedListFacts
 
         public bool Contains(T data)
         {
-            Node<T> node = Head.Next;
+            Node<T> node = head.Next;
             for (int i = 0; i < Count; i++)
             {
                 if (node.Data.Equals(data))
@@ -57,7 +58,7 @@ namespace LinkedListFacts
 
         public void CopyTo(T[] array, int location)
         {
-            Node<T> node = Head.Next;
+            Node<T> node = head.Next;
             for (int i = 0; i < Count; i++)
             {
                 array[location] = node.Data;
@@ -68,15 +69,15 @@ namespace LinkedListFacts
 
         public void Clear()
         {
-            Head.Next = null;
-            Head.Previous = null;
-            Last = Head;
+            head.Next = null;
+            head.Previous = null;
+            Last = head;
             count = 0;
         }
 
         public bool Remove(T toDelete)
         {
-            Node<T> node = Head;
+            Node<T> node = head;
             for (int i = 0; i < Count + 1; i++)
             {
                 if (i == GetPreviousLocation(toDelete))
@@ -98,7 +99,7 @@ namespace LinkedListFacts
 
         public IEnumerator<T> GetEnumerator()
         {
-            Node<T> node = Head;
+            Node<T> node = head;
             for (int i = 0; i < Count; i++)
             {
                 node = node.Next;
@@ -113,7 +114,7 @@ namespace LinkedListFacts
 
         private int GetPreviousLocation(T data)
         {
-            Node<T> node = Head.Next;
+            Node<T> node = head.Next;
             for (int i = 0; i < Count; i++)
             {
                 if (node.Data.Equals(data))
@@ -129,7 +130,7 @@ namespace LinkedListFacts
 
         private Node<T> GetNextNode(T data)
         {
-            Node<T> node = Head.Next;
+            Node<T> node = head.Next;
             for (int i = 0; i < Count; i++)
             {
                 if (node.Data.Equals(data))
@@ -140,27 +141,27 @@ namespace LinkedListFacts
                 node = node.Next;
             }
 
-            return Head;
+            return head;
         }
 
         private void InsertFront(T toAdd)
         {
             Node<T> node = new Node<T>(toAdd);
-            Head.Next = node;
-            Head.Previous = node;
+            head.Next = node;
+            head.Previous = node;
             Last = node;
-            node.Previous = Head;
-            node.Next = Head;
+            node.Previous = head;
+            node.Next = head;
         }
 
         private void InsertLast(T toAdd)
         {
             Node<T> node = new Node<T>(toAdd);
             Last.Next = node;
-            Head.Previous = node;
+            head.Previous = node;
             node.Previous = Last;
             Last = node;
-            node.Next = Head;
+            node.Next = head;
         }
     }
 }

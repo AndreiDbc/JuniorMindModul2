@@ -17,8 +17,8 @@ namespace LinkedListFacts
             LinkedList<int> list = new LinkedList<int>();
             list.Add(test);
             Assert.Equal(1, list.Last.Data);
-            Assert.Equal(list.Head, list.Last.Previous);
-            Assert.Equal(list.Head, list.Last.Next);
+            Assert.Equal(0, list.Last.Previous.Data);
+            Assert.Equal(0, list.Last.Next.Data);
         }
 
         [Fact]
@@ -31,9 +31,13 @@ namespace LinkedListFacts
             list.Add(test);
             list.Add(test2);
             list.Add(test3);
-            Assert.Equal(1, list.Head.Next.Data);
-            Assert.Equal(2, list.Last.Previous.Data);
-            Assert.Equal(3, list.Last.Data);
+            IEnumerator enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal(1, enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal(2, enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal(3, enumerator.Current);
         }
 
         [Fact]
@@ -90,8 +94,8 @@ namespace LinkedListFacts
             list.Add(test3);
             list.Clear();
             Assert.Equal(0, list.Count);
-            Assert.Equal(null, list.Head.Next);
-            Assert.Equal(null, list.Head.Previous);
+            Assert.Equal(null, list.Last.Next);
+            Assert.Equal(null, list.Last.Previous);
         }
 
         [Fact]
@@ -105,7 +109,9 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             list.Remove(1);
-            Assert.Equal(2, list.Head.Next.Data);
+            IEnumerator enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal(2, enumerator.Current);
             Assert.Equal(2, list.Last.Previous.Data);
         }
 
@@ -120,8 +126,11 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             list.Remove(2);
-            Assert.Equal(1, list.Head.Next.Data);
-            Assert.Equal(3, list.Last.Data);
+            IEnumerator enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal(1, enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal(3, enumerator.Current);
         }
 
         [Fact]
@@ -135,7 +144,7 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             list.Remove(3);
-            Assert.Equal(1, list.Head.Next.Data);
+            Assert.Equal(1, list.Last.Previous.Data);
             Assert.Equal(2, list.Last.Data);
         }
 
