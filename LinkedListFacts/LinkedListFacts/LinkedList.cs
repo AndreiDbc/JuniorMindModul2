@@ -70,6 +70,7 @@ namespace LinkedListFacts
         {
             Head.Next = null;
             Head.Previous = null;
+            Last = Head;
             count = 0;
         }
 
