@@ -73,6 +73,58 @@ namespace LinkedListFacts
             count = 0;
         }
 
+        public void Delete(T toDelete)
+        {
+            Node<T> node = Head;
+            for (int i = 0; i < Count + 1; i++)
+            {
+                if (i == GetPreviousLocation(toDelete))
+                {
+                    node.Next = GetNextNode(toDelete);
+                    Node<T> temp = node;
+                    node = node.Next;
+                    node.Previous = temp;
+                    Last = i == 0 ? Last : node.Previous;
+                    count--;
+                    return;
+                }
+
+                node = node.Next;
+            }
+        }
+
+        private int GetPreviousLocation(T data)
+        {
+            Node<T> node = Head.Next;
+            for (int i = 0; i < Count; i++)
+            {
+                if (node.Data.Equals(data))
+                {
+                    return i;
+                }
+
+                node = node.Previous;
+            }
+
+            return -1;
+        }
+
+        private Node<T> GetNextNode(T data)
+        {
+            Node<T> node = Head.Next;
+            for (int i = 0; i < Count; i++)
+            {
+                if (node.Data.Equals(data))
+                {
+                    return node.Next;
+                }
+
+                node = node.Next;
+            }
+
+            return Head;
+        }
+
         private void InsertFront(T toAdd)
         {
             Node<T> node = new Node<T>(toAdd);

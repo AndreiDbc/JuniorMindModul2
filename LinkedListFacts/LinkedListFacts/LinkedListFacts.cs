@@ -93,5 +93,50 @@ namespace LinkedListFacts
             Assert.Equal(null, list.Head.Next);
             Assert.Equal(null, list.Head.Previous);
         }
+
+        [Fact]
+        public void DeleteIsCalledShouldDeleteFirstNode()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            list.Delete(1);
+            Assert.Equal(2, list.Head.Next.Data);
+            Assert.Equal(2, list.Last.Previous.Data);
+        }
+
+        [Fact]
+        public void DeleteIsCalledShouldDeleteSecondNode()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            list.Delete(2);
+            Assert.Equal(1, list.Head.Next.Data);
+            Assert.Equal(3, list.Last.Data);
+        }
+
+        [Fact]
+        public void DeleteIsCalledShouldDeleteLastNode()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            list.Delete(3);
+            Assert.Equal(1, list.Head.Next.Data);
+            Assert.Equal(2, list.Last.Data);
+        }
     }
 }
