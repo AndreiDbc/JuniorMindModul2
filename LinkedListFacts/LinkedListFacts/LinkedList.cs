@@ -108,20 +108,17 @@ namespace LinkedListFacts
             return GetEnumerator();
         }
 
-        private int GetPreviousLocation(T data)
+        private Node<T> GetPreviousNode(T data)
         {
-            Node<T> node = head.Next;
-            for (int i = 0; i < Count; i++)
+            for (Node<T> i = head.Next; i != head; i = i.Next)
             {
-                if (node.Data.Equals(data))
+                if (i.Data.Equals(data))
                 {
-                    return i;
+                    return i.Previous;
                 }
-
-                node = node.Previous;
             }
 
-            return -1;
+            return head;
         }
 
         private Node<T> GetNextNode(T data)
