@@ -28,15 +28,12 @@ namespace LinkedListFacts
 
         public void Add(T toAdd)
         {
-            if (count == 0)
-            {
-                InsertFront(toAdd);
-            }
-            else
-            {
-                InsertLast(toAdd);
-            }
-
+            Node<T> node = new Node<T>(toAdd);
+            Last.Next = node;
+            head.Previous = node;
+            node.Previous = Last;
+            Last = node;
+            node.Next = head;
             count++;
         }
 
@@ -88,7 +85,6 @@ namespace LinkedListFacts
             return false;
         }
 
-
         public IEnumerator<T> GetEnumerator()
         {
             Node<T> node = head;
@@ -128,26 +124,6 @@ namespace LinkedListFacts
             }
 
             return head;
-        }
-
-        private void InsertFront(T toAdd)
-        {
-            Node<T> node = new Node<T>(toAdd);
-            head.Next = node;
-            head.Previous = node;
-            Last = node;
-            node.Previous = head;
-            node.Next = head;
-        }
-
-        private void InsertLast(T toAdd)
-        {
-            Node<T> node = new Node<T>(toAdd);
-            Last.Next = node;
-            head.Previous = node;
-            node.Previous = Last;
-            Last = node;
-            node.Next = head;
         }
     }
 }
