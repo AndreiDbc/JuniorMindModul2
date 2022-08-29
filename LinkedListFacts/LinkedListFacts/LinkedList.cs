@@ -103,31 +103,5 @@ namespace LinkedListFacts
         {
             return GetEnumerator();
         }
-
-        private Node<T> GetPreviousNode(T data)
-        {
-            for (Node<T> i = head.Next; i != head; i = i.Next)
-            {
-                if (i.Data.Equals(data))
-                {
-                    return i.Previous;
-                }
-            }
-
-            return head;
-        }
-
-        private Node<T> GetNextNode(T data)
-        {
-            for (Node<T> i = head.Next; i != head; i = i.Next)
-            {
-                if (i.Equals(data))
-                {
-                    return i.Next;
-                }
-            }
-
-            return head;
-        }
     }
 }
