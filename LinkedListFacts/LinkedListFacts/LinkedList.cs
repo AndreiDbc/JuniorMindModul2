@@ -76,8 +76,11 @@ namespace LinkedListFacts
             {
                 if (i.Data.Equals(toDelete))
                 {
-                    i.Previous = GetNextNode(toDelete);
-                    i.Next.Previous = GetPreviousNode(toDelete);
+                    var temp = i.Next;
+                    temp.Previous = i.Previous;
+                    i.Next = temp;
+                    i.Previous.Next = temp;
+                    Last = i == Last ? Last.Previous : Last;
                     count--;
                     return true;
                 }

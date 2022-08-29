@@ -94,8 +94,7 @@ namespace LinkedListFacts
             list.Add(test3);
             list.Clear();
             Assert.Equal(0, list.Count);
-            Assert.Equal(null, list.Last.Next);
-            Assert.Equal(null, list.Last.Previous);
+            Assert.Equal(list.Last.Previous, list.Last.Next);
         }
 
         [Fact]
