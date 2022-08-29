@@ -16,6 +16,7 @@ namespace LinkedListFacts
         {
             head = new Node<T>(default(T));
             Last = head;
+            head.Next = Last;
             count = 0;
         }
 
