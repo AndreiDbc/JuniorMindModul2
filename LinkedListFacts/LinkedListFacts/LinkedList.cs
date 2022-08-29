@@ -123,15 +123,12 @@ namespace LinkedListFacts
 
         private Node<T> GetNextNode(T data)
         {
-            Node<T> node = head.Next;
-            for (int i = 0; i < Count; i++)
+            for (Node<T> i = head.Next; i != head; i = i.Next)
             {
-                if (node.Data.Equals(data))
+                if (i.Equals(data))
                 {
-                    return node.Next;
+                    return i.Next;
                 }
-
-                node = node.Next;
             }
 
             return head;
