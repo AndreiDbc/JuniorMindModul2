@@ -73,25 +73,20 @@ namespace LinkedListFacts
 
         public bool Remove(T toDelete)
         {
-            Node<T> node = head;
-            for (int i = 0; i < Count + 1; i++)
+            for (Node<T> i = head.Next; i != head; i = i.Next)
             {
-                if (i == GetPreviousLocation(toDelete))
+                if (i.Data.Equals(toDelete))
                 {
-                    node.Next = GetNextNode(toDelete);
-                    Node<T> temp = node;
-                    node = node.Next;
-                    node.Previous = temp;
-                    Last = i == count - 1 ? node.Previous : Last;
+                    i.Previous = GetNextNode(toDelete);
+                    i.Next.Previous = GetPreviousNode(toDelete);
                     count--;
                     return true;
                 }
-
-                node = node.Next;
             }
 
             return false;
         }
+
 
         public IEnumerator<T> GetEnumerator()
         {
