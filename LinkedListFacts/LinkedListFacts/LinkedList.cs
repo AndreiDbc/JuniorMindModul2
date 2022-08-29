@@ -15,8 +15,9 @@ namespace LinkedListFacts
         public LinkedList()
         {
             head = new Node<T>(default(T));
+            head.Next = head;
+            head.Previous = head;
             Last = head;
-            head.Next = Last;
             count = 0;
         }
 
@@ -63,8 +64,8 @@ namespace LinkedListFacts
 
         public void Clear()
         {
-            head.Next = null;
-            head.Previous = null;
+            head.Next = head;
+            head.Previous = head;
             Last = head;
             count = 0;
         }
