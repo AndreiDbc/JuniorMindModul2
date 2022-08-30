@@ -179,6 +179,25 @@ namespace LinkedListFacts
             return false;
         }
 
+        public bool Remove(Node<T> toDelete)
+        {
+            for (Node<T> i = head.Next; i != head; i = i.Next)
+            {
+                if (i.Equals(toDelete))
+                {
+                    var temp = i.Next;
+                    temp.Previous = i.Previous;
+                    i.Next = temp;
+                    i.Previous.Next = temp;
+                    Last = i == Last ? Last.Previous : Last;
+                    count--;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             Node<T> node = head;
