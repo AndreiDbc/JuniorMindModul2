@@ -417,5 +417,21 @@ namespace LinkedListFacts
             list.Remove(list.Last);
             Assert.Equal(2, list.Last.Data);
         }
+
+        [Fact]
+        public void RemoveFirstIsCalledShouldDeleteFirstNode()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            IEnumerator<int> enumerator = list.GetEnumerator();
+            list.RemoveFirst();
+            enumerator.MoveNext();
+            Assert.Equal(2, enumerator.Current);
+        }
     }
 }

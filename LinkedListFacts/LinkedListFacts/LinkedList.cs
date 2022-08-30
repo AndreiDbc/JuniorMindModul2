@@ -198,6 +198,11 @@ namespace LinkedListFacts
             return false;
         }
 
+        public void RemoveFirst()
+        {
+            Remove(head.Next);
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             Node<T> node = head;
