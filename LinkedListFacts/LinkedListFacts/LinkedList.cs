@@ -135,6 +135,11 @@ namespace LinkedListFacts
         public bool Remove(T toDelete)
         {
             Node<T> node = Find(toDelete);
+            if (!Contains(toDelete))
+            {
+                return false;
+            }
+
             var temp = node.Next;
             temp.Previous = node.Previous;
             node.Next = temp;
@@ -146,6 +151,11 @@ namespace LinkedListFacts
 
         public bool Remove(Node<T> toDelete)
         {
+            if (!Contains(toDelete.Data))
+            {
+                return false;
+            }
+
             var temp = toDelete.Next;
             temp.Previous = toDelete.Previous;
             toDelete.Next = temp;
