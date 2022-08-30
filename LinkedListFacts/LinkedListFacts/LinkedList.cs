@@ -203,6 +203,11 @@ namespace LinkedListFacts
             Remove(head.Next);
         }
 
+        public void RemoveLast()
+        {
+            Remove(Last);
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             Node<T> node = head;

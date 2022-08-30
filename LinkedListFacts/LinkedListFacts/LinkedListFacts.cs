@@ -433,5 +433,19 @@ namespace LinkedListFacts
             enumerator.MoveNext();
             Assert.Equal(2, enumerator.Current);
         }
+
+        [Fact]
+        public void RemoveLastIsCalledShouldDeleteLastNode()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            list.RemoveLast();
+            Assert.Equal(2, list.Last.Data);
+        }
     }
 }
