@@ -123,6 +123,11 @@ namespace LinkedListFacts
             AddAfter(Last, toAdd);
         }
 
+        public void AddLast(T toAdd)
+        {
+            AddAfter(Last, toAdd);
+        }
+
         public bool Contains(T data)
         {
             foreach (var value in this)
