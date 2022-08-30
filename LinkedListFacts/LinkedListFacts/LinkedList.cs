@@ -9,7 +9,7 @@ namespace LinkedListFacts
 {
     class LinkedList<T> : ICollection<T>
     {
-        private readonly Node<T> head;
+        private Node<T> head;
         private int count;
 
         public LinkedList()
@@ -50,6 +50,7 @@ namespace LinkedListFacts
                     i.Next = toAdd;
                     Last = i.Equals(Last) ? toAdd : Last;
                     count++;
+                    return;
                 }
             }
         }
@@ -67,6 +68,24 @@ namespace LinkedListFacts
                     i.Next = node;
                     Last = i.Equals(Last) ? node : Last;
                     count++;
+                    return;
+                }
+            }
+        }
+
+        public void AddBefore(Node<T> next, Node<T> toAdd)
+        {
+            for (Node<T> i = head.Next; i != head; i = i.Next)
+            {
+                if (i.Equals(next))
+                {
+                    i.Previous.Next = toAdd;
+                    toAdd.Previous = i.Previous;
+                    toAdd.Next = i.Next;
+                    i.Previous = toAdd;
+                    head = i.Equals(head.Next) ? toAdd : head;
+                    count++;
+                    return;
                 }
             }
         }
