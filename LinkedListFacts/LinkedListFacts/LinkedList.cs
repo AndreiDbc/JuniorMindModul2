@@ -90,6 +90,24 @@ namespace LinkedListFacts
             }
         }
 
+        public void AddBefore(Node<T> next, T toAdd)
+        {
+            for (Node<T> i = head.Next; i != head; i = i.Next)
+            {
+                if (i.Equals(next))
+                {
+                    Node<T> node = new Node<T>(toAdd);
+                    i.Previous.Next = node;
+                    node.Previous = i.Previous;
+                    node.Next = i.Next;
+                    i.Previous = node;
+                    head = i.Equals(head.Next) ? node : head;
+                    count++;
+                    return;
+                }
+            }
+        }
+
         public bool Contains(T data)
         {
             foreach (var value in this)

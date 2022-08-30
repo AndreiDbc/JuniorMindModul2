@@ -297,7 +297,7 @@ namespace LinkedListFacts
         }
 
         [Fact]
-        public void AddBeforeIsCalledShouldInsertNodeContainingDataOnFirstPosition()
+        public void AddBeforeIsCalledShouldInsertNodenFirstPosition()
         {
             const int test = 1;
             const int test2 = 2;
@@ -307,6 +307,23 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             Node<int> toAdd = new Node<int>(56);
+            list.AddBefore(list.Last.Previous.Previous, toAdd);
+            IEnumerator<int> enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal(56, enumerator.Current);
+        }
+
+        [Fact]
+        public void AddBeforeIsCalledShouldInsertNodeContainingDataOnFirstPosition()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            const int toAdd = 56;
             list.AddBefore(list.Last.Previous.Previous, toAdd);
             IEnumerator<int> enumerator = list.GetEnumerator();
             enumerator.MoveNext();
