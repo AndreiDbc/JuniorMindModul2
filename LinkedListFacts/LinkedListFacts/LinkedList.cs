@@ -106,19 +106,7 @@ namespace LinkedListFacts
 
         public bool Remove(T toDelete)
         {
-            Node<T> node = Find(toDelete);
-            if (!Contains(toDelete))
-            {
-                return false;
-            }
-
-            var temp = node.Next;
-            temp.Previous = node.Previous;
-            node.Next = temp;
-            node.Previous.Next = temp;
-            Last = node == Last ? Last.Previous : Last;
-            count--;
-            return true;
+            return Remove(Find(toDelete));
         }
 
         public bool Remove(Node<T> toDelete)
@@ -162,7 +150,7 @@ namespace LinkedListFacts
             return GetEnumerator();
         }
 
-        private Node<T> Find(T data)
+        private Node<T>? Find(T data)
         {
             for (Node<T> i = head.Next; i != head; i = i.Next)
             {
@@ -172,7 +160,7 @@ namespace LinkedListFacts
                 }
             }
 
-            return null;
+            return new Node<T>(default(T));
         }
 
         private void ChangePreviousAferAddition(Node<T> previous, Node<T> toAdd)
