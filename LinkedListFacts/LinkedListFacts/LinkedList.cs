@@ -40,72 +40,44 @@ namespace LinkedListFacts
 
         public void AddAfter(Node<T> previous, Node<T> toAdd)
         {
-            for (Node<T> i = head.Next; i != head; i = i.Next)
-            {
-                if (i.Equals(previous))
-                {
-                    toAdd.Next = i.Next;
-                    i.Next = toAdd;
-                    toAdd.Previous = i;
-                    i.Next = toAdd;
-                    Last = i.Equals(Last) ? toAdd : Last;
-                    count++;
-                    return;
-                }
-            }
+            toAdd.Next = previous.Next;
+            previous.Next = toAdd;
+            toAdd.Previous = previous;
+            previous.Next = toAdd;
+            Last = previous.Equals(Last) ? toAdd : Last;
+            count++;
         }
 
         public void AddAfter(Node<T> previous, T toAdd)
         {
-            for (Node<T> i = head.Next; i != head; i = i.Next)
-            {
-                if (i.Equals(previous))
-                {
-                    Node<T> node = new Node<T>(toAdd);
-                    node.Next = i.Next;
-                    i.Next = node;
-                    node.Previous = i;
-                    i.Next = node;
-                    Last = i.Equals(Last) ? node : Last;
-                    count++;
-                    return;
-                }
-            }
+            Node<T> node = new Node<T>(toAdd);
+            node.Next = previous.Next;
+            previous.Next = node;
+            node.Previous = previous;
+            previous.Next = node;
+            Last = previous.Equals(Last) ? node : Last;
+            count++;
         }
 
         public void AddBefore(Node<T> next, Node<T> toAdd)
         {
-            for (Node<T> i = head.Next; i != head; i = i.Next)
-            {
-                if (i.Equals(next))
-                {
-                    i.Previous.Next = toAdd;
-                    toAdd.Previous = i.Previous;
-                    toAdd.Next = i.Next;
-                    i.Previous = toAdd;
-                    head = i.Equals(head.Next) ? toAdd : head;
-                    count++;
-                    return;
-                }
-            }
+            next.Previous.Next = toAdd;
+            toAdd.Previous = next.Previous;
+            toAdd.Next = next.Next;
+            next.Previous = toAdd;
+            head = next.Equals(head.Next) ? toAdd : head;
+            count++;
         }
 
         public void AddBefore(Node<T> next, T toAdd)
         {
-            for (Node<T> i = head.Next; i != head; i = i.Next)
-            {
-                if (i.Equals(next))
-                {
-                    Node<T> node = new Node<T>(toAdd);
-                    i.Previous.Next = node;
-                    node.Previous = i.Previous;
-                    node.Next = i.Next;
-                    i.Previous = node;
-                    head = i.Equals(head.Next) ? node : head;
-                    count++;
-                    return;
-                }
-            }
+            Node<T> node = new Node<T>(toAdd);
+            next.Previous.Next = node;
+            node.Previous = next.Previous;
+            node.Next = next.Next;
+            next.Previous = node;
+            head = next.Equals(head.Next) ? node : head;
+            count++;
         }
 
         public void AddFirst(Node<T> toAdd)
@@ -162,40 +134,25 @@ namespace LinkedListFacts
 
         public bool Remove(T toDelete)
         {
-            for (Node<T> i = head.Next; i != head; i = i.Next)
-            {
-                if (i.Data.Equals(toDelete))
-                {
-                    var temp = i.Next;
-                    temp.Previous = i.Previous;
-                    i.Next = temp;
-                    i.Previous.Next = temp;
-                    Last = i == Last ? Last.Previous : Last;
-                    count--;
-                    return true;
-                }
-            }
-
-            return false;
+            Node<T> node = Find(toDelete);
+            var temp = node.Next;
+            temp.Previous = node.Previous;
+            node.Next = temp;
+            node.Previous.Next = temp;
+            Last = node == Last ? Last.Previous : Last;
+            count--;
+            return true;
         }
 
         public bool Remove(Node<T> toDelete)
         {
-            for (Node<T> i = head.Next; i != head; i = i.Next)
-            {
-                if (i.Equals(toDelete))
-                {
-                    var temp = i.Next;
-                    temp.Previous = i.Previous;
-                    i.Next = temp;
-                    i.Previous.Next = temp;
-                    Last = i == Last ? Last.Previous : Last;
-                    count--;
-                    return true;
-                }
-            }
-
-            return false;
+            var temp = toDelete.Next;
+            temp.Previous = toDelete.Previous;
+            toDelete.Next = temp;
+            toDelete.Previous.Next = temp;
+            Last = toDelete == Last ? Last.Previous : Last;
+            count--;
+            return true;
         }
 
         public void RemoveFirst()
@@ -221,6 +178,19 @@ namespace LinkedListFacts
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private Node<T> Find(T data)
+        {
+            for (Node<T> i = head.Next; i != head; i = i.Next)
+            {
+                if (i.Data.Equals(data))
+                {
+                    return i;
+                }
+            }
+
+            return null;
         }
     }
 }
