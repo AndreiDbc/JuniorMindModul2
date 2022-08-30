@@ -118,6 +118,11 @@ namespace LinkedListFacts
             AddBefore(head.Next, toAdd);
         }
 
+        public void AddLast(Node<T> toAdd)
+        {
+            AddAfter(Last, toAdd);
+        }
+
         public bool Contains(T data)
         {
             foreach (var value in this)
