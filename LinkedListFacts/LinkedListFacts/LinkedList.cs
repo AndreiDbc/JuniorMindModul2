@@ -54,6 +54,23 @@ namespace LinkedListFacts
             }
         }
 
+        public void AddAfter(Node<T> previous, T toAdd)
+        {
+            for (Node<T> i = head.Next; i != head; i = i.Next)
+            {
+                if (i.Equals(previous))
+                {
+                    Node<T> node = new Node<T>(toAdd);
+                    node.Next = i.Next;
+                    i.Next = node;
+                    node.Previous = i;
+                    i.Next = node;
+                    Last = i.Equals(Last) ? node : Last;
+                    count++;
+                }
+            }
+        }
+
         public bool Contains(T data)
         {
             foreach (var value in this)
