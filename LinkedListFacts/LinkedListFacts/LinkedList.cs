@@ -9,7 +9,7 @@ namespace LinkedListFacts
 {
     class LinkedList<T> : ICollection<T>
     {
-        private Node<T> head;
+        private readonly Node<T> head;
         private int count;
 
         public LinkedList()
