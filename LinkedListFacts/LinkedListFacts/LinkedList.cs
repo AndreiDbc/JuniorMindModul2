@@ -37,7 +37,7 @@ namespace LinkedListFacts
             toAdd.Next = previous.Next;
             previous.Next = toAdd;
             toAdd.Previous = previous;
-            previous.Next = toAdd;
+            toAdd.Next.Previous = toAdd;
             Last = previous.Equals(Last) ? toAdd : Last;
             count++;
         }
