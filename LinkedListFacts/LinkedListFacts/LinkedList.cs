@@ -92,12 +92,10 @@ namespace LinkedListFacts
 
         public void CopyTo(T[] array, int location)
         {
-            Node<T> node = head.Next;
-            for (int i = 0; i < Count; i++)
+            for (Node<T> i = head.Next; i != head; i = i.Next)
             {
-                array[location] = node.Data;
+                array[location] = i.Data;
                 location++;
-                node = node.Next;
             }
         }
 
