@@ -38,8 +38,8 @@ namespace LinkedListFacts
             previous.Next = toAdd;
             toAdd.Previous = previous;
             toAdd.Next.Previous = toAdd;
-            Last = previous.Equals(Last) ? toAdd : Last;
             count++;
+            Last = previous.Equals(Last) ? toAdd : Last;
         }
 
         public void AddAfter(Node<T> previous, T toAdd)
@@ -54,7 +54,7 @@ namespace LinkedListFacts
 
         public void AddBefore(Node<T> next, T toAdd)
         {
-            AddAfter(next.Previous, new Node<T>(toAdd));
+            AddBefore(next, new Node<T>(toAdd));
         }
 
         public void AddFirst(Node<T> toAdd)
