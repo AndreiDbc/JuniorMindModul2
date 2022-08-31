@@ -25,7 +25,7 @@ namespace LinkedListFacts
 
         public bool IsReadOnly { get; }
 
-        public Node<T> Last { get; set; }
+        public Node<T> Last { get; }
 
         public void Add(T toAdd)
         {
@@ -39,7 +39,6 @@ namespace LinkedListFacts
             toAdd.Previous = previous;
             toAdd.Next.Previous = toAdd;
             count++;
-            Last = previous.Equals(Last) ? toAdd : Last;
         }
 
         public void AddAfter(Node<T> previous, T toAdd)
@@ -103,7 +102,6 @@ namespace LinkedListFacts
         {
             head.Next = head;
             head.Previous = head;
-            Last = head;
             count = 0;
         }
 
@@ -119,7 +117,6 @@ namespace LinkedListFacts
             temp.Previous = toDelete.Previous;
             toDelete.Next = temp;
             toDelete.Previous.Next = temp;
-            Last = toDelete == Last ? Last.Previous : Last;
             count--;
             return true;
         }
