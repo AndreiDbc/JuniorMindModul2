@@ -34,22 +34,27 @@ namespace LinkedListFacts
 
         public void AddAfter(Node<T> previous, Node<T> toAdd)
         {
-            ChangePreviousAferAddition(previous, toAdd);
+            toAdd.Next = previous.Next;
+            previous.Next = toAdd;
+            toAdd.Previous = previous;
+            previous.Next = toAdd;
+            Last = previous.Equals(Last) ? toAdd : Last;
+            count++;
         }
 
         public void AddAfter(Node<T> previous, T toAdd)
         {
-            ChangePreviousAferAddition(previous, new Node<T>(toAdd));
+            AddAfter(previous, new Node<T>(toAdd));
         }
 
         public void AddBefore(Node<T> next, Node<T> toAdd)
         {
-            ChangeNextAfterAddition(next, toAdd);
+            AddAfter(next.Previous, toAdd);
         }
 
         public void AddBefore(Node<T> next, T toAdd)
         {
-            ChangeNextAfterAddition(next, new Node<T>(toAdd));
+            AddAfter(next.Previous, new Node<T>(toAdd));
         }
 
         public void AddFirst(Node<T> toAdd)
@@ -161,26 +166,6 @@ namespace LinkedListFacts
             }
 
             return new Node<T>(default(T));
-        }
-
-        private void ChangePreviousAferAddition(Node<T> previous, Node<T> toAdd)
-        {
-            toAdd.Next = previous.Next;
-            previous.Next = toAdd;
-            toAdd.Previous = previous;
-            previous.Next = toAdd;
-            Last = previous.Equals(Last) ? toAdd : Last;
-            count++;
-        }
-
-        private void ChangeNextAfterAddition(Node<T> next, Node<T> toAdd)
-        {
-            next.Previous.Next = toAdd;
-            toAdd.Previous = next.Previous;
-            toAdd.Next = next.Next;
-            next.Previous = toAdd;
-            head = next.Equals(head.Next) ? toAdd : head;
-            count++;
         }
     }
 }
