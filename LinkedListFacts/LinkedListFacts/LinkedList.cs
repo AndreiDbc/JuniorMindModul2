@@ -140,11 +140,9 @@ namespace LinkedListFacts
 
         public IEnumerator<T> GetEnumerator()
         {
-            Node<T> node = head;
-            for (int i = 0; i < Count; i++)
+            for (Node<T> i = head.Next; i != head; i = i.Next)
             {
-                node = node.Next;
-                yield return node.Data;
+                yield return i.Data;
             }
         }
 
