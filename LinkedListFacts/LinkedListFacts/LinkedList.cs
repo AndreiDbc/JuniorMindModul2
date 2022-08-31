@@ -109,16 +109,12 @@ namespace LinkedListFacts
 
         public bool Remove(T toDelete)
         {
-            return Remove(Find(toDelete));
+            Node<T> node = Find(toDelete);
+            return node != null && Remove(node);
         }
 
         public bool Remove(Node<T> toDelete)
         {
-            if (!Contains(toDelete.Data))
-            {
-                return false;
-            }
-
             var temp = toDelete.Next;
             temp.Previous = toDelete.Previous;
             toDelete.Next = temp;
@@ -161,7 +157,7 @@ namespace LinkedListFacts
                 }
             }
 
-            return new Node<T>(default(T));
+            return null;
         }
     }
 }
