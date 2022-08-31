@@ -64,7 +64,7 @@ namespace LinkedListFacts
 
         public void AddFirst(T toAdd)
         {
-            AddBefore(head.Next, toAdd);
+            AddAfter(head, toAdd);
         }
 
         public void AddLast(Node<T> toAdd)
