@@ -16,9 +16,9 @@ namespace LinkedListFacts
             const int test = 1;
             LinkedList<int> list = new LinkedList<int>();
             list.Add(test);
-            Assert.Equal(1, list.Last.Data);
-            Assert.Equal(0, list.Last.Previous.Data);
-            Assert.Equal(0, list.Last.Next.Data);
+            IEnumerator enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal(1, enumerator.Current);
         }
 
         [Fact]
@@ -93,8 +93,9 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             list.Clear();
+            IEnumerator enumerator = list.GetEnumerator();
             Assert.Equal(0, list.Count);
-            Assert.Equal(list.Last.Previous, list.Last.Next);
+            Assert.False(enumerator.MoveNext());
         }
 
         [Fact]
@@ -111,7 +112,6 @@ namespace LinkedListFacts
             IEnumerator enumerator = list.GetEnumerator();
             enumerator.MoveNext();
             Assert.Equal(2, enumerator.Current);
-            Assert.Equal(2, list.Last.Previous.Data);
         }
 
         [Fact]
@@ -143,8 +143,10 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             list.Remove(3);
-            Assert.Equal(1, list.Last.Previous.Data);
-            Assert.Equal(2, list.Last.Data);
+            IEnumerator enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            Assert.False(enumerator.MoveNext());
         }
 
         [Fact]
@@ -242,36 +244,32 @@ namespace LinkedListFacts
         }
 
         [Fact]
-        public void AddAfterIsCalledShouldInsertNodeOnSecondPosition()
+        public void AddAfterIsCalledShouldInsertNodeOnThirdPosition()
         {
-            const int test = 1;
-            const int test2 = 2;
-            const int test3 = 3;
             LinkedList<int> list = new LinkedList<int>();
-            list.Add(test);
-            list.Add(test2);
-            list.Add(test3);
+            list.Add(1);
+            list.Add(2);
+            list.Add(3);
             Node<int> toAdd = new Node<int>(56);
-            list.AddAfter(list.Last.Next.Next, toAdd);
+            list.AddAfter(list.Last.Previous, toAdd);
             IEnumerator<int> enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
             enumerator.MoveNext();
             enumerator.MoveNext();
             Assert.Equal(56, enumerator.Current);
         }
 
         [Fact]
-        public void AddAfterIsCalledShouldInsertNodeContainingDataOnSecondPosition()
+        public void AddAfterIsCalledShouldInsertNodeContainingDataOnThirdPosition()
         {
-            const int test = 1;
-            const int test2 = 2;
-            const int test3 = 3;
             LinkedList<int> list = new LinkedList<int>();
-            list.Add(test);
-            list.Add(test2);
-            list.Add(test3);
+            list.Add(1);
+            list.Add(2);
+            list.Add(3);
             const int toAdd = 56;
-            list.AddAfter(list.Last.Next.Next, toAdd);
+            list.AddAfter(list.Last.Previous, toAdd);
             IEnumerator<int> enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
             enumerator.MoveNext();
             enumerator.MoveNext();
             Assert.Equal(56, enumerator.Current);
@@ -415,7 +413,11 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             list.Remove(list.Last);
-            Assert.Equal(2, list.Last.Data);
+            IEnumerator<int> enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            Assert.Equal(2, enumerator.Current);
+            Assert.False(enumerator.MoveNext());
         }
 
         [Fact]
@@ -445,7 +447,11 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             list.RemoveLast();
-            Assert.Equal(2, list.Last.Data);
+            IEnumerator<int> enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            Assert.Equal(2, enumerator.Current);
+            Assert.False(enumerator.MoveNext());
         }
     }
 }

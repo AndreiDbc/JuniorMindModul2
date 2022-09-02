@@ -17,7 +17,6 @@ namespace LinkedListFacts
             head = new Node<T>(default(T));
             head.Next = head;
             head.Previous = head;
-            Last = head;
             count = 0;
         }
 
@@ -25,11 +24,11 @@ namespace LinkedListFacts
 
         public bool IsReadOnly { get; }
 
-        public Node<T> Last { get; }
+        public Node<T> Last { get => head.Previous; }
 
         public void Add(T toAdd)
         {
-            AddAfter(Last, toAdd);
+            AddAfter(head.Previous, toAdd);
         }
 
         public void AddAfter(Node<T> previous, Node<T> toAdd)
@@ -68,7 +67,7 @@ namespace LinkedListFacts
 
         public void AddLast(Node<T> toAdd)
         {
-            AddAfter(Last, toAdd);
+            AddAfter(head.Previous, toAdd);
         }
 
         public void AddLast(T toAdd)
@@ -128,7 +127,7 @@ namespace LinkedListFacts
 
         public void RemoveLast()
         {
-            Remove(Last);
+            Remove(head.Previous);
         }
 
         public IEnumerator<T> GetEnumerator()
