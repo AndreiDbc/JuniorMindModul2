@@ -563,5 +563,20 @@ namespace LinkedListFacts
             Node<int> node = new Node<int>(56);
             Assert.Throws<InvalidOperationException>(() => list.Remove(node));
         }
+
+        [Fact]
+        public void AddAfterIsCalledNodeIsAllreadyContainedShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            LinkedList<int> list2 = new LinkedList<int>();
+            list2.Add(43);
+            Assert.Throws<InvalidOperationException>(() => list.AddAfter(list.Last, list2.Last));
+        }
     }
 }
