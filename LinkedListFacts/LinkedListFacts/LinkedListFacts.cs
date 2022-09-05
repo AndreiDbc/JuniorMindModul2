@@ -453,5 +453,47 @@ namespace LinkedListFacts
             Assert.Equal(2, enumerator.Current);
             Assert.False(enumerator.MoveNext());
         }
+
+        [Fact]
+        public void AddAfterIsCalledPreviousIsNullShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Node<int> toAdd = new Node<int>(56);
+            Assert.Throws<ArgumentNullException>(() => list.AddAfter(null, toAdd));
+        }
+
+        [Fact]
+        public void AddAfterIsCalledToAddIsNullShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Assert.Throws<ArgumentNullException>(() => list.AddAfter(list.Last, null));
+        }
+
+        [Fact]
+        public void AddAfterIsCalledListDoesntContainPreviousShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Node<int> previous = new Node<int>(56);
+            Node<int> toAdd = new Node<int>(8);
+            Assert.Throws<InvalidOperationException>(() => list.AddAfter(previous, toAdd));
+        }
     }
 }

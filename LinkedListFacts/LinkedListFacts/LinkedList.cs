@@ -35,6 +35,19 @@ namespace LinkedListFacts
 
         public void AddAfter(Node<T> previous, Node<T> toAdd)
         {
+            if (previous == null)
+            {
+                throw new ArgumentNullException(nameof(previous));
+            }
+            else if (toAdd == null)
+            {
+                throw new ArgumentNullException(nameof(toAdd));
+            }
+            else if (!Contains(previous.Data) && previous != head)
+            {
+                throw new InvalidOperationException("Node is not in the current LinkedList<T>.");
+            }
+
             toAdd.Next = previous.Next;
             previous.Next = toAdd;
             toAdd.Previous = previous;
