@@ -24,7 +24,7 @@ namespace LinkedListFacts
 
         public bool IsReadOnly { get; }
 
-        public Node<T> Last { get => head.Previous; }
+        public Node<T> Last { get => count == 0 ? null : head.Previous; }
 
         public void Add(T toAdd)
         {
