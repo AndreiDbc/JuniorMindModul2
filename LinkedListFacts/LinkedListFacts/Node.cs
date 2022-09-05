@@ -13,6 +13,7 @@ namespace LinkedListFacts
             this.Data = data;
             Previous = null;
             Next = null;
+            IsContained = null;
         }
 
         public Node<T> Previous { get; set; }
@@ -20,5 +21,7 @@ namespace LinkedListFacts
         public Node<T> Next { get; set; }
 
         public T Data { get; }
+
+        public LinkedList<T> IsContained { get; set; }
     }
 }
