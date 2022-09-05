@@ -495,5 +495,46 @@ namespace LinkedListFacts
             Node<int> toAdd = new Node<int>(8);
             Assert.Throws<InvalidOperationException>(() => list.AddAfter(previous, toAdd));
         }
+
+        [Fact]
+        public void CopyToIsCalledArrayIsNullShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Assert.Throws<ArgumentNullException>(() => list.CopyTo(null, 1));
+        }
+
+        [Fact]
+        public void CopyToIsCalledIndexIsLessThanZeroShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            int[] array = new int[3];
+            Assert.Throws<ArgumentException>(() => list.CopyTo(array, -1));
+        }
+
+        [Fact]
+        public void CopyToIsCalledArrayDoesntHaveEnoughSpaceShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            int[] array = new int[3];
+            Assert.Throws<ArgumentException>(() => list.CopyTo(array, 2));
+        }
     }
 }
