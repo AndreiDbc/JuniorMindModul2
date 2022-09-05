@@ -127,17 +127,31 @@ namespace LinkedListFacts
         public bool Remove(T toDelete)
         {
             Node<T> node = Find(toDelete);
-            return node != null && Remove(node);
+            if (node == null)
+            {
+                return false;
+            }
+
+            Remove(node);
+            return true;
         }
 
-        public bool Remove(Node<T> toDelete)
+        public void Remove(Node<T> toDelete)
         {
+            if (toDelete == null)
+            {
+                throw new ArgumentNullException(nameof(toDelete));
+            }
+            else if (!Contains(toDelete.Data) && toDelete != head)
+            {
+                throw new InvalidOperationException("Node is not in the current LinkedList<T>.");
+            }
+
             var temp = toDelete.Next;
             temp.Previous = toDelete.Previous;
             toDelete.Next = temp;
             toDelete.Previous.Next = temp;
             count--;
-            return true;
         }
 
         public void RemoveFirst()

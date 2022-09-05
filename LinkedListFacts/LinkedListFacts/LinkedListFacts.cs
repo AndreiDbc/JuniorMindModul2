@@ -536,5 +536,32 @@ namespace LinkedListFacts
             int[] array = new int[3];
             Assert.Throws<ArgumentException>(() => list.CopyTo(array, 2));
         }
+
+        [Fact]
+        public void RemoveIsCalledNodeIsNullShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Assert.Throws<ArgumentNullException>(() => list.Remove(null));
+        }
+
+        [Fact]
+        public void RemoveIsCalledNodeIsNotIntheListShouldThrowException()
+        {
+            const int test = 1;
+            const int test2 = 2;
+            const int test3 = 3;
+            LinkedList<int> list = new LinkedList<int>();
+            list.Add(test);
+            list.Add(test2);
+            list.Add(test3);
+            Node<int> node = new Node<int>(56);
+            Assert.Throws<InvalidOperationException>(() => list.Remove(node));
+        }
     }
 }
