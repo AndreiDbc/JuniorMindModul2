@@ -77,15 +77,7 @@ namespace LinkedListFacts
 
         public bool Contains(T data)
         {
-            foreach (var value in this)
-            {
-                if (value.Equals(data))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return Find(data) != null;
         }
 
         public void CopyTo(T[] array, int location)
