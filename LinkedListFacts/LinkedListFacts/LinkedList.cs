@@ -35,11 +35,9 @@ namespace LinkedListFacts
 
         public void AddAfter(Node<T> previous, Node<T> toAdd)
         {
-            ThrowNodeExceptions(previous);
-            if (toAdd == null)
-            {
-                throw new ArgumentNullException(nameof(toAdd));
-            }
+            CheckArgumentNullException(toAdd);
+            CheckArgumentNullException(previous);
+            CheckInvalidOperationException(previous);
 
             toAdd.Next = previous.Next;
             previous.Next = toAdd;
@@ -131,7 +129,8 @@ namespace LinkedListFacts
 
         public void Remove(Node<T> toDelete)
         {
-            ThrowNodeExceptions(toDelete);
+            CheckArgumentNullException(toDelete);
+            CheckInvalidOperationException(toDelete);
 
             var temp = toDelete.Next;
             temp.Previous = toDelete.Previous;
@@ -163,6 +162,16 @@ namespace LinkedListFacts
             return GetEnumerator();
         }
 
+        private static void CheckArgumentNullException(Node<T> node)
+        {
+            if (node != null)
+            {
+                return;
+            }
+
+            throw new ArgumentNullException(nameof(node));
+        }
+
         private Node<T>? Find(T data)
         {
             for (Node<T> i = head.Next; i != head; i = i.Next)
@@ -176,16 +185,14 @@ namespace LinkedListFacts
             return null;
         }
 
-        private void ThrowNodeExceptions(Node<T> node)
+        private void CheckInvalidOperationException(Node<T> node)
         {
-            if (node == null)
+            if (Contains(node.Data) || node == head)
             {
-                throw new ArgumentNullException(nameof(node));
+                return;
             }
-            else if (!Contains(node.Data) && node != head)
-            {
-                throw new InvalidOperationException("Node is not in the current LinkedList<T>.");
-            }
+
+            throw new InvalidOperationException("Node is not in the current LinkedList<T>.");
         }
     }
 }
