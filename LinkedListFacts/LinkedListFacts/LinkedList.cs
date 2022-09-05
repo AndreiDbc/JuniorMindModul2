@@ -26,6 +26,8 @@ namespace LinkedListFacts
 
         public Node<T> Last { get => count == 0 ? null : head.Previous; }
 
+        public Node<T> First { get => count == 0 ? null : head.Next; }
+
         public void Add(T toAdd)
         {
             AddAfter(head.Previous, toAdd);
