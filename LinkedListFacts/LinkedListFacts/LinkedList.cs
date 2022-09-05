@@ -35,17 +35,10 @@ namespace LinkedListFacts
 
         public void AddAfter(Node<T> previous, Node<T> toAdd)
         {
-            if (previous == null)
-            {
-                throw new ArgumentNullException(nameof(previous));
-            }
-            else if (toAdd == null)
+            ThrowNodeExceptions(previous);
+            if (toAdd == null)
             {
                 throw new ArgumentNullException(nameof(toAdd));
-            }
-            else if (!Contains(previous.Data) && previous != head)
-            {
-                throw new InvalidOperationException("Node is not in the current LinkedList<T>.");
             }
 
             toAdd.Next = previous.Next;
@@ -138,14 +131,7 @@ namespace LinkedListFacts
 
         public void Remove(Node<T> toDelete)
         {
-            if (toDelete == null)
-            {
-                throw new ArgumentNullException(nameof(toDelete));
-            }
-            else if (!Contains(toDelete.Data) && toDelete != head)
-            {
-                throw new InvalidOperationException("Node is not in the current LinkedList<T>.");
-            }
+            ThrowNodeExceptions(toDelete);
 
             var temp = toDelete.Next;
             temp.Previous = toDelete.Previous;
@@ -188,6 +174,18 @@ namespace LinkedListFacts
             }
 
             return null;
+        }
+
+        private void ThrowNodeExceptions(Node<T> node)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+            else if (!Contains(node.Data) && node != head)
+            {
+                throw new InvalidOperationException("Node is not in the current LinkedList<T>.");
+            }
         }
     }
 }
