@@ -465,7 +465,7 @@ namespace LinkedListFacts
             list.Add(test2);
             list.Add(test3);
             Node<int> toAdd = new Node<int>(56);
-            Assert.Throws<NullReferenceException>(() => list.AddAfter(null, toAdd));
+            Assert.Throws<ArgumentNullException>(() => list.AddAfter(null, toAdd));
         }
 
         [Fact]
@@ -478,7 +478,7 @@ namespace LinkedListFacts
             list.Add(test);
             list.Add(test2);
             list.Add(test3);
-            Assert.Throws<NullReferenceException>(() => list.AddAfter(list.Last, null));
+            Assert.Throws<ArgumentNullException>(() => list.AddAfter(list.Last, null));
         }
 
         [Fact]
@@ -547,7 +547,7 @@ namespace LinkedListFacts
             list.Add(test);
             list.Add(test2);
             list.Add(test3);
-            Assert.Throws<NullReferenceException>(() => list.Remove(null));
+            Assert.Throws<ArgumentNullException>(() => list.Remove(null));
         }
 
         [Fact]

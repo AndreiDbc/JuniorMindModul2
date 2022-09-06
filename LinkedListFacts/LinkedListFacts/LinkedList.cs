@@ -36,8 +36,8 @@ namespace LinkedListFacts
 
         public void AddAfter(Node<T> previous, Node<T> toAdd)
         {
-            toAdd.CheckArgumentNullException();
-            previous.CheckArgumentNullException();
+            CheckArgumentNullException(toAdd);
+            CheckArgumentNullException(previous);
             CheckIfBelongsToCurrentList(previous);
             CheckIfNodeIsAllreadyContained(toAdd);
 
@@ -132,7 +132,7 @@ namespace LinkedListFacts
 
         public void Remove(Node<T> toDelete)
         {
-            toDelete.CheckArgumentNullException();
+            CheckArgumentNullException(toDelete);
             CheckIfBelongsToCurrentList(toDelete);
 
             var temp = toDelete.Next;
@@ -174,6 +174,16 @@ namespace LinkedListFacts
             }
 
             throw new InvalidOperationException("Node  belongs to another LinkedList<T>.");
+        }
+
+        private static void CheckArgumentNullException(Node<T> node)
+        {
+            if (node != null)
+            {
+                return;
+            }
+
+            throw new ArgumentNullException(nameof(node));
         }
 
         private Node<T>? Find(T data)

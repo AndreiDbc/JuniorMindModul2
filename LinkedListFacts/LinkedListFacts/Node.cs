@@ -23,15 +23,5 @@ namespace LinkedListFacts
         public T Data { get; }
 
         public LinkedList<T> List { get; set; }
-
-        public void CheckArgumentNullException()
-        {
-            if (this.Data != null)
-            {
-                return;
-            }
-
-            throw new ArgumentException("Node is NULL.");
-        }
     }
 }
