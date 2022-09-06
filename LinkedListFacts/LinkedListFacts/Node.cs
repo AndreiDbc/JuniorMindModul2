@@ -23,5 +23,15 @@ namespace LinkedListFacts
         public T Data { get; }
 
         public LinkedList<T> IsContained { get; set; }
+
+        public void CheckArgumentNullException()
+        {
+            if (this.Data != null)
+            {
+                return;
+            }
+
+            throw new ArgumentException("Node is NULL.");
+        }
     }
 }

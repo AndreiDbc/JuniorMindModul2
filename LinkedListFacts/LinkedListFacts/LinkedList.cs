@@ -36,11 +36,10 @@ namespace LinkedListFacts
 
         public void AddAfter(Node<T> previous, Node<T> toAdd)
         {
-            CheckArgumentNullException(toAdd);
-            CheckArgumentNullException(previous);
+            toAdd.CheckArgumentNullException();
+            previous.CheckArgumentNullException();
             CheckIfBelongsToCurrentList(previous);
             CheckIfNodeIsAllreadyContained(toAdd);
-
 
             toAdd.Next = previous.Next;
             previous.Next = toAdd;
@@ -133,7 +132,7 @@ namespace LinkedListFacts
 
         public void Remove(Node<T> toDelete)
         {
-            CheckArgumentNullException(toDelete);
+            toDelete.CheckArgumentNullException();
             CheckIfBelongsToCurrentList(toDelete);
 
             var temp = toDelete.Next;
@@ -165,16 +164,6 @@ namespace LinkedListFacts
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        private static void CheckArgumentNullException(Node<T> node)
-        {
-            if (node != null)
-            {
-                return;
-            }
-
-            throw new ArgumentNullException(nameof(node));
         }
 
         private static void CheckIfNodeIsAllreadyContained(Node<T> node)
