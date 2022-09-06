@@ -23,5 +23,15 @@ namespace LinkedListFacts
         public T Data { get; }
 
         public LinkedList<T> List { get; set; }
+
+        public void CheckIfNodeIsAllreadyContained()
+        {
+            if (this.List == null)
+            {
+                return;
+            }
+
+            throw new InvalidOperationException("Node  belongs to another LinkedList<T>.");
+        }
     }
 }

@@ -39,7 +39,7 @@ namespace LinkedListFacts
             CheckArgumentNullException(toAdd);
             CheckArgumentNullException(previous);
             CheckIfBelongsToCurrentList(previous);
-            CheckIfNodeIsAllreadyContained(toAdd);
+            toAdd.CheckIfNodeIsAllreadyContained();
 
             toAdd.Next = previous.Next;
             previous.Next = toAdd;
@@ -164,16 +164,6 @@ namespace LinkedListFacts
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        private static void CheckIfNodeIsAllreadyContained(Node<T> node)
-        {
-            if (node.List == null)
-            {
-                return;
-            }
-
-            throw new InvalidOperationException("Node  belongs to another LinkedList<T>.");
         }
 
         private static void CheckArgumentNullException(Node<T> node)
