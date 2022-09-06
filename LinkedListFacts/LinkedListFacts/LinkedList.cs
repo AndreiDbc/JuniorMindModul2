@@ -17,7 +17,7 @@ namespace LinkedListFacts
             head = new Node<T>(default(T));
             head.Next = head;
             head.Previous = head;
-            head.IsContained = this;
+            head.List = this;
             count = 0;
         }
 
@@ -45,7 +45,7 @@ namespace LinkedListFacts
             previous.Next = toAdd;
             toAdd.Previous = previous;
             toAdd.Next.Previous = toAdd;
-            toAdd.IsContained = this;
+            toAdd.List = this;
             count++;
         }
 
@@ -139,7 +139,7 @@ namespace LinkedListFacts
             temp.Previous = toDelete.Previous;
             toDelete.Next = temp;
             toDelete.Previous.Next = temp;
-            toDelete.IsContained = null;
+            toDelete.List = null;
             count--;
         }
 
@@ -168,7 +168,7 @@ namespace LinkedListFacts
 
         private static void CheckIfNodeIsAllreadyContained(Node<T> node)
         {
-            if (node.IsContained == null)
+            if (node.List == null)
             {
                 return;
             }
@@ -191,7 +191,7 @@ namespace LinkedListFacts
 
         private void CheckIfBelongsToCurrentList(Node<T> node)
         {
-            if (node.IsContained == this)
+            if (node.List == this)
             {
                 return;
             }

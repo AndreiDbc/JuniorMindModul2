@@ -13,7 +13,7 @@ namespace LinkedListFacts
             this.Data = data;
             Previous = null;
             Next = null;
-            IsContained = null;
+            List = null;
         }
 
         public Node<T> Previous { get; set; }
@@ -22,7 +22,7 @@ namespace LinkedListFacts
 
         public T Data { get; }
 
-        public LinkedList<T> IsContained { get; set; }
+        public LinkedList<T> List { get; set; }
 
         public void CheckArgumentNullException()
         {
