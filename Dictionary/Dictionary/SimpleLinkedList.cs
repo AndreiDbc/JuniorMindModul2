@@ -77,6 +77,15 @@ namespace Dictionary
             return Find(data) != null;
         }
 
+        public void CopyTo(T[] array, int location)
+        {
+            for (Node<T> i = head.Next; i != null; i = i.Next)
+            {
+                array[location] = i.Data;
+                location++;
+            }
+        }
+
         private Node<T>? Find(T data)
         {
             for (Node<T> i = head.Next; i != null; i = i.Next)
