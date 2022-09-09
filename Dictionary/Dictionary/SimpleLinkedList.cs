@@ -24,15 +24,12 @@ namespace Dictionary
         {
             get
             {
-                int temp = count;
                 for (Node<T> i = head.Next; i != null; i = i.Next)
                 {
-                    if (temp == 0)
+                    if (i.Next == null)
                     {
                         return i;
                     }
-
-                    temp--;
                 }
 
                 return head;
