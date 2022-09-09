@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dictionary
 {
-    internal class Dictionary
+    class Dictionary
     {
     }
 }
