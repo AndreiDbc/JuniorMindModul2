@@ -6,7 +6,16 @@ using System.Threading.Tasks;
 
 namespace Dictionary
 {
-    internal class Node
+    class Node<T>
     {
+        public Node(T data)
+        {
+            this.Data = data;
+            Next = null;
+        }
+
+        public Node<T> Next { get; set; }
+
+        public T Data { get; }
     }
 }
