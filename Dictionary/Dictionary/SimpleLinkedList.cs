@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dictionary
 {
-    class SimpleLinkedList<T>
+    class SimpleLinkedList<T> : ICollection<T>
     {
         private readonly Node<T> head;
         private readonly int count;
@@ -19,5 +19,7 @@ namespace Dictionary
         }
 
         public int Count { get => count; }
+
+        public bool IsReadOnly { get; }
     }
 }
