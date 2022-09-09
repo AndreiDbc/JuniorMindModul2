@@ -72,6 +72,11 @@ namespace Dictionary
             count--;
         }
 
+        public bool Contains(T data)
+        {
+            return Find(data) != null;
+        }
+
         private Node<T>? Find(T data)
         {
             for (Node<T> i = head.Next; i != null; i = i.Next)
