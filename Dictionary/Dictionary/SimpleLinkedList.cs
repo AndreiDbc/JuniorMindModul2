@@ -53,6 +53,25 @@ namespace Dictionary
             count = 0;
         }
 
+        public bool Remove(T toDelete)
+        {
+            Node<T> node = Find(toDelete);
+            if (node == null)
+            {
+                return false;
+            }
+
+            Remove(node);
+            return true;
+        }
+
+        public void Remove(Node<T> toDelete)
+        {
+            Node<T> previous = FindPreviousNode(toDelete);
+            previous.Next = toDelete.Next;
+            count--;
+        }
+
         private Node<T>? Find(T data)
         {
             for (Node<T> i = head.Next; i != null; i = i.Next)
