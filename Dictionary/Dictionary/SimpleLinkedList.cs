@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Dictionary
 {
-    class SimpleLinkedList<T>
+    class SimpleLinkedList<T> : ICollection<T>
     {
         private Node<T> head;
         private int count;
@@ -24,7 +25,7 @@ namespace Dictionary
         {
             get
             {
-                for (Node<T> i = head.Next; i != null; i = i.Next)
+                for (Node<T> i = head; i != null; i = i.Next)
                 {
                     if (i.Next == null)
                     {
@@ -40,9 +41,9 @@ namespace Dictionary
 
         public void Add(T data)
         {
-            Node<T> node = new (data);
-            head = node;
+            Node<T> node = new Node<T>(data);
             node.Next = count == 0 ? null : head;
+            head = node;
             count++;
         }
 
@@ -67,9 +68,15 @@ namespace Dictionary
 
         public void Remove(Node<T> toDelete)
         {
+            count--;
+            if (toDelete.Equals(head))
+            {
+                head = toDelete.Next;
+                return;
+            }
+
             Node<T> previous = FindPreviousNode(toDelete);
             previous.Next = toDelete.Next;
-            count--;
         }
 
         public bool Contains(T data)
@@ -79,16 +86,29 @@ namespace Dictionary
 
         public void CopyTo(T[] array, int location)
         {
-            for (Node<T> i = head.Next; i != null; i = i.Next)
+            for (Node<T> i = head; i != null; i = i.Next)
             {
                 array[location] = i.Data;
                 location++;
             }
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (Node<T> i = head; i != null; i = i.Next)
+            {
+                yield return i.Data;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         private Node<T>? Find(T data)
         {
-            for (Node<T> i = head.Next; i != null; i = i.Next)
+            for (Node<T> i = head; i != null; i = i.Next)
             {
                 if (i.Data.Equals(data))
                 {
@@ -101,9 +121,9 @@ namespace Dictionary
 
         private Node<T>? FindPreviousNode(Node<T> node)
         {
-            for (Node<T> i = head.Next; i != null; i = i.Next)
+            for (Node<T> i = head; i != null; i = i.Next)
             {
-                if (i.Next.Equals(node))
+                if (i.Next == node)
                 {
                     return i;
                 }
