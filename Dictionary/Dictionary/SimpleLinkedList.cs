@@ -52,5 +52,31 @@ namespace Dictionary
             head.Next = null;
             count = 0;
         }
+
+        private Node<T>? Find(T data)
+        {
+            for (Node<T> i = head.Next; i != null; i = i.Next)
+            {
+                if (i.Data.Equals(data))
+                {
+                    return i;
+                }
+            }
+
+            return null;
+        }
+
+        private Node<T>? FindPreviousNode(Node<T> node)
+        {
+            for (Node<T> i = head.Next; i != null; i = i.Next)
+            {
+                if (i.Next.Equals(node))
+                {
+                    return i;
+                }
+            }
+
+            return null;
+        }
     }
 }
