@@ -48,5 +48,12 @@ namespace Dictionary
             node.Next = count == 0 ? null : head;
             count++;
         }
+
+        public void Clear()
+        {
+            head = new Node<T>(default(T));
+            head.Next = null;
+            count = 0;
+        }
     }
 }
