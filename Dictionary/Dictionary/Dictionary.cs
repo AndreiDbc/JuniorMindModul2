@@ -20,5 +20,7 @@ namespace Dictionary
         }
 
         public int Count { get => count; }
+
+        public bool IsReadOnly { get; }
     }
 }
