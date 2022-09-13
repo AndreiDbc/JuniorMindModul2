@@ -25,7 +25,19 @@ namespace Dictionary
 
         public bool IsReadOnly { get; }
 
-        public ICollection<TKey> Keys => throw new NotImplementedException();
+        public ICollection<TKey> Keys
+        {
+            get
+            {
+                TKey[] keys = new TKey[count];
+                for (int i = 0; i < count; i++)
+                {
+                    keys[i] = elements[i].Key;
+                }
+
+                return keys;
+            }
+        }
 
         public ICollection<TValue> Values => throw new NotImplementedException();
 
