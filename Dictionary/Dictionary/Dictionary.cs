@@ -39,7 +39,19 @@ namespace Dictionary
             }
         }
 
-        public ICollection<TValue> Values => throw new NotImplementedException();
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                TValue[] values = new TValue[count];
+                for (int i = 0; i < count; i++)
+                {
+                    values[i] = elements[i].Value;
+                }
+
+                return values;
+            }
+        }
 
         public TValue this[TKey key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
