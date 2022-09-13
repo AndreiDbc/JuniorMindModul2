@@ -117,5 +117,21 @@ namespace Dictionary
             dictionary.Add(3, "c");
             Assert.False(dictionary.ContainsKey(9));
         }
+
+        [Fact]
+        public void CopyToIsCalledShouldCopyElementsToArray()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            KeyValuePair<int, string>[] test = new KeyValuePair<int, string>[3];
+            KeyValuePair<int, string>[] toCompare = new[]
+            {
+                new KeyValuePair<int, string>(1, "a"), new KeyValuePair<int, string>(2, "b"), new KeyValuePair<int, string>(3, "c")
+            };
+            dictionary.CopyTo(test, 0);
+            Assert.Equal(test, toCompare);
+        }
     }
 }

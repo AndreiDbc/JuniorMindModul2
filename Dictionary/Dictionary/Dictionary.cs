@@ -131,7 +131,11 @@ namespace Dictionary
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < elements.Length; i++)
+            {
+                array[arrayIndex] = new (elements[i].Key, elements[i].Value);
+                arrayIndex++;
+            }
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
