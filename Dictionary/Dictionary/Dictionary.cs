@@ -53,7 +53,32 @@ namespace Dictionary
             }
         }
 
-        public TValue this[TKey key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public TValue this[TKey key]
+        {
+            get
+            {
+                foreach (var element in elements)
+                {
+                    if (element.Key.Equals(key))
+                    {
+                        return element.Value;
+                    }
+                }
+
+                return default(TValue);
+            }
+
+            set
+            {
+                foreach (var element in elements)
+                {
+                    if (element.Key.Equals(key))
+                    {
+                        element.Value = value;
+                    }
+                }
+            }
+        }
 
         public void Add(TKey key, TValue value)
         {

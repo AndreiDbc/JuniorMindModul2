@@ -17,7 +17,7 @@ namespace Dictionary
 
         public int Next { get; set; }
 
-        public TValue Value { get; }
+        public TValue Value { get; set; }
 
         public TKey Key { get; set; }
     }
