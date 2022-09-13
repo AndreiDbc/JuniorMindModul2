@@ -105,7 +105,15 @@ namespace Dictionary
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            foreach (var element in elements)
+            {
+                if (element.Key.Equals(item.Key) && element.Value.Equals(item.Value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool ContainsKey(TKey key)
