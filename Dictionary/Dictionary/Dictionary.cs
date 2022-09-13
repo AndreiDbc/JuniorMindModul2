@@ -17,8 +17,8 @@ namespace Dictionary
         public Dictionary()
         {
             buckets = new int[5];
-            elements = new Element<TKey, TValue>[5];
             count = 0;
+            elements = new Element<TKey, TValue>[count];
         }
 
         public int Count { get => count; }
