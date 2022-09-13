@@ -14,11 +14,11 @@ namespace Dictionary
         private readonly Element<TKey, TValue>[] elements;
         private readonly int count;
 
-        public Dictionary()
+        public Dictionary(int length)
         {
-            buckets = new int[5];
+            buckets = new int[length];
             count = 0;
-            elements = new Element<TKey, TValue>[count];
+            elements = new Element<TKey, TValue>[length];
         }
 
         public int Count { get => count; }
