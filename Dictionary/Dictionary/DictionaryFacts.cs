@@ -97,5 +97,25 @@ namespace Dictionary
             KeyValuePair<int, string> test = new KeyValuePair<int, string>(2, "b");
             Assert.True(dictionary.Contains(test));
         }
+
+        [Fact]
+        public void ContainsKeyIsCalledShouldReturnTrue()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            Assert.True(dictionary.ContainsKey(3));
+        }
+
+        [Fact]
+        public void ContainsKeyIsCalledShouldReturnFalse()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            Assert.False(dictionary.ContainsKey(9));
+        }
     }
 }

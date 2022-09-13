@@ -118,7 +118,15 @@ namespace Dictionary
 
         public bool ContainsKey(TKey key)
         {
-            throw new NotImplementedException();
+            foreach (var element in elements)
+            {
+                if (element.Key.Equals(key))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
