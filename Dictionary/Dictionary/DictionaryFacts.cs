@@ -60,5 +60,20 @@ namespace Dictionary
             Assert.Equal("c", values.ElementAt(2));
             Assert.Equal(9, keys.ElementAt(2));
         }
+
+        [Fact]
+        public void ClearIsCalledShouldReturnDictionaryToDefaultState()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            dictionary.Clear();
+            ICollection<int> keys = dictionary.Keys;
+            ICollection<string> values = dictionary.Values;
+            Assert.Equal(0, dictionary.Count);
+            Assert.Equal(0, keys.Count);
+            Assert.Equal(0, values.Count);
+        }
     }
 }

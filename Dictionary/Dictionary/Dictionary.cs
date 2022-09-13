@@ -11,17 +11,13 @@ namespace Dictionary
     class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly int[] buckets;
-        private readonly Element<TKey, TValue>[] elements;
+        private Element<TKey, TValue>[] elements;
         private int count;
 
         public Dictionary(int length)
         {
             buckets = new int[length];
-            for (int i = 0; i < length; i++)
-            {
-                buckets[i] = -1;
-            }
-
+            SetBucketElementsToDefault();
             count = 0;
             elements = new Element<TKey, TValue>[length];
         }
@@ -102,7 +98,9 @@ namespace Dictionary
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            SetBucketElementsToDefault();
+            count = 0;
+            elements = new Element<TKey, TValue>[elements.Length];
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -154,6 +152,14 @@ namespace Dictionary
             }
 
             return result % elements.Length;
+        }
+
+        private void SetBucketElementsToDefault()
+        {
+            for (int i = 0; i < buckets.Length; i++)
+            {
+                buckets[i] = -1;
+            }
         }
     }
 }
