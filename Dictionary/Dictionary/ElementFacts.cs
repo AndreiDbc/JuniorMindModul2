@@ -7,14 +7,14 @@ using Xunit;
 
 namespace Dictionary
 {
-    public class NodeFacts
+    public class ElementFacts
     {
         [Fact]
         public void ANodeIsCreatedShouldReturnNodeWithValues()
         {
-            Node<int> node = new Node<int>(1);
-            Assert.Equal(1, node.Data);
-            Assert.Equal(null, node.Next);
+            Element<int> node = new Element<int>(1, 1);
+            Assert.Equal(1, node.Value);
+            Assert.Equal(-1, node.Next);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Dictionary
 {
     class SimpleLinkedList<T> : ICollection<T>
     {
-        private Node<T> head;
+        private Element<T> head;
         private int count;
 
         public SimpleLinkedList()
@@ -21,11 +21,11 @@ namespace Dictionary
 
         public int Count { get => count; }
 
-        public Node<T> Last
+        public Element<T> Last
         {
             get
             {
-                for (Node<T> i = head; i != null; i = i.Next)
+                for (Element<T> i = head; i != null; i = i.Next)
                 {
                     if (i.Next == null)
                     {
@@ -41,7 +41,7 @@ namespace Dictionary
 
         public void Add(T data)
         {
-            Node<T> node = new Node<T>(data);
+            Element<T> node = new Node<T>(data);
             node.Next = count == 0 ? null : head;
             head = node;
             count++;
@@ -56,7 +56,7 @@ namespace Dictionary
 
         public bool Remove(T toDelete)
         {
-            Node<T> node = Find(toDelete);
+            Element<T> node = Find(toDelete);
             if (node == null)
             {
                 return false;
@@ -66,7 +66,7 @@ namespace Dictionary
             return true;
         }
 
-        public void Remove(Node<T> toDelete)
+        public void Remove(Element<T> toDelete)
         {
             count--;
             if (toDelete.Equals(head))
@@ -75,7 +75,7 @@ namespace Dictionary
                 return;
             }
 
-            Node<T> previous = FindPreviousNode(toDelete);
+            Element<T> previous = FindPreviousNode(toDelete);
             previous.Next = toDelete.Next;
         }
 
@@ -86,18 +86,18 @@ namespace Dictionary
 
         public void CopyTo(T[] array, int location)
         {
-            for (Node<T> i = head; i != null; i = i.Next)
+            for (Element<T> i = head; i != null; i = i.Next)
             {
-                array[location] = i.Data;
+                array[location] = i.Value;
                 location++;
             }
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (Node<T> i = head; i != null; i = i.Next)
+            for (Element<T> i = head; i != null; i = i.Next)
             {
-                yield return i.Data;
+                yield return i.Value;
             }
         }
 
@@ -106,11 +106,11 @@ namespace Dictionary
             return GetEnumerator();
         }
 
-        private Node<T>? Find(T data)
+        private Element<T>? Find(T data)
         {
-            for (Node<T> i = head; i != null; i = i.Next)
+            for (Element<T> i = head; i != null; i = i.Next)
             {
-                if (i.Data.Equals(data))
+                if (i.Value.Equals(data))
                 {
                     return i;
                 }
@@ -119,9 +119,9 @@ namespace Dictionary
             return null;
         }
 
-        private Node<T>? FindPreviousNode(Node<T> node)
+        private Element<T>? FindPreviousNode(Element<T> node)
         {
-            for (Node<T> i = head; i != null; i = i.Next)
+            for (Element<T> i = head; i != null; i = i.Next)
             {
                 if (i.Next == node)
                 {
