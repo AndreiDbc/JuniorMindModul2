@@ -11,13 +11,13 @@ namespace Dictionary
     class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly int[] buckets;
-        private readonly SimpleLinkedList<TValue>[] elements;
+        private readonly Element<TKey, TValue>[] elements;
         private readonly int count;
 
         public Dictionary()
         {
             buckets = new int[5];
-            elements = new SimpleLinkedList<TValue>[5];
+            elements = new Element<TKey, TValue>[5];
             count = 0;
         }
 

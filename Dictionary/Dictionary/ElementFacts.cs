@@ -12,8 +12,8 @@ namespace Dictionary
         [Fact]
         public void ANodeIsCreatedShouldReturnNodeWithValues()
         {
-            Element<int> node = new Element<int>(1, 1);
-            Assert.Equal(1, node.Value);
+            Element<int, string> node = new Element<int, string>(1, "a");
+            Assert.Equal("a", node.Value);
             Assert.Equal(-1, node.Next);
         }
     }
