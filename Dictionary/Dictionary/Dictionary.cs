@@ -12,11 +12,16 @@ namespace Dictionary
     {
         private readonly int[] buckets;
         private readonly Element<TKey, TValue>[] elements;
-        private readonly int count;
+        private int count;
 
         public Dictionary(int length)
         {
             buckets = new int[length];
+            for (int i = 0; i < length; i++)
+            {
+                buckets[i] = -1;
+            }
+
             count = 0;
             elements = new Element<TKey, TValue>[length];
         }
@@ -82,12 +87,17 @@ namespace Dictionary
 
         public void Add(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            var element = new Element<TKey, TValue>(item.Key, item.Value);
+            int bucketLocation = GetBucketLocation(item.Key);
+            element.Next = buckets[bucketLocation];
+            elements[count] = element;
+            buckets[bucketLocation] = count;
+            count++;
         }
 
         public void Clear()
@@ -133,6 +143,17 @@ namespace Dictionary
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
+        }
+
+        private int GetBucketLocation(TKey key)
+        {
+            int result = key.GetHashCode();
+            if (result < 0)
+            {
+                result *= -1;
+            }
+
+            return result % elements.Length;
         }
     }
 }
