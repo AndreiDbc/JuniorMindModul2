@@ -133,5 +133,20 @@ namespace Dictionary
             dictionary.CopyTo(test, 0);
             Assert.Equal(test, toCompare);
         }
+
+        [Fact]
+        public void AnEnumeratorIsCreatedMoveNextIsCalledShouldReturnFalse()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            IEnumerator enumerator = dictionary.GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            Assert.Equal(new KeyValuePair<int, string>(3, "c"), enumerator.Current);
+            Assert.False(enumerator.MoveNext());
+        }
     }
 }
