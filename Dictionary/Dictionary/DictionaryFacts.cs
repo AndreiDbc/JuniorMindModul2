@@ -148,5 +148,31 @@ namespace Dictionary
             Assert.Equal(new KeyValuePair<int, string>(3, "c"), enumerator.Current);
             Assert.False(enumerator.MoveNext());
         }
+
+        [Fact]
+        public void TryGetValueIsCalledShouldReturnFalse()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            var value = "";
+            dictionary.TryGetValue(4, out value);
+            Assert.Equal(null, value);
+            Assert.False(dictionary.TryGetValue(4, out value));
+        }
+
+        [Fact]
+        public void TryGetValueIsCalledShouldReturnTrue()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            var value = "";
+            dictionary.TryGetValue(3, out value);
+            Assert.Equal("c", value);
+            Assert.True(dictionary.TryGetValue(3, out value));
+        }
     }
 }

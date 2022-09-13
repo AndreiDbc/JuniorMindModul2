@@ -158,7 +158,17 @@ namespace Dictionary
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            throw new NotImplementedException();
+            foreach (var element in elements)
+            {
+                if (element.Key.Equals(key))
+                {
+                    value = element.Value;
+                    return true;
+                }
+            }
+
+            value = default(TValue);
+            return false;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
