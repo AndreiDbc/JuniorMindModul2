@@ -107,9 +107,10 @@ namespace Dictionary
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            foreach (var element in elements)
+            int location = buckets[GetBucketLocation(item.Key)];
+            for (int i = location; i != -1; i = elements[location].Next)
             {
-                if (element.Key.Equals(item.Key) && element.Value.Equals(item.Value))
+                if (elements[i].Key.Equals(item.Key) && elements[i].Value.Equals(item.Value))
                 {
                     return true;
                 }
@@ -120,9 +121,10 @@ namespace Dictionary
 
         public bool ContainsKey(TKey key)
         {
-            foreach (var element in elements)
+            int location = buckets[GetBucketLocation(key)];
+            for (int i = location; i != -1; i = elements[location].Next)
             {
-                if (element.Key.Equals(key))
+                if (elements[i].Key.Equals(key))
                 {
                     return true;
                 }
