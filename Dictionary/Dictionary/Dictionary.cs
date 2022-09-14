@@ -173,14 +173,11 @@ namespace Dictionary
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            int location = buckets[GetBucketLocation(key)];
-            for (int i = location; i != -1; i = elements[location].Next)
+            Element<TKey, TValue> element = GetElement(key);
+            if (element != null)
             {
-                if (elements[i].Key.Equals(key))
-                {
-                    value = elements[i].Value;
-                    return true;
-                }
+                value = element.Value;
+                return true;
             }
 
             value = default(TValue);
@@ -200,6 +197,20 @@ namespace Dictionary
         private void SetBucketElementsToDefault()
         {
             Array.Fill(buckets, -1);
+        }
+
+        private Element<TKey, TValue> GetElement(TKey key)
+        {
+            int location = buckets[GetBucketLocation(key)];
+            for (int i = location; i != -1; i = elements[location].Next)
+            {
+                if (elements[i].Key.Equals(key))
+                {
+                    return elements[i];
+                }
+            }
+
+            return null;
         }
     }
 }
