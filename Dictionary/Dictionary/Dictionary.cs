@@ -58,28 +58,12 @@ namespace Dictionary
         {
             get
             {
-                int location = buckets[GetBucketLocation(key)];
-                for (int i = location; i != -1; i = elements[location].Next)
-                {
-                    if (elements[i].Key.Equals(key))
-                    {
-                        return elements[i].Value;
-                    }
-                }
-
-                return default;
+                return GetElement(key).Value;
             }
 
             set
             {
-                int location = buckets[GetBucketLocation(key)];
-                for (int i = location; i != -1; i = elements[location].Next)
-                {
-                    if (elements[i].Key.Equals(key))
-                    {
-                        elements[i].Value = value;
-                    }
-                }
+                GetElement(key).Value = value;
             }
         }
 

@@ -182,8 +182,8 @@ namespace Dictionary
             dictionary.Add(1, "a");
             dictionary.Add(2, "b");
             dictionary.Add(3, "c");
-            dictionary.Remove(2);
-            Assert.Equal(null, dictionary[2]);
+            dictionary.Remove(3);
+            Assert.Equal(2, dictionary.Count);
         }
 
         [Fact]
@@ -195,7 +195,7 @@ namespace Dictionary
             dictionary.Add(3, "c");
             KeyValuePair<int, string> test = new KeyValuePair<int, string>(2, "b");
             dictionary.Remove(test);
-            Assert.Equal(null, dictionary[2]);
+            Assert.Equal(2, dictionary.Count);
         }
     }
 }
