@@ -194,13 +194,7 @@ namespace Dictionary
 
         private int GetBucketLocation(TKey key)
         {
-            int result = key.GetHashCode();
-            if (result < 0)
-            {
-                result *= -1;
-            }
-
-            return result % elements.Length;
+            return Math.Abs(key.GetHashCode()) % elements.Length;
         }
 
         private void SetBucketElementsToDefault()
