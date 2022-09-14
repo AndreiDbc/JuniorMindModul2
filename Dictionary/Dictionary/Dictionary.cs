@@ -162,11 +162,12 @@ namespace Dictionary
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            foreach (var element in elements)
+            int location = buckets[GetBucketLocation(key)];
+            for (int i = location; i != -1; i = elements[location].Next)
             {
-                if (element.Key.Equals(key))
+                if (elements[i].Key.Equals(key))
                 {
-                    value = element.Value;
+                    value = elements[i].Value;
                     return true;
                 }
             }
