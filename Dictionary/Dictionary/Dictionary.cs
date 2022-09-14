@@ -121,16 +121,7 @@ namespace Dictionary
 
         public bool ContainsKey(TKey key)
         {
-            int location = buckets[GetBucketLocation(key)];
-            for (int i = location; i != -1; i = elements[location].Next)
-            {
-                if (elements[i].Key.Equals(key))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return GetElement(key)?.Key.Equals(key) == true;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
