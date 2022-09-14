@@ -174,5 +174,28 @@ namespace Dictionary
             Assert.Equal("c", value);
             Assert.True(dictionary.TryGetValue(3, out value));
         }
+
+        [Fact]
+        public void RemoveIsCalledShouldDeleteElement()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            dictionary.Remove(2);
+            Assert.Equal(null, dictionary[2]);
+        }
+
+        [Fact]
+        public void RemoveIsCalledShouldDeleteKeyValuePair()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            KeyValuePair<int, string> test = new KeyValuePair<int, string>(2, "b");
+            dictionary.Remove(test);
+            Assert.Equal(null, dictionary[2]);
+        }
     }
 }

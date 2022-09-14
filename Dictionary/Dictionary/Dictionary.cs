@@ -152,12 +152,23 @@ namespace Dictionary
 
         public bool Remove(TKey key)
         {
-            throw new NotImplementedException();
+            int location = buckets[GetBucketLocation(key)];
+            for (int i = location; i != -1; i = elements[location].Next)
+            {
+                if (elements[i].Key.Equals(key))
+                {
+                    buckets[i] = elements[i].Next;
+                    elements[i] = null;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            return Remove(item.Key);
         }
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
