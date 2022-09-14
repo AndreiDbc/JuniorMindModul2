@@ -126,6 +126,7 @@ namespace Dictionary
                 {
                     buckets[i] = elements[i].Next;
                     elements[i] = null;
+                    count--;
                     return true;
                 }
             }
