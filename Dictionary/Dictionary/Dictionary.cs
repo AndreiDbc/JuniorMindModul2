@@ -189,10 +189,7 @@ namespace Dictionary
 
         private void SetBucketElementsToDefault()
         {
-            for (int i = 0; i < buckets.Length; i++)
-            {
-                buckets[i] = -1;
-            }
+            Array.Fill(buckets, -1);
         }
     }
 }
