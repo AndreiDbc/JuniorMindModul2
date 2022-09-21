@@ -137,7 +137,7 @@ namespace Dictionary
                     elements[buckets[i]].Key = default;
                     elements[buckets[i]].Value = default;
                     int temp = elements[buckets[i]].Next;
-                    elements[buckets[i]].Next = freeIndex == -1 ? -1 : freeIndex;
+                    elements[buckets[i]].Next = freeIndex;
                     removedElements = elements[buckets[i]];
                     freeIndex = buckets[i];
                     buckets[i] = temp;
