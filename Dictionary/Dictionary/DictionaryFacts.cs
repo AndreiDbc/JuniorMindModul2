@@ -197,5 +197,21 @@ namespace Dictionary
             dictionary.Remove(test);
             Assert.Equal(2, dictionary.Count);
         }
+
+        [Fact]
+        public void AddIsCalledAfterElementsAreRemovedElementsShouldOccupyFreePositions()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            dictionary.Remove(2);
+            dictionary.Remove(3);
+            dictionary.Add(4, "d");
+            dictionary.Add(5, "e");
+            Assert.Equal("a", dictionary[1]);
+            Assert.Equal("e", dictionary[5]);
+            Assert.Equal("d", dictionary[4]);
+        }
     }
 }

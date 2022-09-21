@@ -12,14 +12,18 @@ namespace Dictionary
     {
         private readonly int[] buckets;
         private Element<TKey, TValue>[] elements;
+        private Element<TKey, TValue> removedElements;
+        private int freeIndex;
         private int count;
 
         public Dictionary(int length)
         {
             buckets = new int[length];
             SetBucketElementsToDefault();
+            freeIndex = -1;
             count = 0;
             elements = new Element<TKey, TValue>[length];
+            removedElements = new Element<TKey, TValue>(default, default);
         }
 
         public int Count { get => count; }
@@ -76,9 +80,15 @@ namespace Dictionary
         {
             var element = new Element<TKey, TValue>(item.Key, item.Value);
             int bucketLocation = GetBucketLocation(item.Key);
+            if (freeIndex != -1)
+            {
+                removedElements.Next = elements[freeIndex].Next;
+            }
+
             element.Next = buckets[bucketLocation];
-            elements[count] = element;
-            buckets[bucketLocation] = count;
+            elements[freeIndex == -1 ? count : freeIndex] = element;
+            buckets[bucketLocation] = freeIndex == -1 ? count : freeIndex;
+            freeIndex = freeIndex == -1 ? -1 : removedElements.Next;
             count++;
         }
 
@@ -119,13 +129,18 @@ namespace Dictionary
 
         public bool Remove(TKey key)
         {
-            int location = buckets[GetBucketLocation(key)];
-            for (int i = location; i != -1; i = elements[location].Next)
+            int location = GetBucketLocation(key);
+            for (int i = location; i != -1 && ContainsKey(key); i = elements[i].Next)
             {
-                if (elements[i].Key.Equals(key))
+                if (elements[buckets[i]].Key.Equals(key))
                 {
-                    buckets[i] = elements[i].Next;
-                    elements[i] = null;
+                    elements[buckets[i]].Key = default;
+                    elements[buckets[i]].Value = default;
+                    int temp = elements[buckets[i]].Next;
+                    elements[buckets[i]].Next = freeIndex == -1 ? -1 : freeIndex;
+                    removedElements = elements[buckets[i]];
+                    freeIndex = buckets[i];
+                    buckets[i] = temp;
                     count--;
                     return true;
                 }
