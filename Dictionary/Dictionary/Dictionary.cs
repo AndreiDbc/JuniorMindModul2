@@ -88,7 +88,7 @@ namespace Dictionary
             element.Next = buckets[bucketLocation];
             elements[freeIndex == -1 ? count : freeIndex] = element;
             buckets[bucketLocation] = freeIndex == -1 ? count : freeIndex;
-            freeIndex = freeIndex == -1 ? -1 : removedElements.Next;
+            freeIndex = removedElements.Next;
             count++;
         }
 
