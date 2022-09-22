@@ -106,7 +106,7 @@ namespace Dictionary
 
         public bool ContainsKey(TKey key)
         {
-            return GetElement(key)?.Key.Equals(key) == true;
+            return GetElement(key) != null;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
