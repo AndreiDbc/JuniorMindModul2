@@ -188,7 +188,7 @@ namespace Dictionary
         private Element<TKey, TValue> GetElement(TKey key)
         {
             int location = buckets[GetBucketLocation(key)];
-            for (int i = location; i != -1; i = elements[location].Next)
+            for (int i = location; i != -1; i = elements[i].Next)
             {
                 if (elements[i].Key.Equals(key))
                 {
