@@ -76,6 +76,11 @@ namespace Dictionary
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
+            if (ContainsKey(item.Key))
+            {
+                return;
+            }
+
             var element = new Element<TKey, TValue>(item.Key, item.Value);
             int bucketLocation = GetBucketLocation(item.Key);
             Element<TKey, TValue> temp = new Element<TKey, TValue>(default, default);
