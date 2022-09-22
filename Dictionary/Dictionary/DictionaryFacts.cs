@@ -213,5 +213,28 @@ namespace Dictionary
             Assert.Equal("e", dictionary[5]);
             Assert.Equal("d", dictionary[4]);
         }
+
+        [Fact]
+        public void TheIndeexerIsCalledKeyDoesntExistGetShouldThrowException()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            Assert.Throws<KeyNotFoundException>(() => dictionary[7]);
+        }
+
+        [Fact]
+        public void TheIndeexerIsCalledKeyDoesntExistSetShouldAddElement()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary[3] = "c";
+            ICollection<int> keys = dictionary.Keys;
+            ICollection<string> values = dictionary.Values;
+            Assert.Equal(3, keys.ElementAt(2));
+            Assert.Equal("c", values.ElementAt(2));
+        }
     }
 }

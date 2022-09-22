@@ -60,11 +60,22 @@ namespace Dictionary
         {
             get
             {
+                if (!ContainsKey(key))
+                {
+                    throw new KeyNotFoundException();
+                }
+
                 return GetElement(key).Value;
             }
 
             set
             {
+                if (!ContainsKey(key))
+                {
+                    Add(key, value);
+                    return;
+                }
+
                 GetElement(key).Value = value;
             }
         }
