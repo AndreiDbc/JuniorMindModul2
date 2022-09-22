@@ -12,7 +12,6 @@ namespace Dictionary
     {
         private readonly int[] buckets;
         private Element<TKey, TValue>[] elements;
-        private Element<TKey, TValue> removedElements;
         private int freeIndex;
         private int count;
 
@@ -23,7 +22,6 @@ namespace Dictionary
             freeIndex = -1;
             count = 0;
             elements = new Element<TKey, TValue>[length];
-            removedElements = new Element<TKey, TValue>(default, default);
         }
 
         public int Count { get => count; }
@@ -80,15 +78,16 @@ namespace Dictionary
         {
             var element = new Element<TKey, TValue>(item.Key, item.Value);
             int bucketLocation = GetBucketLocation(item.Key);
+            Element<TKey, TValue> temp = new Element<TKey, TValue>(default, default);
             if (freeIndex != -1)
             {
-                removedElements.Next = elements[freeIndex].Next;
+                temp = elements[freeIndex];
             }
 
             element.Next = buckets[bucketLocation];
             elements[freeIndex == -1 ? count : freeIndex] = element;
             buckets[bucketLocation] = freeIndex == -1 ? count : freeIndex;
-            freeIndex = removedElements.Next;
+            freeIndex = freeIndex == -1 ? -1 : temp.Next;
             count++;
         }
 
@@ -138,7 +137,6 @@ namespace Dictionary
                     elements[buckets[i]].Value = default;
                     int temp = elements[buckets[i]].Next;
                     elements[buckets[i]].Next = freeIndex;
-                    removedElements = elements[buckets[i]];
                     freeIndex = buckets[i];
                     buckets[i] = temp;
                     count--;
