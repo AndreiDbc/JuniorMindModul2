@@ -34,9 +34,8 @@ namespace Dictionary
             {
                 TKey[] keys = new TKey[count];
                 var enumerator = GetEnumerator();
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < count && enumerator.MoveNext(); i++)
                 {
-                    enumerator.MoveNext();
                     keys[i] = enumerator.Current.Key;
                 }
 
@@ -50,9 +49,8 @@ namespace Dictionary
             {
                 TValue[] values = new TValue[count];
                 var enumerator = GetEnumerator();
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < count && enumerator.MoveNext(); i++)
                 {
-                    enumerator.MoveNext();
                     values[i] = enumerator.Current.Value;
                 }
 
@@ -132,9 +130,8 @@ namespace Dictionary
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             var enumerator = GetEnumerator();
-            for (int i = arrayIndex; i < array.Length; i++)
+            for (int i = arrayIndex; i < array.Length && enumerator.MoveNext(); i++)
             {
-                enumerator.MoveNext();
                 array[i] = enumerator.Current;
             }
         }
