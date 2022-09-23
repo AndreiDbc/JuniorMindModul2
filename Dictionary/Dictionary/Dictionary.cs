@@ -127,7 +127,7 @@ namespace Dictionary
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            for (int i = 0; i < elements.Length; i++)
+            for (int i = 0, j = count; i < elements.Length && j > 0; i++, j--)
             {
                 array[arrayIndex] = new (elements[i].Key, elements[i].Value);
                 arrayIndex++;
