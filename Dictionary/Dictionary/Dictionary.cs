@@ -33,14 +33,11 @@ namespace Dictionary
             get
             {
                 TKey[] keys = new TKey[count];
-                int temp = 0;
-                for (int i = 0; i < elements.Length && temp != count; i++)
+                var enumerator = GetEnumerator();
+                for (int i = 0; i < count; i++)
                 {
-                    if (!elements[i].Key.Equals(default(TKey)))
-                    {
-                        keys[temp] = elements[i].Key;
-                        temp++;
-                    }
+                    enumerator.MoveNext();
+                    keys[i] = enumerator.Current.Key;
                 }
 
                 return keys;
@@ -52,14 +49,11 @@ namespace Dictionary
             get
             {
                 TValue[] values = new TValue[count];
-                int temp = 0;
-                for (int i = 0; i < elements.Length && temp != count; i++)
+                var enumerator = GetEnumerator();
+                for (int i = 0; i < count; i++)
                 {
-                    if (!elements[i].Key.Equals(default(TKey)))
-                    {
-                        values[temp] = elements[i].Value;
-                        temp++;
-                    }
+                    enumerator.MoveNext();
+                    values[i] = enumerator.Current.Value;
                 }
 
                 return values;
@@ -137,15 +131,11 @@ namespace Dictionary
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            int temp = 0;
-            for (int i = 0; i < elements.Length && temp != count; i++)
+            var enumerator = GetEnumerator();
+            for (int i = arrayIndex; i < array.Length; i++)
             {
-                if (!elements[i].Key.Equals(default(TKey)))
-                {
-                    array[arrayIndex] = new (elements[i].Key, elements[i].Value);
-                    arrayIndex++;
-                    temp++;
-                }
+                enumerator.MoveNext();
+                array[i] = enumerator.Current;
             }
         }
 
