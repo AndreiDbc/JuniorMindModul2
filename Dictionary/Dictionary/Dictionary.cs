@@ -144,23 +144,20 @@ namespace Dictionary
 
         public bool Remove(TKey key)
         {
-            int location = GetBucketLocation(key);
-            for (int i = location; i != -1 && ContainsKey(key); i = elements[i].Next)
+            if (!ContainsKey(key))
             {
-                if (elements[buckets[i]].Key.Equals(key))
-                {
-                    elements[buckets[i]].Key = default;
-                    elements[buckets[i]].Value = default;
-                    int temp = elements[buckets[i]].Next;
-                    elements[buckets[i]].Next = freeIndex;
-                    freeIndex = buckets[i];
-                    buckets[i] = temp;
-                    count--;
-                    return true;
-                }
+                return false;
             }
 
-            return false;
+            var toRemove = GetElement(key);
+            toRemove.Key = default;
+            toRemove.Value = default;
+            int temp = toRemove.Next;
+            toRemove.Next = freeIndex;
+            buckets[GetBucketLocation(key)] = temp;
+            count--;
+
+            return true;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
