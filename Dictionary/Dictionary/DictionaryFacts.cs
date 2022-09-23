@@ -236,5 +236,33 @@ namespace Dictionary
             Assert.Equal(3, keys.ElementAt(2));
             Assert.Equal("c", values.ElementAt(2));
         }
+
+        [Fact]
+        public void KeysIsCalledAfterEelementsAreDeletedShouldReturnKeys()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            dictionary.Remove(1);
+            dictionary.Remove(2);
+            ICollection<int> keys = dictionary.Keys;
+            Assert.Equal(3, keys.First());
+            Assert.Equal(3, keys.Last());
+        }
+
+        [Fact]
+        public void ValuesIsCalledAfterEelementsAreDeletedShouldReturnValues()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            dictionary.Remove(1);
+            dictionary.Remove(2);
+            ICollection<string> values = dictionary.Values;
+            Assert.Equal("c", values.First());
+            Assert.Equal("c", values.Last());
+        }
     }
 }

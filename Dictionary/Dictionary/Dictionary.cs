@@ -33,9 +33,14 @@ namespace Dictionary
             get
             {
                 TKey[] keys = new TKey[count];
-                for (int i = 0; i < count; i++)
+                int temp = 0;
+                for (int i = 0; i < elements.Length && temp != count; i++)
                 {
-                    keys[i] = elements[i].Key;
+                    if (!elements[i].Key.Equals(default(TKey)))
+                    {
+                        keys[temp] = elements[i].Key;
+                        temp++;
+                    }
                 }
 
                 return keys;
@@ -47,9 +52,14 @@ namespace Dictionary
             get
             {
                 TValue[] values = new TValue[count];
-                for (int i = 0; i < count; i++)
+                int temp = 0;
+                for (int i = 0; i < elements.Length && temp != count; i++)
                 {
-                    values[i] = elements[i].Value;
+                    if (!elements[i].Key.Equals(default(TKey)))
+                    {
+                        values[temp] = elements[i].Value;
+                        temp++;
+                    }
                 }
 
                 return values;
