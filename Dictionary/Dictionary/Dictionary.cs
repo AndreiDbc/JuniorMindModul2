@@ -137,10 +137,15 @@ namespace Dictionary
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            for (int i = 0, j = count; i < elements.Length && j > 0; i++, j--)
+            int temp = 0;
+            for (int i = 0; i < elements.Length && temp != count; i++)
             {
-                array[arrayIndex] = new (elements[i].Key, elements[i].Value);
-                arrayIndex++;
+                if (!elements[i].Key.Equals(default(TKey)))
+                {
+                    array[arrayIndex] = new (elements[i].Key, elements[i].Value);
+                    arrayIndex++;
+                    temp++;
+                }
             }
         }
 
