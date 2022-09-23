@@ -151,9 +151,14 @@ namespace Dictionary
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            foreach (var element in elements)
+            int temp = 0;
+            for (int i = 0; i < elements.Length && temp != count; i++)
             {
-                yield return new KeyValuePair<TKey, TValue>(element.Key, element.Value);
+                if (!elements[i].Key.Equals(default(TKey)))
+                {
+                    temp++;
+                    yield return new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
+                }
             }
         }
 
