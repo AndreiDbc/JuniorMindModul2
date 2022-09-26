@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -139,7 +140,7 @@ namespace Dictionary
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             int temp = 0;
-            for (int i = 0; i < elements.Length && temp != count; i++)
+            for (int i = 0; temp != count && i < elements.Length; i++)
             {
                 if (!elements[i].Key.Equals(default(TKey)))
                 {
