@@ -128,6 +128,19 @@ namespace Dictionary
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            else if (arrayIndex < 0)
+            {
+                throw new ArgumentException("Index is outside of the bounds of the array.");
+            }
+            else if (Count > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("The number of elements array is greater than the available space to the end of the destination array.");
+            }
+
             var enumerator = GetEnumerator();
             for (int i = arrayIndex; i < array.Length && enumerator.MoveNext(); i++)
             {

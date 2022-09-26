@@ -294,5 +294,37 @@ namespace Dictionary
             Assert.Equal("c", values.First());
             Assert.Equal("c", values.Last());
         }
+
+        [Fact]
+        public void CopyToIsCalledArrayIsNullShouldThrowException()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            Assert.Throws<ArgumentNullException>(() => dictionary.CopyTo(null, 0));
+        }
+
+        [Fact]
+        public void CopyToIsCalledArrayIndexIsLessThanZeroShouldThrowException()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            KeyValuePair<int, string>[] array = new KeyValuePair<int, string>[3];
+            Assert.Throws<ArgumentException>(() => dictionary.CopyTo(array, -2));
+        }
+
+        [Fact]
+        public void CopyToIsCalledArrayDoesntHaveEnoughSpaceShouldThrowException()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            KeyValuePair<int, string>[] array = new KeyValuePair<int, string>[3];
+            Assert.Throws<ArgumentException>(() => dictionary.CopyTo(array, 1));
+        }
     }
 }
