@@ -149,12 +149,12 @@ namespace Dictionary
 
         public bool Remove(TKey key)
         {
-            if (!ContainsKey(key))
+            var toRemove = GetElement(key);
+            if (toRemove == null)
             {
                 return false;
             }
 
-            var toRemove = GetElement(key);
             toRemove.Key = default;
             toRemove.Value = default;
             int temp = toRemove.Next;
