@@ -187,6 +187,36 @@ namespace Dictionary
         }
 
         [Fact]
+        public void RemoveIsCalledShouldDeleteSecondElement()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(3, "a");
+            dictionary.Add(6, "b");
+            dictionary.Add(9, "c");
+            dictionary.Remove(6);
+            IEnumerator enumerator = dictionary.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal(new KeyValuePair<int, string>(3, "a"), enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal(new KeyValuePair<int, string>(9, "c"), enumerator.Current);
+        }
+
+        [Fact]
+        public void RemoveIsCalledShouldDeleteThirdElement()
+        {
+            Dictionary<int, string> dictionary = new (3);
+            dictionary.Add(3, "a");
+            dictionary.Add(6, "b");
+            dictionary.Add(9, "c");
+            dictionary.Remove(9);
+            IEnumerator enumerator = dictionary.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal(new KeyValuePair<int, string>(3, "a"), enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal(new KeyValuePair<int, string>(6, "b"), enumerator.Current);
+        }
+
+        [Fact]
         public void RemoveIsCalledShouldDeleteKeyValuePair()
         {
             Dictionary<int, string> dictionary = new (3);
