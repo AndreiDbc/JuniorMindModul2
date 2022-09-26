@@ -162,7 +162,9 @@ namespace Dictionary
             toRemove.Value = default;
             int temp = toRemove.Next;
             toRemove.Next = freeIndex;
-            buckets[GetBucketLocation(key)] = temp;
+            int location = GetBucketLocation(key);
+            buckets[location] = temp;
+            freeIndex = buckets[location] == -1 ? freeIndex : elements[freeIndex].Next;
             count--;
 
             return true;
