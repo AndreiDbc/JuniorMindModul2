@@ -153,7 +153,9 @@ namespace Dictionary
             int temp = 0;
             for (int i = 0; temp != count && i < elements.Length; i++)
             {
-                if (!elements[i].Key.Equals(default(TKey)))
+                var toCompare = new Element<TKey, TValue>(default(TKey), default(TValue));
+                toCompare.Next = elements[i].Next;
+                if (elements[i] != toCompare)
                 {
                     temp++;
                     yield return new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
