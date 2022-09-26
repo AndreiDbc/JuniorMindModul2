@@ -70,13 +70,14 @@ namespace Dictionary
 
             set
             {
-                if (!ContainsKey(key))
+                Element<TKey, TValue> element = GetElement(key);
+                if (element == null)
                 {
                     Add(key, value);
                     return;
                 }
 
-                GetElement(key).Value = value;
+                element.Value = value;
             }
         }
 
