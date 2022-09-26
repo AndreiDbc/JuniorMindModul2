@@ -63,12 +63,9 @@ namespace Dictionary
         {
             get
             {
-                if (!ContainsKey(key))
-                {
-                    throw new KeyNotFoundException();
-                }
+                Element<TKey, TValue> element = GetElement(key);
 
-                return GetElement(key).Value;
+                return element == null ? throw new KeyNotFoundException() : element.Value;
             }
 
             set
