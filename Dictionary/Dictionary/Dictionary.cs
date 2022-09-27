@@ -65,14 +65,14 @@ namespace Dictionary
         {
             get
             {
-                int index = GetIndexes(key).Item1;
+                int index = GetIndexes(key).current;
 
                 return index == -1 ? throw new KeyNotFoundException() : elements[index].Value;
             }
 
             set
             {
-                int index = GetIndexes(key).Item1;
+                int index = GetIndexes(key).current;
                 if (index == -1)
                 {
                     Add(key, value);
@@ -119,13 +119,13 @@ namespace Dictionary
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            int index = GetIndexes(item.Key).Item1;
+            int index = GetIndexes(item.Key).current;
             return index != -1 && elements[index].Value.Equals(item.Value);
         }
 
         public bool ContainsKey(TKey key)
         {
-            return GetIndexes(key).Item1 != -1;
+            return GetIndexes(key).current != -1;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -165,7 +165,7 @@ namespace Dictionary
 
         public bool Remove(TKey key)
         {
-            int index = GetIndexes(key).Item1;
+            int index = GetIndexes(key).current;
             if (index == -1)
             {
                 return false;
@@ -174,7 +174,7 @@ namespace Dictionary
             var toRemove = elements[index];
             int location = GetBucketLocation(key);
             int temp = toRemove.Next;
-            int previous = GetIndexes(toRemove.Key).Item2;
+            int previous = GetIndexes(toRemove.Key).previous;
             toRemove.Next = freeIndex;
             freeIndex = previous == -1 ? buckets[location] : index;
             toRemove.Value = default;
@@ -192,7 +192,7 @@ namespace Dictionary
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            int index = GetIndexes(key).Item1;
+            int index = GetIndexes(key).current;
             if (index != -1)
             {
                 value = elements[index].Value;
@@ -218,7 +218,7 @@ namespace Dictionary
             Array.Fill(buckets, -1);
         }
 
-        private (int, int) GetIndexes(TKey key)
+        private (int current, int previous) GetIndexes(TKey key)
         {
             int location = buckets[GetBucketLocation(key)];
             int current = -1;
