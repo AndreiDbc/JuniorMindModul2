@@ -65,14 +65,14 @@ namespace Dictionary
         {
             get
             {
-                int index = GetIndexes(key).current;
+                int index = GetIndexes(key).index;
 
                 return index == -1 ? throw new KeyNotFoundException() : elements[index].Value;
             }
 
             set
             {
-                int index = GetIndexes(key).current;
+                int index = GetIndexes(key).index;
                 if (index == -1)
                 {
                     Add(key, value);
@@ -119,7 +119,7 @@ namespace Dictionary
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            int index = GetIndexes(item.Key).current;
+            int index = GetIndexes(item.Key).index;
             return index != -1 && elements[index].Value.Equals(item.Value);
         }
 
@@ -165,7 +165,7 @@ namespace Dictionary
 
         public bool Remove(TKey key)
         {
-            int index = GetIndexes(key).current;
+            var (index, previous) = GetIndexes(key);
             if (index == -1)
             {
                 return false;
@@ -174,7 +174,6 @@ namespace Dictionary
             var toRemove = elements[index];
             int location = GetBucketLocation(key);
             int temp = toRemove.Next;
-            int previous = GetIndexes(toRemove.Key).previous;
             toRemove.Next = freeIndex;
             freeIndex = previous == -1 ? buckets[location] : index;
             toRemove.Value = default;
@@ -192,7 +191,7 @@ namespace Dictionary
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            int index = GetIndexes(key).current;
+            int index = GetIndexes(key).index;
             if (index != -1)
             {
                 value = elements[index].Value;
@@ -218,10 +217,10 @@ namespace Dictionary
             Array.Fill(buckets, -1);
         }
 
-        private (int current, int previous) GetIndexes(TKey key)
+        private (int index, int previous) GetIndexes(TKey key)
         {
             int location = buckets[GetBucketLocation(key)];
-            int current = -1;
+            int index = -1;
             int previous = -1;
             int temp = -1;
             for (int i = location; i != -1; i = elements[i].Next)
@@ -229,14 +228,14 @@ namespace Dictionary
                 previous = temp;
                 if (elements[i].Key.Equals(key))
                 {
-                    current = i;
+                    index = i;
                     break;
                 }
 
                 temp = i;
             }
 
-            return (current, previous);
+            return (index, previous);
         }
 
         private bool IsIndexFree(int index)
