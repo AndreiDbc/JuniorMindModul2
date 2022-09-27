@@ -152,10 +152,9 @@ namespace Dictionary
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             int temp = 0;
-            int[] indexes = GetFreeIndexes();
             for (int i = 0; temp != count && i < elements.Length; i++)
             {
-                if (!indexes.Contains(i))
+                if (!IsIndexFree(i))
                 {
                     temp++;
                     yield return new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
@@ -245,18 +244,17 @@ namespace Dictionary
             return null;
         }
 
-        private int[] GetFreeIndexes()
+        private bool IsIndexFree(int index)
         {
-            int[] indexes = new int[0];
-            int temp = 0;
             for (int i = freeIndex; i != -1; i = elements[i].Next)
             {
-                Array.Resize(ref indexes, indexes.Length + 1);
-                indexes[temp] = i;
-                temp++;
+                if (i == index)
+                {
+                    return true;
+                }
             }
 
-            return indexes.Length == 0 ? new[] { -1 } : indexes;
+            return false;
         }
     }
 }
