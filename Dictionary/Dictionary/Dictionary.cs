@@ -64,21 +64,21 @@ namespace Dictionary
         {
             get
             {
-                Element<TKey, TValue> element = GetElement(key);
+                int index = GetElementIndex(key);
 
-                return element == null ? throw new KeyNotFoundException() : element.Value;
+                return index == -1 ? throw new KeyNotFoundException() : elements[index].Value;
             }
 
             set
             {
-                Element<TKey, TValue> element = GetElement(key);
-                if (element == null)
+                int index = GetElementIndex(key);
+                if (index == -1)
                 {
                     Add(key, value);
                     return;
                 }
 
-                element.Value = value;
+                elements[index].Value = value;
             }
         }
 
@@ -118,13 +118,12 @@ namespace Dictionary
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            Element<TKey, TValue> element = GetElement(item.Key);
-            return element?.Key.Equals(item.Key) == true && element.Value.Equals(item.Value);
+            return GetElementIndex(item.Key) != -1;
         }
 
         public bool ContainsKey(TKey key)
         {
-            return GetElement(key) != null;
+            return GetElementIndex(key) != -1;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -164,17 +163,18 @@ namespace Dictionary
 
         public bool Remove(TKey key)
         {
-            var toRemove = GetElement(key);
-            if (toRemove == null)
+            int index = GetElementIndex(key);
+            if (index == -1)
             {
                 return false;
             }
 
+            var toRemove = elements[index];
             int location = GetBucketLocation(key);
             int temp = toRemove.Next;
             int previous = GetPreviousIndex(toRemove.Key);
             toRemove.Next = freeIndex;
-            freeIndex = previous == -1 ? buckets[location] : elements[previous].Next;
+            freeIndex = previous == -1 ? buckets[location] : index;
             toRemove.Value = default;
             toRemove.Key = default;
             buckets[location] = buckets[location].Equals(previous) ? temp : buckets[location];
@@ -190,10 +190,10 @@ namespace Dictionary
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            Element<TKey, TValue> element = GetElement(key);
-            if (element != null)
+            int index = GetElementIndex(key);
+            if (index != -1)
             {
-                value = element.Value;
+                value = elements[index].Value;
                 return true;
             }
 
@@ -216,24 +216,24 @@ namespace Dictionary
             Array.Fill(buckets, -1);
         }
 
-        private Element<TKey, TValue> GetElement(TKey key)
+        private int GetElementIndex(TKey key)
         {
             int location = buckets[GetBucketLocation(key)];
             for (int i = location; i != -1; i = elements[i].Next)
             {
                 if (elements[i].Key.Equals(key))
                 {
-                    return elements[i];
+                    return i;
                 }
             }
 
-            return null;
+            return -1;
         }
 
         private int GetPreviousIndex(TKey key)
         {
             int location = buckets[GetBucketLocation(key)];
-            for (int i = location; !elements[location].Key.Equals(key) && i != -1; i = elements[i].Next)
+            for (int i = location; i != -1 && !elements[location].Key.Equals(key); i = elements[i].Next)
             {
                 if (elements[elements[i].Next].Key.Equals(key))
                 {
