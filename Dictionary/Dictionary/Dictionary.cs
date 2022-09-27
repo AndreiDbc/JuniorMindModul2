@@ -6,6 +6,7 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Dictionary
 {
@@ -171,13 +172,14 @@ namespace Dictionary
                 return false;
             }
 
-            toRemove.Key = default;
-            toRemove.Value = default;
-            int temp = toRemove.Next;
-            toRemove.Next = freeIndex;
             int location = GetBucketLocation(key);
-            buckets[location] = elements[buckets[location]] == toRemove ? temp : buckets[location];
-            freeIndex = buckets[location] == -1 ? freeIndex : location;
+            int temp = toRemove.Next;
+            Element<TKey, TValue> element = GetPreviousElement(toRemove);
+            toRemove.Next = freeIndex;
+            freeIndex = element == null ? buckets[location] : element.Next;
+            toRemove.Value = default;
+            toRemove.Key = default;
+            buckets[location] = elements[buckets[location]].Equals(toRemove) ? temp : buckets[location];
             count--;
 
             return true;
@@ -222,6 +224,20 @@ namespace Dictionary
             for (int i = location; i != -1; i = elements[i].Next)
             {
                 if (elements[i].Key.Equals(key))
+                {
+                    return elements[i];
+                }
+            }
+
+            return null;
+        }
+
+        private Element<TKey, TValue> GetPreviousElement(Element<TKey, TValue> element)
+        {
+            int location = buckets[GetBucketLocation(element.Key)];
+            for (int i = location; elements[location] != element && i != -1; i = elements[i].Next)
+            {
+                if (elements[elements[i].Next].Equals(element))
                 {
                     return elements[i];
                 }
