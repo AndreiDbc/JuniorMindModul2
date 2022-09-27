@@ -125,7 +125,7 @@ namespace Dictionary
 
         public bool ContainsKey(TKey key)
         {
-            return GetIndexes(key).current != -1;
+            return GetIndexes(key).index != -1;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
