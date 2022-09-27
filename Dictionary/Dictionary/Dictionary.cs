@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -64,14 +65,14 @@ namespace Dictionary
         {
             get
             {
-                int index = GetElementIndex(key);
+                int index = GetIndexes(key).Item1;
 
                 return index == -1 ? throw new KeyNotFoundException() : elements[index].Value;
             }
 
             set
             {
-                int index = GetElementIndex(key);
+                int index = GetIndexes(key).Item1;
                 if (index == -1)
                 {
                     Add(key, value);
@@ -118,13 +119,13 @@ namespace Dictionary
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            int index = GetElementIndex(item.Key);
+            int index = GetIndexes(item.Key).Item1;
             return index != -1 && elements[index].Value.Equals(item.Value);
         }
 
         public bool ContainsKey(TKey key)
         {
-            return GetElementIndex(key) != -1;
+            return GetIndexes(key).Item1 != -1;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -164,7 +165,7 @@ namespace Dictionary
 
         public bool Remove(TKey key)
         {
-            int index = GetElementIndex(key);
+            int index = GetIndexes(key).Item1;
             if (index == -1)
             {
                 return false;
@@ -173,7 +174,7 @@ namespace Dictionary
             var toRemove = elements[index];
             int location = GetBucketLocation(key);
             int temp = toRemove.Next;
-            int previous = GetPreviousIndex(toRemove.Key);
+            int previous = GetIndexes(toRemove.Key).Item2;
             toRemove.Next = freeIndex;
             freeIndex = previous == -1 ? buckets[location] : index;
             toRemove.Value = default;
@@ -191,7 +192,7 @@ namespace Dictionary
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            int index = GetElementIndex(key);
+            int index = GetIndexes(key).Item1;
             if (index != -1)
             {
                 value = elements[index].Value;
@@ -217,32 +218,25 @@ namespace Dictionary
             Array.Fill(buckets, -1);
         }
 
-        private int GetElementIndex(TKey key)
+        private (int, int) GetIndexes(TKey key)
         {
             int location = buckets[GetBucketLocation(key)];
+            int current = -1;
+            int previous = -1;
+            int temp = -1;
             for (int i = location; i != -1; i = elements[i].Next)
             {
+                previous = temp;
                 if (elements[i].Key.Equals(key))
                 {
-                    return i;
+                    current = i;
+                    break;
                 }
+
+                temp = i;
             }
 
-            return -1;
-        }
-
-        private int GetPreviousIndex(TKey key)
-        {
-            int location = buckets[GetBucketLocation(key)];
-            for (int i = location; i != -1 && !elements[location].Key.Equals(key); i = elements[i].Next)
-            {
-                if (elements[elements[i].Next].Key.Equals(key))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
+            return (current, previous);
         }
 
         private bool IsIndexFree(int index)
