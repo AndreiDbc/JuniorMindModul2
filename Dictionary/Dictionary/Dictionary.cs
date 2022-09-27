@@ -172,7 +172,7 @@ namespace Dictionary
 
             int location = GetBucketLocation(key);
             int temp = toRemove.Next;
-            int previous = GetPreviousIndex(toRemove);
+            int previous = GetPreviousIndex(toRemove.Key);
             toRemove.Next = freeIndex;
             freeIndex = previous == -1 ? buckets[location] : elements[previous].Next;
             toRemove.Value = default;
@@ -230,12 +230,12 @@ namespace Dictionary
             return null;
         }
 
-        private int GetPreviousIndex(Element<TKey, TValue> element)
+        private int GetPreviousIndex(TKey key)
         {
-            int location = buckets[GetBucketLocation(element.Key)];
-            for (int i = location; elements[location] != element && i != -1; i = elements[i].Next)
+            int location = buckets[GetBucketLocation(key)];
+            for (int i = location; !elements[location].Key.Equals(key) && i != -1; i = elements[i].Next)
             {
-                if (elements[elements[i].Next].Equals(element))
+                if (elements[elements[i].Next].Key.Equals(key))
                 {
                     return i;
                 }
