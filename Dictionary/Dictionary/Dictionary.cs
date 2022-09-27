@@ -178,7 +178,7 @@ namespace Dictionary
             freeIndex = previous == -1 ? buckets[location] : index;
             toRemove.Value = default;
             toRemove.Key = default;
-            buckets[location] = buckets[location].Equals(previous) ? temp : buckets[location];
+            buckets[location] = buckets[location].Equals(index) ? temp : buckets[location];
             count--;
 
             return true;
