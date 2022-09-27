@@ -249,7 +249,7 @@ namespace Dictionary
         {
             int[] indexes = new int[0];
             int temp = 0;
-            for (int i = freeIndex; i != -1; i = elements[freeIndex].Next)
+            for (int i = freeIndex; i != -1; i = elements[i].Next)
             {
                 Array.Resize(ref indexes, indexes.Length + 1);
                 indexes[temp] = i;
