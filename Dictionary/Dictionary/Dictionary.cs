@@ -172,12 +172,12 @@ namespace Dictionary
 
             int location = GetBucketLocation(key);
             int temp = toRemove.Next;
-            Element<TKey, TValue> element = GetPreviousElement(toRemove);
+            int previous = GetPreviousIndex(toRemove);
             toRemove.Next = freeIndex;
-            freeIndex = element == null ? buckets[location] : element.Next;
+            freeIndex = previous == -1 ? buckets[location] : elements[previous].Next;
             toRemove.Value = default;
             toRemove.Key = default;
-            buckets[location] = elements[buckets[location]].Equals(toRemove) ? temp : buckets[location];
+            buckets[location] = buckets[location].Equals(previous) ? temp : buckets[location];
             count--;
 
             return true;
@@ -230,18 +230,18 @@ namespace Dictionary
             return null;
         }
 
-        private Element<TKey, TValue> GetPreviousElement(Element<TKey, TValue> element)
+        private int GetPreviousIndex(Element<TKey, TValue> element)
         {
             int location = buckets[GetBucketLocation(element.Key)];
             for (int i = location; elements[location] != element && i != -1; i = elements[i].Next)
             {
                 if (elements[elements[i].Next].Equals(element))
                 {
-                    return elements[i];
+                    return i;
                 }
             }
 
-            return null;
+            return -1;
         }
 
         private bool IsIndexFree(int index)
