@@ -17,5 +17,7 @@ namespace BKTree
             this.data = data;
             this.children = null;
         }
+
+        public Node[] Next { get => children; }
     }
 }
