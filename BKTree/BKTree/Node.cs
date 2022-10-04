@@ -20,6 +20,19 @@ namespace BKTree
 
         public Node[] Next { get => children; }
 
+        public Node ChildAtDistance(int distance)
+        {
+            foreach (var child in this.Next)
+            {
+                if (GetDistance(child).Equals(distance))
+                {
+                    return child;
+                }
+            }
+
+            return null;
+        }
+
         public void AddChild(Node toAdd)
         {
             children ??= new Node[0];
