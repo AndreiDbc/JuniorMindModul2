@@ -14,15 +14,15 @@ namespace BKTree
         {
         }
 
-        public void Add(Node toAdd)
+        public void Add(string data)
         {
             if (root == null)
             {
-                root = toAdd;
+                root = new Node(data);
                 return;
             }
 
-            AddToFreeNode(root, toAdd);
+            AddToFreeNode(root, new Node(data));
         }
 
         private void AddToFreeNode(Node parent, Node toAdd)
