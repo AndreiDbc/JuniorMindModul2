@@ -30,4 +30,4 @@ namespace BKTree
             Assert.Equal(n4, n1.ChildAtDistance(1));
         }
     }
-}}
+}
