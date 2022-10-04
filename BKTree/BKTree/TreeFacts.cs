@@ -10,9 +10,9 @@ namespace BKTree
     public class TreeFacts
     {
         [Fact]
-        public void AddIsCalledShouldAddChildToRoot()
+        public void AddIsCalledShouldAddChildrenToRoot()
         {
-            var tree = new Tree();
+            var tree = new Tree(10);
             const string n1 = "some";
             const string n2 = "salmon";
             const string n3 = "soft";
@@ -21,13 +21,19 @@ namespace BKTree
             tree.Add(n2);
             tree.Add(n3);
             tree.Add(n4);
-            Node[] children = new[] { new Node(n2), new Node(n3), new Node(n4) };
+            List<string> words = tree.ReturnWords("sort");
+            List<string> toCompare = new List<string>();
+            toCompare.Add(n1);
+            toCompare.Add(n2);
+            toCompare.Add(n3);
+            toCompare.Add(n4);
+            Assert.Equal(toCompare, words);
         }
 
         [Fact]
-        public void AddIsCalledShouldAddChildToLeafNode()
+        public void ReturnWordsIsCalledShouldReturnListOfWords()
         {
-            var tree = new Tree();
+            var tree = new Tree(2);
             const string n1 = "some";
             const string n2 = "salmon";
             const string n3 = "soft";
@@ -40,7 +46,12 @@ namespace BKTree
             tree.Add(n4);
             tree.Add(n5);
             tree.Add(n6);
-            Node[] children = new[] { new Node(n5), new Node(n6) };
+            List<string> words = tree.ReturnWords("sort");
+            List<string> toCompare = new List<string>();
+            toCompare.Add(n1);
+            toCompare.Add(n3);
+            toCompare.Add(n6);
+            Assert.Equal(toCompare, words);
         }
     }
 }

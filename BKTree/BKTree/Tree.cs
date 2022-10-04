@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Xunit.Sdk;
 
 namespace BKTree
 {
@@ -25,6 +27,38 @@ namespace BKTree
             }
 
             AddToFreeNode(root, new Node(data));
+        }
+
+        public List<string> ReturnWords(string word)
+        {
+            if (root == null || root.GetDistance(new Node(word)) > levenshteinDistance)
+            {
+                return null;
+            }
+
+            List<string> words = new List<string>();
+            words.Add(root.Data);
+            GetWords(root, new Node(word), words);
+
+            return words;
+        }
+
+        private void GetWords(Node parent, Node word, List<string> words)
+        {
+            if (parent.Next == null)
+            {
+                return;
+            }
+
+            foreach (var node in parent.Next)
+            {
+                if (word.GetDistance(node) <= levenshteinDistance)
+                {
+                    words.Add(node.Data);
+                }
+
+                GetWords(node, word, words);
+            }
         }
 
         private void AddToFreeNode(Node parent, Node toAdd)
