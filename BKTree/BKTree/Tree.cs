@@ -8,10 +8,12 @@ namespace BKTree
 {
     class Tree
     {
+        private readonly int levenshteinDistance;
         private Node root;
 
-        public Tree()
+        public Tree(int levenshteinDistance)
         {
+            this.levenshteinDistance = levenshteinDistance;
         }
 
         public void Add(string data)
