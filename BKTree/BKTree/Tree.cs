@@ -27,29 +27,17 @@ namespace BKTree
 
         private void AddToFreeNode(Node parent, Node toAdd)
         {
-            if (parent.Next == null)
+            if (parent.AddToParent(toAdd))
             {
-                parent.AddChild(toAdd);
                 return;
             }
 
-            Node child = parent.ChildAtDistance(parent.GetDistance(toAdd));
-            if (child == null)
+            if (parent.AddToChild(toAdd))
             {
-                parent.AddChild(toAdd);
                 return;
             }
 
-            foreach (var node in parent.Next)
-            {
-                if (node.GetDistance(toAdd) == null)
-                {
-                    node.AddChild(toAdd);
-                    return;
-                }
-            }
-
-            AddToFreeNode(child, toAdd);
+            AddToFreeNode(parent.ChildAtDistance(parent.GetDistance(toAdd)), toAdd);
         }
     }
 }

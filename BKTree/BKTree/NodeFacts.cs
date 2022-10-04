@@ -24,9 +24,9 @@ namespace BKTree
             var n2 = new Node("salmon");
             var n3 = new Node("soft");
             var n4 = new Node("same");
-            n1.AddChild(n2);
-            n1.AddChild(n3);
-            n1.AddChild(n4);
+            n1.AddToParent(n2);
+            n1.AddToParent(n3);
+            n1.AddToParent(n4);
             Assert.Equal(n4, n1.ChildAtDistance(1));
         }
     }
