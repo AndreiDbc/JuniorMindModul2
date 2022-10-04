@@ -9,5 +9,13 @@ namespace BKTree
 {
     class Node
     {
+        private readonly string data;
+        private Node[] children;
+
+        public Node(string data)
+        {
+            this.data = data;
+            this.children = null;
+        }
     }
 }
