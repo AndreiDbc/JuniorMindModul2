@@ -8,5 +8,10 @@ namespace BKTree
 {
     class Tree
     {
+        private Node root;
+
+        public Tree()
+        {
+        }
     }
 }
