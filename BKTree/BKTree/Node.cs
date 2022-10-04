@@ -20,6 +20,8 @@ namespace BKTree
 
         public Node[] Next { get => children; }
 
+        public string Data { get => data; }
+
         public Node ChildAtDistance(int distance)
         {
             foreach (var child in this.Next)
