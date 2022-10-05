@@ -21,13 +21,16 @@ namespace BKTree
             tree.Add(n2);
             tree.Add(n3);
             tree.Add(n4);
-            List<string> words = tree.ReturnWords("sort");
-            List<string> toCompare = new List<string>();
-            toCompare.Add(n1);
-            toCompare.Add(n2);
-            toCompare.Add(n3);
-            toCompare.Add(n4);
-            Assert.Equal(toCompare, words);
+            IEnumerable<string> words = tree.ReturnWords("sort");
+            IEnumerator<string> enumerator = words.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal("some", enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal("salmon", enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal("soft", enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal("same", enumerator.Current);
         }
 
         [Fact]
@@ -46,12 +49,14 @@ namespace BKTree
             tree.Add(n4);
             tree.Add(n5);
             tree.Add(n6);
-            List<string> words = tree.ReturnWords("sort");
-            List<string> toCompare = new List<string>();
-            toCompare.Add(n1);
-            toCompare.Add(n3);
-            toCompare.Add(n6);
-            Assert.Equal(toCompare, words);
+            IEnumerable<string> words = tree.ReturnWords("sort");
+            IEnumerator<string> enumerator = words.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal("some", enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal("soft", enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal("soda", enumerator.Current);
         }
     }
 }

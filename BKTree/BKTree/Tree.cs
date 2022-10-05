@@ -29,7 +29,7 @@ namespace BKTree
             AddToFreeNode(root, new Node(data));
         }
 
-        public List<string> ReturnWords(string word)
+        public IEnumerable<string> ReturnWords(string word)
         {
             if (root == null || root.GetDistance(word) > levenshteinDistance)
             {
@@ -39,7 +39,6 @@ namespace BKTree
             List<string> words = new List<string>();
             words.Add(root.Data);
             GetWords(root, word, words);
-
             return words;
         }
 
