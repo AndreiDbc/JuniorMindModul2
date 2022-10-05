@@ -12,10 +12,12 @@ namespace BKTree
     {
         private readonly int levenshteinDistance;
         private Node root;
+        private List<string> words;
 
         public Tree(int levenshteinDistance)
         {
             this.levenshteinDistance = levenshteinDistance;
+            words = new List<string>();
         }
 
         public void Add(string data)
@@ -36,14 +38,13 @@ namespace BKTree
                 return null;
             }
 
-            List<string> words = new List<string>();
-            words = GetWords(root, word, words);
+            words = GetWords(root, word);
             words.Add(root.Data);
 
             return words;
         }
 
-        private List<string> GetWords(Node parent, string word, List<string> words)
+        private List<string> GetWords(Node parent, string word)
         {
             if (parent.Next == null)
             {
@@ -57,7 +58,7 @@ namespace BKTree
                     words.Add(node.Data);
                 }
 
-                GetWords(node, word, words);
+                GetWords(node, word);
             }
 
             return words;
