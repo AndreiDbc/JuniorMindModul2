@@ -24,13 +24,14 @@ namespace BKTree
             IEnumerable<string> words = tree.ReturnWords("sort");
             IEnumerator<string> enumerator = words.GetEnumerator();
             enumerator.MoveNext();
+            Assert.Equal("some", enumerator.Current);
+            enumerator.MoveNext();
             Assert.Equal("salmon", enumerator.Current);
             enumerator.MoveNext();
             Assert.Equal("soft", enumerator.Current);
             enumerator.MoveNext();
             Assert.Equal("same", enumerator.Current);
-            enumerator.MoveNext();
-            Assert.Equal("some", enumerator.Current);
+
         }
 
         [Fact]
@@ -52,11 +53,12 @@ namespace BKTree
             IEnumerable<string> words = tree.ReturnWords("sort");
             IEnumerator<string> enumerator = words.GetEnumerator();
             enumerator.MoveNext();
+            Assert.Equal("some", enumerator.Current);
+            enumerator.MoveNext();
             Assert.Equal("soft", enumerator.Current);
             enumerator.MoveNext();
             Assert.Equal("soda", enumerator.Current);
-            enumerator.MoveNext();
-            Assert.Equal("some", enumerator.Current);
+
         }
     }
 }
