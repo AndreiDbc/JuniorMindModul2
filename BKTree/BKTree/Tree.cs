@@ -37,16 +37,17 @@ namespace BKTree
             }
 
             List<string> words = new List<string>();
+            words = GetWords(root, word, words);
             words.Add(root.Data);
-            GetWords(root, word, words);
+
             return words;
         }
 
-        private void GetWords(Node parent, string word, List<string> words)
+        private List<string> GetWords(Node parent, string word, List<string> words)
         {
             if (parent.Next == null)
             {
-                return;
+                return words;
             }
 
             foreach (var node in parent.Next)
@@ -58,6 +59,8 @@ namespace BKTree
 
                 GetWords(node, word, words);
             }
+
+            return words;
         }
 
         private void AddToFreeNode(Node parent, Node toAdd)
