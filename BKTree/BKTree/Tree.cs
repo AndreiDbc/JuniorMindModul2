@@ -31,19 +31,19 @@ namespace BKTree
 
         public List<string> ReturnWords(string word)
         {
-            if (root == null || root.GetDistance(new Node(word)) > levenshteinDistance)
+            if (root == null || root.GetDistance(word) > levenshteinDistance)
             {
                 return null;
             }
 
             List<string> words = new List<string>();
             words.Add(root.Data);
-            GetWords(root, new Node(word), words);
+            GetWords(root, word, words);
 
             return words;
         }
 
-        private void GetWords(Node parent, Node word, List<string> words)
+        private void GetWords(Node parent, string word, List<string> words)
         {
             if (parent.Next == null)
             {
@@ -52,7 +52,7 @@ namespace BKTree
 
             foreach (var node in parent.Next)
             {
-                if (word.GetDistance(node) <= levenshteinDistance)
+                if (node.GetDistance(word) <= levenshteinDistance)
                 {
                     words.Add(node.Data);
                 }

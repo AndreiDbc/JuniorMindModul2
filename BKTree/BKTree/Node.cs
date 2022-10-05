@@ -85,6 +85,11 @@ namespace BKTree
             return matrix[parentLength, childLength];
         }
 
+        public int GetDistance(string word)
+        {
+            return GetDistance(new Node(word));
+        }
+
         private void AddChild(Node toAdd)
         {
             children ??= new Node[0];
