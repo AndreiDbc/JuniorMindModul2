@@ -44,26 +44,29 @@ namespace BKTree
         {
             Queue<Node> queue = new Queue<Node>();
             queue.Enqueue(root);
-            while (queue.Peek() != null)
+            while (queue.TryDequeue(out Node node))
             {
-                queue.TryDequeue(out Node node);
                 foreach (var item in GetNodes(queue, node, word))
                 {
-                    yield return item;
+                    yield return item.Data;
                 }
             }
         }
 
-        private IEnumerable<string> GetNodes(Queue<Node> queue, Node node, string word)
+        private Node[] GetNodes(Queue<Node> queue, Node node, string word)
         {
+            Node[] result = new Node[0];
             for (int i = 0; i < node.Next.Length; i++)
             {
                 if (node.Next[i].GetDistance(word) <= levenshteinDistance)
                 {
                     queue.Enqueue(node.Next[i]);
-                    yield return node.Next[i].Data;
+                    Array.Resize(ref result, result.Length + 1);
+                    result[result.Length - 1] = node.Next[i];
                 }
             }
+
+            return result;
         }
 
         private void AddToFreeNode(Node parent, Node toAdd)
