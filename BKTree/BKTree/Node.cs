@@ -92,8 +92,6 @@ namespace BKTree
 
         private void AddChild(Node toAdd)
         {
-            children ??= new Node[0];
-
             Array.Resize(ref children, children.Length + 1);
             children[children.Length - 1] = toAdd;
         }
