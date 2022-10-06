@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ using Xunit.Sdk;
 
 namespace BKTree
 {
-    class Tree
+    class Tree : IEnumerable<string>
     {
         private readonly int levenshteinDistance;
         private Node root;
@@ -50,6 +51,25 @@ namespace BKTree
                     }
                 }
             }
+        }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            yield return root.Data;
+            Queue<Node> queue = new Queue<Node>();
+            queue.Enqueue(root);
+            while (queue.TryDequeue(out Node node))
+            {
+                foreach (var item in node.Next)
+                {
+                    yield return item.Data;
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private void AddToFreeNode(Node parent, Node toAdd)
