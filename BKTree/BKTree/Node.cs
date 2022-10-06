@@ -69,11 +69,10 @@ namespace BKTree
 
         public int GetDistance(Node child)
         {
-            int parentLength = this.data.Length;
-            int[,] matrix = new int[parentLength + 1, child.Data.Length + 1];
+            int[,] matrix = new int[this.data.Length + 1, child.Data.Length + 1];
             FillEdges(matrix);
 
-            for (int i = 1; i < parentLength + 1; i++)
+            for (int i = 1; i < this.data.Length + 1; i++)
             {
                 for (int j = 1; j < child.Data.Length + 1; j++)
                 {
@@ -81,7 +80,7 @@ namespace BKTree
                 }
             }
 
-            return matrix[parentLength, child.Data.Length];
+            return matrix[this.data.Length, child.Data.Length];
         }
 
         public int GetDistance(string word)
@@ -92,7 +91,7 @@ namespace BKTree
         private void AddChild(Node toAdd)
         {
             Array.Resize(ref children, children.Length + 1);
-            children[children.Length - 1] = toAdd;
+            children[^1] = toAdd;
         }
 
         private void FillEdges(int[,] matrix)
