@@ -31,7 +31,6 @@ namespace BKTree
             Assert.Equal("soft", enumerator.Current);
             enumerator.MoveNext();
             Assert.Equal("same", enumerator.Current);
-
         }
 
         [Fact]
@@ -58,7 +57,6 @@ namespace BKTree
             Assert.Equal("soft", enumerator.Current);
             enumerator.MoveNext();
             Assert.Equal("soda", enumerator.Current);
-
         }
     }
 }

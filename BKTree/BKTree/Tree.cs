@@ -37,26 +37,38 @@ namespace BKTree
             }
 
             IEnumerable<string> first = new[] { root.Data };
-            return first.Concat(GetWords(root, word));
+            return first.Concat(GetWords(word));
         }
 
-        private IEnumerable<string> GetWords(Node parent, string word)
+        private IEnumerable<string> GetWords(string word)
         {
-            if (parent.Next == null)
+            Queue<Node> queue = new Queue<Node>();
+            queue.Enqueue(root);
+            while (queue.Count != 0)
             {
-                yield break;
-            }
-
-            foreach (var node in parent.Next)
-            {
-                if (node.GetDistance(word) <= levenshteinDistance)
+                int count = queue.Count;
+                while (count > 0)
                 {
-                    yield return node.Data;
+                    Node node = queue.Peek();
+                    queue.Dequeue();
+                    foreach (var item in GetNodes(queue, node, word))
+                    {
+                        yield return item;
+                    }
+
+                    count--;
                 }
+            }
+        }
 
-                foreach (var child in GetWords(node, word))
+        private IEnumerable<string> GetNodes(Queue<Node> queue, Node node, string word)
+        {
+            for (int i = 0; i < node.Next.Length; i++)
+            {
+                if (node.Next[i].GetDistance(word) <= levenshteinDistance)
                 {
-                    yield return child;
+                    queue.Enqueue(node.Next[i]);
+                    yield return node.Next[i].Data;
                 }
             }
         }
