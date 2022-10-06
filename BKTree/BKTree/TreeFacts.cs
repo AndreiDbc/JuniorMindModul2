@@ -21,7 +21,7 @@ namespace BKTree
             tree.Add(n2);
             tree.Add(n3);
             tree.Add(n4);
-            IEnumerable<string> words = tree.ReturnWords("sort");
+            IEnumerable<string> words = tree.Find("sort");
             IEnumerator<string> enumerator = words.GetEnumerator();
             enumerator.MoveNext();
             Assert.Equal("some", enumerator.Current);
@@ -49,7 +49,7 @@ namespace BKTree
             tree.Add(n4);
             tree.Add(n5);
             tree.Add(n6);
-            IEnumerable<string> words = tree.ReturnWords("sort");
+            IEnumerable<string> words = tree.Find("sort");
             IEnumerator<string> enumerator = words.GetEnumerator();
             enumerator.MoveNext();
             Assert.Equal("some", enumerator.Current);
