@@ -44,19 +44,12 @@ namespace BKTree
         {
             Queue<Node> queue = new Queue<Node>();
             queue.Enqueue(root);
-            while (queue.Count != 0)
+            while (queue.Peek() != null)
             {
-                int count = queue.Count;
-                while (count > 0)
+                queue.TryDequeue(out Node node);
+                foreach (var item in GetNodes(queue, node, word))
                 {
-                    Node node = queue.Peek();
-                    queue.Dequeue();
-                    foreach (var item in GetNodes(queue, node, word))
-                    {
-                        yield return item;
-                    }
-
-                    count--;
+                    yield return item;
                 }
             }
         }
