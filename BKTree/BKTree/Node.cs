@@ -18,13 +18,13 @@ namespace BKTree
             this.children = new Node[0];
         }
 
-        public Node[] Next { get => children; }
+        public Node[] Children { get => children; }
 
         public string Data { get => data; }
 
         public Node ChildAtDistance(int distance)
         {
-            foreach (var child in this.Next)
+            foreach (var child in this.Children)
             {
                 if (GetDistance(child).Equals(distance))
                 {
@@ -37,7 +37,7 @@ namespace BKTree
 
         public bool AddToParent(Node toAdd)
         {
-            if (this.Next == null)
+            if (this.Children == null)
             {
                 this.AddChild(toAdd);
                 return true;
@@ -55,7 +55,7 @@ namespace BKTree
 
         public bool AddToChild(Node toAdd)
         {
-            foreach (var node in this.Next)
+            foreach (var node in this.Children)
             {
                 if (node.GetDistance(toAdd) == null)
                 {

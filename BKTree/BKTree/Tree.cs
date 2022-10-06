@@ -42,7 +42,7 @@ namespace BKTree
             queue.Enqueue(root);
             while (queue.TryDequeue(out Node node))
             {
-                foreach (var item in node.Next)
+                foreach (var item in node.Children)
                 {
                     if (item.GetDistance(word) <= levenshteinDistance)
                     {
@@ -60,7 +60,7 @@ namespace BKTree
             queue.Enqueue(root);
             while (queue.TryDequeue(out Node node))
             {
-                foreach (var item in node.Next)
+                foreach (var item in node.Children)
                 {
                     yield return item.Data;
                 }
