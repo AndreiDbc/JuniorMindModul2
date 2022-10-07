@@ -32,7 +32,7 @@ namespace BKTree
                 }
             }
 
-            return null;
+            return default;
         }
 
         public bool AddChild(Node toAdd)
