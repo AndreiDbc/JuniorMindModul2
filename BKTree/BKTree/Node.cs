@@ -37,12 +37,6 @@ namespace BKTree
 
         public bool AddToParent(Node toAdd)
         {
-            if (this.Children == null)
-            {
-                this.AddChild(toAdd);
-                return true;
-            }
-
             Node child = this.ChildAtDistance(this.GetDistance(toAdd));
             if (child != null)
             {

@@ -10,6 +10,42 @@ namespace BKTree
     public class NodeFacts
     {
         [Fact]
+        public void ChildAtDistanceIsCalledShouldReturnChild()
+        {
+            var first = new Node("Drill");
+            var second = new Node("Bill");
+            var third = new Node("Dill");
+            first.AddToParent(second);
+            first.AddToParent(third);
+            Assert.Equal(third, first.ChildAtDistance(1));
+        }
+
+        [Fact]
+        public void ChildAtDistanceIsCalledShouldReturnNull()
+        {
+            var first = new Node("Drill");
+            var second = new Node("Bill");
+            var third = new Node("Dill");
+            first.AddToParent(second);
+            first.AddToParent(third);
+            Assert.Equal(null, first.ChildAtDistance(5));
+        }
+
+        [Fact]
+        public void AddToParentIsCalledChildAllreadyExistsWithDistanceShouldReturnFalse()
+        {
+            var first = new Node("Drill");
+            var second = new Node("Bill");
+            var third = new Node("Dill");
+            var fourth = new Node("ill");
+            first.AddToParent(second);
+            first.AddToParent(third);
+            first.AddToParent(fourth);
+            Assert.Equal(new[] { second, third }, first.Children);
+            Assert.False(first.AddToParent(fourth));
+        }
+
+        [Fact]
         public void GetDistanceIsCalledShouldReturnDistanceBetweenNodes()
         {
             Node first = new Node("Drill");
