@@ -35,7 +35,7 @@ namespace BKTree
             return null;
         }
 
-        public bool AddToParent(Node toAdd)
+        public bool AddChild(Node toAdd)
         {
             Node child = this.ChildAtDistance(this.GetDistance(toAdd));
             if (child != null)
@@ -43,22 +43,9 @@ namespace BKTree
                 return false;
             }
 
-            this.AddChild(toAdd);
+            Array.Resize(ref children, children.Length + 1);
+            children[^1] = toAdd;
             return true;
-        }
-
-        public bool AddToChild(Node toAdd)
-        {
-            foreach (var node in this.Children)
-            {
-                if (node.GetDistance(toAdd) == null)
-                {
-                    node.AddChild(toAdd);
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         public int GetDistance(Node child)
@@ -80,12 +67,6 @@ namespace BKTree
         public int GetDistance(string word)
         {
             return GetDistance(new Node(word));
-        }
-
-        private void AddChild(Node toAdd)
-        {
-            Array.Resize(ref children, children.Length + 1);
-            children[^1] = toAdd;
         }
 
         private void FillEdges(int[,] matrix)

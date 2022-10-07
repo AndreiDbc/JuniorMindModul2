@@ -74,12 +74,7 @@ namespace BKTree
 
         private void AddToFreeNode(Node parent, Node toAdd)
         {
-            if (parent.AddToParent(toAdd))
-            {
-                return;
-            }
-
-            if (parent.AddToChild(toAdd))
+            if (parent.AddChild(toAdd))
             {
                 return;
             }

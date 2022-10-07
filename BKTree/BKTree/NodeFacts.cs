@@ -15,8 +15,8 @@ namespace BKTree
             var first = new Node("Drill");
             var second = new Node("Bill");
             var third = new Node("Dill");
-            first.AddToParent(second);
-            first.AddToParent(third);
+            first.AddChild(second);
+            first.AddChild(third);
             Assert.Equal(third, first.ChildAtDistance(1));
         }
 
@@ -26,23 +26,44 @@ namespace BKTree
             var first = new Node("Drill");
             var second = new Node("Bill");
             var third = new Node("Dill");
-            first.AddToParent(second);
-            first.AddToParent(third);
+            first.AddChild(second);
+            first.AddChild(third);
             Assert.Equal(null, first.ChildAtDistance(5));
         }
 
         [Fact]
-        public void AddToParentIsCalledChildAllreadyExistsWithDistanceShouldReturnFalse()
+        public void AddChildIsCalledShouldAddChild()
+        {
+            var first = new Node("Drill");
+            var second = new Node("Bill");
+            var third = new Node("Dill");
+            first.AddChild(second);
+            first.AddChild(third);
+            Assert.Equal(new[] { second, third }, first.Children);
+        }
+
+        [Fact]
+        public void AddChildIsCalledShouldReturnTrue()
+        {
+            var first = new Node("Drill");
+            var second = new Node("Bill");
+            var third = new Node("Dill");
+            Assert.True(first.AddChild(second));
+            Assert.True(first.AddChild(third));
+        }
+
+        [Fact]
+        public void AddChildIsCalledChildAllreadyExistsWithDistanceShouldReturnFalse()
         {
             var first = new Node("Drill");
             var second = new Node("Bill");
             var third = new Node("Dill");
             var fourth = new Node("ill");
-            first.AddToParent(second);
-            first.AddToParent(third);
-            first.AddToParent(fourth);
+            first.AddChild(second);
+            first.AddChild(third);
+            first.AddChild(fourth);
             Assert.Equal(new[] { second, third }, first.Children);
-            Assert.False(first.AddToParent(fourth));
+            Assert.False(first.AddChild(fourth));
         }
 
         [Fact]
@@ -60,9 +81,9 @@ namespace BKTree
             var n2 = new Node("salmon");
             var n3 = new Node("soft");
             var n4 = new Node("same");
-            n1.AddToParent(n2);
-            n1.AddToParent(n3);
-            n1.AddToParent(n4);
+            n1.AddChild(n2);
+            n1.AddChild(n3);
+            n1.AddChild(n4);
             Assert.Equal(n4, n1.ChildAtDistance(1));
         }
     }
