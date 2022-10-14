@@ -12,57 +12,55 @@ namespace Linq
         [Fact]
         public void AllIsCalledShouldReturnTrue()
         {
-            IEnumerable<int> list = new List<int>() { 1, 2, 3 };
-            Assert.True(list.All(val => val < 5));
+            Assert.True(new List<int>() { 1, 2, 3 }.All(val => val < 5));
         }
 
         [Fact]
         public void AllIsCalledShouldReturnFalse()
         {
-            IEnumerable<int> list = new List<int>() { 1, 6, 3 };
-            Assert.False(list.All(val => val < 5));
+            Assert.False(new List<int>() { 1, 6, 3 }.All(val => val < 5));
         }
 
         [Fact]
         public void AnyIsCalledShouldReturnTrue()
         {
-            IEnumerable<int> list = new List<int>() { 1, 2, 3 };
-            Assert.True(list.Any(val => val == 2));
+            Assert.True(new List<int>() { 1, 2, 3 }.Any(val => val == 2));
         }
 
         [Fact]
         public void AnyIsCalledShouldReturnFalse()
         {
-            IEnumerable<int> list = new List<int>() { 1, 2, 3 };
-            Assert.False(list.Any(val => val == 6));
+            Assert.False(new List<int>() { 1, 2, 3 }.Any(val => val == 6));
         }
 
         [Fact]
         public void FirstIsCalledShouldReturnItem()
         {
-            IEnumerable<int> list = new List<int>() { 1, 2, 3 };
-            Assert.Equal(2, list.First(val => val > 1));
+            Assert.Equal(2, new List<int>() { 1, 2, 3 }.First(val => val > 1));
         }
 
         [Fact]
         public void FirstIsCalledShouldThrowException()
         {
-            IEnumerable<int> list = new List<int>() { 1, 2, 3 };
-            Assert.Throws<InvalidOperationException>(() => list.First(val => val > 3));
+            Assert.Throws<InvalidOperationException>(() => new List<int>() { 1, 2, 3 }.First(val => val > 3));
         }
 
         [Fact]
         public void SelectIsCalledShouldReturnStringToLower()
         {
-            IEnumerable<string> strings = new List<string>() { "ASd", "dDS", "sdsD" };
-            Assert.Equal(new[] { "asd", "dds", "sdsd" }, strings.Select(element => element.ToLower()));
+            Assert.Equal(new[] { "asd", "dds", "sdsd" }, new List<string>() { "ASd", "dDS", "sdsD" }.Select(element => element.ToLower()));
         }
 
         [Fact]
         public void SelectManyIsCalledShouldReturnCharacters()
         {
-            IEnumerable<string> strings = new List<string>() { "ASd", "dDS" };
-            Assert.Equal(new[] { 'A', 'S', 'd', 'd', 'D', 'S' }, strings.SelectMany(x => x));
+            Assert.Equal(new[] { 'A', 'S', 'd', 'd', 'D', 'S' }, new List<string>() { "ASd", "dDS" }.SelectMany(x => x));
+        }
+
+        [Fact]
+        public void WhereIsCalledShouldReturnNumbers()
+        {
+            Assert.Equal(new[] { 1, 2, 3 }, new[] { 1, 2, 3, 4 }.Where(number => number < 4));
         }
     }
 }
