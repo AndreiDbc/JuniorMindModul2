@@ -9,5 +9,18 @@ namespace Linq
 {
     public class LinqFacts
     {
+        [Fact]
+        public void AllIsCalledShouldReturnTrue()
+        {
+            IEnumerable<int> list = new List<int>() { 1, 2, 3 };
+            Assert.True(list.All(val => val < 5));
+        }
+
+        [Fact]
+        public void AllIsCalledShouldReturnFalse()
+        {
+            IEnumerable<int> list = new List<int>() { 1, 6, 3 };
+            Assert.False(list.All(val => val < 5));
+        }
     }
 }
