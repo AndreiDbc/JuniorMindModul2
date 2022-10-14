@@ -106,5 +106,15 @@ namespace Linq
                 yield return resultSelector(firstEnumerator.Current, secondEnumerator.Current);
             }
         }
+
+        public static TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
+        {
+            foreach (var item in source)
+            {
+                seed = func(seed, item);
+            }
+
+            return seed;
+        }
     }
 }

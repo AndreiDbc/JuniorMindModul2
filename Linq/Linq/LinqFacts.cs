@@ -86,5 +86,11 @@ namespace Linq
             Assert.Equal(new[] { "1a", "2b", "3c" }, new List<int>() { 1, 2, 3 }
             .Zip(new List<string>() { "a", "b", "c", "d" }, (leters, numbers) => leters + numbers));
         }
+
+        [Fact]
+        public void AggregateIsCalledShouldReturnMultiplication()
+        {
+            Assert.Equal(3000, new List<int> { 10, 20, 15 }.Aggregate((x, y) => x * y));
+        }
     }
 }
