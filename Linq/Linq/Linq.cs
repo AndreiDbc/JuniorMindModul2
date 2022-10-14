@@ -54,5 +54,16 @@ namespace Linq
                 yield return selector(item);
             }
         }
+
+        public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
+        {
+            foreach (var item in source)
+            {
+                foreach (var selected in selector(item))
+                {
+                    yield return selected;
+                }
+            }
+        }
     }
 }

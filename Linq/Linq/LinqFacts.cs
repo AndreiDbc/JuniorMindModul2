@@ -58,5 +58,11 @@ namespace Linq
             Assert.Equal(new[] { "asd", "dds", "sdsd" }, strings.Select(element => element.ToLower()));
         }
 
+        [Fact]
+        public void SelectManyIsCalledShouldReturnCharacters()
+        {
+            IEnumerable<string> strings = new List<string>() { "ASd", "dDS" };
+            Assert.Equal(new[] { 'A', 'S', 'd', 'd', 'D', 'S' }, strings.SelectMany(x => x));
+        }
     }
 }
