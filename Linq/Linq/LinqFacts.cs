@@ -62,5 +62,17 @@ namespace Linq
         {
             Assert.Equal(new[] { 1, 2, 3 }, new[] { 1, 2, 3, 4 }.Where(number => number < 4));
         }
+
+        [Fact]
+        public void ToDictionaryIsCalledShouldConvertListToDictionary()
+        {
+            Assert.Equal(new Dictionary<char, char>().GetType(), new List<char>() { 'a', 'b', 'c' }.ToDictionary(x => x).GetType());
+        }
+
+        [Fact]
+        public void ToDictionaryIsCalledShouldReturnValues()
+        {
+            Assert.Equal(new Dictionary<int, int> { { 2, 1 }, { 3, 2 }, { 4, 3 } }, new List<int>() { 1, 2, 3 }.ToDictionary(x => x + 1));
+        }
     }
 }
