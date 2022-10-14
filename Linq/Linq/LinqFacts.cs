@@ -36,5 +36,19 @@ namespace Linq
             IEnumerable<int> list = new List<int>() { 1, 2, 3 };
             Assert.False(list.Any(val => val == 6));
         }
+
+        [Fact]
+        public void FirstIsCalledShouldReturnItem()
+        {
+            IEnumerable<int> list = new List<int>() { 1, 2, 3 };
+            Assert.Equal(2, list.First(val => val > 1));
+        }
+
+        [Fact]
+        public void FirstIsCalledShouldThrowException()
+        {
+            IEnumerable<int> list = new List<int>() { 1, 2, 3 };
+            Assert.Throws<InvalidOperationException>(() => list.First(val => val > 3));
+        }
     }
 }
