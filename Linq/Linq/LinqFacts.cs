@@ -50,5 +50,13 @@ namespace Linq
             IEnumerable<int> list = new List<int>() { 1, 2, 3 };
             Assert.Throws<InvalidOperationException>(() => list.First(val => val > 3));
         }
+
+        [Fact]
+        public void SelectIsCalledShouldReturnStringToLower()
+        {
+            IEnumerable<string> strings = new List<string>() { "ASd", "dDS", "sdsD" };
+            Assert.Equal(new[] { "asd", "dds", "sdsd" }, strings.Select(element => element.ToLower()));
+        }
+
     }
 }
