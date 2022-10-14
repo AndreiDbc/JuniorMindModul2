@@ -42,19 +42,22 @@ namespace Linq
         [Fact]
         public void FirstIsCalledShouldThrowException()
         {
-            Assert.Throws<InvalidOperationException>(() => new List<int>() { 1, 2, 3 }.First(val => val > 3));
+            Assert.Throws<InvalidOperationException>(() => new List<int>() { 1, 2, 3 }
+            .First(val => val > 3));
         }
 
         [Fact]
         public void SelectIsCalledShouldReturnStringToLower()
         {
-            Assert.Equal(new[] { "asd", "dds", "sdsd" }, new List<string>() { "ASd", "dDS", "sdsD" }.Select(element => element.ToLower()));
+            Assert.Equal(new[] { "asd", "dds", "sdsd" }, new List<string>() { "ASd", "dDS", "sdsD" }
+            .Select(element => element.ToLower()));
         }
 
         [Fact]
         public void SelectManyIsCalledShouldReturnCharacters()
         {
-            Assert.Equal(new[] { 'A', 'S', 'd', 'd', 'D', 'S' }, new List<string>() { "ASd", "dDS" }.SelectMany(x => x));
+            Assert.Equal(new[] { 'A', 'S', 'd', 'd', 'D', 'S' }, new List<string>() { "ASd", "dDS" }
+            .SelectMany(x => x));
         }
 
         [Fact]
@@ -66,13 +69,22 @@ namespace Linq
         [Fact]
         public void ToDictionaryIsCalledShouldConvertListToDictionary()
         {
-            Assert.Equal(new Dictionary<char, char>().GetType(), new List<char>() { 'a', 'b', 'c' }.ToDictionary(x => x).GetType());
+            Assert.Equal(new Dictionary<char, char>().GetType(), new List<char>() { 'a', 'b', 'c' }
+            .ToDictionary(x => x).GetType());
         }
 
         [Fact]
         public void ToDictionaryIsCalledShouldReturnValues()
         {
-            Assert.Equal(new Dictionary<int, int> { { 2, 1 }, { 3, 2 }, { 4, 3 } }, new List<int>() { 1, 2, 3 }.ToDictionary(x => x + 1));
+            Assert.Equal(new Dictionary<int, int> { { 2, 1 }, { 3, 2 }, { 4, 3 } }, new List<int>() { 1, 2, 3 }
+            .ToDictionary(x => x + 1));
+        }
+
+        [Fact]
+        public void ZipIsCalledShouldReturnNewEnumerable()
+        {
+            Assert.Equal(new[] { "1a", "2b", "3c" }, new List<int>() { 1, 2, 3 }
+            .Zip(new List<string>() { "a", "b", "c", "d" }, (leters, numbers) => leters + numbers));
         }
     }
 }

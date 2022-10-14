@@ -47,7 +47,8 @@ namespace Linq
             throw new InvalidOperationException();
         }
 
-        public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
+        public static IEnumerable<TResult> Select<TSource, TResult>(
+            this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
             foreach (var item in source)
             {
@@ -55,7 +56,8 @@ namespace Linq
             }
         }
 
-        public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
+        public static IEnumerable<TResult> SelectMany<TSource, TResult>(
+            this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
         {
             foreach (var item in source)
             {
@@ -66,7 +68,8 @@ namespace Linq
             }
         }
 
-        public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
+        public static IEnumerable<TSource> Where<TSource>(
+            this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
             foreach (var item in source)
             {
@@ -77,7 +80,10 @@ namespace Linq
             }
         }
 
-        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector)
         {
             var dictionary = new Dictionary<TKey, TElement>();
             foreach (var item in source)
@@ -86,6 +92,19 @@ namespace Linq
             }
 
             return dictionary;
+        }
+
+        public static IEnumerable<TResult> Zip<TFirst, TSecond, TResult>(
+            this IEnumerable<TFirst> first,
+            IEnumerable<TSecond> second,
+            Func<TFirst, TSecond, TResult> resultSelector)
+        {
+            var firstEnumerator = first.Select(element => element).GetEnumerator();
+            var secondEnumerator = second.Select(element => element).GetEnumerator();
+            for (int i = 0; i > -1 && firstEnumerator.MoveNext() && secondEnumerator.MoveNext(); i++)
+            {
+                yield return resultSelector(firstEnumerator.Current, secondEnumerator.Current);
+            }
         }
     }
 }
