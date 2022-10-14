@@ -116,5 +116,24 @@ namespace Linq
 
             return seed;
         }
+
+        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(
+        this IEnumerable<TOuter> outer,
+        IEnumerable<TInner> inner,
+        Func<TOuter, TKey> outerKeySelector,
+        Func<TInner, TKey> innerKeySelector,
+        Func<TOuter, TInner, TResult> resultSelector)
+        {
+            foreach (var outerItem in outer)
+            {
+                foreach (var innerItem in inner)
+                {
+                    if (outerKeySelector(outerItem).Equals(innerKeySelector(innerItem)))
+                    {
+                        yield return resultSelector(outerItem, innerItem);
+                    }
+                }
+            }
+        }
     }
 }

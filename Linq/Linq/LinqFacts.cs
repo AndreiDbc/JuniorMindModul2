@@ -92,5 +92,15 @@ namespace Linq
         {
             Assert.Equal(3000, new List<int> { 10, 20, 15 }.Aggregate((x, y) => x * y));
         }
+
+        [Fact]
+        public void JoinIsCalledShouldReturnResult()
+        {
+            Assert.Equal(new[] { "a d", "b e", "c f" }, new Dictionary<int, string>() { { 0, "a" }, { 1, "b" }, { 2, "c" } }.Join(
+                new Dictionary<int, string>() { { 2, "d" }, { 4, "e" }, { 6, "f" } },
+                outerKeySelector => outerKeySelector.Key + 1,
+                innerKeySelector => innerKeySelector.Key / 2,
+                (outer, inner) => outer.Value + " " + inner.Value));
+        }
     }
 }
