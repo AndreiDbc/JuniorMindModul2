@@ -109,12 +109,13 @@ namespace Linq
 
         public static TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
         {
+            TAccumulate result = default;
             foreach (var item in source)
             {
-                seed = func(seed, item);
+                result = func(seed, item);
             }
 
-            return seed;
+            return result;
         }
 
         public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(
