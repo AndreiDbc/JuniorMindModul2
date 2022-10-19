@@ -99,11 +99,13 @@ namespace Linq
             IEnumerable<TSecond> second,
             Func<TFirst, TSecond, TResult> resultSelector)
         {
-            var firstEnumerator = first.Select(element => element).GetEnumerator();
-            var secondEnumerator = second.Select(element => element).GetEnumerator();
-            for (int i = 0; i > -1 && firstEnumerator.MoveNext() && secondEnumerator.MoveNext(); i++)
+            var enumerator = second.Select(element => element).GetEnumerator();
+            foreach (var item in first)
             {
-                yield return resultSelector(firstEnumerator.Current, secondEnumerator.Current);
+                if (enumerator.MoveNext())
+                {
+                    yield return resultSelector(item, enumerator.Current);
+                }
             }
         }
 
