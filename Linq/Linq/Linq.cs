@@ -138,5 +138,19 @@ namespace Linq
                 }
             }
         }
+
+        public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
+        {
+            var result = new List<TSource>();
+            foreach (var item in source)
+            {
+                if (!result.Contains(item))
+                {
+                    result.Add(source.First(val => comparer.Equals(val, item)));
+                }
+            }
+
+            return result;
+        }
     }
 }

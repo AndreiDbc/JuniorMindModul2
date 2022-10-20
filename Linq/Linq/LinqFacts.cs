@@ -102,5 +102,11 @@ namespace Linq
                 innerKeySelector => innerKeySelector.Key / 2,
                 (outer, inner) => outer.Value + " " + inner.Value));
         }
+
+        [Fact]
+        public void DistinctIsCalledShouldReturnDistinctElements()
+        {
+            Assert.Equal(new[] { 1, 2, 3 }, new List<int>() { 1, 1, 2, 3, 3 }.Distinct(EqualityComparer<int>.Default));
+        }
     }
 }
