@@ -10,6 +10,16 @@ namespace Linq
     {
         public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
             foreach (TSource item in source)
             {
                 if (!predicate(item))
@@ -99,7 +109,7 @@ namespace Linq
             IEnumerable<TSecond> second,
             Func<TFirst, TSecond, TResult> resultSelector)
         {
-            var enumerator = second.Select(element => element).GetEnumerator();
+            var enumerator = second.GetEnumerator();
             foreach (var item in first)
             {
                 if (enumerator.MoveNext())
