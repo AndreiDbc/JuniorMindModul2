@@ -165,5 +165,26 @@ namespace Linq
         {
             Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 1, 2, 3, 3 }.Distinct(null));
         }
+
+        [Fact]
+        public void UnionIsCalledShouldReturnElements()
+        {
+            Assert.Equal(new[] { 1, 2, 3 }, new List<int>() { 1, 2 }
+            .Union(new List<int>() { 2, 3 }, EqualityComparer<int>.Default));
+        }
+
+        [Fact]
+        public void UnionIsCalledSecondIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2 }
+            .Union(null, EqualityComparer<int>.Default));
+        }
+
+        [Fact]
+        public void UnionIsCalledIequalityComparerIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2 }
+            .Union(new List<int>() { 2, 3 }, null));
+        }
     }
 }

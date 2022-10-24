@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -180,6 +181,26 @@ namespace Linq
                 if (!result.Contains(item))
                 {
                     result.Add(source.First(val => comparer.Equals(val, item)));
+                }
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<TSource> Union<TSource>(
+        this IEnumerable<TSource> first,
+        IEnumerable<TSource> second,
+        IEqualityComparer<TSource> comparer)
+        {
+            CheckForNull(second);
+            CheckForNull(comparer);
+            var result = new List<TSource>();
+            result.AddRange(first);
+            foreach (var item in second)
+            {
+                if (!result.Contains(item))
+                {
+                    result.Add(item);
                 }
             }
 
