@@ -196,11 +196,14 @@ namespace Linq
             CheckForNull(comparer);
             var result = new List<TSource>();
             result.AddRange(first);
-            foreach (var item in second)
+            foreach (var firstItem in first)
             {
-                if (!result.Contains(item))
+                foreach (var secondItem in second)
                 {
-                    result.Add(item);
+                    if (!comparer.Equals(firstItem, secondItem) && !result.Contains(secondItem))
+                    {
+                        result.Add(secondItem);
+                    }
                 }
             }
 
