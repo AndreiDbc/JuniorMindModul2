@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Linq
 {
@@ -10,16 +12,8 @@ namespace Linq
     {
         public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-
+            CheckForNull(source);
+            CheckForNull(predicate);
             foreach (TSource item in source)
             {
                 if (!predicate(item))
@@ -33,6 +27,8 @@ namespace Linq
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
+            CheckForNull(source);
+            CheckForNull(predicate);
             foreach (var item in source)
             {
                 if (predicate(item))
@@ -46,6 +42,8 @@ namespace Linq
 
         public static TSource First<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
+            CheckForNull(source);
+            CheckForNull(predicate);
             foreach (var item in source)
             {
                 if (predicate(item))
@@ -60,6 +58,8 @@ namespace Linq
         public static IEnumerable<TResult> Select<TSource, TResult>(
             this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
+            CheckForNull(source);
+            CheckForNull(selector);
             foreach (var item in source)
             {
                 yield return selector(item);
@@ -69,6 +69,8 @@ namespace Linq
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(
             this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
         {
+            CheckForNull(source);
+            CheckForNull(selector);
             foreach (var item in source)
             {
                 foreach (var selected in selector(item))
@@ -81,6 +83,8 @@ namespace Linq
         public static IEnumerable<TSource> Where<TSource>(
             this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
+            CheckForNull(source);
+            CheckForNull(predicate);
             foreach (var item in source)
             {
                 if (predicate(item))
@@ -95,6 +99,9 @@ namespace Linq
             Func<TSource, TKey> keySelector,
             Func<TSource, TElement> elementSelector)
         {
+            CheckForNull(source);
+            CheckForNull(keySelector);
+            CheckForNull(elementSelector);
             var dictionary = new Dictionary<TKey, TElement>();
             foreach (var item in source)
             {
@@ -109,6 +116,8 @@ namespace Linq
             IEnumerable<TSecond> second,
             Func<TFirst, TSecond, TResult> resultSelector)
         {
+            CheckForNull(first);
+            CheckForNull(second);
             var enumerator = second.GetEnumerator();
             foreach (var item in first)
             {
@@ -121,6 +130,13 @@ namespace Linq
 
         public static TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
         {
+            CheckForNull(source);
+            CheckForNull(func);
+            if (seed == null)
+            {
+                throw new ArgumentNullException(nameof(seed));
+            }
+
             TAccumulate result = default;
             foreach (var item in source)
             {
@@ -137,6 +153,11 @@ namespace Linq
         Func<TInner, TKey> innerKeySelector,
         Func<TOuter, TInner, TResult> resultSelector)
         {
+            CheckForNull(outer);
+            CheckForNull(inner);
+            CheckForNull(outerKeySelector);
+            CheckForNull(innerKeySelector);
+            CheckForNull(resultSelector);
             foreach (var outerItem in outer)
             {
                 foreach (var innerItem in inner)
@@ -151,6 +172,8 @@ namespace Linq
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
         {
+            CheckForNull(source);
+            CheckForNull(comparer);
             var result = new List<TSource>();
             foreach (var item in source)
             {
@@ -161,6 +184,46 @@ namespace Linq
             }
 
             return result;
+        }
+
+        private static void CheckForNull<T>(IEnumerable<T> source)
+        {
+            if (source != null)
+            {
+                return;
+            }
+
+            throw new ArgumentNullException(nameof(source));
+        }
+
+        private static void CheckForNull<TSource, TElement>(Func<TSource, TElement> predicate)
+        {
+            if (predicate != null)
+            {
+                return;
+            }
+
+            throw new ArgumentNullException(nameof(predicate));
+        }
+
+        private static void CheckForNull<TSource, TFirst, TSecond>(Func<TSource, TFirst, TSecond> predicate)
+        {
+            if (predicate != null)
+            {
+                return;
+            }
+
+            throw new ArgumentNullException(nameof(predicate));
+        }
+
+        private static void CheckForNull<TSource>(IEqualityComparer<TSource> predicate)
+        {
+            if (predicate != null)
+            {
+                return;
+            }
+
+            throw new ArgumentNullException(nameof(predicate));
         }
     }
 }

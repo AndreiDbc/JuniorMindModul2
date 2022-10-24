@@ -16,6 +16,12 @@ namespace Linq
         }
 
         [Fact]
+        public void AllIsCalledPredicateIsNullShouldThorwException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2, 3 }.All(null));
+        }
+
+        [Fact]
         public void AllIsCalledShouldReturnFalse()
         {
             Assert.False(new List<int>() { 1, 6, 3 }.All(val => val < 5));
@@ -28,6 +34,12 @@ namespace Linq
         }
 
         [Fact]
+        public void AnyIsCalledPredicateIsNullShouldThorwException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2, 3 }.All(null));
+        }
+
+        [Fact]
         public void AnyIsCalledShouldReturnFalse()
         {
             Assert.False(new List<int>() { 1, 2, 3 }.Any(val => val == 6));
@@ -37,6 +49,13 @@ namespace Linq
         public void FirstIsCalledShouldReturnItem()
         {
             Assert.Equal(2, new List<int>() { 1, 2, 3 }.First(val => val > 1));
+        }
+
+        [Fact]
+        public void FirstIsCalledPredicateIsNullShouldThorwException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2, 3 }
+            .First(null));
         }
 
         [Fact]
@@ -67,6 +86,12 @@ namespace Linq
         }
 
         [Fact]
+        public void WhereIsCalledPredicateIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new[] { 1, 2, 3, 4 }.Where(null));
+        }
+
+        [Fact]
         public void ToDictionaryIsCalledShouldConvertListToDictionary()
         {
             Assert.Equal(new Dictionary<char, char>().GetType(), new List<char>() { 'a', 'b', 'c' }
@@ -94,6 +119,12 @@ namespace Linq
         }
 
         [Fact]
+        public void AggregateIsCalledFuncIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int> { 10, 20, 15 }.Aggregate(null));
+        }
+
+        [Fact]
         public void JoinIsCalledShouldReturnResult()
         {
             Assert.Equal(new[] { "a d", "b e", "c f" }, new Dictionary<int, string>() { { 0, "a" }, { 1, "b" }, { 2, "c" } }.Join(
@@ -104,9 +135,35 @@ namespace Linq
         }
 
         [Fact]
+        public void JoinIsCalledOuterKeySelectorIsNullSHouldThorwException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Dictionary<int, string>() { { 0, "a" }, { 1, "b" }, { 2, "c" } }.Join(
+                new Dictionary<int, string>() { { 2, "d" }, { 4, "e" }, { 6, "f" } },
+                null,
+                innerKeySelector => innerKeySelector.Key / 2,
+                (outer, inner) => outer.Value + " " + inner.Value));
+        }
+
+        [Fact]
+        public void JoinIsCalledInnerKeySelectorIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Dictionary<int, string>() { { 0, "a" }, { 1, "b" }, { 2, "c" } }.Join(
+                new Dictionary<int, string>() { { 2, "d" }, { 4, "e" }, { 6, "f" } },
+                outerKeySelector => outerKeySelector.Key + 1,
+                null,
+                (outer, inner) => outer.Value + " " + inner.Value));
+        }
+
+        [Fact]
         public void DistinctIsCalledShouldReturnDistinctElements()
         {
             Assert.Equal(new[] { 1, 2, 3 }, new List<int>() { 1, 1, 2, 3, 3 }.Distinct(EqualityComparer<int>.Default));
+        }
+
+        [Fact]
+        public void DistinctIsCalledIEqualityComparerIsNullShouldTHorwException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 1, 2, 3, 3 }.Distinct(null));
         }
     }
 }
