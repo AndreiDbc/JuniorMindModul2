@@ -207,6 +207,28 @@ namespace Linq
             return result;
         }
 
+        public static IEnumerable<TSource> Intersect<TSource>(
+        this IEnumerable<TSource> first,
+        IEnumerable<TSource> second,
+        IEqualityComparer<TSource> comparer)
+        {
+            CheckForNull(second);
+            CheckForNull(comparer);
+            var result = new List<TSource>();
+            foreach (var firstItem in first)
+            {
+                foreach (var secondItem in second)
+                {
+                    if (comparer.Equals(firstItem, secondItem) && !result.Contains(firstItem))
+                    {
+                        result.Add(firstItem);
+                    }
+                }
+            }
+
+            return result;
+        }
+
         private static void CheckForNull<T>(IEnumerable<T> source)
         {
             if (source != null)
