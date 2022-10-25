@@ -207,5 +207,26 @@ namespace Linq
             Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2, 3, 4 }
             .Intersect(new List<int>() { 1, 2, 8, 9 }, null));
         }
+
+        [Fact]
+        public void ExceptIsCalledShouldReturnElements()
+        {
+            Assert.Equal(new[] { 1, 5, 7 }, new List<int>() { 1, 2, 3, 4, 5, 6, 7 }
+            .Except(new List<int>() { 2, 3, 4, 6 }, EqualityComparer<int>.Default));
+        }
+
+        [Fact]
+        public void ExceptIsCalledSecondIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2, 3, 4, 5, 6, 7 }
+            .Except(null, EqualityComparer<int>.Default));
+        }
+
+        [Fact]
+        public void ExceptIsCalledEqualityComparerIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2, 3, 4, 5, 6, 7 }
+            .Except(new List<int>() { 2, 3, 4, 6 }, null));
+        }
     }
 }
