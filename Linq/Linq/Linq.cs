@@ -243,20 +243,13 @@ namespace Linq
             CheckForNull(second);
             CheckForNull(comparer);
 
-            var result = new List<TSource>();
-
-            foreach (var firstItem in first)
+            foreach (var item in first)
             {
-                foreach (var secondItem in second)
+                if (!first.Intersect(second, EqualityComparer<TSource>.Default).Contains(item))
                 {
-                    if (comparer.Equals(firstItem, secondItem))
-                    {
-                        result.Add(firstItem);
-                    }
+                    yield return item;
                 }
             }
-
-            return result;
         }
 
         private static void CheckForNull<T>(IEnumerable<T> source)
