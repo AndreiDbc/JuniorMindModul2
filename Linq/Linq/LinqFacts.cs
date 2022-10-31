@@ -135,7 +135,7 @@ namespace Linq
         }
 
         [Fact]
-        public void JoinIsCalledOuterKeySelectorIsNullSHouldThorwException()
+        public void JoinIsCalledOuterKeySelectorIsNullShouldThrowException()
         {
             Assert.Throws<ArgumentNullException>(() => new Dictionary<int, string>() { { 0, "a" }, { 1, "b" }, { 2, "c" } }.Join(
                 new Dictionary<int, string>() { { 2, "d" }, { 4, "e" }, { 6, "f" } },
@@ -227,6 +227,37 @@ namespace Linq
         {
             Assert.Throws<ArgumentNullException>(() => new List<int>() { 1, 2, 3, 4, 5, 6, 7 }
             .Except(new List<int>() { 2, 3, 4, 6 }, null));
+        }
+
+        [Fact]
+        public void GroupByIsCalledShouldSortElements()
+        {
+            Assert.Equal(
+                new List<string> { "3:ads-cvb", "2:ba" }, new[] { "ads", "ba", "cvb" }.GroupBy(
+                x => x.Length,
+                y => y,
+                (key, values) => key + ":" + string.Join("-", values),
+                EqualityComparer<int>.Default));
+        }
+
+        [Fact]
+        public void GroupByIsCalledKeySelectorIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new[] { "ads", "ba", "cvb" }.GroupBy(
+                null,
+                y => y,
+                (key, values) => key + ":" + string.Join("-", values),
+                EqualityComparer<int>.Default));
+        }
+
+        [Fact]
+        public void GroupByIsCalledResultIEqualityComparerNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new[] { "ads", "ba", "cvb" }.GroupBy(
+                x => x.Length,
+                y => y,
+                (key, values) => key + ":" + string.Join("-", values),
+                null));
         }
     }
 }

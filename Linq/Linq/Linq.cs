@@ -252,6 +252,43 @@ namespace Linq
             }
         }
 
+        public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        Func<TSource, TElement> elementSelector,
+        Func<TKey, IEnumerable<TElement>, TResult> resultSelector,
+        IEqualityComparer<TKey> comparer)
+        {
+            CheckForNull(source);
+            CheckForNull(keySelector);
+            CheckForNull(elementSelector);
+            CheckForNull(resultSelector);
+            CheckForNull(comparer);
+
+            var temp = new Dictionary<TKey, List<TElement>>(comparer);
+            foreach (var element in source)
+            {
+                var key = keySelector(element);
+                if (temp.ContainsKey(key))
+                {
+                    temp[key].Add(elementSelector(element));
+                }
+                else
+                {
+                    temp.Add(key, new List<TElement>() { elementSelector(element) });
+                }
+            }
+
+            var result = new List<TResult>();
+
+            foreach (var item in temp)
+            {
+                result.Add(resultSelector(item.Key, item.Value));
+            }
+
+            return result;
+        }
+
         private static void CheckForNull<T>(IEnumerable<T> source)
         {
             if (source != null)
