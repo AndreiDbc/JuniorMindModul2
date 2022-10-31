@@ -255,7 +255,7 @@ namespace Linq
 
             foreach (var item in first)
             {
-                if (!first.Intersect(second, EqualityComparer<TSource>.Default).Contains(item))
+                if (!first.Intersect(second, comparer).Contains(item))
                 {
                     result.Add(item);
                 }
