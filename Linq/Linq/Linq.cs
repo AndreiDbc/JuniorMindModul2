@@ -86,13 +86,17 @@ namespace Linq
         {
             CheckForNull(source);
             CheckForNull(predicate);
+
+            var result = new List<TSource>();
             foreach (var item in source)
             {
                 if (predicate(item))
                 {
-                    yield return item;
+                    result.Add(item);
                 }
             }
+
+            return result;
         }
 
         public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
@@ -159,16 +163,20 @@ namespace Linq
             CheckForNull(outerKeySelector);
             CheckForNull(innerKeySelector);
             CheckForNull(resultSelector);
+
+            var result = new List<TResult>();
             foreach (var outerItem in outer)
             {
                 foreach (var innerItem in inner)
                 {
                     if (outerKeySelector(outerItem).Equals(innerKeySelector(innerItem)))
                     {
-                        yield return resultSelector(outerItem, innerItem);
+                        result.Add(resultSelector(outerItem, innerItem));
                     }
                 }
             }
+
+            return result;
         }
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
@@ -243,13 +251,17 @@ namespace Linq
             CheckForNull(second);
             CheckForNull(comparer);
 
+            var result = new List<TSource>();
+
             foreach (var item in first)
             {
                 if (!first.Intersect(second, EqualityComparer<TSource>.Default).Contains(item))
                 {
-                    yield return item;
+                    result.Add(item);
                 }
             }
+
+            return result;
         }
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(
