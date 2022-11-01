@@ -7,14 +7,21 @@ using System.Threading.Tasks;
 
 namespace Linq
 {
-    class OrderedEnumerable<T> : IOrderedEnumerable<T>
+    class OrderedEnumerable<TElement> : IOrderedEnumerable<TElement>
     {
-        public IOrderedEnumerable<T> CreateOrderedEnumerable<TKey>(Func<T, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
+        private IEnumerable<TElement> source;
+
+        public OrderedEnumerable(IEnumerable<TElement> source)
+        {
+            this.source = source;
+        }
+
+        public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TKey>(Func<TElement, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<TElement> GetEnumerator()
         {
             throw new NotImplementedException();
         }
