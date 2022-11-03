@@ -280,5 +280,58 @@ namespace Linq
             Assert.Throws<ArgumentNullException>(() => new[] { "bbc", "as", "bc", "z", "zh" }
             .OrderBy(x => x.Length, null).Select(x => x));
         }
+
+        [Fact]
+        public void ThenByIsCalledShouldSortElements()
+        {
+            Assert.Equal(
+                new[]
+            {
+                new { Value = "as", Key = 1 },
+                new { Value = "bbc", Key = 1 },
+                new { Value = "z", Key = 2 },
+                new { Value = "bc", Key = 2 },
+                new { Value = "zh", Key = 3 }
+            },
+                new[]
+            {
+                new { Value = "zh", Key = 3 },
+                new { Value = "bbc", Key = 1 },
+                new { Value = "bc", Key = 2 },
+                new { Value = "as", Key = 1 },
+                new { Value = "z", Key = 2 }
+            }
+            .OrderBy(x => x.Key, Comparer<int>.Default).ThenBy(y => y.Value.Length, Comparer<int>.Default).Select(z => z));
+        }
+
+        [Fact]
+        public void ThenByIsCalledKeyselectorIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new[]
+            {
+                new { Value = "zh", Key = 3 },
+                new { Value = "bbc", Key = 1 },
+                new { Value = "bc", Key = 2 },
+                new { Value = "as", Key = 1 },
+                new { Value = "z", Key = 2 }
+            }
+            .OrderBy(x => x.Key, Comparer<int>.Default).ThenBy(null, Comparer<int>.Default).Select(z => z));
+        }
+
+        [Fact]
+        public void ThenByIsCalledComparerIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new[]
+            {
+                new { Value = "zh", Key = 3 },
+                new { Value = "bbc", Key = 1 },
+                new { Value = "bc", Key = 2 },
+                new { Value = "as", Key = 1 },
+                new { Value = "z", Key = 2 }
+            }
+            .OrderBy(x => x.Key, Comparer<int>.Default).ThenBy(y => y.Value.Length, null).Select(z => z));
+        }
     }
 }
