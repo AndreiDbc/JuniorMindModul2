@@ -306,7 +306,10 @@ namespace Linq
         Func<TSource, TKey> keySelector,
         IComparer<TKey> comparer)
         {
-            return new OrderedEnumerable<TSource>(source, Comparer<TSource>.Default);
+            CheckForNull(source);
+            CheckForNull(keySelector);
+            CheckForNull(comparer);
+            return new OrderedEnumerable<TKey, TSource>(source, comparer, keySelector);
         }
 
         private static void CheckForNull<T>(IEnumerable<T> source)
@@ -340,6 +343,16 @@ namespace Linq
         }
 
         private static void CheckForNull<TSource>(IEqualityComparer<TSource> predicate)
+        {
+            if (predicate != null)
+            {
+                return;
+            }
+
+            throw new ArgumentNullException(nameof(predicate));
+        }
+
+        private static void CheckForNull<TSource>(IComparer<TSource> predicate)
         {
             if (predicate != null)
             {

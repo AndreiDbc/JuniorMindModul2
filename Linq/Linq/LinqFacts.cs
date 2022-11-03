@@ -264,7 +264,21 @@ namespace Linq
         public void OrderByIsCalledShouldSortElements()
         {
             Assert.Equal(new[] { "z", "as", "bc", "zh", "bbc" }, new[] { "bbc", "as", "bc", "z", "zh" }
-            .OrderBy(x => x.Length).Select(x => x));
+            .OrderBy(x => x.Length, Comparer<int>.Default).Select(x => x));
+        }
+
+        [Fact]
+        public void OrderByIsCalledKeySelectorIsNullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new[] { "bbc", "as", "bc", "z", "zh" }
+            .OrderBy(null, Comparer<int>.Default).Select(x => x));
+        }
+
+        [Fact]
+        public void OrderByIsCalledComparerIsnullShouldThrowException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new[] { "bbc", "as", "bc", "z", "zh" }
+            .OrderBy(x => x.Length, null).Select(x => x));
         }
     }
 }
