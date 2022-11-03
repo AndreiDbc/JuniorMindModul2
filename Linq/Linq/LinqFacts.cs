@@ -263,13 +263,8 @@ namespace Linq
         [Fact]
         public void OrderByIsCalledShouldSortElements()
         {
-            var source = new[]
-            {
-                "bbc", "as", "bc", "z", "zh"
-            };
-            var query = source.OrderBy(x => x.Length)
-                              .Select(x => x);
-            Assert.Equal(new[] { "z", "as", "bc", "zh", "bbc" }, query);
+            Assert.Equal(new[] { "z", "as", "bc", "zh", "bbc" }, new[] { "bbc", "as", "bc", "z", "zh" }
+            .OrderBy(x => x.Length).Select(x => x));
         }
     }
 }
