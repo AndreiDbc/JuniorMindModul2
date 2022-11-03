@@ -25,12 +25,28 @@ namespace Linq
 
         public IEnumerator<TElement> GetEnumerator()
         {
-            throw new NotImplementedException();
+            List<TElement> elements = source.ToList();
+            while (elements.Count > 0)
+            {
+                TElement minElement = elements[0];
+                int minIndex = 0;
+                for (int i = 1; i < elements.Count; i++)
+                {
+                    if (currentComparer.Compare(elements[i], minElement) < 0)
+                    {
+                        minElement = elements[i];
+                        minIndex = i;
+                    }
+                }
+
+                elements.RemoveAt(minIndex);
+                yield return minElement;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return source.GetEnumerator();
         }
     }
 }
