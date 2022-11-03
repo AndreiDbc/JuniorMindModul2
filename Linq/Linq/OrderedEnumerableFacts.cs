@@ -9,5 +9,20 @@ namespace Linq
 {
     public class OrderedEnumerableFacts
     {
+        [Fact]
+        public void GetEnumeratorIsCalledShouldReturnElements()
+        {
+            var enumerator = new OrderedEnumerable<string>(
+              new List<string> { "bbc", "dd", "a", "ss" },
+              Comparer<string>.Default).GetEnumerator();
+            enumerator.MoveNext();
+            Assert.Equal("a", enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal("bbc", enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal("dd", enumerator.Current);
+            enumerator.MoveNext();
+            Assert.Equal("ss", enumerator.Current);
+        }
     }
 }

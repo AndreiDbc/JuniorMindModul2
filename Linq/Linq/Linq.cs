@@ -301,6 +301,14 @@ namespace Linq
             return result;
         }
 
+        public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        IComparer<TKey> comparer)
+        {
+            return new OrderedEnumerable<TSource>(source, Comparer<TSource>.Default);
+        }
+
         private static void CheckForNull<T>(IEnumerable<T> source)
         {
             if (source != null)

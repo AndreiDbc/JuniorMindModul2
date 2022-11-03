@@ -259,5 +259,17 @@ namespace Linq
                 (key, values) => key + ":" + string.Join("-", values),
                 null));
         }
+
+        [Fact]
+        public void OrderByIsCalledShouldSortElements()
+        {
+            var source = new[]
+            {
+                "bbc", "as", "bc", "z", "zh"
+            };
+            var query = source.OrderBy(x => x.Length)
+                              .Select(x => x);
+            Assert.Equal(new[] { "z", "as", "bc", "zh", "bbc" }, query);
+        }
     }
 }
