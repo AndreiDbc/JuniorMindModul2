@@ -12,9 +12,10 @@ namespace Linq
         [Fact]
         public void GetEnumeratorIsCalledShouldReturnElements()
         {
-            var enumerator = new OrderedEnumerable<string>(
+            var enumerator = new OrderedEnumerable<string, string>(
               new List<string> { "bbc", "dd", "a", "ss" },
-              Comparer<string>.Default).GetEnumerator();
+              Comparer<string>.Default,
+              x => x).GetEnumerator();
             enumerator.MoveNext();
             Assert.Equal("a", enumerator.Current);
             enumerator.MoveNext();
