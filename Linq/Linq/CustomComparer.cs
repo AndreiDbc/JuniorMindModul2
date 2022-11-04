@@ -7,7 +7,15 @@ using System.Xml.Linq;
 
 namespace Linq
 {
-    class CustomComparer
+    class CustomComparer<T> : IComparer<T>
     {
+        private readonly IComparer<T> primary;
+        private readonly IComparer<T> secondary;
+
+        public CustomComparer(IComparer<T> primary, IComparer<T> secondary)
+        {
+            this.primary = primary;
+            this.secondary = secondary;
+        }
     }
 }

@@ -20,8 +20,8 @@ namespace Linq
         public int Compare(TElement first, TElement second)
         {
             TKey firstKey = keySelector(first);
-            TKey SecondKey = keySelector(second);
-            return comparer.Compare(firstKey, SecondKey);
+            TKey secondKey = keySelector(second);
+            return comparer.Compare(firstKey, secondKey);
         }
     }
 }
