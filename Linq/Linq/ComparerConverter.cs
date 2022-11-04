@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace Linq
 {
-    class ComparerConverter
+    class ComparerConverter<TElement, TKey> : IComparer<TElement>
     {
+        private readonly Func<TElement, TKey> keySelector;
+        private readonly IComparer<TKey> comparer;
+
+        internal ComparerConverter(Func<TElement, TKey> keySelector, IComparer<TKey> comparer)
+        {
+            this.keySelector = keySelector;
+            this.comparer = comparer ?? Comparer<TKey>.Default;
+        }
     }
 }
