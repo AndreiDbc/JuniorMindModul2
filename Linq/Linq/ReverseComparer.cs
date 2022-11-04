@@ -15,9 +15,9 @@ namespace Linq
             this.forwardComparer = forwardComparer;
         }
 
-        public int Compare(T x, T y)
+        public int Compare(T first, T second)
         {
-            return forwardComparer.Compare(y, x);
+            return forwardComparer.Compare(second, first);
         }
     }
 }

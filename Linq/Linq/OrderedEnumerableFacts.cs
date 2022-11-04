@@ -37,6 +37,15 @@ namespace Linq
         }
 
         [Fact]
+        public void CreateOrderedEnumerableIsCalledShouldReturnNewOrderedEnumerableInOrder()
+        {
+            Assert.Equal(
+                new[] { "a", "b", "c", "d" },
+                new OrderedEnumerable<string>(new List<string>() { "d", "c", "b", "a" }, Comparer<string>.Default)
+                .CreateOrderedEnumerable(x => x, Comparer<string>.Default, false).Select(x => x));
+        }
+
+        [Fact]
         public void CreateOrderedEnumerableIsCalledKeySelectorIsNullShouldThrowException()
         {
             Assert.Throws<ArgumentNullException>(() => new OrderedEnumerable<string>(new List<string>() { "as", "s" }, Comparer<string>.Default)

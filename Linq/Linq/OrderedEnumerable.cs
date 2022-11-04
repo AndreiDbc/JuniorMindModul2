@@ -26,8 +26,13 @@ namespace Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            return new OrderedEnumerable<TElement>(source, new CustomComparer<TElement>(
-                currentComparer, new ComparerConverter<TElement, TKey>(keySelector, comparer)));
+            IComparer<TElement> secondaryComparer = new ComparerConverter<TElement, TKey>(keySelector, comparer);
+            if (descending)
+            {
+                secondaryComparer = new ReverseComparer<TElement>(secondaryComparer);
+            }
+
+            return new OrderedEnumerable<TElement>(source, new CustomComparer<TElement>(currentComparer, secondaryComparer));
         }
 
         public IEnumerator<TElement> GetEnumerator()
