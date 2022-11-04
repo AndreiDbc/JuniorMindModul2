@@ -12,10 +12,9 @@ namespace Linq
         [Fact]
         public void GetEnumeratorIsCalledShouldReturnElements()
         {
-            var enumerator = new OrderedEnumerable<string, string>(
+            var enumerator = new OrderedEnumerable<string>(
               new List<string> { "bbc", "dd", "a", "ss" },
-              Comparer<string>.Default,
-              x => x).GetEnumerator();
+              Comparer<string>.Default).GetEnumerator();
             enumerator.MoveNext();
             Assert.Equal("a", enumerator.Current);
             enumerator.MoveNext();
@@ -24,6 +23,16 @@ namespace Linq
             Assert.Equal("dd", enumerator.Current);
             enumerator.MoveNext();
             Assert.Equal("ss", enumerator.Current);
+        }
+
+        [Fact]
+        public void CreateOrderedEnumerableIsCalledShouldReturnNewOrderedEnumerable()
+        {
+            Assert.Equal(
+                new OrderedEnumerable<string>(new List<string> { "bbc", "dd", "a", "ss" }, Comparer<string>.Default).GetType(),
+                new OrderedEnumerable<string>(
+                new List<string> { "bbc", "dd", "a", "ss" },
+                new CustomComparer<string>(Comparer<string>.Default, new ComparerConverter<string, bool>(x => x.EndsWith("b"), Comparer<bool>.Default))).GetType());
         }
     }
 }

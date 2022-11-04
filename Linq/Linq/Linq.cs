@@ -309,7 +309,7 @@ namespace Linq
             CheckForNull(source);
             CheckForNull(keySelector);
             CheckForNull(comparer);
-            return new OrderedEnumerable<TKey, TSource>(source, comparer, keySelector);
+            return new OrderedEnumerable<TSource>(source, Comparer<TSource>.Default);
         }
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(

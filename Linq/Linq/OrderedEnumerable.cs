@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Linq
 {
-    class OrderedEnumerable<TKey, TElement> : IOrderedEnumerable<TElement>
+    class OrderedEnumerable<TElement> : IOrderedEnumerable<TElement>
     {
         private readonly IEnumerable<TElement> source;
         private readonly IComparer<TElement> currentComparer;
@@ -18,9 +18,11 @@ namespace Linq
             this.currentComparer = currentComparer;
         }
 
-        public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TKey>(Func<TElement, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
+        public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TKey>(
+            Func<TElement, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
         {
-            return new OrderedEnumerable<TKey, TElement>(source, comparer, keySelector);
+            return new OrderedEnumerable<TElement>(source, new CustomComparer<TElement>(
+                currentComparer, new ComparerConverter<TElement, TKey>(keySelector, comparer)));
         }
 
         public IEnumerator<TElement> GetEnumerator()
