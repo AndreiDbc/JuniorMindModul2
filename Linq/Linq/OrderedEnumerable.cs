@@ -21,6 +21,11 @@ namespace Linq
         public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TKey>(
             Func<TElement, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
         {
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
+
             return new OrderedEnumerable<TElement>(source, new CustomComparer<TElement>(
                 currentComparer, new ComparerConverter<TElement, TKey>(keySelector, comparer)));
         }
