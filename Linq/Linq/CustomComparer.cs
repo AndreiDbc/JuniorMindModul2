@@ -17,5 +17,16 @@ namespace Linq
             this.primary = primary;
             this.secondary = secondary;
         }
+
+        public int Compare(T first, T second)
+        {
+            int primaryResult = primary.Compare(first, second);
+            if (primaryResult != 0)
+            {
+                return primaryResult;
+            }
+
+            return secondary.Compare(first, second);
+        }
     }
 }
