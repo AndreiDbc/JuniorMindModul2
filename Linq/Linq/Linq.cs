@@ -323,17 +323,6 @@ namespace Linq
             return source.CreateOrderedEnumerable(keySelector, comparer, false);
         }
 
-        public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(
-        this IOrderedEnumerable<TSource> source,
-        Func<TSource, TKey> keySelector,
-        IComparer<TKey> comparer)
-        {
-            CheckForNull(source);
-            CheckForNull(keySelector);
-            CheckForNull(comparer);
-            return source.CreateOrderedEnumerable(keySelector, comparer, true);
-        }
-
         private static void CheckForNull<T>(IEnumerable<T> source)
         {
             if (source != null)
