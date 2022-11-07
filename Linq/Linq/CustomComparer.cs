@@ -31,6 +31,20 @@ namespace Linq
             this.primary = primary;
         }
 
+        public int Compare(TElement first, TElement second)
+        {
+            if (keySelector != null)
+            {
+                return CompareKeys(first, second);
+            }
+            else if (secondary != null)
+            {
+                return ComparePrimaryAndSecondary(first, second);
+            }
+
+            return ReverseCompare(first, second);
+        }
+
         public int ComparePrimaryAndSecondary(TElement first, TElement second)
         {
             int primaryResult = primary.Compare(first, second);
@@ -47,6 +61,11 @@ namespace Linq
             TKey firstKey = keySelector(first);
             TKey secondKey = keySelector(second);
             return keyComparer.Compare(firstKey, secondKey);
+        }
+
+        public int ReverseCompare(TElement first, TElement second)
+        {
+            return primary.Compare(second, first);
         }
     }
 }
