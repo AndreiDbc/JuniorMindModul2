@@ -11,21 +11,21 @@ namespace Linq
     public class CustomComparerFacts
     {
         [Fact]
-        public void CompareIsCalledComparePrimaryAndSecondaryIsUsedShouldReturnMinusOne()
+        public void CompareIsCalledCompareKeysIsUsedShouldReturnMinusOne()
         {
             Assert.Equal(-1, new CustomComparer<string, int>(x => x.Length, Comparer<int>.Default)
                 .Compare("as", "bdc"));
         }
 
         [Fact]
-        public void CompareIsCalledComparePrimaryAndSecondaryIsUsedShouldReturnZero()
+        public void CompareIsCalledCompareKeysIsUsedShouldReturnZero()
         {
             Assert.Equal(0, new CustomComparer<string, int>(x => x.Length, Comparer<int>.Default)
                 .Compare("as", "as"));
         }
 
         [Fact]
-        public void CompareIsCalledComparePrimaryAndSecondaryIsUsedShouldReturnOne()
+        public void CompareIsCalledCompareKeysUsedShouldReturnOne()
         {
             Assert.Equal(1, new CustomComparer<string, int>(x => x.Length, Comparer<int>.Default)
                 .Compare("casd", "bd"));
@@ -38,14 +38,14 @@ namespace Linq
         }
 
         [Fact]
-        public void CompareIsCalledShouldReturnPrimaryResult()
+        public void CompareIsCalledComparePrimaryAndSecondaryIsUsedShouldReturnPrimaryResult()
         {
             Assert.Equal(-1, new CustomComparer<string, bool>(Comparer<string>.Default, new CustomComparer<string, bool>(x => x.EndsWith("b"), Comparer<bool>.Default))
                 .Compare("asd", "gb"));
         }
 
         [Fact]
-        public void CompareIsCalledShouldReturnSecondaryResult()
+        public void CompareIsCalledComparePrimaryAndSecondaryIsUsedShouldReturnSecondaryResult()
         {
             Assert.Equal(1, new CustomComparer<string, bool>(Comparer<string>.Default, new CustomComparer<string, bool>(x => x.EndsWith("b"), Comparer<bool>.Default))
                 .Compare("zba", "zb"));

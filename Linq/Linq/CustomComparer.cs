@@ -45,7 +45,7 @@ namespace Linq
             return ReverseCompare(first, second);
         }
 
-        public int ComparePrimaryAndSecondary(TElement first, TElement second)
+        private int ComparePrimaryAndSecondary(TElement first, TElement second)
         {
             int primaryResult = primary.Compare(first, second);
             if (primaryResult != 0)
@@ -56,14 +56,14 @@ namespace Linq
             return secondary.Compare(first, second);
         }
 
-        public int CompareKeys(TElement first, TElement second)
+        private int CompareKeys(TElement first, TElement second)
         {
             TKey firstKey = keySelector(first);
             TKey secondKey = keySelector(second);
             return keyComparer.Compare(firstKey, secondKey);
         }
 
-        public int ReverseCompare(TElement first, TElement second)
+        private int ReverseCompare(TElement first, TElement second)
         {
             return primary.Compare(second, first);
         }
