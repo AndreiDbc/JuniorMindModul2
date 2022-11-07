@@ -7,15 +7,28 @@ using System.Xml.Linq;
 
 namespace Linq
 {
-    class CustomComparer<T> : IComparer<T>
+    class CustomComparer<TElement, TKey> : IComparer<TElement>
     {
-        private readonly IComparer<T> primary;
-        private readonly IComparer<T> secondary;
+        private readonly Func<TElement, TKey> keySelector;
+        private readonly IComparer<TElement> primary;
+        private readonly IComparer<TElement> secondary;
+        private readonly IComparer<TKey> keyComparer;
 
-        public CustomComparer(IComparer<T> primary, IComparer<T> secondary)
+        public CustomComparer(IComparer<TElement> primary, IComparer<TElement> secondary)
         {
             this.primary = primary;
             this.secondary = secondary;
+        }
+
+        public CustomComparer(Func<TElement, TKey> keySelector, IComparer<TKey> keyComparer)
+        {
+            this.keySelector = keySelector;
+            this.keyComparer = keyComparer;
+        }
+
+        public CustomComparer(IComparer<TElement> primary)
+        {
+            this.primary = primary;
         }
 
         public int Compare(T first, T second)
