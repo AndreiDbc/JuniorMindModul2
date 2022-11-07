@@ -31,7 +31,7 @@ namespace Linq
             this.primary = primary;
         }
 
-        public int Compare(T first, T second)
+        public int ComparePrimaryAndSecondary(TElement first, TElement second)
         {
             int primaryResult = primary.Compare(first, second);
             if (primaryResult != 0)
