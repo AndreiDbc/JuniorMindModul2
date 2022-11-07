@@ -305,6 +305,29 @@ namespace Linq
         }
 
         [Fact]
+        public void ThenByIsCalledSecondaryComparerHasStringTypeShouldSortElements()
+        {
+            Assert.Equal(
+                new[]
+            {
+                new { Value = "bbc", Key = 1 },
+                new { Value = "Bbs", Key = 1 },
+                new { Value = "bc", Key = 2 },
+                new { Value = "Bh", Key = 2 },
+                new { Value = "Z", Key = 2 }
+            },
+                new[]
+            {
+                new { Value = "Bh", Key = 2 },
+                new { Value = "bbc", Key = 1 },
+                new { Value = "bc", Key = 2 },
+                new { Value = "Bbs", Key = 1 },
+                new { Value = "Z", Key = 2 }
+            }
+            .OrderBy(x => x.Key, Comparer<int>.Default).ThenBy(y => y.Value.ToLower(), Comparer<string>.Default).Select(z => z));
+        }
+
+        [Fact]
         public void ThenByIsCalledKeyselectorIsNullShouldThrowException()
         {
             Assert.Throws<ArgumentNullException>(() =>
