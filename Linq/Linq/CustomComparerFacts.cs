@@ -11,44 +11,21 @@ namespace Linq
     public class CustomComparerFacts
     {
         [Fact]
-        public void CompareIsCalledCompareKeysIsUsedShouldReturnMinusOne()
+        public void CompareIsCalledShouldReturnMinusOne()
         {
-            Assert.Equal(-1, new CustomComparer<string, int>(x => x.Length, Comparer<int>.Default)
-                .Compare("as", "bdc"));
+            Assert.Equal(-1, new CustomComparer<string>(Comparer<string>.Default.Compare).Compare("as", "bdf"));
         }
 
         [Fact]
-        public void CompareIsCalledCompareKeysIsUsedShouldReturnZero()
+        public void CompareIsCalledShouldReturnZero()
         {
-            Assert.Equal(0, new CustomComparer<string, int>(x => x.Length, Comparer<int>.Default)
-                .Compare("as", "as"));
+            Assert.Equal(0, new CustomComparer<string>(Comparer<string>.Default.Compare).Compare("as", "as"));
         }
 
         [Fact]
-        public void CompareIsCalledCompareKeysUsedShouldReturnOne()
+        public void CompareIsCalledShouldReturnOne()
         {
-            Assert.Equal(1, new CustomComparer<string, int>(x => x.Length, Comparer<int>.Default)
-                .Compare("casd", "bd"));
-        }
-
-        [Fact]
-        public void CompareIsCalledShouldReturnReversedResult()
-        {
-            Assert.Equal(-1, new CustomComparer<int, int>(Comparer<int>.Default).Compare(3, 2));
-        }
-
-        [Fact]
-        public void CompareIsCalledComparePrimaryAndSecondaryIsUsedShouldReturnPrimaryResult()
-        {
-            Assert.Equal(-1, new CustomComparer<string, bool>(Comparer<string>.Default, new CustomComparer<string, bool>(x => x.EndsWith("b"), Comparer<bool>.Default))
-                .Compare("asd", "gb"));
-        }
-
-        [Fact]
-        public void CompareIsCalledComparePrimaryAndSecondaryIsUsedShouldReturnSecondaryResult()
-        {
-            Assert.Equal(1, new CustomComparer<string, bool>(Comparer<string>.Default, new CustomComparer<string, bool>(x => x.EndsWith("b"), Comparer<bool>.Default))
-                .Compare("zba", "zb"));
+            Assert.Equal(1, new CustomComparer<string>(Comparer<string>.Default.Compare).Compare("zs", "bdf"));
         }
     }
 }

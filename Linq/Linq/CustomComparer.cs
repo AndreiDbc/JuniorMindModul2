@@ -18,41 +18,9 @@ namespace Linq
 
         public delegate int CompareFunc(T first, T second);
 
-        public int Compare(TElement first, TElement second)
+        public int Compare(T first, T second)
         {
-            if (keySelector != null)
-            {
-                return CompareKeys(first, second);
-            }
-            else if (secondary != null)
-            {
-                return ComparePrimaryAndSecondary(first, second);
-            }
-
-            return ReverseCompare(first, second);
-        }
-
-        private int ComparePrimaryAndSecondary(TElement first, TElement second)
-        {
-            int primaryResult = primary.Compare(first, second);
-            if (primaryResult != 0)
-            {
-                return primaryResult;
-            }
-
-            return secondary.Compare(first, second);
-        }
-
-        private int CompareKeys(TElement first, TElement second)
-        {
-            TKey firstKey = keySelector(first);
-            TKey secondKey = keySelector(second);
-            return keyComparer.Compare(firstKey, secondKey);
-        }
-
-        private int ReverseCompare(TElement first, TElement second)
-        {
-            return primary.Compare(second, first);
+            return new CompareFunc(Comparer<T>.Default.Compare).Invoke(first, second);
         }
     }
 }
