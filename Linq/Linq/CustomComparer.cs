@@ -31,6 +31,8 @@ namespace Linq
             this.primary = primary;
         }
 
+        public delegate int CompareFunc(T first, T second);
+
         public int Compare(TElement first, TElement second)
         {
             if (keySelector != null)
