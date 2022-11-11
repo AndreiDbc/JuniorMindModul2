@@ -9,14 +9,12 @@ namespace Linq
 {
     class CustomComparer<T> : IComparer<T>
     {
-        private readonly Func<T> compareFunc;
+        private readonly Func<T, T, int> compareFunc;
 
-        public CustomComparer(Func<T> compareFunc)
+        public CustomComparer(Func<T, T, int> compareFunc)
         {
             this.compareFunc = compareFunc;
         }
-
-        public delegate int Func<T>(T first, T second);
 
         public int Compare(T first, T second)
         {
