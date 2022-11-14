@@ -27,6 +27,10 @@ namespace Linq
             }
 
             var secondaryComparer = new CustomComparer<TElement>((first, second) => comparer.Compare(keySelector(first), keySelector(second)));
+            if (descending)
+            {
+                secondaryComparer = new CustomComparer<TElement>((first, second) => comparer.Compare(keySelector(second), keySelector(first)));
+            }
 
             return new OrderedEnumerable<TElement>(
                 source,
