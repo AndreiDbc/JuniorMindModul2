@@ -35,7 +35,9 @@ namespace Linq
 
             return new OrderedEnumerable<TElement>(
                 source,
-                new CustomComparer<TElement>((first, second) => result.Compare(first, second) != 0 ? currentComparer.Compare(first, second) : secondaryComparer.Compare(first, second)));
+                new CustomComparer<TElement>((first, second) => result.Compare(first, second) != 0
+                ? currentComparer.Compare(first, second)
+                : secondaryComparer.Compare(first, second)));
         }
 
         public IEnumerator<TElement> GetEnumerator()
