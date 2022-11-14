@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Xunit;
 
 namespace Linq
@@ -309,7 +311,9 @@ namespace Linq
             CheckForNull(source);
             CheckForNull(keySelector);
             CheckForNull(comparer);
-            return new OrderedEnumerable<TSource>(source, new CustomComparer<TSource, TKey>(keySelector, comparer));
+            return new OrderedEnumerable<TSource>(
+                source,
+                new CustomComparer<TSource>((first, second) => comparer.Compare(keySelector(first), keySelector(second))));
         }
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(
