@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Linq
 {
@@ -26,15 +27,15 @@ namespace Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            var secondaryComparer = new CustomComparer<TElement>((first, second) => comparer.Compare(keySelector(first), keySelector(second)));
-            if (descending)
-            {
-                secondaryComparer = new CustomComparer<TElement>((first, second) => comparer.Compare(keySelector(second), keySelector(first)));
-            }
+            var secondaryComparer = descending
+                ? new CustomComparer<TElement>((first, second) => comparer.Compare(keySelector(second), keySelector(first)))
+                : new CustomComparer<TElement>((first, second) => comparer.Compare(keySelector(first), keySelector(second)));
+
+            var result = new CustomComparer<TElement>((first, second) => currentComparer.Compare(first, second));
 
             return new OrderedEnumerable<TElement>(
                 source,
-                new CustomComparer<TElement>((first, second) => currentComparer.Compare(first, second) != 0 ? currentComparer.Compare(first, second) : secondaryComparer.Compare(first, second)));
+                new CustomComparer<TElement>((first, second) => result.Compare(first, second) != 0 ? currentComparer.Compare(first, second) : secondaryComparer.Compare(first, second)));
         }
 
         public IEnumerator<TElement> GetEnumerator()
