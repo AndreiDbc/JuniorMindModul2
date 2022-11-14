@@ -33,7 +33,7 @@ namespace Linq
                 new OrderedEnumerable<string>(new List<string> { "bbc", "dd", "a", "ss" }, Comparer<string>.Default).GetType(),
                 new OrderedEnumerable<string>(
                 new List<string> { "bbc", "dd", "a", "ss" },
-                new CustomComparer<string, bool>(Comparer<string>.Default, new CustomComparer<string, bool>(x => x.EndsWith("b"), Comparer<bool>.Default))).GetType());
+                new CustomComparer<string>((first, second) => Comparer<string>.Default.Compare(first, second))).GetType());
         }
 
         [Fact]

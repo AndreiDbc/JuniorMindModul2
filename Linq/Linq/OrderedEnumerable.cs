@@ -26,13 +26,11 @@ namespace Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            IComparer<TElement> secondaryComparer = new CustomComparer<TElement, TKey>(keySelector, comparer);
-            if (descending)
-            {
-                secondaryComparer = new CustomComparer<TElement, TKey>(secondaryComparer);
-            }
+            var secondaryComparer = new CustomComparer<TElement>((first, second) => comparer.Compare(keySelector(first), keySelector(second)));
 
-            return new OrderedEnumerable<TElement>(source, new CustomComparer<TElement, TKey>(currentComparer, secondaryComparer));
+            return new OrderedEnumerable<TElement>(
+                source,
+                new CustomComparer<TElement>((first, second) => currentComparer.Compare(first, second) != 0 ? currentComparer.Compare(first, second) : secondaryComparer.Compare(first, second)));
         }
 
         public IEnumerator<TElement> GetEnumerator()
