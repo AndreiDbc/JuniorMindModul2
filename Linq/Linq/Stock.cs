@@ -32,5 +32,18 @@ namespace Linq
         {
             return GetEnumerator();
         }
+
+        private int Find(string name)
+        {
+            for (int i = 0; i < stockObjects.Count && stockObjects.Any(val => val.Name == name); i++)
+            {
+                if (stockObjects[i].Name == name)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
     }
 }
