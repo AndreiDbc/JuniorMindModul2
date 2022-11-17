@@ -20,6 +20,20 @@ namespace Linq
 
         public int Count { get => count; }
 
+        public void Add(StockObject toAdd)
+        {
+            var index = Find(toAdd.Name);
+            if (index == -1)
+            {
+                stockObjects.Add(toAdd);
+                count++;
+            }
+            else
+            {
+                stockObjects[index].Quantity += toAdd.Quantity;
+            }
+        }
+
         public IEnumerator<StockObject> GetEnumerator()
         {
             foreach (var item in stockObjects)
