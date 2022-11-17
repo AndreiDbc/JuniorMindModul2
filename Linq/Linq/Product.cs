@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Linq
 {
-    class StockObject
+    class Product
     {
-        public StockObject(string name, int quantity)
+        public Product(string name, int quantity)
         {
             this.Name = name;
             this.Quantity = quantity;

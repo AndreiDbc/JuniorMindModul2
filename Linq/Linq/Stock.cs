@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace Linq
 {
-    class Stock : IEnumerable<StockObject>
+    class Stock : IEnumerable<Product>
     {
-        private readonly List<StockObject> stockObjects;
+        private readonly List<Product> stockObjects;
         private int count;
 
         public Stock()
         {
-            stockObjects = new List<StockObject>();
+            stockObjects = new List<Product>();
             count = 0;
         }
 
         public int Count { get => count; }
 
-        public void Add(StockObject toAdd)
+        public void Add(Product toAdd)
         {
             var index = Find(toAdd.Name);
             if (index == -1)
@@ -34,7 +34,7 @@ namespace Linq
             }
         }
 
-        public void RemoveQuantity(StockObject toRemove)
+        public void RemoveQuantity(Product toRemove)
         {
             var index = Find(toRemove.Name);
             if (stockObjects[index].Quantity < toRemove.Quantity)
@@ -45,7 +45,7 @@ namespace Linq
             stockObjects[index].Quantity -= toRemove.Quantity;
         }
 
-        public IEnumerator<StockObject> GetEnumerator()
+        public IEnumerator<Product> GetEnumerator()
         {
             foreach (var item in stockObjects)
             {

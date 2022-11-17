@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Linq
 {
-    public class StockObjectFacts
+    public class ProductFacts
     {
         [Fact]
         public void StockObjectIsCreatedShouldReturnContainingValues()
         {
-            var obj = new StockObject("bike", 3);
+            var obj = new Product("bike", 3);
             Assert.Equal("bike", obj.Name);
             Assert.Equal(3, obj.Quantity);
         }
@@ -21,7 +21,7 @@ namespace Linq
         [Fact]
         public void StockObjectIsCreatedQuantitySetterIsCalledSHouldUpdateValue()
         {
-            var obj = new StockObject("bike", 3);
+            var obj = new Product("bike", 3);
             obj.Quantity += 3;
             Assert.Equal(6, obj.Quantity);
         }
