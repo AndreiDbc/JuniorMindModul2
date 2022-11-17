@@ -9,5 +9,15 @@ namespace Linq
 {
     class Stock
     {
+        private readonly List<StockObject> stockObjects;
+        private int count;
+
+        public Stock()
+        {
+            stockObjects = new List<StockObject>();
+            count = 0;
+        }
+
+        public int Count { get => count; }
     }
 }
