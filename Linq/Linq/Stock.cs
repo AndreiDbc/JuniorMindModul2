@@ -34,6 +34,17 @@ namespace Linq
             }
         }
 
+        public void RemoveQuantity(StockObject toRemove)
+        {
+            var index = Find(toRemove.Name);
+            if (stockObjects[index].Quantity < toRemove.Quantity)
+            {
+                return;
+            }
+
+            stockObjects[index].Quantity -= toRemove.Quantity;
+        }
+
         public IEnumerator<StockObject> GetEnumerator()
         {
             foreach (var item in stockObjects)

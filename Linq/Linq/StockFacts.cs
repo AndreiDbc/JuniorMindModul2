@@ -16,17 +16,39 @@ namespace Linq
             var stock = new Stock();
             var obj = new StockObject("bike", 2);
             stock.Add(obj);
-            Assert.True(stock.Any(val => val.Equals(obj)));
+            Assert.Equal(obj, stock.First(val => val.Equals(obj)));
         }
 
         [Fact]
         public void AddIsCalledStockContainsExistingObjectShouldUpdateQuantity()
         {
             var stock = new Stock();
-            stock.Add(new StockObject("bike", 2));
-            stock.Add(new StockObject("bike", 2));
-            Assert.Equal(new StockObject("bike", 4), stock.First());
+            var obj = new StockObject("bike", 2);
+            var result = new StockObject("bike", 4);
+            stock.Add(obj);
+            stock.Add(obj);
+            Assert.Equal(result, stock.First(val => val.Equals(result)));
             Assert.Equal(1, stock.Count);
+        }
+
+        [Fact]
+        public void RemoveQuantityIsCalledShouldUpdateQuantity()
+        {
+            var stock = new Stock();
+            var result = new StockObject("bike", 1);
+            stock.Add(new StockObject("bike", 2));
+            stock.RemoveQuantity(new StockObject("bike", 1));
+            Assert.Equal(result, stock.First(val => val.Equals(result)));
+        }
+
+        [Fact]
+        public void RemoveIsCalledToRemoveQuantityIsGreaterThanExistingQuantityShouldNotUpdateResult()
+        {
+            var stock = new Stock();
+            var result = new StockObject("bike", 2);
+            stock.Add(new StockObject("bike", 2));
+            stock.RemoveQuantity(new StockObject("bike", 5));
+            Assert.Equal(result, stock.First(val => val.Equals(result)));
         }
     }
 }
