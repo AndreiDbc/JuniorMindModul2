@@ -8,5 +8,14 @@ namespace Linq
 {
     class StockObject
     {
+        public StockObject(string name, int quantity)
+        {
+            this.Name = name;
+            this.Quantity = quantity;
+        }
+
+        public string Name { get; }
+
+        public int Quantity { get; set; }
     }
 }
