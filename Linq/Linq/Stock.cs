@@ -24,6 +24,7 @@ namespace Linq
 
         public void Add(Product toAdd)
         {
+            CheckForNull(toAdd);
             var index = Find(toAdd.Name);
             if (index == -1)
             {
@@ -38,6 +39,8 @@ namespace Linq
 
         public void RemoveQuantity(Product toRemove)
         {
+            CheckForNull(toRemove);
+            CheckIfContains(toRemove);
             var index = Find(toRemove.Name);
             if (products[index].Quantity < toRemove.Quantity)
             {
