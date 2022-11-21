@@ -9,12 +9,12 @@ namespace Linq
 {
     class Stock : IEnumerable<Product>
     {
-        private readonly List<Product> stockObjects;
+        private readonly List<Product> products;
         private int count;
 
         public Stock()
         {
-            stockObjects = new List<Product>();
+            products = new List<Product>();
             count = 0;
         }
 
@@ -25,29 +25,29 @@ namespace Linq
             var index = Find(toAdd.Name);
             if (index == -1)
             {
-                stockObjects.Add(toAdd);
+                products.Add(toAdd);
                 count++;
             }
             else
             {
-                stockObjects[index].Quantity += toAdd.Quantity;
+                products[index].Quantity += toAdd.Quantity;
             }
         }
 
         public void RemoveQuantity(Product toRemove)
         {
             var index = Find(toRemove.Name);
-            if (stockObjects[index].Quantity < toRemove.Quantity)
+            if (products[index].Quantity < toRemove.Quantity)
             {
                 return;
             }
 
-            stockObjects[index].Quantity -= toRemove.Quantity;
+            products[index].Quantity -= toRemove.Quantity;
         }
 
         public IEnumerator<Product> GetEnumerator()
         {
-            foreach (var item in stockObjects)
+            foreach (var item in products)
             {
                 yield return item;
             }
@@ -60,9 +60,9 @@ namespace Linq
 
         private int Find(string name)
         {
-            for (int i = 0; i < stockObjects.Count && stockObjects.Any(val => val.Name == name); i++)
+            for (int i = 0; i < products.Count && products.Any(val => val.Name == name); i++)
             {
-                if (stockObjects[i].Name == name)
+                if (products[i].Name == name)
                 {
                     return i;
                 }
