@@ -13,8 +13,8 @@ namespace Linq
         [Fact]
         public void AddIsCalledShouldAddItem()
         {
-            var stock = new Stock();
             var obj = new Product("bike", 2);
+            var stock = new Stock(AlertForThreshold);
             stock.Add(obj);
             Assert.Equal(obj, stock.First(val => val.Equals(obj)));
         }
@@ -22,7 +22,7 @@ namespace Linq
         [Fact]
         public void AddIsCalledStockContainsExistingObjectShouldUpdateQuantity()
         {
-            var stock = new Stock();
+            var stock = new Stock(AlertForThreshold);
             var obj = new Product("bike", 2);
             var result = new Product("bike", 4);
             stock.Add(obj);
@@ -35,12 +35,19 @@ namespace Linq
         }
 
         [Fact]
+        public void AddIsCalledToAddIsNullShouldThrowException()
+        {
+            var stock = new Stock(AlertForThreshold);
+            Assert.Throws<ArgumentException>(() => stock.Add(null));
+        }
+
+        [Fact]
         public void RemoveQuantityIsCalledShouldUpdateQuantity()
         {
-            var stock = new Stock();
-            var result = new Product("bike", 1);
-            stock.Add(new Product("bike", 2));
-            stock.RemoveQuantity(new Product("bike", 1));
+            var stock = new Stock(AlertForThreshold);
+            var result = new Product("bike", 17);
+            stock.Add(new Product("bike", 20));
+            stock.RemoveQuantity(new Product("bike", 3));
             IEnumerator<Product> enumerator = stock.GetEnumerator();
             enumerator.MoveNext();
             Assert.Equal(result.Name, enumerator.Current.Name);
@@ -48,16 +55,45 @@ namespace Linq
         }
 
         [Fact]
+        public void RemoveQuantityIsCalledToRemoveIsNullShouldThrowException()
+        {
+            var stock = new Stock(AlertForThreshold);
+            Assert.Throws<ArgumentException>(() => stock.RemoveQuantity(null));
+        }
+
+        [Fact]
+        public void RemoveQuantityIsCalledItemIsNotInStoreSHouldThrowException()
+        {
+            var stock = new Stock(AlertForThreshold);
+            stock.Add(new Product("bike", 15));
+            Assert.Throws<ArgumentException>(() => stock.RemoveQuantity(new Product("hat", 2)));
+        }
+
+        [Fact]
         public void RemoveIsCalledToRemoveQuantityIsGreaterThanExistingQuantityShouldNotUpdateResult()
         {
-            var stock = new Stock();
+            var stock = new Stock(AlertForThreshold);
             var result = new Product("bike", 2);
             stock.Add(new Product("bike", 2));
-            stock.RemoveQuantity(new Product("bike", 5));
-            IEnumerator<Product> enumerator = stock.GetEnumerator();
-            enumerator.MoveNext();
-            Assert.Equal(result.Name, enumerator.Current.Name);
-            Assert.Equal(result.Quantity, enumerator.Current.Quantity);
+            Assert.Throws<ArgumentException>(() => stock.RemoveQuantity(new Product("bike", 5)));
+        }
+
+        [Fact]
+        public void RemoveIsCalledShouldNotifyForLessThanTenItems()
+        {
+            var stock = new Stock(AlertForThreshold);
+            stock.Add(new Product("bike", 2));
+            Assert.Throws<ArgumentException>(() => stock.RemoveQuantity(new Product("bike", 1)));
+        }
+
+        private static void AlertForThreshold(Product product)
+        {
+            if (product.Quantity == 1)
+            {
+                throw new ArgumentException("Only one " + product.Name + " left!");
+            }
+
+            throw new ArgumentException("Only " + product.Quantity + " " + product.Name + "s left!");
         }
     }
 }

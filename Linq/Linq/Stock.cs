@@ -42,12 +42,19 @@ namespace Linq
             CheckForNull(toRemove);
             CheckIfContains(toRemove);
             var index = Find(toRemove.Name);
+            var alertThresholds = new[] { 10, 5, 2 }.First(x => x > toRemove.Quantity);
             if (products[index].Quantity < toRemove.Quantity)
+            {
+                throw new ArgumentException("Not enough items in store!");
+            }
+
+            products[index].Quantity -= toRemove.Quantity;
+            if (products[index].Quantity >= alertThresholds)
             {
                 return;
             }
 
-            products[index].Quantity -= toRemove.Quantity;
+            alert(toRemove);
         }
 
         public IEnumerator<Product> GetEnumerator()
