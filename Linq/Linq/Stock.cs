@@ -60,6 +60,26 @@ namespace Linq
             return GetEnumerator();
         }
 
+        private static void CheckForNull(Product product)
+        {
+            if (product != null)
+            {
+                return;
+            }
+
+            throw new ArgumentException("Insert product name.");
+        }
+
+        private void CheckIfContains(Product product)
+        {
+            if (products.Any(val => val.Name == product.Name))
+            {
+                return;
+            }
+
+            throw new ArgumentException("Product not in store.");
+        }
+
         private int Find(string name)
         {
             for (int i = 0; i < products.Count && products.Any(val => val.Name == name); i++)
