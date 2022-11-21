@@ -10,10 +10,12 @@ namespace Linq
     class Stock : IEnumerable<Product>
     {
         private readonly List<Product> products;
+        private readonly Action<Product> alert;
         private int count;
 
-        public Stock()
+        public Stock(Action<Product> alert)
         {
+            this.alert = alert;
             products = new List<Product>();
             count = 0;
         }
