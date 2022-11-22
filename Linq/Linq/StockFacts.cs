@@ -81,9 +81,16 @@ namespace Linq
         [Fact]
         public void RemoveIsCalledShouldNotifyForLessThanTenItems()
         {
-            var stock = new Stock(AlertForThreshold);
+            var stock = new Stock(Alert);
             stock.Add(new Product("bike", 2));
-            Assert.Throws<ArgumentException>(() => stock.RemoveQuantity(new Product("bike", 1)));
+            bool alertTriggered = false;
+            void Alert(Product product)
+            {
+                alertTriggered = true;
+            }
+
+            stock.RemoveQuantity(new Product("bike", 1));
+            Assert.True(alertTriggered);
         }
 
         private static void AlertForThreshold(Product product)
