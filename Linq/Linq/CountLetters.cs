@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Linq
 {
-    internal class CountLetters
+    class CountLetters
     {
+        private readonly string phrase;
+
+        public CountLetters(string phrase)
+        {
+            this.phrase = phrase;
+        }
     }
 }
