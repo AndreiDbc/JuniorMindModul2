@@ -20,5 +20,17 @@ namespace Linq
         {
             Assert.Equal(3, new CountLetters("aeiowaAyIjO").CountConsonants());
         }
+
+        [Fact]
+        public void GetSingleCharacterIsCalledShouldReturnFirstCharacterThatDoesntRepeat()
+        {
+            Assert.Equal('c', new CountLetters("aibcbaii").GetSingleCharacter());
+        }
+
+        [Fact]
+        public void GetSingleCharacterIsCalledAllCharactersRepeatShouldReturnNullCharacter()
+        {
+            Assert.Equal('\0', new CountLetters("aibcbacii").GetSingleCharacter());
+        }
     }
 }

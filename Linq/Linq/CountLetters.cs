@@ -26,5 +26,18 @@ namespace Linq
             const string consonants = "QqWwRrTtYyPpSsDdGgHhJjKkLlZzXxCcVvBbNnMm";
             return phrase.Select(consonant => consonant).Count(letter => consonants.Any(toCompare => toCompare.Equals(letter)));
         }
+
+        public char GetSingleCharacter()
+        {
+            foreach (char c in phrase)
+            {
+                if (phrase.Intersect(c.ToString(), EqualityComparer<char>.Default).Count() == 1)
+                {
+                    return c;
+                }
+            }
+
+            return '\0';
+        }
     }
 }
