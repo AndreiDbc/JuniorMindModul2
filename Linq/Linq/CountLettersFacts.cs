@@ -14,5 +14,11 @@ namespace Linq
         {
             Assert.Equal(3, new CountLetters("fhAgou").CountVocals());
         }
+
+        [Fact]
+        public void CountConsonantsIsCalledShouldReturnNoOfConsonants()
+        {
+            Assert.Equal(3, new CountLetters("aeiowaAyIjO").CountConsonants());
+        }
     }
 }
