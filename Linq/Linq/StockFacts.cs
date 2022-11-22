@@ -86,7 +86,7 @@ namespace Linq
             bool alertTriggered = false;
             void Alert(Product product)
             {
-                alertTriggered = true;
+                alertTriggered = product.Quantity == 1 && product.Name == "bike";
             }
 
             stock.RemoveQuantity(new Product("bike", 1));
