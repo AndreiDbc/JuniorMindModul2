@@ -14,5 +14,11 @@ namespace Linq
         {
             this.phrase = phrase;
         }
+
+        public int CountVocals()
+        {
+            const string vocals = "EeUuIiOoAa";
+            return phrase.Select(vocal => vocal).Count(letter => vocals.Any(toCompare => toCompare.Equals(letter)));
+        }
     }
 }
