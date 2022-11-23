@@ -17,9 +17,8 @@ namespace Linq
 
         public (int vowels, int consonants) Count()
         {
-            var select = phrase.Select(value => value);
-            return (select.Count(letter => "EeUuIiOoAa".Any(toCompare => toCompare.Equals(letter))),
-            select.Count(letter => "QqWwRrTtYyPpSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm".Any(toCompare => toCompare.Equals(letter))));
+            return (phrase.Count(letter => "EeUuIiOoAa".Any(toCompare => toCompare.Equals(letter))),
+            phrase.Count(letter => "QqWwRrTtYyPpSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm".Any(toCompare => toCompare.Equals(letter))));
         }
 
         public char GetSingleCharacter()
