@@ -24,15 +24,7 @@ namespace Linq
 
         public char GetSingleCharacter()
         {
-            foreach (char c in phrase)
-            {
-                if (phrase.Intersect(c.ToString(), EqualityComparer<char>.Default).Count() == 1)
-                {
-                    return c;
-                }
-            }
-
-            return '\0';
+            return phrase.First(value => phrase.Count(toCompare => value == toCompare) == 1);
         }
     }
 }
