@@ -15,16 +15,11 @@ namespace Linq
             this.phrase = phrase;
         }
 
-        public int CountVocals()
+        public (int vowels, int consonants) Count()
         {
-            const string vocals = "EeUuIiOoAa";
-            return phrase.Select(vocal => vocal).Count(letter => vocals.Any(toCompare => toCompare.Equals(letter)));
-        }
-
-        public int CountConsonants()
-        {
-            const string consonants = "QqWwRrTtYyPpSsDdGgHhJjKkLlZzXxCcVvBbNnMm";
-            return phrase.Select(consonant => consonant).Count(letter => consonants.Any(toCompare => toCompare.Equals(letter)));
+            var select = phrase.Select(value => value);
+            return (select.Count(letter => "EeUuIiOoAa".Any(toCompare => toCompare.Equals(letter))),
+            select.Count(letter => "QqWwRrTtYyPpSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm".Any(toCompare => toCompare.Equals(letter))));
         }
 
         public char GetSingleCharacter()

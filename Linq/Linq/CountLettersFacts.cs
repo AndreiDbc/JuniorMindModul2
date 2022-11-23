@@ -12,13 +12,7 @@ namespace Linq
         [Fact]
         public void CountVocalsIsCalledShouldReturnNoOfVocals()
         {
-            Assert.Equal(3, new CountLetters("fhAgou").CountVocals());
-        }
-
-        [Fact]
-        public void CountConsonantsIsCalledShouldReturnNoOfConsonants()
-        {
-            Assert.Equal(3, new CountLetters("aeiowaAyIjO").CountConsonants());
+            Assert.Equal((3, 5), new CountLetters("fhAgyyou").Count());
         }
 
         [Fact]
