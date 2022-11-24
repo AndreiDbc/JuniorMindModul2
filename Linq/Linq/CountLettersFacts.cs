@@ -10,9 +10,9 @@ namespace Linq
     public class CountLettersFacts
     {
         [Fact]
-        public void CountVocalsIsCalledShouldReturnNoOfVocals()
+        public void CountCalledShouldReturnNoOfVowelsAndConsonants()
         {
-            Assert.Equal((3, 5), new CountLetters("fhAgyyou").Count());
+            Assert.Equal((3, 5), new CountLetters("fhAg ;yyou").Count());
         }
 
         [Fact]
