@@ -20,8 +20,8 @@ namespace Linq
             (int vowels, int consonants) result = (0, 0);
             result = phrase.ToLower().Where(character => char.IsLetter(character))
                 .Aggregate(result, (_, character) => "euioa".Any(toCompare => toCompare.Equals(character))
-            ? (result.vowels++, result.consonants)
-            : (result.vowels, result.consonants++));
+            ? (++result.vowels, result.consonants)
+            : (result.vowels, ++result.consonants));
 
             return result;
         }
