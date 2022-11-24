@@ -20,5 +20,17 @@ namespace Linq
         {
             Assert.Equal('c', new CountLetters("aibcbaii").GetSingleCharacter());
         }
+
+        [Fact]
+        public void ConvertIsCalledShouldConvertStringToNumber()
+        {
+            Assert.Equal(123, new CountLetters("123").Convert());
+        }
+
+        [Fact]
+        public void ConvertIsCalledPhraseContainsNonDigitsShouldThrowException()
+        {
+            Assert.Throws<ArgumentException>(() => new CountLetters("12g").Convert());
+        }
     }
 }

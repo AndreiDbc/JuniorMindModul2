@@ -30,5 +30,16 @@ namespace Linq
         {
             return phrase.First(value => phrase.Count(toCompare => value == toCompare) == 1);
         }
+
+        public int Convert()
+        {
+            if (!phrase.All(char.IsDigit))
+            {
+                throw new ArgumentException("String may only contain digits.");
+            }
+
+            int result = 0;
+            return phrase.Aggregate(result, (_, character) => result = result * 10 + character - '0');
+        }
     }
 }
