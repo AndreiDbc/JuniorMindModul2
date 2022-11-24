@@ -18,8 +18,8 @@ namespace Linq
         public (int vowels, int consonants) Count()
         {
             (int vowels, int consonants) result = (0, 0);
-            result = phrase.ToLower().Where(character => char.IsLetter(character))
-                .Aggregate(result, (_, character) => "euioa".Any(toCompare => toCompare.Equals(character))
+            result = phrase.ToLower().Where(char.IsLetter)
+                .Aggregate(result, (_, character) => "euioa".Contains(character)
             ? (++result.vowels, result.consonants)
             : (result.vowels, ++result.consonants));
 
