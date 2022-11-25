@@ -41,5 +41,10 @@ namespace Linq
             int result = 0;
             return phrase.Aggregate(result, (_, character) => result = result * 10 + character - '0');
         }
+
+        public int GetMostApparitionsOfCharacter()
+        {
+            return phrase.Select(character => phrase.Intersect(new List<char> { character }, EqualityComparer<char>.Default).Count(toCompare => toCompare == character)).Max();
+        }
     }
 }

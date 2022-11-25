@@ -32,5 +32,11 @@ namespace Linq
         {
             Assert.Throws<ArgumentException>(() => new CountLetters("12g").Convert());
         }
+
+        [Fact]
+        public void GetMostApparitionsOfCharacterIsCalledShouldReturnNoOfApparitions()
+        {
+            Assert.Equal(3, new CountLetters("asabsa").GetMostApparitionsOfCharacter());
+        }
     }
 }
