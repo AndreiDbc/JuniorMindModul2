@@ -8,5 +8,8 @@ namespace Linq
 {
     class Merchandise
     {
+        public string Name { get; set; }
+
+        public ICollection<Feature> Features { get; set; }
     }
 }
