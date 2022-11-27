@@ -14,5 +14,10 @@ namespace Linq
         {
             return merchandises.Where(merchandise => features.All(feature => merchandise.Features.Contains(feature)));
         }
+
+        public static IEnumerable<Merchandise> GetNoFeaturesMerchandises(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
+        {
+            return merchandises.Where(merchandise => !features.Any(feature => merchandise.Features.Contains(feature)));
+        }
     }
 }
