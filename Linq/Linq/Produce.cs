@@ -8,5 +8,7 @@ namespace Linq
 {
     class Produce
     {
+        public string Name;
+        public int Quantity;
     }
 }
