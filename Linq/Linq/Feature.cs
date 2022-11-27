@@ -8,5 +8,6 @@ namespace Linq
 {
     class Feature
     {
+        public int Id { get; set; }
     }
 }
