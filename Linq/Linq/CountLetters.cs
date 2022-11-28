@@ -44,7 +44,7 @@ namespace Linq
 
         public int GetMostApparitionsOfCharacter()
         {
-            return phrase.Select(character => phrase.Intersect(new List<char> { character }, EqualityComparer<char>.Default).Count(toCompare => toCompare == character)).Max();
+            return phrase.Select(character => phrase.Count(toCompare => toCompare == character)).Max();
         }
     }
 }
