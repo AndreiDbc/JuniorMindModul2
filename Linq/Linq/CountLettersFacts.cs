@@ -28,6 +28,12 @@ namespace Linq
         }
 
         [Fact]
+        public void ConvertIsCalledStringStartsWithDashShouldConvertStringToNumber()
+        {
+            Assert.Equal(-123, new CountLetters("-123").Convert());
+        }
+
+        [Fact]
         public void ConvertIsCalledPhraseContainsNonDigitsShouldThrowException()
         {
             Assert.Throws<ArgumentException>(() => new CountLetters("12g").Convert());

@@ -33,13 +33,14 @@ namespace Linq
 
         public int Convert()
         {
-            if (!phrase.All(char.IsDigit))
+            if (!phrase.All(char.IsDigit) && !phrase.StartsWith("-"))
             {
                 throw new ArgumentException("String may only contain digits.");
             }
 
-            int result = 0;
-            return phrase.Aggregate(result, (_, character) => result = result * 10 + character - '0');
+            return phrase.StartsWith("-")
+                ? phrase[1..].Aggregate(0, (number, character) => number * 10 + character - '0') * -1
+                : phrase.Aggregate(0, (number, character) => number * 10 + character - '0');
         }
 
         public int GetMostApparitionsOfCharacter()
