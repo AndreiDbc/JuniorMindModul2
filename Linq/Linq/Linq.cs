@@ -144,10 +144,10 @@ namespace Linq
                 throw new ArgumentNullException(nameof(seed));
             }
 
-            TAccumulate result = default;
+            TAccumulate result = seed;
             foreach (var item in source)
             {
-                result = func(seed, item);
+                result = func(result, item);
             }
 
             return result;
