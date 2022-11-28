@@ -38,9 +38,11 @@ namespace Linq
                 throw new ArgumentException("String may only contain digits.");
             }
 
+            Func<int, char, int> func = (number, character) => (number * 10) + character - '0';
+
             return phrase.StartsWith("-")
-                ? phrase[1..].Aggregate(0, (number, character) => number * 10 + character - '0') * -1
-                : phrase.Aggregate(0, (number, character) => number * 10 + character - '0');
+                ? phrase[1..].Aggregate(0, func) * -1
+                : phrase.Aggregate(0, func);
         }
 
         public int GetMostApparitionsOfCharacter()
