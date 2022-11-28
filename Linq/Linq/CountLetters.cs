@@ -30,14 +30,16 @@ namespace Linq
 
         public int Convert()
         {
-            if (!phrase.All(char.IsDigit) && !phrase.StartsWith("-"))
+            bool isNegative = phrase.StartsWith("-");
+            Func<string, bool> hasOnlyDigits = input => input.All(char.IsDigit);
+            if (isNegative ? !hasOnlyDigits(phrase[1..]) : !hasOnlyDigits(phrase))
             {
                 throw new ArgumentException("String may only contain digits.");
             }
 
             Func<int, char, int> func = (number, character) => (number * 10) + character - '0';
 
-            return phrase.StartsWith("-")
+            return isNegative
                 ? phrase[1..].Aggregate(0, func) * -1
                 : phrase.Aggregate(0, func);
         }
