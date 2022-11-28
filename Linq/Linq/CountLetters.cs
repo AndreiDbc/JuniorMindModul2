@@ -17,13 +17,10 @@ namespace Linq
 
         public (int vowels, int consonants) Count()
         {
-            (int vowels, int consonants) result = (0, 0);
-            result = phrase.ToLower().Where(char.IsLetter)
-                .Aggregate(result, (_, character) => "euioa".Contains(character)
-            ? (++result.vowels, result.consonants)
-            : (result.vowels, ++result.consonants));
-
-            return result;
+            return phrase.ToLower().Where(char.IsLetter)
+                .Aggregate((0, 0), (touple, character) => "euioa".Contains(character)
+            ? (++touple.Item1, touple.Item2)
+            : (touple.Item1, ++touple.Item2));
         }
 
         public char GetSingleCharacter()
