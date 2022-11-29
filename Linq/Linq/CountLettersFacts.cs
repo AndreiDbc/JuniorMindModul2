@@ -44,5 +44,11 @@ namespace Linq
         {
             Assert.Equal(3, new CountLetters("asabsa").GetMostApparitionsOfCharacter());
         }
+
+        [Fact]
+        public void GetPalindromsIsCalledShouldReturnPalindromes()
+        {
+            Assert.Equal(new[] { "a", "aa", "aabaa", "a", "aba", "b", "a", "aa","a", "c" }, new CountLetters("aabaac").GetPalindromes());
+        }
     }
 }

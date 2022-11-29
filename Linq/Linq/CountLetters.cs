@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Linq
 {
@@ -47,6 +50,17 @@ namespace Linq
         public int GetMostApparitionsOfCharacter()
         {
             return phrase.Select(character => phrase.Count(toCompare => toCompare == character)).Max();
+        }
+
+        public IEnumerable<string> GetPalindromes()
+        {
+            var phraseSubstrings =
+                from i in Enumerable.Range(0, phrase.Length)
+                from j in Enumerable.Range(0, phrase.Length - i + 1)
+                where j >= 1
+                select phrase.Substring(i, j);
+
+            return phraseSubstrings.Where(x => x == new string(x.ToCharArray().Reverse().ToArray()));
         }
     }
 }
