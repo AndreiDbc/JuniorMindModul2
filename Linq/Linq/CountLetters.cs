@@ -21,9 +21,9 @@ namespace Linq
         public (int vowels, int consonants) Count()
         {
             return phrase.ToLower().Where(char.IsLetter)
-                .Aggregate((0, 0), (touple, character) => "euioa".Contains(character)
-            ? (++touple.Item1, touple.Item2)
-            : (touple.Item1, ++touple.Item2));
+                .Aggregate((vowels: 0, consonants: 0), (touple, character) => "euioa".Contains(character)
+            ? (++touple.vowels, touple.consonants)
+            : (touple.vowels, ++touple.consonants));
         }
 
         public char GetSingleCharacter()
