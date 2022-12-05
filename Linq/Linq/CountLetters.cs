@@ -54,13 +54,10 @@ namespace Linq
 
         public IEnumerable<string> GetPalindromes()
         {
-            var phraseSubstrings =
-                from i in Enumerable.Range(0, phrase.Length)
-                from j in Enumerable.Range(0, phrase.Length - i + 1)
-                where j >= 1
-                select phrase.Substring(i, j);
-
-            return phraseSubstrings.Where(x => x == new string(x.ToCharArray().Reverse().ToArray()));
+            return Enumerable.Range(1, phrase.Length)
+                .SelectMany(x => Enumerable.Range(0, phrase.Length - x + 1)
+                .Select(y => phrase.Substring(y, x))
+                .Where(x => x == new string(x.ToCharArray().Reverse().ToArray())));
         }
     }
 }

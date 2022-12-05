@@ -48,7 +48,7 @@ namespace Linq
         [Fact]
         public void GetPalindromsIsCalledShouldReturnPalindromes()
         {
-            Assert.Equal(new[] { "a", "aa", "aabaa", "a", "aba", "b", "a", "aa","a", "c" }, new CountLetters("aabaac").GetPalindromes());
+            Assert.Equal(new[] { "a", "a", "b", "a", "a", "c", "aa", "aa", "aba", "aabaa" }, new CountLetters("aabaac").GetPalindromes());
         }
     }
 }
