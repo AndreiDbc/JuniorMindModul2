@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Xunit;
 
 namespace Linq
@@ -12,21 +13,19 @@ namespace Linq
         [Fact]
         public void JoinListIsCalledShouldCombineLists()
         {
-            var p1 = new Produce();
-            p1.Name = "Mars";
-            p1.Quantity = 1;
-            var p2 = new Produce();
-            p2.Name = "Twix";
-            p2.Quantity = 2;
-            var p3 = new Produce();
-            p3.Name = "Bounty";
-            p3.Quantity = 4;
-            var p4 = new Produce();
-            p4.Name = "Twix";
-            p4.Quantity = 4;
+            var p1 = new Produce { Name = "Mars", Quantity = 1 };
+            var p2 = new Produce { Name = "Twix", Quantity = 2 };
+            var p3 = new Produce { Name = "Bounty", Quantity = 4 };
+            var p4 = new Produce { Name = "Twix", Quantity = 4 };
             var l1 = new List<Produce>() { p1, p2 };
             var l2 = new List<Produce>() { p2, p3 };
-            Assert.Equal(new List<Produce>() { p1, p4, p3 }, l1.JoinLists(l2));
+            var result = l1.JoinLists(l2);
+            Assert.Equal(p1.Name, result.ElementAt(0).Name);
+            Assert.Equal(p1.Quantity, result.ElementAt(0).Quantity);
+            Assert.Equal(p4.Quantity, result.ElementAt(1).Quantity);
+            Assert.Equal(p4.Name, result.ElementAt(1).Name);
+            Assert.Equal(p3.Quantity, result.ElementAt(2).Quantity);
+            Assert.Equal(p3.Name, result.ElementAt(2).Name);
         }
     }
 }
