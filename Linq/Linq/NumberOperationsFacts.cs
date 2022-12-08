@@ -14,5 +14,11 @@ namespace Linq
         {
             Assert.Equal(new[] { new[] { 1 }, new[] { 2 }, new[] { 3 }, new[] { 1, 2 } }, new[] { 1, 2, 3, 4 }.GenerateSubarrays(3));
         }
+
+        [Fact]
+        public void GenerateSumIsCalledShouldReturnSequenceThatResultsToK()
+        {
+            Assert.Equal(new[] { "+1-2+3=2" }, 3.GenerateSum(2));
+        }
     }
 }

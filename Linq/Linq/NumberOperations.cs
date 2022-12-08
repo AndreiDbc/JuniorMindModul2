@@ -16,5 +16,23 @@ namespace Linq
                 .Select(y => numbers.Skip(y).Take(x)))
                 .Where(z => z.Sum() <= sum);
         }
+
+        public static IEnumerable<string> GenerateSum(this int n, int k)
+        {
+            var range = Enumerable.Range(1, n);
+            var signs = GeneratePermutations(new[] { true, false }, n);
+            return signs.Where(x => range.Aggregate(0, (sum, element) => x.ElementAt(element - 1)
+            ? sum + element
+            : sum + element * (-1)) == k)
+                .Select(x => range.Aggregate("", (expression, element) =>
+                expression + (x.ElementAt(element - 1) ? "+" : "-") + element) + "=" + k);
+        }
+
+        private static IEnumerable<IEnumerable<T>> GeneratePermutations<T>(IEnumerable<T> enumerable, int length)
+        {
+            return length == 1
+                ? enumerable.Select(x => new[] { x })
+                : GeneratePermutations(enumerable, length - 1).SelectMany(x => enumerable, (y, z) => y.Concat(new[] { z }));
+        }
     }
 }
