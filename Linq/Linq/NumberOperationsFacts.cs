@@ -20,5 +20,11 @@ namespace Linq
         {
             Assert.Equal(new[] { "+1-2+3=2" }, 3.GenerateSum(2));
         }
+
+        [Fact]
+        public void GenerateTripletsIsCalledShouldReturnSequenceOfNumbers()
+        {
+            Assert.Equal(new[] { new[] { 3, 4, 5 }, new[] { 4, 3, 5 } }, new[] { 1, 2, 3, 4, 5}.GenerateTriplets());
+        }
     }
 }
