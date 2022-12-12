@@ -31,8 +31,11 @@ namespace Linq
 
         public static IEnumerable<IEnumerable<int>> GenerateTriplets(this IEnumerable<int> numbers)
         {
-            return GeneratePermutations(numbers, 3).Where(
-                x => Math.Pow(x.ElementAt(2), 2).Equals(Math.Pow(x.ElementAt(0), 2) + Math.Pow(x.ElementAt(1), 2)));
+            return from i in numbers
+                   from j in numbers
+                   from k in numbers
+                   where i * i + j * j == k * k
+                   select new[] { i, j, k };
         }
 
         private static IEnumerable<IEnumerable<T>> GeneratePermutations<T>(IEnumerable<T> enumerable, int length)
