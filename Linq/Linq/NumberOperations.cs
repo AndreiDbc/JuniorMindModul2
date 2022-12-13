@@ -22,7 +22,7 @@ namespace Linq
         {
             var range = Enumerable.Range(1, n);
             var signs = new[] { true, false };
-            var signPermutations = new[] { true, false }.Select(i => Enumerable.Range(0, n - 1).SelectMany(j => new bool[j].Append(i)));
+            var signPermutations = new[] { true, false }.Select(i => range.SelectMany(j => new bool[j - 1].Append(i)));
             return signPermutations.Where(x => range.Aggregate(0, (sum, element) => x.ElementAt(element - 1)
             ? sum + element
             : sum + element * (-1)) == k)
@@ -35,7 +35,8 @@ namespace Linq
             var range = Enumerable.Range(0, numbers.Count() - 1);
             return range.SelectMany(i => range.Select(j => new[] { numbers.ElementAt(i), numbers.ElementAt(j) }
             .Concat(numbers.Where(k => numbers.ElementAt(i) * numbers.ElementAt(i) + numbers.ElementAt(j) * numbers.ElementAt(j) == k * k))))
-            .Where(result => result.Count() == 3);
+            .OrderBy(x => x.Count(), Comparer<int>.Default)
+                .Where(result => result.Count() == 3);
         }
     }
 }
