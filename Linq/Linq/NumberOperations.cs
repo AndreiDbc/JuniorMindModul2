@@ -31,10 +31,14 @@ namespace Linq
 
         public static IEnumerable<IEnumerable<int>> GenerateTriplets(this IEnumerable<int> numbers)
         {
-            return Enumerable.Range(0, numbers.Count() - 1).SelectMany(i => Enumerable.Range(i + 1, numbers.Count() - i - 1)
+            return ValidateTriplets(Enumerable.Range(0, numbers.Count() - 1).SelectMany(i => Enumerable.Range(i + 1, numbers.Count() - i - 1)
                      .SelectMany(j => Enumerable.Range(j + 1, numbers.Count() - j - 1)
-                        .Select(k => new[] { numbers.ElementAt(i), numbers.ElementAt(j), numbers.ElementAt(k) })))
-                .Where(a => (a.ElementAt(0) * a.ElementAt(0) + a.ElementAt(1) * a.ElementAt(1) == a.ElementAt(2) * a.ElementAt(2)) ||
+                        .Select(k => new[] { numbers.ElementAt(i), numbers.ElementAt(j), numbers.ElementAt(k) }))));
+        }
+
+        private static IEnumerable<IEnumerable<int>> ValidateTriplets(IEnumerable<IEnumerable<int>> enumerable)
+        {
+            return enumerable.Where(a => (a.ElementAt(0) * a.ElementAt(0) + a.ElementAt(1) * a.ElementAt(1) == a.ElementAt(2) * a.ElementAt(2)) ||
                 (a.ElementAt(1) * a.ElementAt(1) + a.ElementAt(2) * a.ElementAt(2) == a.ElementAt(0) * a.ElementAt(0)) ||
                 (a.ElementAt(2) * a.ElementAt(2) + a.ElementAt(0) * a.ElementAt(0) == a.ElementAt(1) * a.ElementAt(1)));
         }
