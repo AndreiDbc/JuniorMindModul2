@@ -21,7 +21,7 @@ namespace Linq
         public static IEnumerable<string> GenerateSum(this int n, int k)
         {
             var range = Enumerable.Range(1, n);
-            var signPermutations = new[] { true, false }.Select(i => range.SelectMany(j => new bool[j - 1].Append(i)));
+            var signPermutations = PermutateSigns(n);
             return signPermutations.Where(x => range.Aggregate(0, (sum, element) => x.ElementAt(element - 1)
             ? sum + element
             : sum + element * (-1)) == k)
@@ -41,6 +41,11 @@ namespace Linq
             return (values.ElementAt(0) * values.ElementAt(0) + values.ElementAt(1) * values.ElementAt(1) == values.ElementAt(2) * values.ElementAt(2)) ||
                 (values.ElementAt(1) * values.ElementAt(1) + values.ElementAt(2) * values.ElementAt(2) == values.ElementAt(0) * values.ElementAt(0)) ||
                 (values.ElementAt(2) * values.ElementAt(2) + values.ElementAt(0) * values.ElementAt(0) == values.ElementAt(1) * values.ElementAt(1));
+        }
+
+        private static IEnumerable<IEnumerable<int>> PermutateSigns(int length)
+        {
+            return new[] { 1, -1 }.Select(i => Enumerable.Range(1, length).SelectMany(j => new int[j - 1].Append(i)));
         }
     }
 }
