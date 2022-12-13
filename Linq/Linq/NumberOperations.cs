@@ -21,7 +21,6 @@ namespace Linq
         public static IEnumerable<string> GenerateSum(this int n, int k)
         {
             var range = Enumerable.Range(1, n);
-            var signs = new[] { true, false };
             var signPermutations = new[] { true, false }.Select(i => range.SelectMany(j => new bool[j - 1].Append(i)));
             return signPermutations.Where(x => range.Aggregate(0, (sum, element) => x.ElementAt(element - 1)
             ? sum + element
@@ -32,11 +31,12 @@ namespace Linq
 
         public static IEnumerable<IEnumerable<int>> GenerateTriplets(this IEnumerable<int> numbers)
         {
-            var range = Enumerable.Range(0, numbers.Count() - 1);
-            return range.SelectMany(i => range.Select(j => new[] { numbers.ElementAt(i), numbers.ElementAt(j) }
-            .Concat(numbers.Where(k => numbers.ElementAt(i) * numbers.ElementAt(i) + numbers.ElementAt(j) * numbers.ElementAt(j) == k * k))))
-            .OrderBy(x => x.Count(), Comparer<int>.Default)
-                .Where(result => result.Count() == 3);
+            return Enumerable.Range(0, numbers.Count() - 1).SelectMany(i => Enumerable.Range(i + 1, numbers.Count() - i - 1)
+                     .SelectMany(j => Enumerable.Range(j + 1, numbers.Count() - j - 1)
+                        .Select(k => new[] { numbers.ElementAt(i), numbers.ElementAt(j), numbers.ElementAt(k) })))
+                .Where(a => (a.ElementAt(0) * a.ElementAt(0) + a.ElementAt(1) * a.ElementAt(1) == a.ElementAt(2) * a.ElementAt(2)) ||
+                (a.ElementAt(1) * a.ElementAt(1) + a.ElementAt(2) * a.ElementAt(2) == a.ElementAt(0) * a.ElementAt(0)) ||
+                (a.ElementAt(2) * a.ElementAt(2) + a.ElementAt(0) * a.ElementAt(0) == a.ElementAt(1) * a.ElementAt(1)));
         }
     }
 }
