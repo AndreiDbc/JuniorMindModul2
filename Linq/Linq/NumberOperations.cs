@@ -43,7 +43,7 @@ namespace Linq
         private static IEnumerable<IEnumerable<int>> PermutateSigns(int length)
         {
             IEnumerable<IEnumerable<int>> seed = new[] { new int[0] };
-            return Enumerable.Range(1, Convert.ToInt32(Math.Pow(2, length)))
+            return Enumerable.Range(1, length)
                 .Aggregate(seed, (result, count) => result.Concat(new[] { result.ElementAt(count - 1).Append(-1), result.ElementAt(count - 1).Append(1) }))
                 .Where(values => values.Count() == length);
         }
