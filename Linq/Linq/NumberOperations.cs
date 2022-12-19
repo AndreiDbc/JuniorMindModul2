@@ -44,8 +44,7 @@ namespace Linq
         {
             IEnumerable<IEnumerable<int>> seed = new[] { new int[0] };
             return Enumerable.Range(1, length)
-                .Aggregate(seed, (result, count) => result.Concat(new[] { result.ElementAt(count - 1).Append(-1), result.ElementAt(count - 1).Append(1) }))
-                .Where(values => values.Count() == length);
+                .Aggregate(seed, (result, _) => result.SelectMany(x => new[] { x.Append(-1), x.Append(1) }));
         }
     }
 }
