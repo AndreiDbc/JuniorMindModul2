@@ -22,11 +22,9 @@ namespace Linq
         {
             var range = Enumerable.Range(1, n);
             var signPermutations = PermutateSigns(n);
-            return signPermutations.Where(x => range.Aggregate(0, (sum, element) => x.ElementAt(element - 1)
-            ? sum + element
-            : sum + element * (-1)) == k)
+            return signPermutations.Where(x => range.Aggregate(0, (sum, element) => sum + element * x.ElementAt(element - 1)) == k)
                 .Select(x => range.Aggregate("", (expression, element) =>
-                expression + (x.ElementAt(element - 1) ? "+" : "-") + element) + "=" + k);
+                expression + (x.ElementAt(element - 1) == 1 ? "+" : "-") + element) + "=" + k);
         }
 
         public static IEnumerable<IEnumerable<int>> GenerateTriplets(this IEnumerable<int> numbers)
@@ -45,7 +43,10 @@ namespace Linq
 
         private static IEnumerable<IEnumerable<int>> PermutateSigns(int length)
         {
-            return new[] { 1, -1 }.Select(i => Enumerable.Range(1, length).SelectMany(j => new int[j - 1].Append(i)));
+            IEnumerable<IEnumerable<int>> seed = new[] { new int[0] };
+            return Enumerable.Range(1, Convert.ToInt32(Math.Pow(2, length)))
+                .Aggregate(seed, (result, count) => result.Concat(new[] { result.ElementAt(count - 1).Concat(new[] { -1 }), result.ElementAt(count - 1).Concat(new[] { 1 }) }))
+                .Where(values => values.Count() == length);
         }
     }
 }
