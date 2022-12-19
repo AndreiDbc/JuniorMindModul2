@@ -18,7 +18,7 @@ namespace Linq
         [Fact]
         public void GenerateSumIsCalledShouldReturnSequenceThatResultsToK()
         {
-            Assert.Equal(new[] { "+1-2+3=2" }, 3.GenerateSum(2));
+            Assert.Equal(new[] { new[] { 1, -2, 3 } }, 3.GenerateSum(2));
         }
 
         [Fact]

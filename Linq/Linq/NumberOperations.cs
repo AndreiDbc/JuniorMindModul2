@@ -18,12 +18,9 @@ namespace Linq
                 .Where(z => z.Sum() <= sum);
         }
 
-        public static IEnumerable<string> GenerateSum(this int n, int k)
+        public static IEnumerable<IEnumerable<int>> GenerateSum(this int n, int k)
         {
-            var range = Enumerable.Range(1, n);
-            return PermutateSigns(n).Where(x => range.Aggregate(0, (sum, element) => sum + element * x.ElementAt(element - 1)) == k)
-                .Select(x => range.Aggregate("", (expression, element) =>
-                expression + (x.ElementAt(element - 1) == 1 ? "+" : "-") + element) + "=" + k);
+            return PermutateSigns(n).Select(Solution).Where(s => s.Sum() == k);
         }
 
         public static IEnumerable<IEnumerable<int>> GenerateTriplets(this IEnumerable<int> numbers)
@@ -46,5 +43,7 @@ namespace Linq
             return Enumerable.Range(1, length)
                 .Aggregate(seed, (result, _) => result.SelectMany(x => new[] { x.Append(-1), x.Append(1) }));
         }
+
+        private static IEnumerable<int> Solution(IEnumerable<int> signs) => signs.Select((current, index) => current * (index + 1));
     }
 }
