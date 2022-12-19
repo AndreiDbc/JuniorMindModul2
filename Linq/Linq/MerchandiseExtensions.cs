@@ -12,12 +12,12 @@ namespace Linq
     {
         public static IEnumerable<Merchandise> GetAllFeaturesMerchandises(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            return merchandises.Where(merchandise => features.All(feature => merchandise.Features.Contains(feature)));
+            return merchandises.Where(merchandise => features.All(merchandise.Features.Contains));
         }
 
         public static IEnumerable<Merchandise> GetNoFeaturesMerchandises(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            return merchandises.Where(merchandise => !features.Any(feature => merchandise.Features.Contains(feature)));
+            return merchandises.Where(merchandise => !features.Any(merchandise.Features.Contains));
         }
 
         public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
