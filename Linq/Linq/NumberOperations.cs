@@ -21,8 +21,7 @@ namespace Linq
         public static IEnumerable<string> GenerateSum(this int n, int k)
         {
             var range = Enumerable.Range(1, n);
-            var signPermutations = PermutateSigns(n);
-            return signPermutations.Where(x => range.Aggregate(0, (sum, element) => sum + element * x.ElementAt(element - 1)) == k)
+            return PermutateSigns(n).Where(x => range.Aggregate(0, (sum, element) => sum + element * x.ElementAt(element - 1)) == k)
                 .Select(x => range.Aggregate("", (expression, element) =>
                 expression + (x.ElementAt(element - 1) == 1 ? "+" : "-") + element) + "=" + k);
         }
