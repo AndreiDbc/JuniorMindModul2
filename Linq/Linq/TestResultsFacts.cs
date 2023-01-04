@@ -12,10 +12,7 @@ namespace Linq
         [Fact]
         public void AnInstanceOfTestResultsIsCreatedShouldReturnObject()
         {
-            var test = new TestResults();
-            test.FamilyId = "a";
-            test.Id = "b";
-            test.Score = 2;
+            var test = new TestResults() { FamilyId = "a", Id = "b", Score = 2 };
             Assert.Equal("a", test.FamilyId);
             Assert.Equal("b", test.Id);
             Assert.Equal(2, test.Score);
