@@ -22,7 +22,31 @@ namespace Linq
 
         public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            return merchandises.Where(merchandise => features.Any(merchandise.Features.Contains) && !features.All(merchandise.Features.Contains));
+            var dictionary = new Dictionary<Feature, List<Merchandise>>();
+            merchandises.Aggregate(dictionary, (x, y) =>
+            {
+                features.Aggregate(x, (a, b) =>
+                {
+                    if (y.Features.Contains(b))
+                    {
+                        a[b].Add(y);
+                    }
+                    else
+                    {
+                        a[b] = new List<Merchandise>() { y };
+                    }
+
+                    return x;
+                });
+
+                return dictionary;
+            });
+
+            return features.Aggregate(new List<Merchandise>(), (x, y) =>
+            {
+                x.AddRange(dictionary[y].Where(a => features.Any(b => !a.Features.Contains(b) && a.Features.Count != 0)));
+                return x;
+            }).Distinct();
         }
     }
 }
