@@ -13,7 +13,16 @@ namespace Linq
     {
         public static IEnumerable<Merchandise> GetAllFeaturesMerchandises(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            return merchandises.Where(merchandise => features.All(merchandise.Features.Contains));
+            var dictionary = AddToDictionary(merchandises, features);
+            return features.Aggregate(new List<Merchandise>(), (x, y) =>
+            {
+                if (dictionary.ContainsKey(y))
+                {
+                    x.AddRange(dictionary[y].Where(a => features.All(b => a.Features.Contains(b))));
+                }
+
+                return x;
+            }).Distinct();
         }
 
         public static IEnumerable<Merchandise> GetNoFeaturesMerchandises(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
@@ -21,7 +30,11 @@ namespace Linq
             var dictionary = AddToDictionary(merchandises, features);
             return features.Aggregate(new List<Merchandise>(), (x, y) =>
             {
-                x.AddRange(dictionary[y].Where(a => features.All(b => !a.Features.Contains(b))));
+                if (dictionary.ContainsKey(y))
+                {
+                    x.AddRange(dictionary[y].Where(a => features.All(b => !a.Features.Contains(b))));
+                }
+
                 return x;
             }).Distinct();
         }
@@ -32,7 +45,11 @@ namespace Linq
 
             return features.Aggregate(new List<Merchandise>(), (x, y) =>
             {
-                x.AddRange(dictionary[y].Where(a => features.Any(b => !a.Features.Contains(b) && a.Features.Count != 0)));
+                if (dictionary.ContainsKey(y))
+                {
+                    x.AddRange(dictionary[y].Where(a => features.Any(b => !a.Features.Contains(b) && a.Features.Count != 0)));
+                }
+
                 return x;
             }).Distinct();
         }
