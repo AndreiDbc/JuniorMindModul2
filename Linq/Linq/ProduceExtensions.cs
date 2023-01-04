@@ -11,13 +11,26 @@ namespace Linq
     {
         public static IEnumerable<Produce> JoinLists(this IEnumerable<Produce> first, IEnumerable<Produce> second)
         {
-            return first.Select(x => new Produce
+            var dictionary = new Dictionary<string, Produce>();
+            first.Aggregate(dictionary, (x, y) =>
             {
-                Name = x.Name,
-                Quantity = second.Contains(x)
-            ? second.First(y => y.Name == x.Name).Quantity + x.Quantity
-            : x.Quantity
-            }).Union(second.Where(z => !first.Contains(z)), EqualityComparer<Produce>.Default);
+                x.Add(y.Name, y);
+                return x;
+            });
+
+            return second.Aggregate(dictionary, (x, y) =>
+            {
+                if (x.ContainsKey(y.Name))
+                {
+                    x[y.Name].Quantity += y.Quantity;
+                }
+                else
+                {
+                    x.Add(y.Name, y);
+                }
+
+                return x;
+            }).Values;
         }
     }
 }
