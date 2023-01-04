@@ -9,5 +9,12 @@ namespace Linq
 {
     public class WordCountFacts
     {
+        [Fact]
+        public void AnInstanceOfWordCountIsCreatedShouldReturnObject()
+        {
+            var test = new WordCount() { Word = "as", Count = 1 };
+            Assert.Equal("as", test.Word);
+            Assert.Equal(1, test.Count);
+        }
     }
 }
