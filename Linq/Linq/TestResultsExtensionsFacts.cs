@@ -20,6 +20,7 @@ namespace Linq
             Assert.Equal(3, results.ElementAt(0).Score);
             Assert.Equal("b", results.ElementAt(1).FamilyId);
             Assert.Equal(2, results.ElementAt(1).Score);
+            Assert.Equal(2, results.Count());
         }
     }
 }
