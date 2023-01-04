@@ -8,5 +8,11 @@ namespace Linq
 {
     class Sudoku
     {
+        private readonly int[,] matrix;
+
+        public Sudoku(int[,] matrix)
+        {
+            this.matrix = matrix;
+        }
     }
 }
