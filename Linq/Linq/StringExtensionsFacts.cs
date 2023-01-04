@@ -12,7 +12,7 @@ namespace Linq
         [Fact]
         public void CountWordsIsCalledShouldReturnListOfWords()
         {
-            const string text = "a s a f.a g s";
+            const string text = "a a f s.a g s";
             var result = text.CountWords();
             Assert.Equal(3, result.ElementAt(0).Count);
             Assert.Equal("a", result.ElementAt(0).Word);

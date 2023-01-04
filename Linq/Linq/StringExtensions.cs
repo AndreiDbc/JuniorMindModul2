@@ -25,7 +25,7 @@ namespace Linq
                 }
 
                 return x;
-            }).Values;
+            }).Values.OrderByDescending(x => x.Count);
         }
     }
 }
