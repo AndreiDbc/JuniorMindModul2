@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualBasic;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -22,8 +23,20 @@ namespace Linq
 
         public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
+            var dictionary = AddToDictionary(merchandises, features);
+
+            return features.Aggregate(new List<Merchandise>(), (x, y) =>
+            {
+                x.AddRange(dictionary[y].Where(a => features.Any(b => !a.Features.Contains(b) && a.Features.Count != 0)));
+                return x;
+            }).Distinct();
+        }
+
+        private static Dictionary<Feature, List<Merchandise>> AddToDictionary(
+            this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
+        {
             var dictionary = new Dictionary<Feature, List<Merchandise>>();
-            merchandises.Aggregate(dictionary, (x, y) =>
+            return merchandises.Aggregate(dictionary, (x, y) =>
             {
                 features.Aggregate(x, (a, b) =>
                 {
@@ -41,12 +54,6 @@ namespace Linq
 
                 return dictionary;
             });
-
-            return features.Aggregate(new List<Merchandise>(), (x, y) =>
-            {
-                x.AddRange(dictionary[y].Where(a => features.Any(b => !a.Features.Contains(b) && a.Features.Count != 0)));
-                return x;
-            }).Distinct();
         }
     }
 }
