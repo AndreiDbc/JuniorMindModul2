@@ -18,7 +18,12 @@ namespace Linq
 
         public static IEnumerable<Merchandise> GetNoFeaturesMerchandises(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            return merchandises.Where(merchandise => !features.Any(merchandise.Features.Contains));
+            var dictionary = AddToDictionary(merchandises, features);
+            return features.Aggregate(new List<Merchandise>(), (x, y) =>
+            {
+                x.AddRange(dictionary[y].Where(a => features.All(b => !a.Features.Contains(b))));
+                return x;
+            }).Distinct();
         }
 
         public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
