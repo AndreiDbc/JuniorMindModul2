@@ -11,7 +11,8 @@ namespace Linq
 {
     static class MerchandiseExtensions
     {
-        public static IEnumerable<Merchandise> GetAllFeaturesMerchandises(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
+        public static IEnumerable<Merchandise> GetAllFeaturesMerchandises(
+            this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
             var dictionary = AddToDictionary(merchandises, features);
             return features.Aggregate(new List<Merchandise>(), (x, y) =>
@@ -25,7 +26,8 @@ namespace Linq
             }).Distinct();
         }
 
-        public static IEnumerable<Merchandise> GetNoFeaturesMerchandises(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
+        public static IEnumerable<Merchandise> GetNoFeaturesMerchandises(
+            this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
             var dictionary = AddToDictionary(merchandises, features);
             return features.Aggregate(new List<Merchandise>(), (x, y) =>
@@ -39,19 +41,32 @@ namespace Linq
             }).Distinct();
         }
 
-        public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
+        public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(
+            this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            var dictionary = AddToDictionary(merchandises, features);
+            var dictionary = new Dictionary<Feature, List<Merchandise>>();
 
-            return features.Aggregate(new List<Merchandise>(), (x, y) =>
+            return merchandises.Aggregate(dictionary, (x, y) =>
             {
-                if (dictionary.ContainsKey(y))
+                features.Aggregate(x, (a, b) =>
                 {
-                    x.AddRange(dictionary[y].Where(a => features.Any(b => !a.Features.Contains(b) && a.Features.Count != 0)));
-                }
+                    if (!features.All(y.Features.Contains) && y.Features.Contains(b))
+                    {
+                        if (a.ContainsKey(b))
+                        {
+                            a[b].Add(y);
+                        }
+                        else
+                        {
+                            a.Add(b, new List<Merchandise> { y });
+                        }
+                    }
 
-                return x;
-            }).Distinct();
+                    return x;
+                });
+
+                return dictionary;
+            }).Values.SelectMany(a => a).Distinct();
         }
 
         private static Dictionary<Feature, List<Merchandise>> AddToDictionary(
