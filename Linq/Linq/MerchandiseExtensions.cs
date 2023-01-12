@@ -68,29 +68,5 @@ namespace Linq
                 return dictionary;
             }).Values.SelectMany(a => a).Distinct();
         }
-
-        private static Dictionary<Feature, List<Merchandise>> AddToDictionary(
-            this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
-        {
-            var dictionary = new Dictionary<Feature, List<Merchandise>>();
-            return merchandises.Aggregate(dictionary, (x, y) =>
-            {
-                features.Aggregate(x, (a, b) =>
-                {
-                    if (y.Features.Contains(b))
-                    {
-                        a[b].Add(y);
-                    }
-                    else
-                    {
-                        a[b] = new List<Merchandise>() { y };
-                    }
-
-                    return x;
-                });
-
-                return dictionary;
-            });
-        }
     }
 }
