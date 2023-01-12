@@ -28,29 +28,8 @@ namespace Linq
         public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(
             this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            var dictionary = new Dictionary<Feature, List<Merchandise>>();
-
-            return merchandises.Aggregate(dictionary, (x, y) =>
-            {
-                features.Aggregate(x, (a, b) =>
-                {
-                    if (!features.All(y.Features.Contains) && y.Features.Contains(b))
-                    {
-                        if (a.ContainsKey(b))
-                        {
-                            a[b].Add(y);
-                        }
-                        else
-                        {
-                            a.Add(b, new List<Merchandise> { y });
-                        }
-                    }
-
-                    return x;
-                });
-
-                return dictionary;
-            }).Values.SelectMany(a => a).Distinct();
+            var hashset = features.ToHashSet();
+            return merchandises.Where(x => x.Features.Count != 0 && hashset.IsProperSupersetOf(x.Features));
         }
     }
 }
