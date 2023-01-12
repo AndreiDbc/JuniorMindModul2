@@ -22,7 +22,7 @@ namespace Linq
             this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
             var featuresToHashSet = features.ToHashSet();
-            return merchandises.Where(x => !x.Features.ToHashSet().IsSubsetOf(featuresToHashSet) || x.Features.Count == 0);
+            return merchandises.Where(x => !featuresToHashSet.IsSupersetOf(x.Features) || x.Features.Count == 0);
         }
 
         public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(
