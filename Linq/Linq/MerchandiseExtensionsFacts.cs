@@ -47,7 +47,7 @@ namespace Linq
         }
 
         [Fact]
-        public void GetMerchandisesContainingFeaturesIsCalledShouldReturnMerchandise()
+        public void GetMerchandisesContainingFeaturesIsCalledShouldReturnMerchandises()
         {
             var f1 = new Feature { Id = 1 };
             var f2 = new Feature { Id = 2 };
@@ -55,11 +55,11 @@ namespace Linq
             var m1 = new Merchandise { Name = "a", Features = new List<Feature>() };
             var m2 = new Merchandise { Name = "b", Features = new List<Feature>() { f2, f3 } };
             var m3 = new Merchandise { Name = "c", Features = new List<Feature>() { f1, f2, f3 } };
-            Assert.Equal(new List<Merchandise>() { m2 }, new List<Merchandise>() { m1, m2, m3 }.GetMerchandisesContainingFeatures(new List<Feature>() { f1, f2, f3 }));
+            Assert.Equal(new List<Merchandise>() { m2, m3 }, new List<Merchandise>() { m1, m2, m3 }.GetMerchandisesContainingFeatures(new List<Feature>() { f1, f2, f3 }));
         }
 
         [Fact]
-        public void GetMerchandisesContainingFeaturesIsCalledMerchandiseContainsSomeCommonFeaturesShouldReturnM2()
+        public void GetMerchandisesContainingFeaturesIsCalledMerchandiseContainsSomeCommonFeaturesShouldReturnM2andM3()
         {
             var f1 = new Feature { Id = 1 };
             var f2 = new Feature { Id = 2 };
@@ -68,7 +68,7 @@ namespace Linq
             var m1 = new Merchandise { Name = "a", Features = new List<Feature>() { f4 } };
             var m2 = new Merchandise { Name = "b", Features = new List<Feature>() { f2, f3, f4 } };
             var m3 = new Merchandise { Name = "c", Features = new List<Feature>() { f1, f2, f3 } };
-            Assert.Equal(new List<Merchandise>() { m2 }, new List<Merchandise>() { m1, m2, m3 }.GetMerchandisesContainingFeatures(new List<Feature>() { f1, f2, f3 }));
+            Assert.Equal(new List<Merchandise>() { m2, m3 }, new List<Merchandise>() { m1, m2, m3 }.GetMerchandisesContainingFeatures(new List<Feature>() { f1, f2, f3 }));
         }
     }
 }

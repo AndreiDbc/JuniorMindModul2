@@ -29,8 +29,7 @@ namespace Linq
             this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
             var featuresToHashSet = features.ToHashSet();
-            return merchandises.Where(x => featuresToHashSet.Intersect(x.Features).Any()
-                     && !featuresToHashSet.IsSubsetOf(x.Features));
+            return merchandises.Where(x => featuresToHashSet.Intersect(x.Features).Any());
         }
     }
 }
