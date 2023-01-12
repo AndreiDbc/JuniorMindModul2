@@ -11,12 +11,7 @@ namespace Linq
     {
         public static IEnumerable<Produce> JoinLists(this IEnumerable<Produce> first, IEnumerable<Produce> second)
         {
-            var dictionary = new Dictionary<string, Produce>();
-            first.Aggregate(dictionary, (x, y) =>
-            {
-                x.Add(y.Name, y);
-                return x;
-            });
+            var dictionary = first.ToDictionary(x => x.Name);
 
             return second.Aggregate(dictionary, (x, y) =>
             {
