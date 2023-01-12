@@ -14,22 +14,22 @@ namespace Linq
         public static IEnumerable<Merchandise> GetAllFeaturesMerchandises(
             this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            var hashset = features.ToHashSet();
-            return merchandises.Where(x => hashset.IsSubsetOf(x.Features));
+            var featuresToHashSet = features.ToHashSet();
+            return merchandises.Where(x => featuresToHashSet.IsSubsetOf(x.Features));
         }
 
         public static IEnumerable<Merchandise> GetNoFeaturesMerchandises(
             this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            var hashset = features.ToHashSet();
-            return merchandises.Where(x => !x.Features.ToHashSet().IsSubsetOf(hashset) || x.Features.Count == 0);
+            var featuresToHashSet = features.ToHashSet();
+            return merchandises.Where(x => !x.Features.ToHashSet().IsSubsetOf(featuresToHashSet) || x.Features.Count == 0);
         }
 
         public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(
             this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            var hashset = features.ToHashSet();
-            return merchandises.Where(x => x.Features.Count != 0 && hashset.IsProperSupersetOf(x.Features));
+            var featuresToHashSet = features.ToHashSet();
+            return merchandises.Where(x => x.Features.Count != 0 && featuresToHashSet.IsProperSupersetOf(x.Features));
         }
     }
 }
