@@ -21,16 +21,8 @@ namespace Linq
         public static IEnumerable<Merchandise> GetNoFeaturesMerchandises(
             this IEnumerable<Merchandise> merchandises, ICollection<Feature> features)
         {
-            var dictionary = AddToDictionary(merchandises, features);
-            return features.Aggregate(new List<Merchandise>(), (x, y) =>
-            {
-                if (dictionary.ContainsKey(y))
-                {
-                    x.AddRange(dictionary[y].Where(a => features.All(b => !a.Features.Contains(b))));
-                }
-
-                return x;
-            }).Distinct();
+            var hashset = features.ToHashSet();
+            return merchandises.Where(x => !x.Features.ToHashSet().IsSubsetOf(hashset) || x.Features.Count == 0);
         }
 
         public static IEnumerable<Merchandise> GetMerchandisesContainingFeatures(
