@@ -30,7 +30,7 @@ namespace Linq
         {
             var featuresToHashSet = features.ToHashSet();
             return merchandises.Where(x => featuresToHashSet.Intersect(x.Features).Any()
-            && featuresToHashSet.Intersect(x.Features).Count() != features.Count);
+                     && !featuresToHashSet.IsSubsetOf(x.Features));
         }
     }
 }
