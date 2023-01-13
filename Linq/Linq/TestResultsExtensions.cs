@@ -11,20 +11,24 @@ namespace Linq
     {
         public static IEnumerable<TestResults> EliminateDuplicates(this IEnumerable<TestResults> testResults)
         {
-            var dictionary = new Dictionary<string, TestResults>();
-            return testResults.Aggregate(dictionary, (x, y) =>
-            {
-                if (x.ContainsKey(y.FamilyId))
+            return testResults.GroupBy(
+                a => a.FamilyId,
+                b => b,
+                (key, value) => new TestResults()
                 {
-                    x[y.FamilyId].Score = y.Score > x[y.FamilyId].Score ? y.Score : x[y.FamilyId].Score;
-                }
-                else
-                {
-                    x.Add(y.FamilyId, y);
-                }
+                    FamilyId = key,
+                    Id = value.ElementAt(0).Id,
+                    Score = value.Aggregate(0, (x, y) =>
+                    {
+                        if (x < y.Score)
+                        {
+                            x = y.Score;
+                        }
 
-                return x;
-            }).Values;
+                        return x;
+                    })
+                },
+                EqualityComparer<string>.Default);
         }
     }
 }
