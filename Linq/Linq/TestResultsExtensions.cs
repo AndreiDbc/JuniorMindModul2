@@ -18,15 +18,7 @@ namespace Linq
                 {
                     FamilyId = key,
                     Id = value.ElementAt(0).Id,
-                    Score = value.Aggregate(0, (x, y) =>
-                    {
-                        if (x < y.Score)
-                        {
-                            x = y.Score;
-                        }
-
-                        return x;
-                    })
+                    Score = value.Max(a => a.Score)
                 },
                 EqualityComparer<string>.Default);
         }
