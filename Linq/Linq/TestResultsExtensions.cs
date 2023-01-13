@@ -14,12 +14,7 @@ namespace Linq
             return testResults.GroupBy(
                 a => a.FamilyId,
                 b => b,
-                (key, value) => new TestResults()
-                {
-                    FamilyId = key,
-                    Id = value.ElementAt(0).Id,
-                    Score = value.Max(a => a.Score)
-                },
+                (_, value) => value.MaxBy(a => a.Score),
                 EqualityComparer<string>.Default);
         }
     }
