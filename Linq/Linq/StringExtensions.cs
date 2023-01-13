@@ -11,21 +11,12 @@ namespace Linq
     {
         public static IEnumerable<WordCount> CountWords(this string text)
         {
-            var dictionary = new Dictionary<string, WordCount>();
             var words = text.Split(" .?!".ToCharArray());
-            return words.Aggregate(dictionary, (x, y) =>
-            {
-                if (x.ContainsKey(y))
-                {
-                    x[y].Count++;
-                }
-                else
-                {
-                    x.Add(y, new WordCount() { Count = 1, Word = y.ToLower() });
-                }
-
-                return x;
-            }).Values.OrderByDescending(x => x.Count);
+            return words.GroupBy(
+                a => a,
+                b => b,
+                (key, value) => new WordCount() { Word = key, Count = value.Count() },
+                EqualityComparer<string>.Default).OrderByDescending(x => x.Count);
         }
     }
 }
