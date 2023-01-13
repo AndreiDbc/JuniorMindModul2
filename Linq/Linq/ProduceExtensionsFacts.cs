@@ -21,7 +21,13 @@ namespace Linq
             var p5 = new Produce { Name = "Mars", Quantity = 1 };
             var l1 = new List<Produce>() { p1, p2 };
             var l2 = new List<Produce>() { p4, p3, p5 };
-            Assert.Equal(new[] { "Mars: 2", "Twix: 5", "Bounty: 4" }, l1.JoinLists(l2));
+            var result = l1.JoinLists(l2);
+            Assert.Equal("Mars", result.ElementAt(0).Name);
+            Assert.Equal(2, result.ElementAt(0).Quantity);
+            Assert.Equal("Twix", result.ElementAt(1).Name);
+            Assert.Equal(5, result.ElementAt(1).Quantity);
+            Assert.Equal("Bounty", result.ElementAt(2).Name);
+            Assert.Equal(4, result.ElementAt(2).Quantity);
         }
     }
 }

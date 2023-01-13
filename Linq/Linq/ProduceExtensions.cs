@@ -10,12 +10,12 @@ namespace Linq
 {
     static class ProduceExtensions
     {
-        public static IEnumerable<string> JoinLists(this IEnumerable<Produce> first, IEnumerable<Produce> second)
+        public static IEnumerable<Produce> JoinLists(this IEnumerable<Produce> first, IEnumerable<Produce> second)
         {
             return first.Concat(second).GroupBy(
                 a => a.Name,
                 b => b,
-                (key, values) => key + ": " + values.Aggregate(0, (x, y) => x + y.Quantity),
+                (key, values) => new Produce() { Name = key, Quantity = values.Aggregate(0, (x, y) => x + y.Quantity) },
                 EqualityComparer<string>.Default);
         }
     }
