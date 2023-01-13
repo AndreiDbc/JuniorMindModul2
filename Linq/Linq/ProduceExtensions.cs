@@ -14,8 +14,8 @@ namespace Linq
         {
             return first.Concat(second).GroupBy(
                 a => a.Name,
-                b => b,
-                (key, values) => new Produce() { Name = key, Quantity = values.Aggregate(0, (x, y) => x + y.Quantity) },
+                b => b.Quantity,
+                (key, values) => new Produce() { Name = key, Quantity = values.Sum() },
                 EqualityComparer<string>.Default);
         }
     }
