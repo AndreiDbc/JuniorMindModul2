@@ -9,14 +9,16 @@ namespace Linq
 {
     static class StringExtensions
     {
-        public static IEnumerable<WordCount> CountWords(this string text)
+        public static IEnumerable<WordCount> CountWords(this string text, int noOfWords = 0)
         {
             var words = text.Split(" .?!".ToCharArray());
-            return words.GroupBy(
+            var topWords = words.GroupBy(
                 a => a,
-                b => b,
                 (key, value) => new WordCount() { Word = key, Count = value.Count() },
                 EqualityComparer<string>.Default).OrderByDescending(x => x.Count);
+            return noOfWords == 0
+                ? topWords
+                : topWords.Take(noOfWords);
         }
     }
 }
