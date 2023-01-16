@@ -14,5 +14,10 @@ namespace Linq
         {
             this.matrix = matrix;
         }
+
+        private static bool ValidateArrays(IEnumerable<IEnumerable<int>> array)
+        {
+            return array.All(x => x.Distinct().All(y => y < 10 && y > 0) && x.Count() == 9);
+        }
     }
 }
