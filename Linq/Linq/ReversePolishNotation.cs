@@ -8,5 +8,11 @@ namespace Linq
 {
     class ReversePolishNotation
     {
+        private readonly string expression;
+
+        public ReversePolishNotation(string expression)
+        {
+            this.expression = expression;
+        }
     }
 }
