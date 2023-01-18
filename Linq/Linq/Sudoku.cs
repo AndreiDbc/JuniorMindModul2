@@ -22,9 +22,8 @@ namespace Linq
             IEnumerable<IEnumerable<int>> temp = new[] { new int[0] };
             var squares = Enumerable.Range(0, 3).Aggregate(temp, (a, b) =>
             {
-                return a.Concat(Enumerable.Range(0, 3).Select(x =>
-                            Enumerable.Range(0, 3).SelectMany(c => Enumerable.Range(0, 3).Select(d =>
-                                    matrix[c + 3 * b, d + (3 * x)]))));
+                return a.Append(Enumerable.Range(0, 3).SelectMany(c => Enumerable.Range(0, 3).Select(d =>
+                                    matrix[c + 3 * b, d + (3 * b)])));
             }).Skip(1);
 
             return rows.Concat(columns).Concat(squares).All(ValidateArray);
