@@ -32,7 +32,7 @@ namespace Linq
 
         private static bool ValidateArray(IEnumerable<int> array)
         {
-            return array.Distinct().All(y => y < 10 && y > 0) && array.Count() == 9;
+            return array.All(y => y < 10 && y > 0) && array.Count() == 9 && array.Distinct().Count() == 9;
         }
     }
 }
