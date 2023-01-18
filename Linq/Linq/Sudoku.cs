@@ -27,7 +27,7 @@ namespace Linq
                                     matrix[c + 3 * b, d + (3 * x)]))));
             }).Skip(1);
 
-            return ValidateArrays(rows) && ValidateArrays(columns) && ValidateArrays(squares);
+            return rows.Concat(columns).Concat(squares).All(ValidateArray);
         }
 
         private static bool ValidateArray(IEnumerable<int> array)
