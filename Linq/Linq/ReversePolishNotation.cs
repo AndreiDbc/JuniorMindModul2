@@ -16,45 +16,24 @@ namespace Linq
             this.expression = expression;
         }
 
-        public int Calculate()
+        public int GetResult()
         {
-            var elements = expression.Split(" ");
-            var stack = new Stack<int>();
-            return elements.Aggregate(0, (_, element) =>
+            IEnumerable<int> numbers = new int[] { };
+            return expression.Split(" ").Aggregate(numbers, (seed, element) =>
+                seed.Append(int.TryParse(element, out var number) ? number : Calculate(seed.TakeLast(2), element))).Last();
+        }
+
+        private static int Calculate(IEnumerable<int> numbers, string element)
+        {
+            var first = numbers.ElementAt(0);
+            var second = numbers.ElementAt(1);
+            return element switch
             {
-                int calculus = 0;
-                if (int.TryParse(element, out var number))
-                {
-                    stack.Push(number);
-                }
-                else
-                {
-                    int temp = stack.Pop();
-
-                    switch (element)
-                    {
-                        case "*":
-
-                            calculus = stack.Pop() * temp;
-                            stack.Push(calculus);
-                            break;
-                        case "/":
-                            calculus = stack.Pop() / temp;
-                            stack.Push(calculus);
-                            break;
-                        case "+":
-                            calculus = stack.Pop() + temp;
-                            stack.Push(calculus);
-                            break;
-                        case "-":
-                            calculus = stack.Pop() - temp;
-                            stack.Push(calculus);
-                            break;
-                    }
-                }
-
-                return calculus;
-            });
+                "*" => first * second,
+                "/" => first / second,
+                "-" => first - second,
+                "+" => first + second
+            };
         }
     }
 }
