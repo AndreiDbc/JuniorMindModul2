@@ -19,12 +19,8 @@ namespace Linq
         {
             var rows = Enumerable.Range(0, 9).Select(x => Enumerable.Range(0, 9).Select(y => matrix[x, y]));
             var columns = Enumerable.Range(0, 9).Select(x => Enumerable.Range(0, 9).Select(y => matrix[y, x]));
-            IEnumerable<IEnumerable<int>> temp = new[] { new int[0] };
-            var squares = Enumerable.Range(0, 3).Aggregate(temp, (a, b) =>
-            {
-                return a.Append(Enumerable.Range(0, 3).SelectMany(c => Enumerable.Range(0, 3).Select(d =>
-                                    matrix[c + 3 * b, d + (3 * b)])));
-            }).Skip(1);
+            var squares = Enumerable.Range(0, 9).Select(i => Enumerable.Range(0, 3).SelectMany(j =>
+                Enumerable.Range(0, 3).Select(k => matrix[i / 3 * 3 + j, i % 3 * 3 + k])));
 
             return rows.Concat(columns).Concat(squares).All(ValidateArray);
         }
