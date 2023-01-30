@@ -58,5 +58,20 @@ namespace GitAppFacts
             Assert.Equal(new List<string> { "commit" }, branches["branch2"]);
             Assert.Equal(1, branches["branch2"].Count);
         }
+
+        [Fact]
+        public void PullIsCalledShouldUpdateBranch()
+        {
+            var branches = new Dictionary<string, List<string>>()
+            {
+              { "branch1", new List<string>() },
+              { "branch2", new List<string>() }
+            };
+
+            var repository = new GitRepository(branches, "branch1");
+            var success = repository.Pull(new List<string> { "commit" });
+            Assert.True(success);
+            Assert.Equal(1, branches["branch1"].Count);
+        }
     }
 }

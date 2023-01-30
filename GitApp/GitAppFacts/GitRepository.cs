@@ -36,5 +36,12 @@ namespace GitAppFacts
 
             return true;
         }
+
+        public bool Pull(List<string> commits)
+        {
+            branches[branch].AddRange(commits);
+
+            return true;
+        }
     }
 }
