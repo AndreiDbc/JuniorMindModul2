@@ -8,6 +8,11 @@ namespace GitApp
     {
         public static void Main()
         {
+            var branch = GetCurrentGitBranch();
+            var command = new GitCommand(branch);
+            Console.WriteLine(branch);
+            Console.WriteLine(command.GetNumberOfCommitsToPush());
+            Console.WriteLine(command.GetNumberOfCommitsToPull());
         }
 
         public static string GetCurrentGitBranch()
