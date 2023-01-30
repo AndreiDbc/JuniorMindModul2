@@ -23,5 +23,11 @@ namespace GitAppFacts
             branches[branch].Add(commit);
             return true;
         }
+
+        public bool Checkout(string newBranch)
+        {
+            this.branch = newBranch;
+            return true;
+        }
     }
 }
