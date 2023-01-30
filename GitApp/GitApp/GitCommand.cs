@@ -18,5 +18,24 @@ namespace GitApp
             this.branchName = branchName;
             this.repository = repository;
         }
+
+        public string GetNumberOfCommitsToPush()
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "git",
+                    Arguments = $"rev-list origin/{branchName}..HEAD --count",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            var commits = process.StandardOutput.ReadToEnd();
+            process.Dispose();
+            return commits.Trim();
+        }
     }
 }
