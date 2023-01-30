@@ -10,5 +10,13 @@ namespace GitApp
 {
     public class GitCommand
     {
+        private readonly string branchName;
+        private readonly GitRepository repository;
+
+        public GitCommand(string branchName, GitRepository repository)
+        {
+            this.branchName = branchName;
+            this.repository = repository;
+        }
     }
 }
