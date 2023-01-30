@@ -11,12 +11,10 @@ namespace GitApp
     public class GitCommand
     {
         private readonly string branchName;
-        private readonly GitRepository repository;
 
-        public GitCommand(string branchName, GitRepository repository)
+        public GitCommand(string branchName)
         {
             this.branchName = branchName;
-            this.repository = repository;
         }
 
         public string GetNumberOfCommitsToPush()
