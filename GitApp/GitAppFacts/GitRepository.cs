@@ -17,5 +17,11 @@ namespace GitAppFacts
             this.branches = branches;
             this.branch = branch;
         }
+
+        public bool Commit(string commit)
+        {
+            branches[branch].Add(commit);
+            return true;
+        }
     }
 }
