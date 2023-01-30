@@ -15,7 +15,7 @@ namespace GitApp
                 ? "You are in 'detached HEAD' state. You can look around, make experimental changes " +
                 "and commit them, and you can discard any commits you make in this state without " +
                 "impacting any branches by switching back to a branch."
-                : $"Branch mame: {branch}\n" +
+                : $"Branch name: {branch}\n" +
                 $"Outgoing: {command.GetNumberOfCommitsToPush()} \n" +
                 $"Incoming: {command.GetNumberOfCommitsToPull()}");
         }
