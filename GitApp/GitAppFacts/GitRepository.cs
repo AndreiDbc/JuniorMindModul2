@@ -29,5 +29,12 @@ namespace GitAppFacts
             this.branch = newBranch;
             return true;
         }
+
+        public bool Push(string location)
+        {
+            branches[location].AddRange(branches[branch]);
+
+            return true;
+        }
     }
 }
