@@ -9,5 +9,13 @@ namespace GitAppFacts
 {
     public class GitRepository
     {
+        private readonly Dictionary<string, List<string>> branches;
+        private string branch;
+
+        public GitRepository(Dictionary<string, List<string>> branches, string branch)
+        {
+            this.branches = branches;
+            this.branch = branch;
+        }
     }
 }
