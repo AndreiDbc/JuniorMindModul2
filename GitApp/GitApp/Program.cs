@@ -18,6 +18,7 @@ namespace GitApp
                 $"Outgoing: {gitCommand.GetNumberOfCommitsToPush(branch)} \n" +
                 $"Incoming: {gitCommand.GetNumberOfCommitsToPull(branch)}");
             Console.WriteLine($"Branches: {gitCommand.ShowAllBranches()}");
+            gitCommand.GetCommits().ForEach(commit => Console.WriteLine(commit));
         }
     }
 }

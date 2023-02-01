@@ -93,5 +93,26 @@ namespace GitApp
             process.Dispose();
             return commits.Trim();
         }
+
+        public List<string> GetCommits()
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = fileName,
+                    Arguments = "log --pretty=format:\"%h - %an, %ar : %s\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            var commits = process.StandardOutput.ReadToEnd();
+            process.Dispose();
+            var result = new List<string>();
+            result.AddRange(commits.Trim().Split("\n"));
+            return result;
+        }
     }
 }
