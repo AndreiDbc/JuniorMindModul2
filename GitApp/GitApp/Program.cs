@@ -8,15 +8,15 @@ namespace GitApp
     {
         public static void Main()
         {
-            var branch = new GitCommand().GetCurrentGitBranch();
-            var command = new GitCommand();
+            var gitCommand = new GitCommand("git");
+            var branch = gitCommand.GetCurrentGitBranch();
             Console.Write(branch == ""
                 ? "You are in 'detached HEAD' state. You can look around, make experimental changes " +
                 "and commit them, and you can discard any commits you make in this state without " +
                 "impacting any branches by switching back to a branch."
                 : $"Branch name: {branch}\n" +
-                $"Outgoing: {command.GetNumberOfCommitsToPush(branch)} \n" +
-                $"Incoming: {command.GetNumberOfCommitsToPull(branch)}");
+                $"Outgoing: {gitCommand.GetNumberOfCommitsToPush(branch)} \n" +
+                $"Incoming: {gitCommand.GetNumberOfCommitsToPull(branch)}");
         }
     }
 }

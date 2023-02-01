@@ -11,13 +11,20 @@ namespace GitApp
 {
     public class GitCommand
     {
+        private readonly string fileName;
+
+        public GitCommand(string fileName)
+        {
+            this.fileName = fileName;
+        }
+
         public string GetCurrentGitBranch()
         {
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "git",
+                    FileName = fileName,
                     Arguments = "branch --show-current",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
@@ -36,7 +43,7 @@ namespace GitApp
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "git",
+                    FileName = fileName,
                     Arguments = $"rev-list origin/{branchName}..HEAD --count",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
@@ -55,7 +62,7 @@ namespace GitApp
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "git",
+                    FileName = fileName,
                     Arguments = $"rev-list --count origin/{branchName} --not HEAD",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
