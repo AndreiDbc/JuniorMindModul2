@@ -74,5 +74,24 @@ namespace GitApp
             process.Dispose();
             return commits.Trim();
         }
+
+        public string ShowAllBranches()
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = fileName,
+                    Arguments = "branch",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            var commits = process.StandardOutput.ReadToEnd();
+            process.Dispose();
+            return commits.Trim();
+        }
     }
 }
