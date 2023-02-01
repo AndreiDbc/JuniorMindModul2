@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,14 +11,26 @@ namespace GitApp
 {
     public class GitCommand
     {
-        private readonly string branchName;
-
-        public GitCommand(string branchName)
+        public string GetCurrentGitBranch()
         {
-            this.branchName = branchName;
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "git",
+                    Arguments = "branch --show-current",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            var branch = process.StandardOutput.ReadToEnd();
+            process.Dispose();
+            return branch.Trim();
         }
 
-        public string GetNumberOfCommitsToPush()
+        public string GetNumberOfCommitsToPush(string branchName)
         {
             var process = new Process
             {
@@ -36,7 +49,7 @@ namespace GitApp
             return commits.Trim();
         }
 
-        public string GetNumberOfCommitsToPull()
+        public string GetNumberOfCommitsToPull(string branchName)
         {
             var process = new Process
             {
