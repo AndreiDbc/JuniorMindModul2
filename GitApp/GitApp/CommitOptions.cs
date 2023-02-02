@@ -50,5 +50,10 @@ namespace GitApp
             current = SetToZero(current - page.Count);
             return (index, current);
         }
+
+        private static int SetToZero(int number)
+        {
+            return number < 0 ? 0 : number;
+        }
     }
 }
