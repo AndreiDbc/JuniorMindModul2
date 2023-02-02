@@ -28,8 +28,9 @@ namespace GitApp
             {
                 Console.Clear();
                 Console.WriteLine(initialText);
-                var page = GetPage(index, size + initialTextSize, current);
+                var page = GetPage(index, size + initialTextSize - Console.LargestWindowWidth, current);
                 page.ForEach(commit => Console.WriteLine(commit));
+                Console.Write("Press 'Esc' to exit.");
                 keyInfo = Console.ReadKey();
                 (index, current) = keyInfo.Key switch
                 {
