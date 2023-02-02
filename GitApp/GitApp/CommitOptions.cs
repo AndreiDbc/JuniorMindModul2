@@ -74,5 +74,18 @@ namespace GitApp
             while (commitTextSize < size);
             return result;
         }
+
+        private (int index, int current) InterractWithDownArrow(List<string> page, int index, int current)
+        {
+            if ("> " + commits[current] == page[^1])
+            {
+                index++;
+            }
+
+            current++;
+            index = SetToLast(index);
+            current = SetToLast(current);
+            return (index, current);
+        }
     }
 }
