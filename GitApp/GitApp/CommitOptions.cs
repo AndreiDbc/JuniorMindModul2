@@ -101,5 +101,12 @@ namespace GitApp
 
             return (index, current);
         }
+
+        private (int index, int current) InterractWithPageDown(List<string> page, int index, int current)
+        {
+            index = SetToLast(index + page.Count);
+            current = SetToLast(current + page.Count);
+            return (index, current);
+        }
     }
 }
