@@ -108,5 +108,10 @@ namespace GitApp
             current = SetToLast(current + page.Count);
             return (index, current);
         }
+
+        private int SetToLast(int number)
+        {
+            return number > commits.Count - 1 ? commits.Count - 1 : number;
+        }
     }
 }
