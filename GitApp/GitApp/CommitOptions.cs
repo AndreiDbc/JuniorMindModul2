@@ -43,5 +43,12 @@ namespace GitApp
 
             Console.ReadKey();
         }
+
+        private static (int index, int current) InterractWithPageUp(List<string> page, int index, int current)
+        {
+            index = SetToZero(index - page.Count);
+            current = SetToZero(current - page.Count);
+            return (index, current);
+        }
     }
 }
