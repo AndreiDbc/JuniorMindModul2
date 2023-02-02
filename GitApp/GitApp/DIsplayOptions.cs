@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    class CommitOptions
+    class DisplayOptions
     {
         private readonly List<string> commits;
 
-        public CommitOptions(List<string> commits)
+        public DisplayOptions(List<string> commits)
         {
             this.commits = commits;
         }
 
-        public void Interract(string initialText, int size)
+        public void Interract(string initialText)
         {
+            var size = Console.WindowHeight * Console.WindowWidth;
             int initialTextSize = initialText.Split("\n").Length * Console.LargestWindowWidth;
             ConsoleKeyInfo keyInfo;
             int index = 0;
