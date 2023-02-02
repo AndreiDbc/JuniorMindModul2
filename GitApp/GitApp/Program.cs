@@ -20,8 +20,8 @@ namespace GitApp
             Console.WriteLine(branch == ""
                 ? detachedHeadMessage
                 : initialMessage);
-            var option = new DisplayOptions(gitCommand.GetCommits());
-            option.Interract(initialMessage);
+            var display = new DisplayOptions(gitCommand.GetCommits());
+            display.Interract(initialMessage);
         }
     }
 }
