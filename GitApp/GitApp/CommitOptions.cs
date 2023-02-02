@@ -87,5 +87,19 @@ namespace GitApp
             current = SetToLast(current);
             return (index, current);
         }
+
+        private (int index, int current) InterractWithUpArrow(List<string> page, int index, int current)
+        {
+            if ("> " + commits[current] == page[0])
+            {
+                index--;
+            }
+
+            current--;
+            index = SetToZero(index);
+            current = SetToZero(current);
+
+            return (index, current);
+        }
     }
 }
