@@ -55,5 +55,24 @@ namespace GitApp
         {
             return number < 0 ? 0 : number;
         }
+
+        private List<string> GetPage(int index, int size, int current)
+        {
+            var result = new List<string>();
+            int commitTextSize = 0;
+            do
+            {
+                result.Add(commits[index]);
+                commitTextSize += commits[index].Split("\n").Length * Console.LargestWindowWidth;
+                if (commits[index] == commits[current])
+                {
+                    result[^1] = "> " + commits[current];
+                }
+
+                index++;
+            }
+            while (commitTextSize < size);
+            return result;
+        }
     }
 }
