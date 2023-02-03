@@ -65,7 +65,7 @@ namespace GitApp
             do
             {
                 result.Add(commits[index]);
-                commitTextSize += commits[index].Split("\n").Length * Console.LargestWindowWidth;
+                commitTextSize += commits[index].Split("\n").Length * Console.WindowWidth;
                 if (commits[index] == commits[current])
                 {
                     result[^1] = "> " + commits[current];
