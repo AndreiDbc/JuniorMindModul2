@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    class DisplayOptions
+    class DisplayText
     {
         private readonly List<string> commits;
 
-        public DisplayOptions(List<string> commits)
+        public DisplayText(List<string> commits)
         {
             this.commits = commits;
         }
