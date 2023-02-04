@@ -110,16 +110,25 @@ namespace GitApp
             }
 
             current--;
-            index = SetToZero(index);
             current = SetToZero(current);
+            if (page[^1] == commits[^1])
+            {
+                return (index, current);
+            }
 
+            index = SetToZero(index);
             return (index, current);
         }
 
         private (int index, int current) InterractWithPageDown(List<string> page, int index, int current)
         {
-            index = SetToLast(index + page.Count - 1, page);
             current = SetToLast(current + page.Count - 1, page);
+            if (page[^1] == commits[^1])
+            {
+                return (index, current);
+            }
+
+            index = SetToLast(index + page.Count - 1, page);
             return (index, current);
         }
 
