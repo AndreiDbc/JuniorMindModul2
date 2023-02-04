@@ -27,7 +27,7 @@ namespace GitApp
             int initialTextSize = initialText.Split("\n").Length * Console.WindowWidth;
             do
             {
-                var page = GetPage(index, size - initialTextSize - Console.WindowWidth, current);
+                var page = GetPage(index, size - initialTextSize - Console.WindowWidth * 2, current);
                 WriteText(initialText, current, page);
                 keyInfo = Console.ReadKey();
                 (index, current) = keyInfo.Key switch
