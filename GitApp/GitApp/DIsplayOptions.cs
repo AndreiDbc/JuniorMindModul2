@@ -91,14 +91,19 @@ namespace GitApp
 
         private (int index, int current) InterractWithDownArrow(List<string> page, int index, int current)
         {
+            current++;
+            current = SetToLast(current, page);
+            if (page[^1] == commits[^1])
+            {
+                return (index, current);
+            }
+
             if ("> " + commits[current] == page[^1])
             {
                 index++;
             }
 
-            current++;
             index = SetToLast(index, page);
-            current = SetToLast(current, page);
             return (index, current);
         }
 
@@ -111,11 +116,6 @@ namespace GitApp
 
             current--;
             current = SetToZero(current);
-            if (page[^1] == commits[^1])
-            {
-                return (index, current);
-            }
-
             index = SetToZero(index);
             return (index, current);
         }
