@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
@@ -19,18 +20,15 @@ namespace GitApp
 
         public void Interract(string initialText)
         {
-            var size = Console.WindowHeight * Console.WindowWidth;
-            int initialTextSize = initialText.Split("\n").Length * Console.WindowWidth;
             ConsoleKeyInfo keyInfo;
             int index = 0;
             var current = index;
+            var size = Console.WindowHeight * Console.WindowWidth;
+            int initialTextSize = initialText.Split("\n").Length * Console.WindowWidth;
             do
             {
-                Console.Clear();
-                Console.WriteLine(initialText);
                 var page = GetPage(index, size - initialTextSize - Console.WindowWidth, current);
-                page.ForEach(commit => Console.WriteLine(commit));
-                Console.Write("Press 'Esc' to exit.");
+                WriteText(initialText, current, page);
                 keyInfo = Console.ReadKey();
                 (index, current) = keyInfo.Key switch
                 {
@@ -78,15 +76,31 @@ namespace GitApp
             {
                 result.Add(commits[index]);
                 commitTextSize += NoOfNewLines(commits[index].Split("\n"));
-                if (commits[index] == commits[current])
-                {
-                    result[^1] = "> " + commits[current];
-                }
-
                 index++;
             }
             while (commitTextSize <= size && index <= commits.Count - 1);
             return result;
+        }
+
+        private void WriteText(string initialText, int current, List<string> page)
+        {
+            Console.Clear();
+            Console.WriteLine(initialText);
+            page.ForEach(commit =>
+            {
+                if (commit == commits[current])
+                {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.WriteLine(commit);
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine(commit);
+                }
+            });
+            Console.Write("Press 'Esc' to exit.");
         }
 
         private (int index, int current) InterractWithDownArrow(List<string> page, int index, int current)
@@ -98,7 +112,7 @@ namespace GitApp
                 return (index, current);
             }
 
-            if ("> " + commits[current] == page[^1])
+            if (commits[current] == page[^1])
             {
                 index++;
             }
@@ -109,7 +123,7 @@ namespace GitApp
 
         private (int index, int current) InterractWithUpArrow(List<string> page, int index, int current)
         {
-            if ("> " + commits[current] == page[0])
+            if (commits[current] == page[0])
             {
                 index--;
             }
