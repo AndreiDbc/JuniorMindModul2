@@ -122,13 +122,13 @@ namespace GitApp
 
         private (int index, int current) InterractWithPageDown(List<string> page, int index, int current)
         {
-            current = SetToLast(current + page.Count - 1, page);
+            current = SetToLast(current + page.Count, page);
             if (page[^1] == commits[^1])
             {
                 return (index, current);
             }
 
-            index = SetToLast(index + page.Count - 1, page);
+            index = SetToLast(index + page.Count, page);
             return (index, current);
         }
 
