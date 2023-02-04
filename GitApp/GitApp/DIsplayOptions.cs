@@ -20,7 +20,7 @@ namespace GitApp
         public void Interract(string initialText)
         {
             var size = Console.WindowHeight * Console.WindowWidth;
-            int initialTextSize = initialText.Split("\n").Length * Console.LargestWindowWidth;
+            int initialTextSize = initialText.Split("\n").Length * Console.WindowWidth;
             ConsoleKeyInfo keyInfo;
             int index = 0;
             var current = index;
@@ -28,7 +28,7 @@ namespace GitApp
             {
                 Console.Clear();
                 Console.WriteLine(initialText);
-                var page = GetPage(index, size + initialTextSize - Console.LargestWindowWidth, current);
+                var page = GetPage(index, size - initialTextSize - Console.WindowWidth, current);
                 page.ForEach(commit => Console.WriteLine(commit));
                 Console.Write("Press 'Esc' to exit.");
                 keyInfo = Console.ReadKey();
@@ -58,6 +58,18 @@ namespace GitApp
             return number < 0 ? 0 : number;
         }
 
+        private static int NoOfNewLines(string[] commit)
+        {
+            var lines = 0;
+            foreach (var phrase in commit)
+            {
+                lines = phrase.Length / Console.WindowWidth * Console.WindowWidth
+                    + (phrase.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
+            }
+
+            return lines;
+        }
+
         private List<string> GetPage(int index, int size, int current)
         {
             var result = new List<string>();
@@ -65,7 +77,7 @@ namespace GitApp
             do
             {
                 result.Add(commits[index]);
-                commitTextSize += commits[index].Split("\n").Length * Console.WindowWidth;
+                commitTextSize += NoOfNewLines(commits[index].Split("\n"));
                 if (commits[index] == commits[current])
                 {
                     result[^1] = "> " + commits[current];
@@ -73,7 +85,7 @@ namespace GitApp
 
                 index++;
             }
-            while (commitTextSize < size);
+            while (commitTextSize <= size && index <= commits.Count - 1);
             return result;
         }
 
@@ -85,8 +97,8 @@ namespace GitApp
             }
 
             current++;
-            index = SetToLast(index);
-            current = SetToLast(current);
+            index = SetToLast(index, page);
+            current = SetToLast(current, page);
             return (index, current);
         }
 
@@ -106,12 +118,12 @@ namespace GitApp
 
         private (int index, int current) InterractWithPageDown(List<string> page, int index, int current)
         {
-            index = SetToLast(index + page.Count);
-            current = SetToLast(current + page.Count);
+            index = SetToLast(index + page.Count - 1, page);
+            current = SetToLast(current + page.Count - 1, page);
             return (index, current);
         }
 
-        private int SetToLast(int number)
+        private int SetToLast(int number, List<string> page)
         {
             return number > commits.Count - 1 ? commits.Count - 1 : number;
         }
