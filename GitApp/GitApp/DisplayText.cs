@@ -11,11 +11,11 @@ namespace GitApp
 {
     class DisplayText
     {
-        private readonly List<string> commits;
+        private readonly List<List<string>> commitsIDAuthorDateMessage;
 
-        public DisplayText(List<string> commits)
+        public DisplayText(List<List<string>> commitsIDAuthorDateMessage)
         {
-            this.commits = commits;
+            this.commitsIDAuthorDateMessage = commitsIDAuthorDateMessage;
         }
 
         public void Interract(string initialText)
