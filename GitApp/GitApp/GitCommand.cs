@@ -94,24 +94,18 @@ namespace GitApp
             return commits.Trim();
         }
 
-        public List<string> GetCommits()
+        public List<List<string>> GetCommits()
         {
-            var process = new Process
+            var commitIds = GetCommitId();
+            var commitAuthors = GetCommitAuthorName();
+            var commitDates = GetCommitDate();
+            var commitMessages = GetCommitMessage();
+            var result = new List<List<string>>();
+            for (int i = 0; i < commitIds.Count; i++)
             {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = fileName,
-                    Arguments = "log --pretty=format:\"%h - %an, %ar : %s\"",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
-            };
-            process.Start();
-            var commits = process.StandardOutput.ReadToEnd();
-            process.Dispose();
-            var result = new List<string>();
-            result.AddRange(commits.Trim().Split("\n"));
+                result.Add(new List<string>() { commitIds[i], commitAuthors[i], commitDates[i], commitMessages[i] });
+            }
+
             return result;
         }
 
