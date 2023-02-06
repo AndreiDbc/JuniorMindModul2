@@ -140,9 +140,9 @@ namespace GitApp
             return (SetToLastOrDontChange(index), current);
         }
 
-        private (int index, int current) InterractWithUpArrow(List<string> page, int index, int current)
+        private (int index, int current) InterractWithUpArrow(List<List<string>> page, int index, int current)
         {
-            if (commits[current] == page[0])
+            if (commitsIDAuthorDateMessage[current][0] + " - " == page[0][0])
             {
                 index--;
             }
