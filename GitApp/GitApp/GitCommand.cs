@@ -135,5 +135,26 @@ namespace GitApp
             result.AddRange(commits.Trim().Split("\n"));
             return result;
         }
+
+        private List<string> GetCommitAuthorName()
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = fileName,
+                    Arguments = "log --format=\"%an\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            var commits = process.StandardOutput.ReadToEnd();
+            process.Dispose();
+            var result = new List<string>();
+            result.AddRange(commits.Trim().Split("\n"));
+            return result;
+        }
     }
 }
