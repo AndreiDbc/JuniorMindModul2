@@ -66,17 +66,25 @@ namespace GitApp
             return lines;
         }
 
-        private List<string> GetPage(int index, int size)
+        private List<List<string>> GetPage(int index, int size)
         {
-            var result = new List<string>();
+            var result = new List<List<string>>();
             int commitTextSize = 0;
             do
             {
-                result.Add(commits[index]);
-                commitTextSize += NoOfNewLines(commits[index].Split("\n"));
+                result.Add(new List<string>()
+                {
+                    commitsIDAuthorDateMessage[index][0] + " - ",
+                    commitsIDAuthorDateMessage[index][1] + ", ",
+                    commitsIDAuthorDateMessage[index][2] + ": ",
+                    commitsIDAuthorDateMessage[index][3]
+                });
+                string[] temp = result[^1][3].Split("\n");
+                commitTextSize += NoOfNewLines(new[] { result[^1][0] + result[^1][1] + result[^1][2] + temp[0] })
+                    + NoOfNewLines(temp[1..]);
                 index++;
             }
-            while (commitTextSize <= size && index <= commits.Count - 1);
+            while (commitTextSize <= size && index <= commitsIDAuthorDateMessage.Count - 1);
             return result;
         }
 
