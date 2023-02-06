@@ -163,7 +163,7 @@ namespace GitApp
 
         private int SetToLastOrDontChange(int number)
         {
-            return number > commits.Count - 1 ? commits.Count - 1 : number;
+            return number > commitsIDAuthorDateMessage.Count - 1 ? commitsIDAuthorDateMessage.Count - 1 : number;
         }
     }
 }
