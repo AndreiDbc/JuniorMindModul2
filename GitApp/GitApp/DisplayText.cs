@@ -88,22 +88,37 @@ namespace GitApp
             return result;
         }
 
-        private void WriteText(string initialText, int current, List<string> page)
+        private void WriteText(string initialText, int current, List<List<string>> page)
         {
             Console.Clear();
             Console.WriteLine(initialText);
             page.ForEach(commit =>
             {
-                if (commit == commits[current])
+                if (commit[0] == commitsIDAuthorDateMessage[current][0] + " - ")
                 {
                     Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write(commit[0]);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write(commit[1]);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(commit[2]);
                     Console.ForegroundColor = ConsoleColor.Black;
-                    Console.WriteLine(commit);
+                    Console.WriteLine(commit[3]);
+                    Console.ForegroundColor = ConsoleColor.Black;
                     Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine(commit);
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write(commit[0]);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write(commit[1]);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(commit[2]);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine(commit[3]);
+                    Console.ResetColor();
                 }
             });
             Console.Write("Press 'Esc' to exit.");
