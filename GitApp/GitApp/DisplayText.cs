@@ -150,10 +150,10 @@ namespace GitApp
             return (SetToZeroOrDontChange(index), SetToZeroOrDontChange(current - 1));
         }
 
-        private (int index, int current) InterractWithPageDown(List<string> page, int index, int current)
+        private (int index, int current) InterractWithPageDown(List<List<string>> page, int index, int current)
         {
             current = SetToLastOrDontChange(current + page.Count);
-            if (page[^1] == commits[^1])
+            if (page[^1][0] == commitsIDAuthorDateMessage[^1][0] + " - ")
             {
                 return (index, current);
             }
