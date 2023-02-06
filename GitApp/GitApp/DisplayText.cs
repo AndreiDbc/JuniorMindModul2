@@ -124,15 +124,15 @@ namespace GitApp
             Console.Write("Press 'Esc' to exit.");
         }
 
-        private (int index, int current) InterractWithDownArrow(List<string> page, int index, int current)
+        private (int index, int current) InterractWithDownArrow(List<List<string>> page, int index, int current)
         {
             current = SetToLastOrDontChange(current + 1);
-            if (page[^1] == commits[^1])
+            if (page[^1][0] == commitsIDAuthorDateMessage[^1][0] + " - ")
             {
                 return (index, current);
             }
 
-            if (commits[current] == page[^1])
+            if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
             {
                 index++;
             }
