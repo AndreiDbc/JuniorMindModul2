@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Castle.Components.DictionaryAdapter.Xml;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -134,7 +135,8 @@ namespace GitApp
 
             if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
             {
-                index++;
+                index = index + page.Count;
+                current++;
             }
 
             return (SetToLastOrDontChange(index), current);
