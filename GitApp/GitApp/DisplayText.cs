@@ -127,7 +127,6 @@ namespace GitApp
 
         private (int index, int current) InterractWithDownArrow(List<List<string>> page, int index, int current)
         {
-            current = SetToLastOrDontChange(current + 1);
             if (page[^1][0] == commitsIDAuthorDateMessage[^1][0] + " - ")
             {
                 return (index, current);
@@ -136,10 +135,9 @@ namespace GitApp
             if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
             {
                 index = index + page.Count;
-                current++;
             }
 
-            return (SetToLastOrDontChange(index), current);
+            return (SetToLastOrDontChange(index), SetToLastOrDontChange(current + 1));
         }
 
         private (int index, int current) InterractWithUpArrow(List<List<string>> page, int index, int current)
