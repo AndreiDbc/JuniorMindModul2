@@ -27,7 +27,7 @@ namespace GitApp
             int index = 0;
             var current = index;
             var size = Console.WindowHeight * Console.WindowWidth;
-            int initialTextSize = NoOfNewLines(initialText.Split("\n"));
+            int initialTextSize = GetTextSize(initialText.Split("\n"));
             do
             {
                 var page = GetPage(index, size - initialTextSize - Console.WindowWidth);
@@ -57,16 +57,16 @@ namespace GitApp
             return number < 0 ? 0 : number;
         }
 
-        private static int NoOfNewLines(string[] text)
+        private static int GetTextSize(string[] text)
         {
-            var lines = 0;
+            var textSize = 0;
             foreach (var phrase in text)
             {
-                lines += phrase.Length / Console.WindowWidth * Console.WindowWidth
+                textSize += phrase.Length / Console.WindowWidth * Console.WindowWidth
                     + (phrase.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
             }
 
-            return lines;
+            return textSize;
         }
 
         private static List<List<string>> TruncateText(List<List<string>> page, int size)
@@ -104,8 +104,8 @@ namespace GitApp
                     commitsIDAuthorDateMessage[index][3]
                 });
                 string[] temp = result[^1][3].Split("\n");
-                commitTextSize += NoOfNewLines(new[] { result[^1][0] + result[^1][1] + result[^1][2] + temp[0] })
-                    + NoOfNewLines(temp[1..]);
+                commitTextSize += GetTextSize(new[] { result[^1][0] + result[^1][1] + result[^1][2] + temp[0] })
+                    + GetTextSize(temp[1..]);
                 index++;
             }
             while (index <= commitsIDAuthorDateMessage.Count - 1);
