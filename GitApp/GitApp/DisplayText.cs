@@ -1,10 +1,12 @@
 ﻿using Castle.Components.DictionaryAdapter.Xml;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,10 +27,10 @@ namespace GitApp
             int index = 0;
             var current = index;
             var size = Console.WindowHeight * Console.WindowWidth;
-            int initialTextSize = initialText.Split("\n").Length * Console.WindowWidth;
+            int initialTextSize = NoOfNewLines(initialText.Split("\n"));
             do
             {
-                var page = GetPage(index, size - initialTextSize - Console.WindowWidth * 2);
+                var page = GetPage(index, size - initialTextSize - Console.WindowWidth);
                 WriteText(initialText, current, page);
                 keyInfo = Console.ReadKey();
                 (index, current) = keyInfo.Key switch
@@ -60,11 +62,32 @@ namespace GitApp
             var lines = 0;
             foreach (var phrase in text)
             {
-                lines = phrase.Length / Console.WindowWidth * Console.WindowWidth
+                lines += phrase.Length / Console.WindowWidth * Console.WindowWidth
                     + (phrase.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
             }
 
             return lines;
+        }
+
+        private static List<List<string>> TruncateText(List<List<string>> page, int size)
+        {
+            string toAdd = "";
+            var occupiedRowSize = size - (page[^1][0] + page[^1][1] + page[^1][2]).Length;
+            var i = 0;
+            do
+            {
+                if (toAdd.Length + occupiedRowSize == size)
+                {
+                    break;
+                }
+
+                toAdd += page[^1][3][i];
+                i++;
+            }
+            while (true);
+            page[^1].RemoveAt(3);
+            page[^1].Add(toAdd + "...");
+            return page;
         }
 
         private List<List<string>> GetPage(int index, int size)
@@ -73,6 +96,11 @@ namespace GitApp
             int commitTextSize = 0;
             do
             {
+                if (commitTextSize >= size)
+                {
+                    break;
+                }
+
                 result.Add(new List<string>()
                 {
                     commitsIDAuthorDateMessage[index][0] + " - ",
@@ -85,8 +113,9 @@ namespace GitApp
                     + NoOfNewLines(temp[1..]);
                 index++;
             }
-            while (commitTextSize <= size && index <= commitsIDAuthorDateMessage.Count - 1);
-            return result;
+            while (index <= commitsIDAuthorDateMessage.Count - 1);
+
+            return commitTextSize > size ? TruncateText(result, commitTextSize - size - 3) : result;
         }
 
         private void WriteText(string initialText, int current, List<List<string>> page)
@@ -134,7 +163,7 @@ namespace GitApp
 
             if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
             {
-                index = index + page.Count;
+                return (index + 1, current + 1);
             }
 
             return (SetToLastOrDontChange(index), SetToLastOrDontChange(current + 1));
