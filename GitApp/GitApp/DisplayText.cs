@@ -72,14 +72,14 @@ namespace GitApp
         private static List<List<string>> TruncateText(List<List<string>> page, int size)
         {
             string toAdd = "";
-            var occupiedRowSize = size - (page[^1][0] + page[^1][1] + page[^1][2]).Length;
+            var unoccupiedRowSize = size - (page[^1][0] + page[^1][1] + page[^1][2]).Length;
             var i = 0;
             do
             {
                 toAdd += page[^1][3][i];
                 i++;
             }
-            while (toAdd.Length + occupiedRowSize != size);
+            while (toAdd.Length != unoccupiedRowSize);
             page[^1].RemoveAt(3);
             page[^1].Add(toAdd + "...");
             return page;
@@ -158,7 +158,7 @@ namespace GitApp
 
             if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
             {
-                return (index + 1, current + 1);
+                index++;
             }
 
             return (SetToLastOrDontChange(index), SetToLastOrDontChange(current + 1));
