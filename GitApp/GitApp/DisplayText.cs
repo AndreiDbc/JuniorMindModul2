@@ -74,12 +74,12 @@ namespace GitApp
             string toAdd = "";
             var occupiedRowSize = size - (page[^1][0] + page[^1][1] + page[^1][2]).Length;
             var i = 0;
-            while (toAdd.Length + occupiedRowSize != size)
+            do
             {
-
                 toAdd += page[^1][3][i];
                 i++;
             }
+            while (toAdd.Length + occupiedRowSize != size);
             page[^1].RemoveAt(3);
             page[^1].Add(toAdd + "...");
             return page;
