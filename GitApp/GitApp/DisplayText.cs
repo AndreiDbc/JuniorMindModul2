@@ -42,9 +42,9 @@ namespace GitApp
                 (index, current) = keyInfo.Key switch
                 {
                     ConsoleKey.DownArrow => InterractWithDownArrow(
-                    page,
-                    isPageLargerThanWindow ? index + (commitTextSize - emptySpace) / windowWidth: index,
-                    current),
+                        page,
+                        isPageLargerThanWindow ? index + (commitTextSize - emptySpace) / windowWidth : index,
+                        current),
                     ConsoleKey.UpArrow => InterractWithUpArrow(page, index, current),
                     ConsoleKey.PageDown => InterractWithPageDown(page, index, current),
                     ConsoleKey.PageUp => InterractWithPageUp(page, index, current),
@@ -130,27 +130,28 @@ namespace GitApp
             {
                 if (commit[0] == commitsIDAuthorDateMessage[current][0] + " - ")
                 {
-                    Console.BackgroundColor = ConsoleColor.White;
+                    var backgroundColor = Console.BackgroundColor;
+                    Console.BackgroundColor = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.Write(commit[0]);
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write(commit[1]);
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write(commit[2]);
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = backgroundColor;
                     Console.WriteLine(commit[3]);
-                    Console.ForegroundColor = ConsoleColor.Black;
                     Console.ResetColor();
                 }
                 else
                 {
+                    var foregroundColor = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.Write(commit[0]);
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write(commit[1]);
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write(commit[2]);
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = foregroundColor;
                     Console.WriteLine(commit[3]);
                     Console.ResetColor();
                 }
