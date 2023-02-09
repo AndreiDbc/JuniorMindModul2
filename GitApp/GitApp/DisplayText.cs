@@ -36,15 +36,15 @@ namespace GitApp
                 List<List<string>>? page;
                 (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
                 var isPageLargerThanWindow = commitTextSize > emptySpace;
-                page = isPageLargerThanWindow ? TruncateText(page, commitTextSize - emptySpace - 3) : page;
+                page = isPageLargerThanWindow
+                    ? TruncateText(page, commitTextSize - emptySpace - 3)
+                    : page;
                 WriteText(initialText, current, page);
                 keyInfo = Console.ReadKey();
                 (index, current) = keyInfo.Key switch
                 {
-                    ConsoleKey.DownArrow => InterractWithDownArrow(
-                        page,
-                        isPageLargerThanWindow ? index + (commitTextSize - emptySpace) / windowWidth : index,
-                        current),
+                    ConsoleKey.DownArrow =>
+                        InterractWithDownArrow(page, index, current, isPageLargerThanWindow),
                     ConsoleKey.UpArrow => InterractWithUpArrow(page, index, current),
                     ConsoleKey.PageDown => InterractWithPageDown(page, index, current),
                     ConsoleKey.PageUp => InterractWithPageUp(page, index, current),
@@ -56,9 +56,11 @@ namespace GitApp
             Console.ReadKey();
         }
 
-        private static (int index, int current) InterractWithPageUp(List<List<string>> page, int index, int current)
+        private static (int index, int current) InterractWithPageUp(
+            List<List<string>> page, int index, int current)
         {
-            return (SetToZeroOrDontChange(index - page.Count), SetToZeroOrDontChange(current - page.Count));
+            return (SetToZeroOrDontChange(index - page.Count),
+                SetToZeroOrDontChange(current - page.Count));
         }
 
         private static int SetToZeroOrDontChange(int number)
@@ -159,7 +161,8 @@ namespace GitApp
             Console.Write("Press 'Esc' to exit.");
         }
 
-        private (int index, int current) InterractWithDownArrow(List<List<string>> page, int index, int current)
+        private (int index, int current) InterractWithDownArrow(
+            List<List<string>> page, int index, int current, bool isPageLargerThanWindow)
         {
             if (page[^1][0] == commitsIDAuthorDateMessage[^1][0] + " - ")
             {
@@ -169,12 +172,14 @@ namespace GitApp
             if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
             {
                 index++;
+                index = isPageLargerThanWindow ? index + 1 : index;
             }
 
             return (SetToLastOrDontChange(index), SetToLastOrDontChange(current + 1));
         }
 
-        private (int index, int current) InterractWithUpArrow(List<List<string>> page, int index, int current)
+        private (int index, int current) InterractWithUpArrow(
+            List<List<string>> page, int index, int current)
         {
             if (commitsIDAuthorDateMessage[current][0] + " - " == page[0][0])
             {
@@ -184,7 +189,8 @@ namespace GitApp
             return (SetToZeroOrDontChange(index), SetToZeroOrDontChange(current - 1));
         }
 
-        private (int index, int current) InterractWithPageDown(List<List<string>> page, int index, int current)
+        private (int index, int current) InterractWithPageDown(
+            List<List<string>> page, int index, int current)
         {
             current = SetToLastOrDontChange(current + page.Count);
             if (page[^1][0] == commitsIDAuthorDateMessage[^1][0] + " - ")
@@ -197,7 +203,9 @@ namespace GitApp
 
         private int SetToLastOrDontChange(int number)
         {
-            return number > commitsIDAuthorDateMessage.Count - 1 ? commitsIDAuthorDateMessage.Count - 1 : number;
+            return number > commitsIDAuthorDateMessage.Count - 1
+                ? commitsIDAuthorDateMessage.Count - 1
+                : number;
         }
     }
 }
