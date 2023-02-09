@@ -114,9 +114,8 @@ namespace GitApp
                     commitsIDAuthorDateMessage[index][2] + ": ",
                     commitsIDAuthorDateMessage[index][3]
                 });
-                string[] temp = result[^1][3].Split("\n");
-                commitTextSize += GetTextSize(new[] { result[^1][0] + result[^1][1] + result[^1][2] + temp[0] })
-                    + GetTextSize(temp[1..]);
+
+                commitTextSize += GetTextSize(new[] { result[^1][0] + result[^1][1] + result[^1][2] + result[^1][3] });
                 index++;
             }
             while (index <= commitsIDAuthorDateMessage.Count - 1);
