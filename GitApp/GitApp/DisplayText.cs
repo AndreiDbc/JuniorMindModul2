@@ -24,18 +24,27 @@ namespace GitApp
         public void Interract(string initialText)
         {
             ConsoleKeyInfo keyInfo;
-            int index = 0;
+            var index = 0;
             var current = index;
-            var size = Console.WindowHeight * Console.WindowWidth;
-            int initialTextSize = GetTextSize(initialText.Split("\n"));
+            var windowWidth = Console.WindowWidth;
+            var windowSize = Console.WindowHeight * windowWidth;
+            var initialTextSize = GetTextSize(initialText.Split("\n"));
+            var emptySpace = windowSize - initialTextSize - windowWidth;
+            var commitTextSize = 0;
             do
             {
-                var page = GetPage(index, size - initialTextSize - Console.WindowWidth);
+                List<List<string>>? page;
+                (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
+                var isPageLargerThanWindow = commitTextSize > emptySpace;
+                page = isPageLargerThanWindow ? TruncateText(page, commitTextSize - emptySpace - 3) : page;
                 WriteText(initialText, current, page);
                 keyInfo = Console.ReadKey();
                 (index, current) = keyInfo.Key switch
                 {
-                    ConsoleKey.DownArrow => InterractWithDownArrow(page, index, current),
+                    ConsoleKey.DownArrow => InterractWithDownArrow(
+                    page,
+                    isPageLargerThanWindow ? index + (commitTextSize - emptySpace) / windowWidth: index,
+                    current),
                     ConsoleKey.UpArrow => InterractWithUpArrow(page, index, current),
                     ConsoleKey.PageDown => InterractWithPageDown(page, index, current),
                     ConsoleKey.PageUp => InterractWithPageUp(page, index, current),
@@ -85,7 +94,7 @@ namespace GitApp
             return page;
         }
 
-        private List<List<string>> GetPage(int index, int size)
+        private (List<List<string>>, int commitTextSize) GetPageTextAndSize(int index, int size)
         {
             var result = new List<List<string>>();
             int commitTextSize = 0;
@@ -110,7 +119,7 @@ namespace GitApp
             }
             while (index <= commitsIDAuthorDateMessage.Count - 1);
 
-            return commitTextSize > size ? TruncateText(result, commitTextSize - size - 3) : result;
+            return (result, commitTextSize);
         }
 
         private void WriteText(string initialText, int current, List<List<string>> page)
