@@ -31,16 +31,26 @@ namespace GitApp
             var initialTextSize = GetTextSize(initialText.Split("\n"));
             var emptySpace = windowSize - initialTextSize - windowWidth;
             var commitTextSize = 0;
+            var isPageLargerThanWindow = commitTextSize > emptySpace;
+            List<List<string>>? page;
+            (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
+            page = isPageLargerThanWindow
+                ? TruncateText(page, commitTextSize - emptySpace - 3)
+                : page;
+            WriteText(initialText, current, page);
             do
             {
-                List<List<string>>? page;
+                keyInfo = Console.ReadKey();
+                windowWidth = Console.WindowWidth;
+                windowSize = Console.WindowHeight * windowWidth;
+                initialTextSize = GetTextSize(initialText.Split("\n"));
+                emptySpace = windowSize - initialTextSize - windowWidth;
                 (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
-                var isPageLargerThanWindow = commitTextSize > emptySpace;
+                isPageLargerThanWindow = commitTextSize > emptySpace;
                 page = isPageLargerThanWindow
                     ? TruncateText(page, commitTextSize - emptySpace - 3)
                     : page;
                 WriteText(initialText, current, page);
-                keyInfo = Console.ReadKey();
                 (index, current) = keyInfo.Key switch
                 {
                     ConsoleKey.DownArrow =>
