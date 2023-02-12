@@ -45,12 +45,6 @@ namespace GitApp
                 windowSize = Console.WindowHeight * windowWidth;
                 initialTextSize = GetTextSize(initialText.Split("\n"));
                 emptySpace = windowSize - initialTextSize - windowWidth;
-                (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
-                isPageLargerThanWindow = commitTextSize > emptySpace;
-                page = isPageLargerThanWindow
-                    ? TruncateText(page, commitTextSize - emptySpace - 3)
-                    : page;
-                WriteText(initialText, current, page);
                 (index, current) = keyInfo.Key switch
                 {
                     ConsoleKey.DownArrow =>
@@ -60,6 +54,12 @@ namespace GitApp
                     ConsoleKey.PageUp => InterractWithPageUp(page, index, current),
                     _ => (index, current)
                 };
+                (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
+                isPageLargerThanWindow = commitTextSize > emptySpace;
+                page = isPageLargerThanWindow
+                    ? TruncateText(page, commitTextSize - emptySpace - 3)
+                    : page;
+                WriteText(initialText, current, page);
             }
             while (!keyInfo.Key.Equals(ConsoleKey.Escape));
 
