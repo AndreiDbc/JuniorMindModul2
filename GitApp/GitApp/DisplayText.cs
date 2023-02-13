@@ -181,7 +181,14 @@ namespace GitApp
             if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
             {
                 index++;
-                index = isPageLargerThanWindow ? index + 1 : index;
+                index = isPageLargerThanWindow
+                    ? index +
+                        (commitsIDAuthorDateMessage[current][0] + " - " +
+                        commitsIDAuthorDateMessage[current][1] + ", " +
+                        commitsIDAuthorDateMessage[current][2] + ": " +
+                        commitsIDAuthorDateMessage[current][3]).Length
+                            / Console.WindowWidth
+                    : index;
             }
 
             return (SetToLastOrDontChange(index), SetToLastOrDontChange(current + 1));
