@@ -141,29 +141,20 @@ namespace GitApp
             {
                 if (commit[0] == commitsIDAuthorDateMessage[current][0] + " - ")
                 {
-                    var backgroundColor = Console.BackgroundColor;
-                    Console.BackgroundColor = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.Write(commit[0]);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(commit[1]);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write(commit[2]);
-                    Console.ForegroundColor = backgroundColor;
-                    Console.WriteLine(commit[3]);
+                    Console.WriteLine(
+                        $"\x1b[48;5;15m\x1b[38;5;27m{commit[0]}"
+                        + $"\x1b[38;5;46m{commit[1]}"
+                        + $"\x1b[38;5;196m{commit[2]}"
+                        + $"\x1b[38;5;0m{commit[3]}");
                     Console.ResetColor();
                 }
                 else
                 {
-                    var foregroundColor = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.Write(commit[0]);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(commit[1]);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write(commit[2]);
-                    Console.ForegroundColor = foregroundColor;
-                    Console.WriteLine(commit[3]);
+                    Console.WriteLine(
+                        $"\x1b[48;5;0m\x1b[38;5;27m{commit[0]}"
+                        + $"\x1b[38;5;46m{commit[1]}"
+                        + $"\x1b[38;5;196m{commit[2]}"
+                        + $"\x1b[38;5;15m{commit[3]}");
                     Console.ResetColor();
                 }
             });
