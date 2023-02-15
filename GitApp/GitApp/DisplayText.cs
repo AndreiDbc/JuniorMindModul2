@@ -175,7 +175,7 @@ namespace GitApp
         {
             if (page[^1][0] == commitsIDAuthorDateMessage[^1][0] + " - ")
             {
-                return (index, current);
+                return (index, SetToLastOrDontChange(current + 1));
             }
 
             if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
