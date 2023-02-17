@@ -137,10 +137,10 @@ namespace GitApp
         {
             Console.Clear();
             Console.WriteLine(initialText);
+            var foregroundColor = Color.FromName(Console.ForegroundColor.ToString());
+            var backgroundColor = Color.FromName(Console.BackgroundColor.ToString());
             page.ForEach(commit =>
             {
-                var foregroundColor = Color.FromName(Console.ForegroundColor.ToString());
-                var backgroundColor = Color.FromName(Console.BackgroundColor.ToString());
                 if (commit[0] == commitsIDAuthorDateMessage[current][0] + " - ")
                 {
                     Console.WriteLine(
