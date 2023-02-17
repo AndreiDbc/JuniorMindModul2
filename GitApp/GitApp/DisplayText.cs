@@ -137,27 +137,26 @@ namespace GitApp
         {
             Console.Clear();
             Console.WriteLine(initialText);
-            var foregroundColor = Color.FromName(Console.ForegroundColor.ToString());
-            var backgroundColor = Color.FromName(Console.BackgroundColor.ToString());
             page.ForEach(commit =>
             {
                 if (commit[0] == commitsIDAuthorDateMessage[current][0] + " - ")
                 {
-                    Console.WriteLine(
-                        $"\x1b[48;2;{foregroundColor.R};{foregroundColor.G};{foregroundColor.B}m\x1b[38;5;27m{commit[0]}"
-                        + $"\x1b[38;5;46m{commit[1]}"
-                        + $"\x1b[38;5;196m{commit[2]}"
-                        + $"\x1b[38;2;{backgroundColor.R};{backgroundColor.G};{backgroundColor.B}m{commit[3]}");
+                    Console.Write(
+                        $"\x1b[7m\x1b[48;5;27m{commit[0]}"
+                        + $"\x1b[48;5;46m{commit[1]}"
+                        + $"\x1b[48;5;196m{commit[2]}");
+                    Console.ResetColor();
+                    Console.WriteLine($"\x1b[7m{commit[3]}");
                     Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine(
-                        $"\x1b[38;5;27m{commit[0]}"
+                    Console.Write(
+                        $"\x1b[0m\x1b[38;5;27m{commit[0]}"
                         + $"\x1b[38;5;46m{commit[1]}"
-                        + $"\x1b[38;5;196m{commit[2]}"
-                        + $"\x1b[38;2;{foregroundColor.R};{foregroundColor.G};{foregroundColor.B}m{commit[3]}");
+                        + $"\x1b[38;5;196m{commit[2]}");
                     Console.ResetColor();
+                    Console.WriteLine(commit[3]);
                 }
             });
             Console.Write("Press 'Esc' to exit.");
