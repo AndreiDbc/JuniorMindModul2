@@ -31,9 +31,9 @@ namespace GitApp
             var initialTextSize = GetTextSize(initialText.Split("\n"));
             var emptySpace = windowSize - initialTextSize - windowWidth;
             var commitTextSize = 0;
-            var isPageLargerThanWindow = commitTextSize > emptySpace;
             List<List<string>>? page;
             (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
+            var isPageLargerThanWindow = commitTextSize > emptySpace;
             page = isPageLargerThanWindow
                 ? TruncateText(page, commitTextSize - emptySpace - 3)
                 : page;
