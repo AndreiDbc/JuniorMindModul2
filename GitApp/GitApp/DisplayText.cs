@@ -106,6 +106,11 @@ namespace GitApp
             return page;
         }
 
+        private string InterractWithEnter(int current)
+        {
+            return new GitCommand("git").GetCommitModifiedFileNames(commitsIDAuthorDateMessage[current][0]);
+        }
+
         private (List<List<string>>, int commitTextSize) GetPageTextAndSize(int index, int size)
         {
             var result = new List<List<string>>();
