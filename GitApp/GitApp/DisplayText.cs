@@ -45,15 +45,7 @@ namespace GitApp
                 windowSize = Console.WindowHeight * windowWidth;
                 initialTextSize = GetTextSize(initialText.Split("\n"));
                 emptySpace = windowSize - initialTextSize - windowWidth;
-                (index, current) = keyInfo.Key switch
-                {
-                    ConsoleKey.DownArrow =>
-                        InterractWithDownArrow(page, index, current, isPageLargerThanWindow),
-                    ConsoleKey.UpArrow => InterractWithUpArrow(page, index, current),
-                    ConsoleKey.PageDown => InterractWithPageDown(page, index, current),
-                    ConsoleKey.PageUp => InterractWithPageUp(page, index, current),
-                    _ => (index, current)
-                };
+                (index, current) = SetIndexAndCurrent(keyInfo, page, index, current, isPageLargerThanWindow);
                 (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
                 isPageLargerThanWindow = commitTextSize > emptySpace;
                 page = isPageLargerThanWindow
@@ -104,6 +96,20 @@ namespace GitApp
             page[^1].RemoveAt(3);
             page[^1].Add(toAdd + "...");
             return page;
+        }
+
+        private (int index, int current) SetIndexAndCurrent(
+            ConsoleKeyInfo keyInfo, List<List<string>> page, int index, int current, bool isPageLargerThanWindow)
+        {
+            return keyInfo.Key switch
+            {
+                ConsoleKey.DownArrow =>
+                    InterractWithDownArrow(page, index, current, isPageLargerThanWindow),
+                ConsoleKey.UpArrow => InterractWithUpArrow(page, index, current),
+                ConsoleKey.PageDown => InterractWithPageDown(page, index, current),
+                ConsoleKey.PageUp => InterractWithPageUp(page, index, current),
+                _ => (index, current)
+            };
         }
 
         private string InterractWithEnter(int current)
