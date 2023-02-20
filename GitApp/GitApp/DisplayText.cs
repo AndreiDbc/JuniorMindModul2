@@ -32,12 +32,12 @@ namespace GitApp
             var emptySpace = windowSize - initialTextSize - windowWidth;
             var commitTextSize = 0;
             List<List<string>>? page;
-            (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
+            (page, commitTextSize) = GetCommitsTextAndSize(index, emptySpace);
             var isPageLargerThanWindow = commitTextSize > emptySpace;
             page = isPageLargerThanWindow
                 ? TruncateText(page, commitTextSize - emptySpace - 3)
                 : page;
-            WriteText(initialText, current, page);
+            WriteCommits(initialText, current, page);
             do
             {
                 keyInfo = Console.ReadKey();
@@ -46,12 +46,12 @@ namespace GitApp
                 initialTextSize = GetTextSize(initialText.Split("\n"));
                 emptySpace = windowSize - initialTextSize - windowWidth;
                 (index, current) = SetIndexAndCurrent(keyInfo, page, index, current, isPageLargerThanWindow);
-                (page, commitTextSize) = GetPageTextAndSize(index, emptySpace);
+                (page, commitTextSize) = GetCommitsTextAndSize(index, emptySpace);
                 isPageLargerThanWindow = commitTextSize > emptySpace;
                 page = isPageLargerThanWindow
                     ? TruncateText(page, commitTextSize - emptySpace - 3)
                     : page;
-                WriteText(initialText, current, page);
+                WriteCommits(initialText, current, page);
             }
             while (!keyInfo.Key.Equals(ConsoleKey.Escape));
 
@@ -117,7 +117,7 @@ namespace GitApp
             return new GitCommand("git").GetCommitModifiedFileNames(commitsIDAuthorDateMessage[current][0]);
         }
 
-        private (List<List<string>>, int commitTextSize) GetPageTextAndSize(int index, int size)
+        private (List<List<string>>, int commitTextSize) GetCommitsTextAndSize(int index, int size)
         {
             var result = new List<List<string>>();
             int commitTextSize = 0;
@@ -144,7 +144,7 @@ namespace GitApp
             return (result, commitTextSize);
         }
 
-        private void WriteText(string initialText, int current, List<List<string>> page)
+        private void WriteCommits(string initialText, int current, List<List<string>> page)
         {
             Console.Clear();
             Console.WriteLine(initialText);
