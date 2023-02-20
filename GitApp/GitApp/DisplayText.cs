@@ -146,13 +146,13 @@ namespace GitApp
                         + $"\x1b[48;5;46m{commit[1]}"
                         + $"\x1b[48;5;196m{commit[2]}");
                     Console.ResetColor();
-                    Console.WriteLine($"\x1b[7m{commit[3]}");
+                    Console.WriteLine($"\x1b[7m{commit[3]}\x1b[0m");
                     Console.ResetColor();
                 }
                 else
                 {
                     Console.Write(
-                        $"\x1b[0m\x1b[38;5;27m{commit[0]}"
+                        $"\x1b[38;5;27m{commit[0]}"
                         + $"\x1b[38;5;46m{commit[1]}"
                         + $"\x1b[38;5;196m{commit[2]}");
                     Console.ResetColor();
