@@ -109,6 +109,25 @@ namespace GitApp
             return result;
         }
 
+        public string GetCommitModifiedFileNames(string commit)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = fileName,
+                    Arguments = $"show --pretty=\"\" --name-only {commit}",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            var data = process.StandardOutput.ReadToEnd();
+            process.Dispose();
+            return data.Trim();
+        }
+
         private List<string> GetCommitId()
         {
             var process = new Process
