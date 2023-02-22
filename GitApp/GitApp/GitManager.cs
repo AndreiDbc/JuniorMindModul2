@@ -25,5 +25,10 @@ namespace GitApp
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "branch --show-current"));
         }
+
+        public string GetNumberOfCommitsToPush(string branchName)
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, $"rev-list origin/{branchName}..HEAD --count"));
+        }
     }
 }
