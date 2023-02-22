@@ -7,7 +7,30 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    public class GitProcessRunner
+    public class GitProcessRunner : IProcessRunner
     {
+        public string RunCommand(GitCommand command)
+        {
+            return GetCommandOutput(command);
+        }
+
+        private static string GetCommandOutput(GitCommand command)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = command.FileName,
+                    Arguments = command.Argument,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            var branch = process.StandardOutput.ReadToEnd();
+            process.Dispose();
+            return branch.Trim();
+        }
     }
 }
