@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    internal class CommitID
+    public class CommitID
     {
+        private readonly GitManager gitManager;
+
+        public CommitID(GitManager gitManager)
+        {
+            this.gitManager = gitManager;
+        }
+
+        public List<string> IDs { get => gitManager.GetCommitId().Split("\n").ToList(); }
     }
 }
