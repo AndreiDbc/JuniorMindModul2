@@ -8,13 +8,14 @@ namespace GitApp
 {
     public class GitCommand
     {
-        public readonly string FileName;
-        public readonly string Argument;
-
         public GitCommand(string fileName, string argument)
         {
             this.FileName = fileName;
             this.Argument = argument;
         }
+
+        public string FileName { get; }
+
+        public string Argument { get; }
     }
 }
