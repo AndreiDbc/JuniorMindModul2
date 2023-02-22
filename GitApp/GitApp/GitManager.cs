@@ -35,5 +35,10 @@ namespace GitApp
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"rev-list --count origin/{branchName} --not HEAD"));
         }
+
+        public string ShowAllBranches()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "branch"));
+        }
     }
 }
