@@ -15,6 +15,6 @@ namespace GitApp
             this.gitManager = gitManager;
         }
 
-        public string Names { get => gitManager.GetCommitAuthorName(); }
+        public List<string> Names { get => gitManager.GetCommitAuthorName().Split("\n").ToList(); }
     }
 }
