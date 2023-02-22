@@ -29,7 +29,13 @@ namespace GitApp
             this.commitsAuthorsNames = commitsAuthorsNames;
             this.commitsDates = commitsDates;
             this.commitsMessages = commitsMessages;
+            Current = 0;
+            Index = 0;
         }
+
+        private int Current { get; set; }
+
+        private int Index { get; set; }
 
         public void Interract(string initialText)
         {
