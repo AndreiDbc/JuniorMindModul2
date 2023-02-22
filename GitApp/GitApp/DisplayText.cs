@@ -114,7 +114,7 @@ namespace GitApp
 
         private string InterractWithEnter(int current)
         {
-            return new GitCommand("git").GetCommitModifiedFileNames(commitsIDAuthorDateMessage[current][0]);
+            return new GitManager("git").GetCommitModifiedFileNames(commitsIDAuthorDateMessage[current][0]);
         }
 
         private (List<List<string>>, int commitTextSize) GetCommitsTextAndSize(int index, int size)
