@@ -20,5 +20,10 @@ namespace GitApp
             this.fileName = fileName;
             this.commandRunner = processRunner;
         }
+
+        public string GetCurrentGitBranch()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "branch --show-current"));
+        }
     }
 }
