@@ -40,5 +40,10 @@ namespace GitApp
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "branch"));
         }
+
+        public string GetCommitModifiedFileNames(string commit)
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, $"show --pretty=\"\" --name-only {commit}"));
+        }
     }
 }
