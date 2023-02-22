@@ -45,5 +45,25 @@ namespace GitApp
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"show --pretty=\"\" --name-only {commit}"));
         }
+
+        private string GetCommitId()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%h\""));
+        }
+
+        private string GetCommitAuthorName()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%an\""));
+        }
+
+        private string GetCommitDate()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%ar\""));
+        }
+
+        private string GetCommitMessage()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%s\""));
+        }
     }
 }
