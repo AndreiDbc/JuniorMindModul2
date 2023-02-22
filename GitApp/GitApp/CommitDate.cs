@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    internal class CommitDate
+    public class CommitDate
     {
+        private readonly GitManager gitManager;
+
+        public CommitDate(GitManager gitManager)
+        {
+            this.gitManager = gitManager;
+        }
+
+        public List<string> Dates { get => gitManager.GetCommitDate().Split("\n").ToList(); }
     }
 }
