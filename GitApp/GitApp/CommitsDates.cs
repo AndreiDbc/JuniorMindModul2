@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    public class CommitDate
+    public class CommitsDates
     {
         private readonly GitManager gitManager;
 
-        public CommitDate(GitManager gitManager)
+        public CommitsDates(GitManager gitManager)
         {
             this.gitManager = gitManager;
         }

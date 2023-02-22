@@ -14,11 +14,21 @@ namespace GitApp
 {
     class DisplayText
     {
-        private readonly List<List<string>> commitsIDAuthorDateMessage;
+        private readonly List<CommitsIDs> commitsIDs;
+        private readonly List<CommitsAuthorsName> commitsAuthorsNames;
+        private readonly List<CommitsDates> commitsDates;
+        private readonly List<CommitsMessages> commitsMessages;
 
-        public DisplayText(List<List<string>> commitsIDAuthorDateMessage)
+        public DisplayText(
+            List<CommitsIDs> commitsIDs,
+            List<CommitsAuthorsName> commitsAuthorsNames,
+            List<CommitsDates> commitsDates,
+            List<CommitsMessages> commitsMessages)
         {
-            this.commitsIDAuthorDateMessage = commitsIDAuthorDateMessage;
+            this.commitsIDs = commitsIDs;
+            this.commitsAuthorsNames = commitsAuthorsNames;
+            this.commitsDates = commitsDates;
+            this.commitsMessages = commitsMessages;
         }
 
         public void Interract(string initialText)
