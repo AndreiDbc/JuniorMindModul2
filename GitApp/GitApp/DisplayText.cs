@@ -51,7 +51,7 @@ namespace GitApp
             (page, commitTextSize) = GetCommitsTextAndSize(emptySpace);
             var isPageLargerThanWindow = commitTextSize > emptySpace;
             page = isPageLargerThanWindow
-                ? TruncateText(page, commitTextSize - emptySpace - 3)
+                ? TruncateText(page)
                 : page;
             WriteCommits(initialText, current, page);
             do
@@ -65,7 +65,7 @@ namespace GitApp
                 (page, commitTextSize) = GetCommitsTextAndSize(emptySpace);
                 isPageLargerThanWindow = commitTextSize > emptySpace;
                 page = isPageLargerThanWindow
-                    ? TruncateText(page, commitTextSize - emptySpace - 3)
+                    ? TruncateText(page)
                     : page;
                 WriteCommits(initialText, current, page);
             }
@@ -98,19 +98,18 @@ namespace GitApp
             return textSize;
         }
 
-        private static List<List<string>> TruncateText(List<List<string>> page, int size)
+        private static List<string> TruncateText(List<string> page)
         {
             string toAdd = "";
-            var unoccupiedRowSize = size - (page[^1][0] + page[^1][1] + page[^1][2]).Length;
             var i = 0;
             do
             {
-                toAdd += page[^1][3][i];
+                toAdd += page[^1][i];
                 i++;
             }
-            while (toAdd.Length != unoccupiedRowSize);
-            page[^1].RemoveAt(3);
-            page[^1].Add(toAdd + "...");
+            while (toAdd.Length != Console.WindowWidth - 3);
+            page.RemoveAt(page.Count - 1);
+            page.Add(toAdd + "...");
             return page;
         }
 
