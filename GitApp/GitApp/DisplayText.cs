@@ -47,8 +47,8 @@ namespace GitApp
             var initialTextSize = GetTextSize(initialText.Split("\n"));
             var emptySpace = windowSize - initialTextSize - windowWidth;
             var commitTextSize = 0;
-            List<List<string>>? page;
-            (page, commitTextSize) = GetCommitsTextAndSize(index, emptySpace);
+            List<string>? page;
+            (page, commitTextSize) = GetCommitsTextAndSize(emptySpace);
             var isPageLargerThanWindow = commitTextSize > emptySpace;
             page = isPageLargerThanWindow
                 ? TruncateText(page, commitTextSize - emptySpace - 3)
@@ -62,7 +62,7 @@ namespace GitApp
                 initialTextSize = GetTextSize(initialText.Split("\n"));
                 emptySpace = windowSize - initialTextSize - windowWidth;
                 (index, current) = SetIndexAndCurrent(keyInfo, page, index, current, isPageLargerThanWindow);
-                (page, commitTextSize) = GetCommitsTextAndSize(index, emptySpace);
+                (page, commitTextSize) = GetCommitsTextAndSize(emptySpace);
                 isPageLargerThanWindow = commitTextSize > emptySpace;
                 page = isPageLargerThanWindow
                     ? TruncateText(page, commitTextSize - emptySpace - 3)
