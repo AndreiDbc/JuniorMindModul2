@@ -14,16 +14,16 @@ namespace GitApp
 {
     class DisplayText
     {
-        private readonly List<CommitsIDs> commitsIDs;
-        private readonly List<CommitsAuthorsName> commitsAuthorsNames;
-        private readonly List<CommitsDates> commitsDates;
-        private readonly List<CommitsMessages> commitsMessages;
+        private readonly CommitsIDs commitsIDs;
+        private readonly CommitsAuthorsName commitsAuthorsNames;
+        private readonly CommitsDates commitsDates;
+        private readonly CommitsMessages commitsMessages;
 
         public DisplayText(
-            List<CommitsIDs> commitsIDs,
-            List<CommitsAuthorsName> commitsAuthorsNames,
-            List<CommitsDates> commitsDates,
-            List<CommitsMessages> commitsMessages)
+            CommitsIDs commitsIDs,
+            CommitsAuthorsName commitsAuthorsNames,
+            CommitsDates commitsDates,
+            CommitsMessages commitsMessages)
         {
             this.commitsIDs = commitsIDs;
             this.commitsAuthorsNames = commitsAuthorsNames;
@@ -133,9 +133,10 @@ namespace GitApp
             return new GitManager("git").GetCommitModifiedFileNames(commitsIDAuthorDateMessage[current][0]);
         }
 
-        private (List<string>, int commitTextSize) GetCommitsTextAndSize(int index, int size)
+        private (List<string>, int commitTextSize) GetCommitsTextAndSize(int size)
         {
             var result = new List<string>();
+            var temp = Index;
             int commitTextSize = 0;
             do
             {
@@ -145,15 +146,15 @@ namespace GitApp
                 }
 
                 result.Add(
-                    commitsIDs[index].IDs + " - " +
-                    commitsAuthorsNames[index].Names + ", " +
-                    commitsDates[index].Dates + ": " +
-                    commitsMessages[index].Messages);
+                    commitsIDs.GetIDAtIndex(temp) + " - " +
+                    commitsAuthorsNames.GetNameAtIndex(temp) + ", " +
+                    commitsDates.GetDateAtIndex(temp) + ": " +
+                    commitsMessages.GetMessageAtIndex(temp));
 
                 commitTextSize += GetTextSize(new[] { result[^1] });
-                index++;
+                temp++;
             }
-            while (index <= commitsIDs.Count - 1);
+            while (temp <= commitsIDs.Count - 1);
 
             return (result, commitTextSize);
         }
