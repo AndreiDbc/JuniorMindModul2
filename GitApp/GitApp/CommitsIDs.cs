@@ -8,13 +8,16 @@ namespace GitApp
 {
     public class CommitsIDs
     {
-        private readonly GitManager gitManager;
+        private readonly List<string> listOfIDs;
 
-        public CommitsIDs(GitManager gitManager)
+        public CommitsIDs(List<string> listOfIDs)
         {
-            this.gitManager = gitManager;
+            this.listOfIDs = listOfIDs;
         }
 
-        public List<string> IDs { get => gitManager.GetCommitId().Split("\n").ToList(); }
+        public string GetIDAtIndex(int index)
+        {
+            return listOfIDs[index];
+        }
     }
 }
