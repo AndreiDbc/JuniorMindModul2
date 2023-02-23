@@ -8,13 +8,16 @@ namespace GitApp
 {
     public class CommitsAuthorsName
     {
-        private readonly GitManager gitManager;
+        private readonly List<string> nameList;
 
-        public CommitsAuthorsName(GitManager gitManager)
+        public CommitsAuthorsName(List<string> nameList)
         {
-            this.gitManager = gitManager;
+            this.nameList = nameList;
         }
 
-        public List<string> Names { get => gitManager.GetCommitAuthorName().Split("\n").ToList(); }
+        public string GetNameAtIndex(int index)
+        {
+            return nameList[index];
+        }
     }
 }
