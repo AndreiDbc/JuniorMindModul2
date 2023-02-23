@@ -8,13 +8,16 @@ namespace GitApp
 {
     public class CommitsMessages
     {
-        private readonly GitManager gitManager;
+        private readonly List<string> commitList;
 
-        public CommitsMessages(GitManager gitManager)
+        public CommitsMessages(List<string> commitList)
         {
-            this.gitManager = gitManager;
+            this.commitList = commitList;
         }
 
-        public List<string> Messages { get => gitManager.GetCommitMessage().Split("\n").ToList(); }
+        public string GetMessageAtIndex(int index)
+        {
+            return commitList[index];
+        }
     }
 }
