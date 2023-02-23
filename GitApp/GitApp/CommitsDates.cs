@@ -8,13 +8,16 @@ namespace GitApp
 {
     public class CommitsDates
     {
-        private readonly GitManager gitManager;
+        private readonly List<string> dateList;
 
-        public CommitsDates(GitManager gitManager)
+        public CommitsDates(List<string> dateList)
         {
-            this.gitManager = gitManager;
+            this.dateList = dateList;
         }
 
-        public List<string> Dates { get => gitManager.GetCommitDate().Split("\n").ToList(); }
+        public string GetDateAtIndex(int index)
+        {
+            return dateList[index];
+        }
     }
 }
