@@ -15,6 +15,8 @@ namespace GitApp
             this.listOfIDs = listOfIDs;
         }
 
+        public int Count { get => listOfIDs.Count; }
+
         public string GetIDAtIndex(int index)
         {
             return listOfIDs[index];
