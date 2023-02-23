@@ -133,9 +133,9 @@ namespace GitApp
             return new GitManager("git").GetCommitModifiedFileNames(commitsIDAuthorDateMessage[current][0]);
         }
 
-        private (List<List<string>>, int commitTextSize) GetCommitsTextAndSize(int index, int size)
+        private (List<string>, int commitTextSize) GetCommitsTextAndSize(int index, int size)
         {
-            var result = new List<List<string>>();
+            var result = new List<string>();
             int commitTextSize = 0;
             do
             {
@@ -144,18 +144,16 @@ namespace GitApp
                     break;
                 }
 
-                result.Add(new List<string>()
-                {
-                    commitsIDAuthorDateMessage[index][0] + " - ",
-                    commitsIDAuthorDateMessage[index][1] + ", ",
-                    commitsIDAuthorDateMessage[index][2] + ": ",
-                    commitsIDAuthorDateMessage[index][3]
-                });
+                result.Add(
+                    commitsIDs[index].IDs + " - " +
+                    commitsAuthorsNames[index].Names + ", " +
+                    commitsDates[index].Dates + ": " +
+                    commitsMessages[index].Messages);
 
-                commitTextSize += GetTextSize(new[] { result[^1][0] + result[^1][1] + result[^1][2] + result[^1][3] });
+                commitTextSize += GetTextSize(new[] { result[^1] });
                 index++;
             }
-            while (index <= commitsIDAuthorDateMessage.Count - 1);
+            while (index <= commitsIDs.Count - 1);
 
             return (result, commitTextSize);
         }
