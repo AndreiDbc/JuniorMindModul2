@@ -74,6 +74,19 @@ namespace GitApp
             Console.ReadKey();
         }
 
+        private static int GetStringEndIndex(string commit, char separator)
+        {
+            for (int i = 0; i < commit.Length; i++)
+            {
+                if (commit[i] == separator)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         private static (int index, int current) InterractWithPageUp(
             List<List<string>> page, int index, int current)
         {
@@ -158,30 +171,33 @@ namespace GitApp
             return (result, commitTextSize);
         }
 
-        private void WriteCommits(string initialText, int current, List<List<string>> page)
+        private void WriteCommits(string initialText, int current, List<string> page)
         {
             Console.Clear();
             Console.WriteLine(initialText);
             page.ForEach(commit =>
             {
-                if (commit[0] == commitsIDAuthorDateMessage[current][0] + " - ")
+                var id = commit[.. (commit.Length - (commit.Length - 5))];
+                var nameEndIndex = GetStringEndIndex(commit, ',');
+                var dateEndIndex = GetStringEndIndex(commit, ':');
+                if (id == commitsIDs.GetIDAtIndex(current) + " - ")
                 {
                     Console.Write(
-                        $"\x1b[7m\x1b[48;5;27m{commit[0]}"
-                        + $"\x1b[48;5;46m{commit[1]}"
-                        + $"\x1b[48;5;196m{commit[2]}");
+                        $"\x1b[7m\x1b[48;5;27m{id + " - "}"
+                        + $"\x1b[48;5;46m{commit[8.. nameEndIndex]}"
+                        + $"\x1b[48;5;196m{commit[(nameEndIndex + 1) .. dateEndIndex]}");
                     Console.ResetColor();
-                    Console.WriteLine($"\x1b[7m{commit[3]}\x1b[0m");
+                    Console.WriteLine($"\x1b[7m{commit[(dateEndIndex + 1) ..]}\x1b[0m");
                     Console.ResetColor();
                 }
                 else
                 {
                     Console.Write(
-                        $"\x1b[38;5;27m{commit[0]}"
-                        + $"\x1b[38;5;46m{commit[1]}"
-                        + $"\x1b[38;5;196m{commit[2]}");
+                        $"\x1b[38;5;27m{id + " - "}"
+                        + $"\x1b[38;5;46m{commit[8 .. nameEndIndex]}"
+                        + $"\x1b[38;5;196m{commit[(nameEndIndex + 1) .. dateEndIndex]}");
                     Console.ResetColor();
-                    Console.WriteLine(commit[3]);
+                    Console.WriteLine(commit[(dateEndIndex + 1) ..]);
                 }
             });
             Console.Write("Press 'Esc' to exit.");
