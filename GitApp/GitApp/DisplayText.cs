@@ -259,8 +259,8 @@ namespace GitApp
 
         private int SetToLastOrDontChange(int number)
         {
-            return number > commitsIDAuthorDateMessage.Count - 1
-                ? commitsIDAuthorDateMessage.Count - 1
+            return number > commitsIDs.Count - 1
+                ? commitsIDs.Count - 1
                 : number;
         }
     }
