@@ -88,11 +88,10 @@ namespace GitApp
             return -1;
         }
 
-        private static (int index, int current) InterractWithPageUp(
-            List<List<string>> page, int index, int current)
+        private void InterractWithPageUp(List<string> page)
         {
-            return (SetToZeroOrDontChange(index - page.Count),
-                SetToZeroOrDontChange(current - page.Count));
+            Index = SetToZeroOrDontChange(Index - page.Count);
+            Current = SetToZeroOrDontChange(Current - page.Count);
         }
 
         private static int SetToZeroOrDontChange(int number)
