@@ -79,7 +79,7 @@ namespace GitApp
             {
                 if (commit[i] == separator)
                 {
-                    return i;
+                    return i + 1;
                 }
             }
 
@@ -135,11 +135,6 @@ namespace GitApp
             };
         }
 
-        private string InterractWithEnter(int current)
-        {
-            return new GitManager("git").GetCommitModifiedFileNames(commitsIDAuthorDateMessage[current][0]);
-        }
-
         private (List<string>, int commitTextSize) GetCommitsTextAndSize(int size)
         {
             var result = new List<string>();
@@ -172,27 +167,27 @@ namespace GitApp
             Console.WriteLine(initialText);
             page.ForEach(commit =>
             {
-                var id = commit[.. (commit.Length - (commit.Length - 5))];
+                var id = commit[.. (commit.Length - (commit.Length - 7))];
                 var nameEndIndex = GetStringEndIndex(commit, ',');
                 var dateEndIndex = GetStringEndIndex(commit, ':');
                 if (id == commitsIDs.GetIDAtIndex(Current) + " - ")
                 {
                     Console.Write(
                         $"\x1b[7m\x1b[48;5;27m{id + " - "}"
-                        + $"\x1b[48;5;46m{commit[8.. nameEndIndex]}"
-                        + $"\x1b[48;5;196m{commit[(nameEndIndex + 1) .. dateEndIndex]}");
+                        + $"\x1b[48;5;46m{commit[10 .. nameEndIndex]}"
+                        + $"\x1b[48;5;196m{commit[nameEndIndex .. dateEndIndex]}");
                     Console.ResetColor();
-                    Console.WriteLine($"\x1b[7m{commit[(dateEndIndex + 1) ..]}\x1b[0m");
+                    Console.WriteLine($"\x1b[7m{commit[dateEndIndex ..]}\x1b[0m");
                     Console.ResetColor();
                 }
                 else
                 {
                     Console.Write(
                         $"\x1b[38;5;27m{id + " - "}"
-                        + $"\x1b[38;5;46m{commit[8 .. nameEndIndex]}"
-                        + $"\x1b[38;5;196m{commit[(nameEndIndex + 1) .. dateEndIndex]}");
+                        + $"\x1b[38;5;46m{commit[10 .. nameEndIndex]}"
+                        + $"\x1b[38;5;196m{commit[nameEndIndex .. dateEndIndex]}");
                     Console.ResetColor();
-                    Console.WriteLine(commit[(dateEndIndex + 1) ..]);
+                    Console.WriteLine(commit[dateEndIndex ..]);
                 }
             });
             Console.Write("Press 'Esc' to exit.");
@@ -201,7 +196,7 @@ namespace GitApp
         private (int index, int current) InterractWithDownArrow(List<string> page, bool isPageLargerThanWindow)
         {
             var lastCommit = page[^1];
-            var lastCommitId = lastCommit[.. (lastCommit.Length - (lastCommit.Length - 5))];
+            var lastCommitId = lastCommit[.. (lastCommit.Length - (lastCommit.Length - 7))];
             var currentID = commitsIDs.GetIDAtIndex(commitsIDs.Count - 1);
             if (lastCommitId == commitsIDs.GetIDAtIndex(commitsIDs.Count - 1))
             {
@@ -228,7 +223,7 @@ namespace GitApp
         {
             var firstCommit = page[0];
             if (commitsIDs.GetIDAtIndex(Current) + " - "
-                == firstCommit[.. (firstCommit.Length - (firstCommit.Length - 5))])
+                == firstCommit[.. (firstCommit.Length - (firstCommit.Length - 7))])
             {
                 Index--;
             }
@@ -240,7 +235,7 @@ namespace GitApp
         {
             Current = SetToLastOrDontChange(Current + page.Count);
             var lastCommit = page[^1];
-            if (lastCommit[.. (lastCommit.Length - lastCommit.Length - 5)]
+            if (lastCommit[.. (lastCommit.Length - lastCommit.Length - 7)]
                 == commitsIDs.GetIDAtIndex(commitsIDs.Count - 1))
             {
                 return (Index, Current);
