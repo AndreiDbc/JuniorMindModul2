@@ -197,7 +197,7 @@ namespace GitApp
         {
             var lastCommit = page[^1];
             var lastCommitId = lastCommit[.. (lastCommit.Length - (lastCommit.Length - 7))];
-            var currentID = commitsIDs.GetIDAtIndex(commitsIDs.Count - 1);
+            var currentID = commitsIDs.GetIDAtIndex(Current);
             if (lastCommitId == commitsIDs.GetIDAtIndex(commitsIDs.Count - 1))
             {
                return (Index, SetToLastOrDontChange(Current + 1));
@@ -222,7 +222,7 @@ namespace GitApp
         private (int index, int current) InterractWithUpArrow(List<string> page)
         {
             var firstCommit = page[0];
-            if (commitsIDs.GetIDAtIndex(Current) + " - "
+            if (commitsIDs.GetIDAtIndex(Current)
                 == firstCommit[.. (firstCommit.Length - (firstCommit.Length - 7))])
             {
                 Index--;
