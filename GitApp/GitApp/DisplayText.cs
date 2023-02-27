@@ -62,7 +62,7 @@ namespace GitApp
                 windowSize = Console.WindowHeight * windowWidth;
                 initialTextSize = GetTextSize(initialText.Split("\n"));
                 emptySpace = windowSize - initialTextSize - windowWidth;
-                (index, current) = SetIndexAndCurrent(keyInfo, page, index, current, isPageLargerThanWindow);
+                SetIndexAndCurrent(keyInfo, page, index, current, isPageLargerThanWindow);
                 (page, commitTextSize) = GetCommitsTextAndSize(emptySpace);
                 isPageLargerThanWindow = commitTextSize > emptySpace;
                 page = isPageLargerThanWindow
@@ -86,12 +86,6 @@ namespace GitApp
             }
 
             return -1;
-        }
-
-        private void InterractWithPageUp(List<string> page)
-        {
-            Index = SetToZeroOrDontChange(Index - page.Count);
-            Current = SetToZeroOrDontChange(Current - page.Count);
         }
 
         private static int SetToZeroOrDontChange(int number)
@@ -126,17 +120,20 @@ namespace GitApp
             return page;
         }
 
-        private (int index, int current) SetIndexAndCurrent(
-            ConsoleKeyInfo keyInfo, List<List<string>> page, int index, int current, bool isPageLargerThanWindow)
+        private (int index, int current) InterractWithPageUp(List<string> page)
+        {
+            return (SetToZeroOrDontChange(Index - page.Count), SetToZeroOrDontChange(Current - page.Count));
+        }
+
+        private (int index, int current) SetIndexAndCurrent(ConsoleKeyInfo keyInfo, List<string> page, bool isPageLargerThanWindow)
         {
             return keyInfo.Key switch
             {
-                ConsoleKey.DownArrow =>
-                    InterractWithDownArrow(page, index, current, isPageLargerThanWindow),
-                ConsoleKey.UpArrow => InterractWithUpArrow(page, index, current),
-                ConsoleKey.PageDown => InterractWithPageDown(page, index, current),
-                ConsoleKey.PageUp => InterractWithPageUp(page, index, current),
-                _ => (index, current)
+                ConsoleKey.DownArrow =>InterractWithDownArrow(page, isPageLargerThanWindow),
+                ConsoleKey.UpArrow => InterractWithUpArrow(page),
+                ConsoleKey.PageDown => InterractWithPageDown(page),
+                ConsoleKey.PageUp => InterractWithPageUp(page),
+                _ => (Index, Current)
             };
         }
 
@@ -203,14 +200,14 @@ namespace GitApp
             Console.Write("Press 'Esc' to exit.");
         }
 
-        private void InterractWithDownArrow(List<string> page, bool isPageLargerThanWindow)
+        private (int index, int current) InterractWithDownArrow(List<string> page, bool isPageLargerThanWindow)
         {
             var lastCommit = page[^1];
             var lastCommitId = lastCommit[.. (lastCommit.Length - (lastCommit.Length - 5))];
             var currentID = commitsIDs.GetIDAtIndex(commitsIDs.Count - 1);
-            if (lastCommitId == currentID)
+            if (lastCommitId == commitsIDs.GetIDAtIndex(commitsIDs.Count - 1))
             {
-                Current = SetToLastOrDontChange(Current + 1);
+               return (Index, SetToLastOrDontChange(Current + 1));
             }
 
             if (currentID == lastCommitId)
@@ -226,11 +223,10 @@ namespace GitApp
                     : Index;
             }
 
-            Index = SetToLastOrDontChange(Index);
-            Current = SetToLastOrDontChange(Current + 1);
+            return (SetToLastOrDontChange(Index), SetToLastOrDontChange(Current + 1));
         }
 
-        private void InterractWithUpArrow(List<string> page)
+        private (int index, int current) InterractWithUpArrow(List<string> page)
         {
             var firstCommit = page[0];
             if (commitsIDs.GetIDAtIndex(Current) + " - "
@@ -239,21 +235,20 @@ namespace GitApp
                 Index--;
             }
 
-            Index = SetToZeroOrDontChange(Index);
-            Current = SetToZeroOrDontChange(Current - 1);
+            return (SetToZeroOrDontChange(Index), SetToZeroOrDontChange(Current - 1));
         }
 
-        private void InterractWithPageDown(List<string> page)
+        private (int index, int current) InterractWithPageDown(List<string> page)
         {
             Current = SetToLastOrDontChange(Current + page.Count);
             var lastCommit = page[^1];
             if (lastCommit[.. (lastCommit.Length - lastCommit.Length - 5)]
                 == commitsIDs.GetIDAtIndex(commitsIDs.Count - 1))
             {
-                return;
+                return (Index, Current);
             }
 
-            Index = SetToLastOrDontChange(Index + page.Count);
+            return (SetToLastOrDontChange(Index + page.Count), Current);
         }
 
         private int SetToLastOrDontChange(int number)
