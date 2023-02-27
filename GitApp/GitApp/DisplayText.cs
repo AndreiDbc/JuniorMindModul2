@@ -170,7 +170,7 @@ namespace GitApp
                 var id = commit[.. (commit.Length - (commit.Length - 7))];
                 var nameEndIndex = GetStringEndIndex(commit, ',');
                 var dateEndIndex = GetStringEndIndex(commit, ':');
-                if (id == commitsIDs.GetIDAtIndex(Current) + " - ")
+                if (id == commitsIDs.GetIDAtIndex(Current))
                 {
                     Console.Write(
                         $"\x1b[7m\x1b[48;5;27m{id + " - "}"
@@ -235,7 +235,7 @@ namespace GitApp
         {
             Current = SetToLastOrDontChange(Current + page.Count);
             var lastCommit = page[^1];
-            if (lastCommit[.. (lastCommit.Length - lastCommit.Length - 7)]
+            if (lastCommit[.. (lastCommit.Length - (lastCommit.Length - 7))]
                 == commitsIDs.GetIDAtIndex(commitsIDs.Count - 1))
             {
                 return (Index, Current);
