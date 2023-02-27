@@ -203,28 +203,31 @@ namespace GitApp
             Console.Write("Press 'Esc' to exit.");
         }
 
-        private (int index, int current) InterractWithDownArrow(
-            List<List<string>> page, int index, int current, bool isPageLargerThanWindow)
+        private void InterractWithDownArrow(List<string> page, bool isPageLargerThanWindow)
         {
-            if (page[^1][0] == commitsIDAuthorDateMessage[^1][0] + " - ")
+            var lastCommit = page[^1];
+            var lastCommitId = lastCommit[.. (lastCommit.Length - (lastCommit.Length - 5))];
+            var currentID = commitsIDs.GetIDAtIndex(commitsIDs.Count - 1);
+            if (lastCommitId == currentID)
             {
-                return (index, SetToLastOrDontChange(current + 1));
+                Current = SetToLastOrDontChange(Current + 1);
             }
 
-            if (commitsIDAuthorDateMessage[current][0] + " - " == page[^1][0])
+            if (currentID == lastCommitId)
             {
-                index++;
-                index = isPageLargerThanWindow
-                    ? index +
-                        (commitsIDAuthorDateMessage[current][0] + " - " +
-                        commitsIDAuthorDateMessage[current][1] + ", " +
-                        commitsIDAuthorDateMessage[current][2] + ": " +
-                        commitsIDAuthorDateMessage[current][3]).Length
-                            / Console.WindowWidth
-                    : index;
+                Index++;
+                Index = isPageLargerThanWindow
+                    ? Index +
+                        ((currentID + " - " +
+                        commitsAuthorsNames.GetNameAtIndex(Current) + ", " +
+                        commitsDates.GetDateAtIndex(Current) + ": " +
+                        commitsMessages.GetMessageAtIndex(Current)).Length
+                            / Console.WindowWidth)
+                    : Index;
             }
 
-            return (SetToLastOrDontChange(index), SetToLastOrDontChange(current + 1));
+            Index = SetToLastOrDontChange(Index);
+            Current = SetToLastOrDontChange(Current + 1);
         }
 
         private (int index, int current) InterractWithUpArrow(
