@@ -244,16 +244,17 @@ namespace GitApp
             Current = SetToZeroOrDontChange(Current - 1);
         }
 
-        private (int index, int current) InterractWithPageDown(
-            List<List<string>> page, int index, int current)
+        private void InterractWithPageDown(List<string> page)
         {
-            current = SetToLastOrDontChange(current + page.Count);
-            if (page[^1][0] == commitsIDAuthorDateMessage[^1][0] + " - ")
+            Current = SetToLastOrDontChange(Current + page.Count);
+            var lastCommit = page[^1];
+            if (lastCommit[.. (lastCommit.Length - lastCommit.Length - 5)]
+                == commitsIDs.GetIDAtIndex(commitsIDs.Count - 1))
             {
-                return (index, current);
+                return;
             }
 
-            return (SetToLastOrDontChange(index + page.Count), current);
+            Index = SetToLastOrDontChange(Index + page.Count);
         }
 
         private int SetToLastOrDontChange(int number)
