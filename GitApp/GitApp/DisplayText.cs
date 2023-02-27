@@ -73,7 +73,7 @@ namespace GitApp
             Console.ReadKey();
         }
 
-        private static int GetStringEndIndex(string commit, char separator)
+        private static int GetElementEndIndex(string commit, char separator)
         {
             for (int i = 0; i < commit.Length; i++)
             {
@@ -168,8 +168,8 @@ namespace GitApp
             page.ForEach(commit =>
             {
                 var id = commit[.. (commit.Length - (commit.Length - 7))];
-                var nameEndIndex = GetStringEndIndex(commit, ',');
-                var dateEndIndex = GetStringEndIndex(commit, ':');
+                var nameEndIndex = GetElementEndIndex(commit, ',');
+                var dateEndIndex = GetElementEndIndex(commit, ':');
                 if (id == commitsIDs.GetIDAtIndex(Current))
                 {
                     Console.Write(
