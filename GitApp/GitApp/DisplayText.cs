@@ -41,8 +41,6 @@ namespace GitApp
         public void Interract(string initialText)
         {
             ConsoleKeyInfo keyInfo;
-            var index = 0;
-            var current = index;
             var windowWidth = Console.WindowWidth;
             var windowSize = Console.WindowHeight * windowWidth;
             var initialTextSize = GetTextSize(initialText.Split("\n"));
@@ -54,7 +52,7 @@ namespace GitApp
             page = isPageLargerThanWindow
                 ? TruncateText(page)
                 : page;
-            WriteCommits(initialText, current, page);
+            WriteCommits(initialText, page);
             do
             {
                 keyInfo = Console.ReadKey();
@@ -62,13 +60,13 @@ namespace GitApp
                 windowSize = Console.WindowHeight * windowWidth;
                 initialTextSize = GetTextSize(initialText.Split("\n"));
                 emptySpace = windowSize - initialTextSize - windowWidth;
-                SetIndexAndCurrent(keyInfo, page, index, current, isPageLargerThanWindow);
+                (Index, Current) = SetIndexAndCurrent(keyInfo, page, isPageLargerThanWindow);
                 (page, commitTextSize) = GetCommitsTextAndSize(emptySpace);
                 isPageLargerThanWindow = commitTextSize > emptySpace;
                 page = isPageLargerThanWindow
                     ? TruncateText(page)
                     : page;
-                WriteCommits(initialText, current, page);
+                WriteCommits(initialText, page);
             }
             while (!keyInfo.Key.Equals(ConsoleKey.Escape));
 
@@ -168,7 +166,7 @@ namespace GitApp
             return (result, commitTextSize);
         }
 
-        private void WriteCommits(string initialText, int current, List<string> page)
+        private void WriteCommits(string initialText, List<string> page)
         {
             Console.Clear();
             Console.WriteLine(initialText);
@@ -177,7 +175,7 @@ namespace GitApp
                 var id = commit[.. (commit.Length - (commit.Length - 5))];
                 var nameEndIndex = GetStringEndIndex(commit, ',');
                 var dateEndIndex = GetStringEndIndex(commit, ':');
-                if (id == commitsIDs.GetIDAtIndex(current) + " - ")
+                if (id == commitsIDs.GetIDAtIndex(Current) + " - ")
                 {
                     Console.Write(
                         $"\x1b[7m\x1b[48;5;27m{id + " - "}"
