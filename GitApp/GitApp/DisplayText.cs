@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -230,15 +231,17 @@ namespace GitApp
             Current = SetToLastOrDontChange(Current + 1);
         }
 
-        private (int index, int current) InterractWithUpArrow(
-            List<List<string>> page, int index, int current)
+        private void InterractWithUpArrow(List<string> page)
         {
-            if (commitsIDAuthorDateMessage[current][0] + " - " == page[0][0])
+            var firstCommit = page[0];
+            if (commitsIDs.GetIDAtIndex(Current) + " - "
+                == firstCommit[.. (firstCommit.Length - (firstCommit.Length - 5))])
             {
-                index--;
+                Index--;
             }
 
-            return (SetToZeroOrDontChange(index), SetToZeroOrDontChange(current - 1));
+            Index = SetToZeroOrDontChange(Index);
+            Current = SetToZeroOrDontChange(Current - 1);
         }
 
         private (int index, int current) InterractWithPageDown(
