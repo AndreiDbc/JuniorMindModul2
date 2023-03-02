@@ -8,5 +8,11 @@ namespace GitApp
 {
     public class PageOptions
     {
+        private readonly IText text;
+
+        public PageOptions(IText text)
+        {
+            this.text = text;
+        }
     }
 }
