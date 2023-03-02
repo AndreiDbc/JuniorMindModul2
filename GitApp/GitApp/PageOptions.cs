@@ -47,5 +47,11 @@ namespace GitApp
 
             return (result, textSize);
         }
+
+        private static int GetTextSize(string phrase)
+        {
+            return phrase.Length / Console.WindowWidth * Console.WindowWidth
+                    + (phrase.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
+        }
     }
 }
