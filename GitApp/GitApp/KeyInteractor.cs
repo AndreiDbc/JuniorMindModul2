@@ -69,5 +69,18 @@ namespace GitApp
 
             return (SetToZeroOrDontChange(text.Index), SetToZeroOrDontChange(text.Current - 1));
         }
+
+        private (int index, int current) InterractWithPageDown(List<string> page)
+        {
+            var list = text.GetText();
+            text.Current = SetToLastOrDontChange(text.Current + page.Count);
+            var lastElement = page[^1];
+            if (lastElement == list[^1])
+            {
+                return (text.Index, text.Current);
+            }
+
+            return (SetToLastOrDontChange(text.Index + page.Count), text.Current);
+        }
     }
 }
