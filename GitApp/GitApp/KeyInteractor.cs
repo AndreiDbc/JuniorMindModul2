@@ -30,5 +30,10 @@ namespace GitApp
                 _ => (text.Index, text.Current)
             };
         }
+
+        private static int SetToZeroOrDontChange(int number)
+        {
+            return number < 0 ? 0 : number;
+        }
     }
 }
