@@ -35,12 +35,11 @@ namespace GitApp
         {
             var list = text.GetText();
             var result = new List<string>();
-            var temp = index;
             int textSize = 0;
             do
             {
-                result.Add(list[temp]);
-                temp++;
+                result.Add(list[index]);
+                index++;
                 textSize += GetTextSize(result[^1]);
             }
             while (textSize < emptySpace);
