@@ -30,5 +30,22 @@ namespace GitApp
             list.Add(toAdd + "...");
             return list;
         }
+
+        public (List<string> list, int textSize) GetPageDataAndSize(int index, int emptySpace)
+        {
+            var list = text.GetText();
+            var result = new List<string>();
+            var temp = index;
+            int textSize = 0;
+            do
+            {
+                result.Add(list[temp]);
+                temp++;
+                textSize += GetTextSize(result[^1]);
+            }
+            while (textSize < emptySpace);
+
+            return (result, textSize);
+        }
     }
 }
