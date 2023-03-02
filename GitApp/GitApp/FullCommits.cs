@@ -30,5 +30,24 @@ namespace GitApp
         public int Current { get; set; }
 
         public int Index { get; set; }
+
+        public List<string> GetText()
+        {
+            var temp = 0;
+            var result = new List<string>();
+            do
+            {
+                result.Add(
+                    commitsIDs.GetIDAtIndex(temp) + " - " +
+                    commitsAuthorsNames.GetNameAtIndex(temp) + ", " +
+                    commitsDates.GetDateAtIndex(temp) + ": " +
+                    commitsMessages.GetMessageAtIndex(temp));
+
+                temp++;
+            }
+            while (temp <= commitsIDs.Count - 1);
+
+            return result;
+        }
     }
 }
