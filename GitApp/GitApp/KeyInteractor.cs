@@ -23,10 +23,10 @@ namespace GitApp
         {
             return keyInfo.Key switch
             {
-                ConsoleKey.DownArrow => InterractWithDownArrow(page, isPageLargerThanWindow),
-                ConsoleKey.UpArrow => InterractWithUpArrow(page),
-                ConsoleKey.PageDown => InterractWithPageDown(page),
-                ConsoleKey.PageUp => InterractWithPageUp(page),
+                ConsoleKey.DownArrow => InteractWithDownArrow(page, isPageLargerThanWindow),
+                ConsoleKey.UpArrow => InteractWithUpArrow(page),
+                ConsoleKey.PageDown => InteractWithPageDown(page),
+                ConsoleKey.PageUp => InteractWithPageUp(page),
                 _ => (text.Index, text.Current)
             };
         }
@@ -58,7 +58,7 @@ namespace GitApp
             return (SetToLastOrDontChange(text.Index), SetToLastOrDontChange(text.Current + 1));
         }
 
-        private (int index, int current) InterractWithUpArrow(List<string> page)
+        private (int index, int current) InteractWithUpArrow(List<string> page)
         {
             var list = text.GetText();
             var firstElement = page[0];
@@ -70,7 +70,7 @@ namespace GitApp
             return (SetToZeroOrDontChange(text.Index), SetToZeroOrDontChange(text.Current - 1));
         }
 
-        private (int index, int current) InterractWithPageDown(List<string> page)
+        private (int index, int current) InteractWithPageDown(List<string> page)
         {
             var list = text.GetText();
             text.Current = SetToLastOrDontChange(text.Current + page.Count);
