@@ -40,5 +40,22 @@ namespace GitApp
         {
             return (SetToZeroOrDontChange(text.Index - page.Count), SetToZeroOrDontChange(text.Current - page.Count));
         }
+
+        private (int index, int current) InteractWithDownArrow(List<string> page, bool isPageLargerThanWindow)
+        {
+            var lastPageElement = page[^1];
+            var list = text.GetText();
+            var currentElement = list[text.Current];
+
+            if (currentElement == lastPageElement)
+            {
+                text.Index++;
+                text.Index = isPageLargerThanWindow
+                    ? text.Index + list[text.Current].Length / Console.WindowWidth
+                    : text.Index;
+            }
+
+            return (SetToLastOrDontChange(text.Index), SetToLastOrDontChange(text.Current + 1));
+        }
     }
 }
