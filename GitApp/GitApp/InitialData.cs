@@ -9,5 +9,11 @@ namespace GitApp
 {
     public class InitialData
     {
+        private readonly GitManager manager;
+
+        public InitialData(GitManager manager)
+        {
+            this.manager = manager;
+        }
     }
 }
