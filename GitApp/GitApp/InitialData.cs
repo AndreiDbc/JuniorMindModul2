@@ -28,5 +28,18 @@ namespace GitApp
                     $"Incoming: {manager.GetNumberOfCommitsToPull(branch)}\n" +
                     $"Branches: {manager.ShowAllBranches()}";
         }
+
+        public int GetTextSize()
+        {
+            var text = this.GetText().Split("\n");
+            var textSize = 0;
+            foreach (var line in text)
+            {
+                textSize += line.Length / Console.WindowWidth * Console.WindowWidth
+                    + (line.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
+            }
+
+            return textSize;
+        }
     }
 }
