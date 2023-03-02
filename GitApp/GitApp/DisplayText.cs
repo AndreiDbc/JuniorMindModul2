@@ -38,37 +38,45 @@ namespace GitApp
 
         private int Index { get; set; }
 
-        public void Interract(string initialText)
+        public void Interract()
         {
-            ConsoleKeyInfo keyInfo;
+            ConsoleKey keyinfo;
+            var gitManager = new GitManager("git", new GitProcessRunner());
+            var initialData = new InitialData(gitManager);
+            var initialText = initialData.GetText();
+            var commitTextSize = 0;
             var windowWidth = Console.WindowWidth;
             var windowSize = Console.WindowHeight * windowWidth;
-            var initialTextSize = GetTextSize(initialText.Split("\n"));
+            var initialTextSize = initialData.GetTextSize();
             var emptySpace = windowSize - initialTextSize - windowWidth;
-            var commitTextSize = 0;
-            List<string>? page;
-            (page, commitTextSize) = GetCommitsTextAndSize(emptySpace);
+            var commits = new FullCommits(
+                new CommitsIDs(gitManager.GetCommitId().Split("\n").ToList()),
+                new CommitsAuthorsName(gitManager.GetCommitAuthorName().Split("\n").ToList()),
+                new CommitsDates(gitManager.GetCommitDate().Split("\n").ToList()),
+                new CommitsMessages(gitManager.GetCommitMessage().Split("\n").ToList()));
+            var pageOptions = new PageOptions(commits);
+            var page = pageOptions.GetPageDataAndSize(commits.Index, emptySpace).list;
+            (page, commitTextSize) = pageOptions.GetPageDataAndSize(commits.Index, emptySpace);
             var isPageLargerThanWindow = commitTextSize > emptySpace;
-            page = isPageLargerThanWindow
-                ? TruncateText(page)
-                : page;
-            WriteCommits(initialText, page);
+            var temp = new List<string>();
+            temp.AddRange(page);
+            WriteCommits(initialText, isPageLargerThanWindow ? PageOptions.TruncateText(temp) : page, commits);
             do
             {
-                keyInfo = Console.ReadKey();
+                var keyInteractor = new KeyInteractor(commits);
+                keyinfo = keyInteractor.Key;
                 windowWidth = Console.WindowWidth;
                 windowSize = Console.WindowHeight * windowWidth;
-                initialTextSize = GetTextSize(initialText.Split("\n"));
+                initialTextSize = initialData.GetTextSize();
                 emptySpace = windowSize - initialTextSize - windowWidth;
-                (Index, Current) = SetIndexAndCurrent(keyInfo, page, isPageLargerThanWindow);
-                (page, commitTextSize) = GetCommitsTextAndSize(emptySpace);
+                (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, isPageLargerThanWindow);
+                (page, commitTextSize) = pageOptions.GetPageDataAndSize(commits.Index, emptySpace);
                 isPageLargerThanWindow = commitTextSize > emptySpace;
-                page = isPageLargerThanWindow
-                    ? TruncateText(page)
-                    : page;
-                WriteCommits(initialText, page);
+                temp.Clear();
+                temp.AddRange(page);
+                WriteCommits(initialText, isPageLargerThanWindow ? PageOptions.TruncateText(temp) : page, commits);
             }
-            while (!keyInfo.Key.Equals(ConsoleKey.Escape));
+            while (!keyinfo.Equals(ConsoleKey.Escape));
 
             Console.ReadKey();
         }
@@ -86,33 +94,33 @@ namespace GitApp
             return -1;
         }
 
-        private void WriteCommits(string initialText, List<string> page)
+        private void WriteCommits(string initialText, List<string> page, IText text)
         {
             Console.Clear();
             Console.WriteLine(initialText);
             page.ForEach(commit =>
             {
-                var id = commit[.. (commit.Length - (commit.Length - 7))];
+                var id = commit[..^(commit.Length - 7)];
                 var nameEndIndex = GetElementEndIndex(commit, ',');
                 var dateEndIndex = GetElementEndIndex(commit, ':');
-                if (id == commitsIDs.GetIDAtIndex(Current))
+                if (id == commitsIDs.GetIDAtIndex(text.Current))
                 {
                     Console.Write(
                         $"\x1b[7m\x1b[48;5;27m{id + " - "}"
-                        + $"\x1b[48;5;46m{commit[10 .. nameEndIndex]}"
-                        + $"\x1b[48;5;196m{commit[nameEndIndex .. dateEndIndex]}");
+                        + $"\x1b[48;5;46m{commit[10..nameEndIndex]}"
+                        + $"\x1b[48;5;196m{commit[nameEndIndex..dateEndIndex]}");
                     Console.ResetColor();
-                    Console.WriteLine($"\x1b[7m{commit[dateEndIndex ..]}\x1b[0m");
+                    Console.WriteLine($"\x1b[7m{commit[dateEndIndex..]}\x1b[0m");
                     Console.ResetColor();
                 }
                 else
                 {
                     Console.Write(
                         $"\x1b[38;5;27m{id + " - "}"
-                        + $"\x1b[38;5;46m{commit[10 .. nameEndIndex]}"
-                        + $"\x1b[38;5;196m{commit[nameEndIndex .. dateEndIndex]}");
+                        + $"\x1b[38;5;46m{commit[10..nameEndIndex]}"
+                        + $"\x1b[38;5;196m{commit[nameEndIndex..dateEndIndex]}");
                     Console.ResetColor();
-                    Console.WriteLine(commit[dateEndIndex ..]);
+                    Console.WriteLine(commit[dateEndIndex..]);
                 }
             });
             Console.Write("Press 'Esc' to exit.");
