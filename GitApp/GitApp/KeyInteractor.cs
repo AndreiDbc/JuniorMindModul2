@@ -35,5 +35,10 @@ namespace GitApp
         {
             return number < 0 ? 0 : number;
         }
+
+        private (int index, int current) InteractWithPageUp(List<string> page)
+        {
+            return (SetToZeroOrDontChange(text.Index - page.Count), SetToZeroOrDontChange(text.Current - page.Count));
+        }
     }
 }
