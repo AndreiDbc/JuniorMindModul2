@@ -82,5 +82,13 @@ namespace GitApp
 
             return (SetToLastOrDontChange(text.Index + page.Count), text.Current);
         }
+
+        private int SetToLastOrDontChange(int number)
+        {
+            var list = text.GetText();
+            return number > list.Count - 1
+                ? list.Count - 1
+                : number;
+        }
     }
 }
