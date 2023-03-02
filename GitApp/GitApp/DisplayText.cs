@@ -16,20 +16,10 @@ namespace GitApp
     class DisplayText
     {
         private readonly CommitsIDs commitsIDs;
-        private readonly CommitsAuthorsName commitsAuthorsNames;
-        private readonly CommitsDates commitsDates;
-        private readonly CommitsMessages commitsMessages;
 
-        public DisplayText(
-            CommitsIDs commitsIDs,
-            CommitsAuthorsName commitsAuthorsNames,
-            CommitsDates commitsDates,
-            CommitsMessages commitsMessages)
+        public DisplayText(CommitsIDs commitsIDs)
         {
             this.commitsIDs = commitsIDs;
-            this.commitsAuthorsNames = commitsAuthorsNames;
-            this.commitsDates = commitsDates;
-            this.commitsMessages = commitsMessages;
         }
 
         public void Interract()
