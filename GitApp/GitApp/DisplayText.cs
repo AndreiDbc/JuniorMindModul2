@@ -142,5 +142,27 @@ namespace GitApp
             }
             while (keyinfo != ConsoleKey.Escape);
         }
+
+        private void Write(IText text, ConsoleKey keyInfo, PageOptions pageOptions, InitialData initialData, int commitTextSize, ref List<string> page)
+        {
+            var keyInteractor = new KeyInteractor(text, keyInfo);
+            var windowWidth = Console.WindowWidth;
+            var windowSize = Console.WindowHeight * windowWidth;
+            var initialText = initialData.GetText();
+            var initialTextSize = initialData.GetTextSize();
+            var emptySpace = windowSize - initialTextSize - windowWidth;
+            var isPageLargerThanWindow = commitTextSize > emptySpace;
+            (text.Index, text.Current) = keyInteractor.KeySwitch(page, isPageLargerThanWindow);
+            (page, commitTextSize) = pageOptions.GetPageDataAndSize(text.Index, emptySpace);
+            isPageLargerThanWindow = commitTextSize > emptySpace;
+            var temp = new List<string>();
+            temp.AddRange(page);
+            if (keyInfo.Equals(ConsoleKey.Enter))
+            {
+                WriteCommitFiles(text.Index);
+            }
+
+            WriteCommits(initialText, isPageLargerThanWindow ? PageOptions.TruncateText(temp) : page, text);
+        }
     }
 }
