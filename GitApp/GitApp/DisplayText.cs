@@ -109,5 +109,38 @@ namespace GitApp
             });
             Console.Write("Press 'Esc' to exit.");
         }
+
+        private void WriteCommitFiles(int index)
+        {
+            var commitModifiedFiles = new CommitModifiedFiles(commitsIDs.GetIDAtIndex(index));
+            var list = commitModifiedFiles.GetText();
+            int textSize = 0;
+            var page = new List<string>();
+            var pageOptions = new PageOptions(commitModifiedFiles);
+            ConsoleKey keyinfo;
+            (page, textSize) = pageOptions.GetPageDataAndSize(
+                commitModifiedFiles.Index,
+                Console.WindowHeight * Console.WindowHeight - Console.WindowHeight);
+            var temp = new List<string>();
+            temp.AddRange(page);
+            Console.Clear();
+            page.ForEach(line => Console.WriteLine(line == list[commitModifiedFiles.Current] ? "\x1b[7m" + line + "\x1b[0m" : line));
+            Console.Write("Press 'Esc' to return.");
+            do
+            {
+                keyinfo = Console.ReadKey().Key;
+                Console.Clear();
+                var keyInteractor = new KeyInteractor(commitModifiedFiles, keyinfo);
+                var isPageLargeThanWindow = textSize > Console.WindowHeight * Console.WindowHeight - Console.WindowHeight;
+                (commitModifiedFiles.Index, commitModifiedFiles.Current) = keyInteractor.KeySwitch(page, isPageLargeThanWindow);
+                (page, textSize) = pageOptions.GetPageDataAndSize(
+                    commitModifiedFiles.Index,
+                    Console.WindowHeight * Console.WindowHeight - Console.WindowHeight);
+                isPageLargeThanWindow = textSize > Console.WindowHeight * Console.WindowHeight - Console.WindowHeight;
+                (isPageLargeThanWindow ? PageOptions.TruncateText(page) : page).ForEach(line => Console.WriteLine(line == list[commitModifiedFiles.Current] ? "\x1b[7m" + line + "\x1b[0m" : line));
+                Console.Write("Press 'Esc' to return.");
+            }
+            while (keyinfo != ConsoleKey.Escape);
+        }
     }
 }
