@@ -8,20 +8,18 @@ namespace GitApp
 {
     public class KeyInteractor
     {
-        private readonly ConsoleKeyInfo keyInfo;
+        private readonly ConsoleKey keyInfo;
         private readonly IText text;
 
-        public KeyInteractor(IText text)
+        public KeyInteractor(IText text, ConsoleKey keyInfo)
         {
-            this.keyInfo = Console.ReadKey();
+            this.keyInfo = keyInfo;
             this.text = text;
         }
 
-        public ConsoleKey Key { get => keyInfo.Key; }
-
         public (int index, int current) KeySwitch(List<string> page, bool isPageLargerThanWindow)
         {
-            return keyInfo.Key switch
+            return keyInfo switch
             {
                 ConsoleKey.DownArrow => InteractWithDownArrow(page, isPageLargerThanWindow),
                 ConsoleKey.UpArrow => InteractWithUpArrow(page),
