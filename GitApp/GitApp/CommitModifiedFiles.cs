@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    public class CommitModifiedFiles
+    public class CommitModifiedFiles : IText
     {
         private readonly string commitID;
 
@@ -20,5 +20,10 @@ namespace GitApp
         public int Current { get; set; }
 
         public int Index { get; set; }
+
+        public List<string> GetText()
+        {
+            return new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(commitID).Split("\n").ToList();
+        }
     }
 }
