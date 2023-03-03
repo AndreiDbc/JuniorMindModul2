@@ -38,6 +38,11 @@ namespace GitApp
             int textSize = 0;
             do
             {
+                if (index > list.Count - 1)
+                {
+                    break;
+                }
+
                 result.Add(list[index]);
                 index++;
                 textSize += GetTextSize(result[^1]);
