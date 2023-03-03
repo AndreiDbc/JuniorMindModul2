@@ -22,9 +22,9 @@ namespace GitApp
             this.commitsIDs = commitsIDs;
         }
 
-        public void Interract()
+        public void Display()
         {
-            ConsoleKey keyinfo;
+            ConsoleKey keyInfo;
             var gitManager = new GitManager("git", new GitProcessRunner());
             var initialData = new InitialData(gitManager);
             var initialText = initialData.GetText();
@@ -47,21 +47,10 @@ namespace GitApp
             WriteCommits(initialText, isPageLargerThanWindow ? PageOptions.TruncateText(temp) : page, commits);
             do
             {
-                var keyInteractor = new KeyInteractor(commits);
-                keyinfo = keyInteractor.Key;
-                windowWidth = Console.WindowWidth;
-                windowSize = Console.WindowHeight * windowWidth;
-                initialTextSize = initialData.GetTextSize();
-                emptySpace = windowSize - initialTextSize - windowWidth;
-                (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, isPageLargerThanWindow);
-                (page, commitTextSize) = pageOptions.GetPageDataAndSize(commits.Index, emptySpace);
-                isPageLargerThanWindow = commitTextSize > emptySpace;
-                temp.Clear();
-                temp.AddRange(page);
-                WriteCommits(initialText, isPageLargerThanWindow ? PageOptions.TruncateText(temp) : page, commits);
+                keyInfo = Console.ReadKey().Key;
+                Write(commits, keyInfo, pageOptions, initialData, commitTextSize, ref page);
             }
-            while (!keyinfo.Equals(ConsoleKey.Escape));
-
+            while (!keyInfo.Equals(ConsoleKey.Escape));
             Console.ReadKey();
         }
 

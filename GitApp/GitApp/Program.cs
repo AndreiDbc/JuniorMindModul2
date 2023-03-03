@@ -10,7 +10,7 @@ namespace GitApp
         {
             var manager = new GitManager("git", new GitProcessRunner());
             var display = new DisplayText(new CommitsIDs(manager.GetCommitId().Split("\n").ToList()));
-            display.Interract();
+            display.Display();
         }
     }
 }
