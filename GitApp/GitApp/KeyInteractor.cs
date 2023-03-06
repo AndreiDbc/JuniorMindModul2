@@ -45,7 +45,7 @@ namespace GitApp
             var list = text.GetText();
             var currentElement = list[text.Current];
 
-            if (currentElement == lastPageElement)
+            if (currentElement == lastPageElement && currentElement != list[^1])
             {
                 text.Index++;
                 text.Index = isPageLargerThanWindow
