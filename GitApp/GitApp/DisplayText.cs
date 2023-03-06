@@ -48,7 +48,7 @@ namespace GitApp
             do
             {
                 keyInfo = Console.ReadKey().Key;
-                Write(commits, keyInfo, pageOptions, initialData, commitTextSize, ref page);
+                Write(commits, keyInfo, pageOptions, initialData, ref commitTextSize, ref page);
             }
             while (!keyInfo.Equals(ConsoleKey.Escape));
             Console.ReadKey();
@@ -132,7 +132,7 @@ namespace GitApp
             while (keyinfo != ConsoleKey.Escape);
         }
 
-        private void Write(IText text, ConsoleKey keyInfo, PageOptions pageOptions, InitialData initialData, int commitTextSize, ref List<string> page)
+        private void Write(IText text, ConsoleKey keyInfo, PageOptions pageOptions, InitialData initialData, ref int commitTextSize, ref List<string> page)
         {
             var keyInteractor = new KeyInteractor(text, keyInfo);
             var windowWidth = Console.WindowWidth;
