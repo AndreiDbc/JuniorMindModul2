@@ -148,7 +148,7 @@ namespace GitApp
             temp.AddRange(page);
             if (keyInfo.Equals(ConsoleKey.Enter))
             {
-                WriteCommitFiles(text.Index);
+                WriteCommitFiles(text.Current);
             }
 
             WriteCommits(initialText, isPageLargerThanWindow ? PageOptions.TruncateText(temp) : page, text);
