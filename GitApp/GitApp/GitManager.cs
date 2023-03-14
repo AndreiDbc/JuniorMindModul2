@@ -65,5 +65,10 @@ namespace GitApp
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%s\""));
         }
+
+        public string GetSHA(string commitID)
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, $"rev-parse {commitID}"));
+        }
     }
 }
