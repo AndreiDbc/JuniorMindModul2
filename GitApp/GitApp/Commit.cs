@@ -15,7 +15,7 @@ namespace GitApp
         public string Message;
     }
 
-    public class Commit
+    public class Commit : IElement
     {
         public readonly string Id;
         public readonly string Author;
@@ -31,6 +31,11 @@ namespace GitApp
             this.Author = props.Author;
             this.Date = props.Date;
             this.Message = props.Message;
+        }
+
+        public string GetElement()
+        {
+            return Id + "\n" + Author + "\n" + Date + "\n" + Message;
         }
 
         private CommitProperties ExtractProperties()
