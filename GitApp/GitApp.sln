@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitApp", "GitApp\GitApp.csproj", "{EF263A55-9C2C-4BCD-B241-DCE17B66C932}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryMock", "GitAppFacts\RepositoryMock.csproj", "{A05CEEED-7F2E-4204-8A04-174765A33D39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitApp.Tests", "GitApp.Tests\GitApp.Tests.csproj", "{6130D085-4630-4143-9075-CD8C094FA9E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{EF263A55-9C2C-4BCD-B241-DCE17B66C932}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF263A55-9C2C-4BCD-B241-DCE17B66C932}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF263A55-9C2C-4BCD-B241-DCE17B66C932}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A05CEEED-7F2E-4204-8A04-174765A33D39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A05CEEED-7F2E-4204-8A04-174765A33D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A05CEEED-7F2E-4204-8A04-174765A33D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A05CEEED-7F2E-4204-8A04-174765A33D39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6130D085-4630-4143-9075-CD8C094FA9E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6130D085-4630-4143-9075-CD8C094FA9E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6130D085-4630-4143-9075-CD8C094FA9E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6130D085-4630-4143-9075-CD8C094FA9E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,6 +12,6 @@ namespace GitApp
 
         public int Current { get; set; }
 
-        public List<string> GetText();
+        public List<IElement> GetText();
     }
 }
