@@ -32,5 +32,10 @@ namespace GitApp
 
             return commits;
         }
+
+        public Commit GetElementAt(int index)
+        {
+            return GetText().Cast<Commit>().ElementAt(index);
+        }
     }
 }
