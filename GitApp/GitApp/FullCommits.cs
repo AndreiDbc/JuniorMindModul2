@@ -8,21 +8,11 @@ namespace GitApp
 {
     public class FullCommits : IText
     {
-        private readonly CommitsIDs commitsIDs;
-        private readonly CommitsAuthorsName commitsAuthorsNames;
-        private readonly CommitsDates commitsDates;
-        private readonly CommitsMessages commitsMessages;
+        private readonly string rawLogData;
 
-        public FullCommits(
-            CommitsIDs commitsIDs,
-            CommitsAuthorsName commitsAuthorsNames,
-            CommitsDates commitsDates,
-            CommitsMessages commitsMessages)
+        public FullCommits(string rawLogData)
         {
-            this.commitsIDs = commitsIDs;
-            this.commitsAuthorsNames = commitsAuthorsNames;
-            this.commitsDates = commitsDates;
-            this.commitsMessages = commitsMessages;
+            this.rawLogData = rawLogData;
             Current = 0;
             Index = 0;
         }
@@ -31,23 +21,16 @@ namespace GitApp
 
         public int Index { get; set; }
 
-        public List<string> GetText()
+        public List<IElement> GetText()
         {
-            var temp = 0;
-            var result = new List<string>();
-            do
+            var commits = new List<IElement>();
+            var str = rawLogData.Split("\n\n");
+            for (int i = 0; i < str.Length; i += 2)
             {
-                result.Add(
-                    commitsIDs.GetIDAtIndex(temp) + " - " +
-                    commitsAuthorsNames.GetNameAtIndex(temp) + ", " +
-                    commitsDates.GetDateAtIndex(temp) + ": " +
-                    commitsMessages.GetMessageAtIndex(temp));
-
-                temp++;
+                commits.Add(new Commit(str[i] + "\n" + str[i + 1].Trim()));
             }
-            while (temp <= commitsIDs.Count - 1);
 
-            return result;
+            return commits;
         }
     }
 }
