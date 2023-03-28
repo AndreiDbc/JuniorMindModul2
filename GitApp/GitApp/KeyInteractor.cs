@@ -17,7 +17,7 @@ namespace GitApp
             this.text = text;
         }
 
-        public (int index, int current) KeySwitch(List<string> page, bool isPageLargerThanWindow)
+        public (int index, int current) KeySwitch(List<IElement> page, bool isPageLargerThanWindow)
         {
             return keyInfo switch
             {
@@ -34,33 +34,33 @@ namespace GitApp
             return number < 0 ? 0 : number;
         }
 
-        private (int index, int current) InteractWithPageUp(List<string> page)
+        private (int index, int current) InteractWithPageUp(List<IElement> page)
         {
             return (SetToZeroOrDontChange(text.Index - page.Count), SetToZeroOrDontChange(text.Current - page.Count));
         }
 
-        private (int index, int current) InteractWithDownArrow(List<string> page, bool isPageLargerThanWindow)
+        private (int index, int current) InteractWithDownArrow(List<IElement> page, bool isPageLargerThanWindow)
         {
             var lastPageElement = page[^1];
             var list = text.GetText();
             var currentElement = list[text.Current];
 
-            if (currentElement == lastPageElement && currentElement != list[^1])
+            if (currentElement.Equals(lastPageElement) && currentElement != list[^1])
             {
                 text.Index++;
                 text.Index = isPageLargerThanWindow
-                    ? text.Index + list[text.Current].Length / Console.WindowWidth
+                    ? text.Index + list[text.Current].GetElement().Length / Console.WindowWidth
                     : text.Index;
             }
 
             return (SetToLastOrDontChange(text.Index), SetToLastOrDontChange(text.Current + 1));
         }
 
-        private (int index, int current) InteractWithUpArrow(List<string> page)
+        private (int index, int current) InteractWithUpArrow(List<IElement> page)
         {
             var list = text.GetText();
             var firstElement = page[0];
-            if (list[text.Current] == firstElement)
+            if (list[text.Current].Equals(firstElement))
             {
                 text.Index--;
             }
@@ -68,12 +68,12 @@ namespace GitApp
             return (SetToZeroOrDontChange(text.Index), SetToZeroOrDontChange(text.Current - 1));
         }
 
-        private (int index, int current) InteractWithPageDown(List<string> page)
+        private (int index, int current) InteractWithPageDown(List<IElement> page)
         {
             var list = text.GetText();
             text.Current = SetToLastOrDontChange(text.Current + page.Count);
             var lastElement = page[^1];
-            if (lastElement == list[^1])
+            if (lastElement.Equals(list[^1]))
             {
                 return (text.Index, text.Current);
             }
