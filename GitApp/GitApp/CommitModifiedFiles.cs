@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,9 +22,16 @@ namespace GitApp
 
         public int Index { get; set; }
 
-        public List<string> GetText()
+        public List<IElement> GetText()
         {
-            return new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(commitID).Split("\n").ToList();
+            var rawData = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(commitID).Split("\n");
+            var result = new List<IElement>();
+            foreach (var item in rawData)
+            {
+                result.Add(new CommitModifiedFile(item));
+            }
+
+            return result;
         }
     }
 }
