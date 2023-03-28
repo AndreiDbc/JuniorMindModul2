@@ -1,5 +1,4 @@
-﻿using GitAppFacts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -69,6 +68,11 @@ namespace GitApp
         public string GetSHA(string commitID)
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"rev-parse {commitID}"));
+        }
+
+        public string GetLog()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "log"));
         }
     }
 }
