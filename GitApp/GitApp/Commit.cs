@@ -33,5 +33,21 @@ namespace GitApp
             this.Message = props.Message;
         }
 
+        private string GetAuthorName()
+        {
+            var temp = rawCommitDetails.Split("\n")[1];
+            var result = "";
+            foreach (var character in temp)
+            {
+                if (character == '<')
+                {
+                    break;
+                }
+
+                result += character;
+            }
+
+            return result.Trim();
+        }
     }
 }
