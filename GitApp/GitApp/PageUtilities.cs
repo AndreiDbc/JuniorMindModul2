@@ -47,6 +47,17 @@ namespace GitApp
             return result;
         }
 
+        public static int GetTextSizeForRightSide(string[] lines)
+        {
+            var result = 0;
+            foreach (var line in lines)
+            {
+                result += line.Length;
+            }
+
+            return result;
+        }
+
         public (List<IElement> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
         {
             var result = new List<IElement>();
