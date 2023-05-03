@@ -65,19 +65,18 @@ namespace GitApp
             }
 
             return (SetToLastOrDontChange(commits.Index), SetToLastOrDontChange(commits.Current + 1));
-        } return (SetToLastOrDontChange(text.Index), SetToLastOrDontChange(text.Current + 1));
         }
 
-        private (int index, int current) InteractWithUpArrow(List<IElement> page)
+        private (int index, int current) InteractWithUpArrow(List<string> page)
         {
-            var list = text.GetText();
-            var firstElement = page[0];
-            if (list[text.Current].Equals(firstElement))
+            var list = commits.GetText();
+            var firstElement = RemoveFormatingCodes(page[0]);
+            if (list[commits.Current].Id.Equals(firstElement[..7]))
             {
-                text.Index--;
+                commits.Index--;
             }
 
-            return (SetToZeroOrDontChange(text.Index), SetToZeroOrDontChange(text.Current - 1));
+            return (SetToZeroOrDontChange(commits.Index), SetToZeroOrDontChange(commits.Current - 1));
         }
 
         private (int index, int current) InteractWithPageDown(List<IElement> page)
