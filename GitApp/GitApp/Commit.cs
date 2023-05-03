@@ -13,14 +13,16 @@ namespace GitApp
         public string Author;
         public string Date;
         public string Message;
+        public string Sha;
     }
 
-    public class Commit : IElement
+    public class Commit
     {
         public readonly string Id;
         public readonly string Author;
         public readonly string Date;
         public readonly string Message;
+        public readonly string Sha;
         private readonly string rawCommitDetails;
 
         public Commit(string rawCommitDetails)
@@ -31,11 +33,12 @@ namespace GitApp
             this.Author = props.Author;
             this.Date = props.Date;
             this.Message = props.Message;
+            this.Sha = props.Sha;
         }
 
         public string GetElement()
         {
-            return Id + "\n" + Author + "\n" + Date + "\n" + Message;
+            return Id + " " + Author + " " + Date + " " + Message;
         }
 
         private CommitProperties ExtractProperties()
