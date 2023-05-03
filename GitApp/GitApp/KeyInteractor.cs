@@ -94,7 +94,7 @@ namespace GitApp
 
         private int SetToLastOrDontChange(int number)
         {
-            var list = text.GetText();
+            var list = commits.GetText();
             return number > list.Count - 1
                 ? list.Count - 1
                 : number;
