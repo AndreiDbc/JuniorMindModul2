@@ -15,20 +15,17 @@ namespace GitApp
             this.list = list;
         }
 
-        public static List<IElement> TruncateText(List<IElement> page)
+        public static string TruncateText(string element, int size)
         {
-            var line = page[^1].GetElement();
             string toAdd = "";
             var i = 0;
             do
             {
-                toAdd += line[i];
+                toAdd += element[i];
                 i++;
             }
-            while (toAdd.Length != Console.WindowWidth - 7);
-            page.RemoveAt(page.Count - 1);
-            page.Add(GetNewElement(page[0].GetType().ToString(), toAdd + "..."));
-            return page;
+            while (toAdd.Length != size - 3);
+            return toAdd + "...";
         }
 
         public (List<IElement> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
