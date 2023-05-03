@@ -50,21 +50,22 @@ namespace GitApp
             return (SetToZeroOrDontChange(commits.Index - page.Count), SetToZeroOrDontChange(commits.Current - page.Count));
         }
 
-        private (int index, int current) InteractWithDownArrow(List<IElement> page, bool isPageLargerThanWindow)
+        private (int index, int current) InteractWithDownArrow(List<string> page, bool isPageLargerThanWindow)
         {
-            var lastPageElement = page[^1];
-            var list = text.GetText();
-            var currentElement = list[text.Current];
+            var lastPageElement = RemoveFormatingCodes(page[^1]);
+            var list = commits.GetText();
+            var currentId = list[commits.Current].Id;
 
-            if (currentElement.Equals(lastPageElement) && currentElement != list[^1])
+            if (currentId.Equals(lastPageElement[..7]) && currentId != list[^1].Id)
             {
-                text.Index++;
-                text.Index = isPageLargerThanWindow
-                    ? text.Index + list[text.Current].GetElement().Length / Console.WindowWidth
-                    : text.Index;
+                commits.Index++;
+                commits.Index = isPageLargerThanWindow
+                    ? commits.Index + list[commits.Current].GetElement().Length / Console.WindowWidth
+                    : commits.Index;
             }
 
-            return (SetToLastOrDontChange(text.Index), SetToLastOrDontChange(text.Current + 1));
+            return (SetToLastOrDontChange(commits.Index), SetToLastOrDontChange(commits.Current + 1));
+        } return (SetToLastOrDontChange(text.Index), SetToLastOrDontChange(text.Current + 1));
         }
 
         private (int index, int current) InteractWithUpArrow(List<IElement> page)
