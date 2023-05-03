@@ -48,10 +48,24 @@ namespace GitApp
             {
                 Id = temp[0][7..14].Trim(),
                 Author = GetAuthorName()[7..].Trim(),
-                Date = temp[2][5..].Trim(),
+                Date = GetDate(temp),
                 Message = temp[3].Trim(),
                 Sha = temp[0][7..]
             };
+        }
+
+        private static string GetDate(string[] data)
+        {
+            foreach (var item in data)
+            {
+                if (item.StartsWith("Date:"))
+                {
+                    var temp = item.Split(" ");
+                    return temp[3] + " " + temp[4] + " " + temp[5] + " " + temp[7];
+                }
+            }
+
+            return "";
         }
 
         private string GetAuthorName()
