@@ -66,6 +66,20 @@ namespace GitApp
             return result;
         }
 
+        private static List<string> SplitRow(string[] data, int limit)
+        {
+            var result = new List<string>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                for (int j = 0, k = 1; j < data[i].Length; j += limit, k++)
+                {
+                    result.Add(data[i][j..Math.Min(data[i].Length, limit * k)]);
+                }
+            }
+
+            return result;
+        }
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
