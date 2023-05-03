@@ -17,15 +17,15 @@ namespace GitApp
 
         public ConsoleKey KeyInfo { get; set; }
 
-        public (int index, int current) KeySwitch(List<IElement> page, bool isPageLargerThanWindow)
+        public (int index, int current) KeySwitch(List<string> page, bool isPageLargerThanWindow)
         {
-            return keyInfo switch
+            return KeyInfo switch
             {
                 ConsoleKey.DownArrow => InteractWithDownArrow(page, isPageLargerThanWindow),
                 ConsoleKey.UpArrow => InteractWithUpArrow(page),
                 ConsoleKey.PageDown => InteractWithPageDown(page),
                 ConsoleKey.PageUp => InteractWithPageUp(page),
-                _ => (text.Index, text.Current)
+                _ => (commits.Index, commits.Current)
             };
         }
 
