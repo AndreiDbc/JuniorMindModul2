@@ -58,9 +58,9 @@ namespace GitApp
             return result;
         }
 
-        public (List<IElement> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
+        public (List<Commit> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
         {
-            var result = new List<IElement>();
+            var result = new List<Commit>();
             int textSize = 0;
             do
             {
@@ -69,10 +69,10 @@ namespace GitApp
                     break;
                 }
 
-                result.Add(list[index]);
+                result.Add(list.ElementAt(index));
                 index++;
-                textSize += GetTextSize(result[^1].GetElement()
-                    + (result[0].GetType().ToString() == "GitApp.Commit" ? "- :," : ""));
+                var element = result[^1].GetElement();
+                textSize += GetTextSize(element) - GetFormatingCodesLength(element);
             }
             while (textSize < availableSpace);
 
