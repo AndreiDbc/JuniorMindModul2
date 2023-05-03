@@ -102,6 +102,30 @@ namespace GitApp
             return list;
         }
 
+        private static List<string> DrawCommitBox(List<string> list)
+        {
+            var limit = 60 * Console.WindowWidth / 100 + 60 * Console.WindowWidth % 100;
+            list.Insert(0, "┌Commits" + new string('─', limit - 9) + "┐");
+            var index = 1;
+            do
+            {
+                if (index < list.Count)
+                {
+                    list[index] = "\x1b[0m│" + list[index] + "\u001b[0m│".PadLeft(limit + 7 - (list[index].Length - GetFormatingCodeAndLength(list[index]).length));
+                }
+                else
+                {
+                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(limit + 7));
+                }
+
+                index++;
+            }
+            while (list.Count % Console.WindowHeight != 0 && !list[^1].StartsWith("\x1b[0m│"));
+            list.Add("\x1b[0m└" + new string('─', limit - 2) + "┘");
+            return list;
+        }
+
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
