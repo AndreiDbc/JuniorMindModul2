@@ -160,6 +160,45 @@ namespace GitApp
             return result;
         }
 
+        private List<string> GetLeftSide()
+        {
+            var width = Console.WindowWidth;
+            var additionalLength = new[] { 14, 10, 11, 4 };
+            var additionalLengthForCurrent = new[] { 14, 10, 11, 8 };
+            var leftSideColumnSize = 15 * width / 100 + 15 * width % 100;
+            var leftSideCommits = AddCommitsToLeftSide();
+            var leftSideTemp = new List<string>();
+            leftSideCommits.ForEach(line =>
+            {
+                var toAdd = "";
+                for (int i = 0; i < line.Count; i++)
+                {
+                    var element = line[i];
+                    if (element.Contains("\u001b[7m"))
+                    {
+                        toAdd += element.Length > leftSideColumnSize + additionalLengthForCurrent[i]
+                        ? PageUtilities.TruncateText(element, leftSideColumnSize + additionalLengthForCurrent[i]) + " "
+                        : element + " ";
+                    }
+                    else if (element.Length > leftSideColumnSize + additionalLength[i])
+                    {
+                        toAdd += PageUtilities.TruncateText(element, leftSideColumnSize + additionalLength[i]) + " ";
+                    }
+                    else
+                    {
+                        toAdd += element + " ";
+                    }
+                }
+
+                leftSideTemp.Add(toAdd.TrimEnd());
+            });
+
+            var leftSide = new List<string>();
+            leftSideTemp.ForEach(commit => leftSide.Add(commit));
+
+            return leftSide;
+        }
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
