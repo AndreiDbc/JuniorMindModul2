@@ -51,6 +51,21 @@ namespace GitApp
             Console.ReadKey();
         }
 
+        private static List<string> FormateRightSide(int limit, string info, string message, string files)
+        {
+            var result = new List<string>();
+            int index = 0;
+            result.AddRange(SplitRow(info.Split("\n"), limit - 2));
+            result = DrawBox(result, "Info", ref index, limit);
+            result.AddRange(SplitRow(message.Split("\n"), limit - 2));
+            index++;
+            result = DrawBox(result, "Message", ref index, limit);
+            result.AddRange(SplitRow(files.Split("\n"), limit - 2));
+            index++;
+            result = DrawBox(result, "Files", ref index, limit);
+            return result;
+        }
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
