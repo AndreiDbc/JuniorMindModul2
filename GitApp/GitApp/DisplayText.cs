@@ -80,6 +80,28 @@ namespace GitApp
             return result;
         }
 
+        private static List<string> DrawBox(List<string> list, string boxName, ref int index, int limit)
+        {
+            list.Insert(index, "┌" + boxName + new string('─', limit - boxName.Length - 2) + "┐");
+            index++;
+            do
+            {
+                if (index < list.Count)
+                {
+                    list[index] = "\x1b[0m│" + list[index] + "│".PadLeft(limit - list[index].Length - 1);
+                }
+                else
+                {
+                    list.Add("\x1b[0m│" + "│".PadLeft(limit - 1));
+                }
+
+                index++;
+            }
+            while (((list.Count + 1) % (Console.WindowHeight / 3) != 0 && list.Count + 1 < Console.WindowHeight) || !list[^1].StartsWith("\x1b[0m│"));
+            list.Add("\x1b[0m└" + new string('─', limit - 2) + "┘");
+            return list;
+        }
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
