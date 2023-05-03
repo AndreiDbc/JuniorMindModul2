@@ -35,6 +35,18 @@ namespace GitApp
             return result;
         }
 
+        public static int GetLinesSizeForRightBox(string element, int size)
+        {
+            int result = 0;
+            foreach (var line in element.Split("\n"))
+            {
+                result += line.Length / size * size
+                    + (line.Length % size == 0 ? 0 : 1) * size;
+            }
+
+            return result;
+        }
+
         public (List<IElement> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
         {
             var result = new List<IElement>();
