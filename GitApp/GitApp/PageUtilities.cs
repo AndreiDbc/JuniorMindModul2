@@ -28,6 +28,13 @@ namespace GitApp
             return toAdd + "...";
         }
 
+        public static int GetSize(List<string> page)
+        {
+            int result = 0;
+            page.ForEach(line => result += GetTextSize(line) - GetFormatingCodesLength(line));
+            return result;
+        }
+
         public (List<IElement> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
         {
             var result = new List<IElement>();
