@@ -79,17 +79,17 @@ namespace GitApp
             return (SetToZeroOrDontChange(commits.Index), SetToZeroOrDontChange(commits.Current - 1));
         }
 
-        private (int index, int current) InteractWithPageDown(List<IElement> page)
+        private (int index, int current) InteractWithPageDown(List<string> page)
         {
-            var list = text.GetText();
-            text.Current = SetToLastOrDontChange(text.Current + page.Count);
-            var lastElement = page[^1];
-            if (lastElement.Equals(list[^1]))
+            var list = commits.GetText();
+            commits.Current = SetToLastOrDontChange(commits.Current + page.Count);
+            var lastElement = RemoveFormatingCodes(page[^1]);
+            if (lastElement[..7].Equals(list[^1].Id))
             {
-                return (text.Index, text.Current);
+                return (commits.Index, commits.Current);
             }
 
-            return (SetToLastOrDontChange(text.Index + page.Count), text.Current);
+            return (SetToLastOrDontChange(commits.Index + page.Count), commits.Current);
         }
 
         private int SetToLastOrDontChange(int number)
