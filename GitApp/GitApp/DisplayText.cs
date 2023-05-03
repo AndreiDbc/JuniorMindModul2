@@ -325,26 +325,32 @@ namespace GitApp
             while (keyInteractor.KeyInfo != ConsoleKey.Escape);
         }
 
-        private void Write(ConsoleKey keyInfo, PageUtilities pageOptions, InitialData initialData, ref int commitTextSize, ref List<IElement> page)
+        private void Write(ConsoleKey keyInfo, PageUtilities pageOptions, InitialData initialData, ref int commitTextSize, ref List<Commit> page)
         {
-            var keyInteractor = new KeyInteractor(commits, keyInfo);
+            var keyInteractor = new KeyInteractor(commits);
+            keyInteractor.KeyInfo = keyInfo;
             var windowWidth = Console.WindowWidth;
             var windowSize = Console.WindowHeight * windowWidth;
             var initialTextSize = initialData.GetTextSize();
             var availableSpace = windowSize - initialTextSize - windowWidth;
             var initialText = initialData.GetText();
             var isPageLargerThanWindow = commitTextSize > availableSpace;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, isPageLargerThanWindow);
+            var commitsToString = new List<string>();
+            page.ForEach(line => commitsToString.Add(line.GetElement()));
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(commitsToString, isPageLargerThanWindow);
             (page, commitTextSize) = pageOptions.GetPageDataAndSize(commits.Index, availableSpace);
-            isPageLargerThanWindow = commitTextSize > availableSpace;
-            var temp = new List<IElement>();
+            var temp = new List<Commit>();
             temp.AddRange(page);
+
             if (keyInfo.Equals(ConsoleKey.Enter))
             {
-                WriteCommitFiles();
+                WriteCommitFiles(keyInteractor);
             }
 
-            WriteCommits(initialText, isPageLargerThanWindow ? PageUtilities.TruncateText(temp).Cast<Commit>().ToList() : page.Cast<Commit>().ToList());
+            var toWrite = GetCommits(initialText, page);
+            isPageLargerThanWindow = commitTextSize > availableSpace;
+            toWrite[^2] = isPageLargerThanWindow ? PageUtilities.TruncateText(toWrite[^2], windowWidth + GetFormatingCodeAndLength(toWrite[^2]).length) : toWrite[^2];
+            toWrite.ForEach(line => Console.WriteLine(line));
         }
     }
 }
