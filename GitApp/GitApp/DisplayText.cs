@@ -247,35 +247,6 @@ namespace GitApp
             return result;
         }
 
-        private void WriteCommits(string initialText, List<Commit> page)
-        {
-            Console.Clear();
-            Console.WriteLine(initialText);
-            page.ForEach(commit =>
-            {
-                if (commit.Id.Equals(commits.GetElementAt(commits.Current).Id))
-                {
-                    Console.Write(
-                        $"\x1b[7m\x1b[48;5;27m{commit.Id + " - "}"
-                        + $"\x1b[48;5;46m{commit.Author + ", "}"
-                        + $"\x1b[48;5;196m{commit.Date + ": "}");
-                    Console.ResetColor();
-                    Console.WriteLine($"\x1b[7m{commit.Message}\x1b[0m");
-                    Console.ResetColor();
-                }
-                else
-                {
-                    Console.Write(
-                        $"\x1b[38;5;27m{commit.Id + " - "}"
-                        + $"\x1b[38;5;46m{commit.Author + ", "}"
-                        + $"\x1b[38;5;196m{commit.Date + ": "}");
-                    Console.ResetColor();
-                    Console.WriteLine(commit.Message);
-                }
-            });
-            Console.Write("Press 'Esc' to exit.");
-        }
-
         private void WriteCommitFiles(KeyInteractor keyInteractor)
         {
             Console.Clear();
