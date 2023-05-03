@@ -146,6 +146,20 @@ namespace GitApp
             }
         }
 
+        private static string FitTextInsideBox(string[] lines, int size)
+        {
+            var result = "";
+            var i = 0;
+            do
+            {
+                result += lines[i] + "\n";
+                i++;
+            }
+            while (i < size);
+            result = i != size - 1 ? PageUtilities.TruncateText(result.TrimEnd() + "  ", result.Length + 2) : result;
+            return result;
+        }
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
