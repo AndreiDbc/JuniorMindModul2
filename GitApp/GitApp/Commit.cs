@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,6 +42,21 @@ namespace GitApp
             return Id + " " + Author + " " + Date + " " + Message;
         }
 
+        private static string GetDate(string[] data)
+        {
+            foreach (var item in data)
+            {
+                if (item.StartsWith("Date:"))
+                {
+                    var temp = item.Split(" ");
+                    var monthNames = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames;
+                    return temp[7] + "-" + (Array.IndexOf(monthNames, temp[4]) + 1) + "-" + temp[5];
+                }
+            }
+
+            return "";
+        }
+
         private CommitProperties ExtractProperties()
         {
             var temp = rawCommitDetails.Split("\n");
@@ -52,20 +68,6 @@ namespace GitApp
                 Message = temp[3].Trim(),
                 Sha = temp[0][7..]
             };
-        }
-
-        private static string GetDate(string[] data)
-        {
-            foreach (var item in data)
-            {
-                if (item.StartsWith("Date:"))
-                {
-                    var temp = item.Split(" ");
-                    return temp[3] + " " + temp[4] + " " + temp[5] + " " + temp[7];
-                }
-            }
-
-            return "";
         }
 
         private string GetAuthorName()
