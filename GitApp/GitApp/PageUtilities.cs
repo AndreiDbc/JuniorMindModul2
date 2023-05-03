@@ -8,9 +8,9 @@ namespace GitApp
 {
     public class PageUtilities
     {
-        private readonly List<IElement> list;
+        private readonly List<Commit> list;
 
-        public PageUtilities(List<IElement> list, int initialTextSize)
+        public PageUtilities(List<Commit> list)
         {
             this.list = list;
         }
