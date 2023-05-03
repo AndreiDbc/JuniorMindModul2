@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    public class FullCommits : IText
+    public class FullCommits
     {
         private readonly string rawLogData;
 
@@ -21,9 +21,9 @@ namespace GitApp
 
         public int Index { get; set; }
 
-        public List<IElement> GetText()
+        public List<Commit> GetText()
         {
-            var commits = new List<IElement>();
+            var commits = new List<Commit>();
             var str = rawLogData.Split("\n\n");
             for (int i = 0; i < str.Length; i += 2)
             {
@@ -35,7 +35,7 @@ namespace GitApp
 
         public Commit GetElementAt(int index)
         {
-            return GetText().Cast<Commit>().ElementAt(index);
+            return GetText().ElementAt(index);
         }
     }
 }
