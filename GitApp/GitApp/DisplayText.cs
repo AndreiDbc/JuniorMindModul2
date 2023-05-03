@@ -29,15 +29,19 @@ namespace GitApp
             var initialText = initialData.GetText();
             var commitTextSize = 0;
             var windowWidth = Console.WindowWidth;
-            var windowSize = Console.WindowHeight * windowWidth;
+            var windowSize = Console.WindowHeight * windowWidth - windowWidth;
             var initialTextSize = initialData.GetTextSize();
-            var availableSpace = windowSize - initialTextSize - windowWidth;
-            var pageOptions = new PageUtilities(commits.GetText(), initialTextSize);
+            var availableSpace = windowSize - initialTextSize;
+            var pageOptions = new PageUtilities(commits.GetText());
             (var page, commitTextSize) = pageOptions.GetPageDataAndSize(commits.Index, availableSpace);
-            var isPageLargerThanWindow = commitTextSize > availableSpace;
-            var temp = new List<IElement>();
+            var temp = new List<Commit>();
             temp.AddRange(page);
-            WriteCommits(initialText, isPageLargerThanWindow ? PageUtilities.TruncateText(temp).Cast<Commit>().ToList() : page.Cast<Commit>().ToList());
+            var toWrite = GetCommits(initialText, page);
+            var codeLength = GetFormatingCodeAndLength(toWrite[^2]);
+            toWrite[^2] = commitTextSize > availableSpace
+                ? PageUtilities.TruncateText(toWrite[^2], windowWidth + codeLength.length)
+                : toWrite[^2];
+            toWrite.ForEach(line => Console.WriteLine(line));
             do
             {
                 keyInfo = Console.ReadKey().Key;
