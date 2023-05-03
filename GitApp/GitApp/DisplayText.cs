@@ -165,7 +165,7 @@ namespace GitApp
             var width = Console.WindowWidth;
             var additionalLength = new[] { 14, 10, 11, 4 };
             var additionalLengthForCurrent = new[] { 14, 10, 11, 8 };
-            var leftSideColumnSize = 15 * width / 100 + 15 * width % 100;
+            var leftSideColumnSize = 20 * width / 100 + 20 * width % 100;
             var leftSideCommits = AddCommitsToLeftSide();
             var leftSideTemp = new List<string>();
             leftSideCommits.ForEach(line =>
@@ -190,7 +190,7 @@ namespace GitApp
                     }
                 }
 
-                leftSideTemp.Add(toAdd.TrimEnd());
+                leftSideTemp.Add(toAdd.Trim());
             });
 
             var leftSide = new List<string>();
@@ -267,13 +267,14 @@ namespace GitApp
             var message = PageUtilities.GetLinesSizeForRightBox(currentCommit.Message, rightSideLineSize) > rightBoxSize
                 ? FitTextInsideBox(currentCommit.Message.Split("\n"), rightBoxSize / rightSideLineSize)
                 : currentCommit.Message;
-            DisplaySplitScreen(GetLeftSide(), FormateRightSide(rightSideLineSize, info, message, files));
             var leftSide = GetLeftSide();
+            DisplaySplitScreen(leftSide, FormateRightSide(rightSideLineSize, info, message, files));
+
             do
             {
                 keyInteractor.KeyInfo = Console.ReadKey().Key;
-                (commits.Index, commits.Current) = keyInteractor.KeySwitch(leftSide, false);
                 leftSide = GetLeftSide();
+                (commits.Index, commits.Current) = keyInteractor.KeySwitch(leftSide, false);
                 width = Console.WindowWidth;
                 height = Console.WindowHeight;
                 rightSideLineSize = 40 * width / 100 + 40 * width % 100 - 2;
