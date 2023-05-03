@@ -292,7 +292,7 @@ namespace GitApp
                     ? FitTextInsideBox(currentCommit.Message.Split("\n"), rightBoxSize / rightSideLineSize)
                     : currentCommit.Message;
                 Console.Clear();
-                DisplaySplitScreen(GetLeftSide(), FormateRightSide(rightSideLineSize, info, message, files));
+                DisplaySplitScreen(GetLeftSide(), FormateRightSide(rightSideLineSize + 2, info, message, files));
             }
             while (keyInteractor.KeyInfo != ConsoleKey.Escape);
         }
