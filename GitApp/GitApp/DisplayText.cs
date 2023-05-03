@@ -276,34 +276,53 @@ namespace GitApp
             Console.Write("Press 'Esc' to exit.");
         }
 
-        private void WriteCommitFiles()
+        private void WriteCommitFiles(KeyInteractor keyInteractor)
         {
-            var commitModifiedFiles = new CommitModifiedFiles(commits.GetElementAt(commits.Current).Id);
-            var list = commitModifiedFiles.GetText();
-            int textSize = 0;
-            var page = new List<IElement>();
-            var pageOptions = new PageUtilities(list, 0);
-            var availableSpace = Console.WindowWidth * Console.WindowHeight;
-            ConsoleKey keyinfo;
-            (page, textSize) = pageOptions.GetPageDataAndSize(commitModifiedFiles.Index, availableSpace);
-            var temp = new List<IElement>();
-            temp.AddRange(page);
             Console.Clear();
-            page.ForEach(line => Console.WriteLine(line == list[commitModifiedFiles.Current] ? "\x1b[7m" + line + "\x1b[0m" : line));
-            Console.Write("Press 'Esc' to return.");
+            var width = Console.WindowWidth;
+            var height = Console.WindowHeight;
+            var windowSize = Console.WindowHeight * width;
+            var currentCommit = commits.GetElementAt(commits.Current);
+            var rightSideLineSize = 40 * width / 100 + 40 * width % 100 - 2;
+            var rightBoxSize = rightSideLineSize * ((height - 6) / 3 + (height - 6) % 3);
+            var info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
+            info = PageUtilities.GetLinesSizeForRightBox(info, rightSideLineSize) > rightBoxSize
+                ? FitTextInsideBox(info.Split("\n"), rightBoxSize / rightSideLineSize)
+                : info;
+            var files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
+            files = PageUtilities.GetLinesSizeForRightBox(files, rightSideLineSize) > rightBoxSize
+                ? FitTextInsideBox(files.Split("\n"), rightBoxSize / rightSideLineSize)
+                : files;
+            var message = PageUtilities.GetLinesSizeForRightBox(currentCommit.Message, rightSideLineSize) > rightBoxSize
+                ? FitTextInsideBox(currentCommit.Message.Split("\n"), rightBoxSize / rightSideLineSize)
+                : currentCommit.Message;
+            DisplaySplitScreen(GetLeftSide(), FormateRightSide(rightSideLineSize, info, message, files));
+            var leftSide = GetLeftSide();
             do
             {
-                keyinfo = Console.ReadKey().Key;
+                keyInteractor.KeyInfo = Console.ReadKey().Key;
+                (commits.Index, commits.Current) = keyInteractor.KeySwitch(leftSide, false);
+                leftSide = GetLeftSide();
+                width = Console.WindowWidth;
+                height = Console.WindowHeight;
+                rightSideLineSize = 40 * width / 100 + 40 * width % 100 - 2;
+                rightBoxSize = rightSideLineSize * ((height - 6) / 3 + (height - 6) % 3);
+                currentCommit = commits.GetElementAt(commits.Current);
+                info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
+                info = PageUtilities.GetLinesSizeForRightBox(info, rightSideLineSize) > rightBoxSize
+                    ? FitTextInsideBox(info.Split("\n"), rightBoxSize / rightSideLineSize)
+                    : info;
+                files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
+                files = PageUtilities.GetLinesSizeForRightBox(files, rightSideLineSize) > rightBoxSize
+                    ? FitTextInsideBox(files.Split("\n"), rightBoxSize / rightSideLineSize)
+                    : files;
+                message = PageUtilities.GetLinesSizeForRightBox(currentCommit.Message, rightSideLineSize) > rightBoxSize
+                    ? FitTextInsideBox(currentCommit.Message.Split("\n"), rightBoxSize / rightSideLineSize)
+                    : currentCommit.Message;
                 Console.Clear();
-                var keyInteractor = new KeyInteractor(commitModifiedFiles, keyinfo);
-                var isPageLargeThanWindow = textSize > Console.WindowHeight * Console.WindowHeight - Console.WindowHeight;
-                (commitModifiedFiles.Index, commitModifiedFiles.Current) = keyInteractor.KeySwitch(page, isPageLargeThanWindow);
-                (page, textSize) = pageOptions.GetPageDataAndSize(commitModifiedFiles.Index, availableSpace);
-                isPageLargeThanWindow = textSize > Console.WindowHeight * Console.WindowHeight - Console.WindowHeight;
-                (isPageLargeThanWindow ? PageUtilities.TruncateText(page) : page).ForEach(line => Console.WriteLine(line == list[commitModifiedFiles.Current] ? "\x1b[7m" + line + "\x1b[0m" : line));
-                Console.Write("Press 'Esc' to return.");
+                DisplaySplitScreen(GetLeftSide(), FormateRightSide(rightSideLineSize, info, message, files));
             }
-            while (keyinfo != ConsoleKey.Escape);
+            while (keyInteractor.KeyInfo != ConsoleKey.Escape);
         }
 
         private void Write(ConsoleKey keyInfo, PageUtilities pageOptions, InitialData initialData, ref int commitTextSize, ref List<IElement> page)
