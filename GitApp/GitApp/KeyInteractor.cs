@@ -34,6 +34,17 @@ namespace GitApp
             return number < 0 ? 0 : number;
         }
 
+        private static string RemoveFormatingCodes(string element)
+        {
+            var result = element;
+            foreach (var code in new[] { "\x1b[0m", "\x1b[7m", "\x1b[48;5;27m", "\x1b[48;5;46m", "\x1b[48;5;196m", "\u001b[38;5;27m", "\u001b[38;5;46m", "\u001b[38;5;196m" })
+            {
+                result = result.Replace(code, "");
+            }
+
+            return result;
+        }
+
         private (int index, int current) InteractWithPageUp(List<IElement> page)
         {
             return (SetToZeroOrDontChange(text.Index - page.Count), SetToZeroOrDontChange(text.Current - page.Count));
