@@ -8,14 +8,14 @@ namespace GitApp
 {
     public class KeyInteractor
     {
-        private readonly ConsoleKey keyInfo;
-        private readonly IText text;
+        private readonly FullCommits commits;
 
-        public KeyInteractor(IText text, ConsoleKey keyInfo)
+        public KeyInteractor(FullCommits commits)
         {
-            this.keyInfo = keyInfo;
-            this.text = text;
+            this.commits = commits;
         }
+
+        public ConsoleKey KeyInfo { get; set; }
 
         public (int index, int current) KeySwitch(List<IElement> page, bool isPageLargerThanWindow)
         {
