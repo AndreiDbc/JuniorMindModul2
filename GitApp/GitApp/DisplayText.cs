@@ -131,6 +131,21 @@ namespace GitApp
             return (codes.Aggregate(0, (result, code) => element.Contains(code) ? code.Length + result : result), codes.Where(code => element.Contains(code)));
         }
 
+        private static void DisplaySplitScreen(List<string> leftSide, List<string> rightSide)
+        {
+            leftSide = DrawCommitBox(leftSide);
+
+            for (int i = 0; i < rightSide.Count; i++)
+            {
+                if (i < leftSide.Count)
+                {
+                    Console.Write(leftSide[i]);
+                }
+
+                Console.WriteLine(rightSide[i]);
+            }
+        }
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
