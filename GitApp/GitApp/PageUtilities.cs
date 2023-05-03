@@ -85,13 +85,10 @@ namespace GitApp
                     + (phrase.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
         }
 
-        private static IElement GetNewElement(string typeName, string data)
+        private static int GetFormatingCodesLength(string element)
         {
-            return typeName switch
-            {
-                "GitApp.Commit" => new Commit(data),
-                "GitApp.CommitModifiedFile" => new CommitModifiedFile(data)
-            };
+            IEnumerable<string> codes = new[] { "\x1b[0m", "\x1b[7m", "\x1b[48;5;27m", "\x1b[48;5;46m", "\x1b[48;5;196m", "\u001b[38;5;27m", "\u001b[38;5;46m", "\u001b[38;5;196m" };
+            return codes.Aggregate(0, (result, code) => element.Contains(code) ? code.Length + result : result);
         }
     }
 }
