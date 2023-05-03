@@ -199,6 +199,32 @@ namespace GitApp
             return leftSide;
         }
 
+        private List<List<string>> AddCommitsToLeftSide()
+        {
+            var result = new List<List<string>>();
+            for (int i = 0; i < Console.WindowHeight - 2; i++)
+            {
+                var firstCommitOnPage = commits.GetElementAt(i + commits.Index);
+                result.Add(firstCommitOnPage.Id.Equals(commits.GetElementAt(commits.Current).Id)
+                    ? new List<string>
+                    {
+                        "\x1b[7m\x1b[48;5;27m" + firstCommitOnPage.Id,
+                        "\x1b[48;5;46m" + firstCommitOnPage.Author,
+                        "\x1b[48;5;196m" + firstCommitOnPage.Date,
+                        "\x1b[0m\x1b[7m" + firstCommitOnPage.Message
+                    }
+                    : new List<string>
+                    {
+                        "\u001b[0m\x1b[38;5;27m" + firstCommitOnPage.Id,
+                        "\x1b[38;5;46m" + firstCommitOnPage.Author,
+                        "\x1b[38;5;196m" + firstCommitOnPage.Date,
+                        "\x1b[0m" + firstCommitOnPage.Message
+                    });
+            }
+
+            return result;
+        }
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
