@@ -225,6 +225,28 @@ namespace GitApp
             return result;
         }
 
+        private List<string> GetCommits(string initialText, List<Commit> page)
+        {
+            Console.Clear();
+            Console.WriteLine(initialText);
+            var result = new List<string>();
+            page.ForEach(commit =>
+            {
+                result.Add(commit.Id.Equals(commits.GetElementAt(commits.Current).Id)
+                        ? "\x1b[7m\x1b[48;5;27m" + commit.Id + " "
+                        + "\x1b[48;5;46m" + commit.Author + " "
+                        + "\x1b[48;5;196m" + commit.Date + " "
+                        + "\x1b[0m\x1b[7m" + commit.Message + " "
+                        : "\u001b[0m\x1b[38;5;27m" + commit.Id + " "
+                        + "\x1b[38;5;46m" + commit.Author + " "
+                        + "\x1b[38;5;196m" + commit.Date + " "
+                        + "\u001b[0m" + commit.Message);
+            });
+            result.Add("Press 'Esc' to exit.");
+
+            return result;
+        }
+
         private void WriteCommits(string initialText, List<Commit> page)
         {
             Console.Clear();
