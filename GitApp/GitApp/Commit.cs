@@ -44,20 +44,13 @@ namespace GitApp
         private CommitProperties ExtractProperties()
         {
             var temp = rawCommitDetails.Split("\n");
-            return temp[0].Length == 7 ? new CommitProperties()
-            {
-                Id = temp[0].Trim(),
-                Author = GetAuthorName(),
-                Date = temp[2].Trim(),
-                Message = temp[3].Trim()
-            }
-            :
-            new CommitProperties()
+            return new CommitProperties()
             {
                 Id = temp[0][7..14].Trim(),
                 Author = GetAuthorName()[7..].Trim(),
                 Date = temp[2][5..].Trim(),
-                Message = temp[3].Trim()
+                Message = temp[3].Trim(),
+                Sha = temp[0][7..]
             };
         }
 
