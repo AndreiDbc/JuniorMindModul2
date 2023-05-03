@@ -45,9 +45,9 @@ namespace GitApp
             return result;
         }
 
-        private (int index, int current) InteractWithPageUp(List<IElement> page)
+        private (int index, int current) InteractWithPageUp(List<string> page)
         {
-            return (SetToZeroOrDontChange(text.Index - page.Count), SetToZeroOrDontChange(text.Current - page.Count));
+            return (SetToZeroOrDontChange(commits.Index - page.Count), SetToZeroOrDontChange(commits.Current - page.Count));
         }
 
         private (int index, int current) InteractWithDownArrow(List<IElement> page, bool isPageLargerThanWindow)
