@@ -34,7 +34,7 @@ namespace GitApp.Tests
                 "\nDate:   Thu Mar 2 15:00:42 2023 +0200\n    Added a constructor.\r\n";
 
             var commit = new Commit(data);
-            const string expected = "Thu Mar 2 15:00:42 2023 +0200";
+            const string expected = "2023-03-02";
             Assert.Equal(expected, commit.Date);
         }
 

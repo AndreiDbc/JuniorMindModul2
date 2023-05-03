@@ -49,12 +49,43 @@ namespace GitApp
                 if (item.StartsWith("Date:"))
                 {
                     var temp = item.Split(" ");
+                    var hhmmss = temp[6].Split(":");
                     var monthNames = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames;
-                    return temp[7] + "-" + (Array.IndexOf(monthNames, temp[4]) + 1) + "-" + temp[5];
+                    var monthIndex = Array.IndexOf(monthNames, temp[4]) + 1;
+                    var monthIndexToString = monthIndex < 10 ? "0" + monthIndex.ToString() : monthIndex.ToString();
+                    var day = temp[5].Length == 1 ? "0" + temp[5] : temp[5];
+                    var commitDate = temp[7] + "-" + monthIndexToString + "-" + day;
+                    var timeDiference = DateTime.Now.Subtract(
+                        new DateTime(int.Parse(temp[7]), int.Parse(monthIndexToString), int.Parse(temp[5]), int.Parse(hhmmss[0]), int.Parse(hhmmss[1]), int.Parse(hhmmss[2])))
+                        .ToString().Split(new[] { ':', '.' });
+                    return commitDate + (int.Parse(timeDiference[0]) < 24 ? GetAdditionalTime(timeDiference) : "");
                 }
             }
 
             return "";
+        }
+
+        private static string GetAdditionalTime(string[] data)
+        {
+            var result = "";
+            if (data[0] == "00" && data[1] == "00")
+            {
+                result = "less than a minute ago";
+            }
+            else if (data[0] == "00")
+            {
+                result = data[2] == "01"
+                    ? "1 minute ago"
+                    : $"{data[2]} minutes ago";
+            }
+            else
+            {
+                result = data[0] == "01"
+                    ? "1 hour ago"
+                    : $"{data[0]} hours ago";
+            }
+
+            return result.StartsWith("0") ? "(" + result[1..] + ")" : "(" + result + ")";
         }
 
         private CommitProperties ExtractProperties()
