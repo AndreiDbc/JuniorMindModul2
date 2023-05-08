@@ -88,6 +88,17 @@ namespace GitApp
             return result.StartsWith("0") ? "(" + result[1..] + ")" : "(" + result + ")";
         }
 
+        private static string GetMessage(string[] data)
+        {
+            var result = "";
+            for (int i = 3; i < data.Length; i++)
+            {
+                result += data[i].Trim() + " ";
+            }
+
+            return result.Trim();
+        }
+
         private CommitProperties ExtractProperties()
         {
             var temp = rawCommitDetails.Split("\n");
@@ -96,7 +107,7 @@ namespace GitApp
                 Id = temp[0][7..14].Trim(),
                 Author = GetAuthorName()[7..].Trim(),
                 Date = GetDate(temp),
-                Message = temp[3].Trim(),
+                Message = GetMessage(temp),
                 Sha = temp[0][7..]
             };
         }
