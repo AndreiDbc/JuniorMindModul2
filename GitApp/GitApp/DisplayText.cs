@@ -113,19 +113,21 @@ namespace GitApp
         private static List<string> DrawCommitBox(List<string> list)
         {
             var limit = (int)(0.6 * Console.WindowWidth);
-            list.Insert(0, "┌Commits" + new string('─', limit - 10) + "┐");
+            const string boxName = "Commits";
+            const int lengthToSubstract = 3;
+            list.Insert(0, "┌" + boxName + new string('─', limit - boxName.Length - lengthToSubstract) + "┐");
             var index = 1;
             do
             {
                 if (index < list.Count)
                 {
-                    var numar = limit + 5 - (list[index].Length - GetFormatingCodeAndLength(list[index]).length);
-                    var str = numar <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(numar + 1);
-                    list[index] = "\x1b[0m│" + list[index] + str;
+                    var padLength = limit + 5 - (list[index].Length - GetFormatingCodeAndLength(list[index]).length);
+                    var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
+                    list[index] = "\x1b[0m│" + list[index] + toPad;
                 }
                 else
                 {
-                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(limit + 7));
+                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(limit + 5));
                 }
 
                 index++;
@@ -173,8 +175,8 @@ namespace GitApp
         private List<string> GetLeftSide()
         {
             var width = Console.WindowWidth;
-            var additionalLength = new[] { 14, 10, 11, 4 };
-            var additionalLengthForCurrent = new[] { 14, 10, 11, 8 };
+            var additionalLength = new[] { 14, 10, 10, 4 };
+            var additionalLengthForCurrent = new[] { 14, 10, 10, 8 };
             var leftSideColumnSize = (int)(0.2 * width);
             var leftSideCommits = AddCommitsToLeftSide();
             var leftSideTemp = new List<string>();
@@ -214,21 +216,21 @@ namespace GitApp
             var result = new List<List<string>>();
             for (int i = 0; i < Console.WindowHeight - 2; i++)
             {
-                var firstCommitOnPage = commits.GetElementAt(i + commits.Index);
-                result.Add(firstCommitOnPage.Id.Equals(commits.GetElementAt(commits.Current).Id)
+                var toAdd = commits.GetElementAt(i + commits.Index);
+                result.Add(toAdd.Id.Equals(commits.GetElementAt(commits.Current).Id)
                     ? new List<string>
                     {
-                        "\x1b[7m\x1b[48;5;27m" + firstCommitOnPage.Id,
-                        "\x1b[48;5;46m" + firstCommitOnPage.Author,
-                        "\x1b[48;5;196m" + firstCommitOnPage.Date,
-                        "\x1b[0m\x1b[7m" + firstCommitOnPage.Message
+                        "\x1b[7m\x1b[48;5;27m" + toAdd.Id,
+                        "\x1b[48;5;46m" + toAdd.Author,
+                        "\x1b[48;5;196m" + toAdd.Date,
+                        "\x1b[0m\x1b[7m" + toAdd.Message
                     }
                     : new List<string>
                     {
-                        "\u001b[0m\x1b[38;5;27m" + firstCommitOnPage.Id,
-                        "\x1b[38;5;46m" + firstCommitOnPage.Author,
-                        "\x1b[38;5;196m" + firstCommitOnPage.Date,
-                        "\x1b[0m" + firstCommitOnPage.Message
+                        "\u001b[0m\x1b[38;5;27m" + toAdd.Id,
+                        "\x1b[38;5;46m" + toAdd.Author,
+                        "\x1b[38;5;196m" + toAdd.Date,
+                        "\x1b[0m" + toAdd.Message
                     });
             }
 
