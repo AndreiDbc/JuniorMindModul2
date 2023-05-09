@@ -156,6 +156,12 @@ namespace GitApp
             var i = 0;
             do
             {
+                if (i == lines[i].Length - 1)
+                {
+                    result += lines[i];
+                    break;
+                }
+
                 result += lines[i] + "\n";
                 i++;
             }
