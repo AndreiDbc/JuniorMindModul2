@@ -63,13 +63,6 @@ namespace GitApp
             result.AddRange(SplitRow(files.Split("\n"), limit - 1));
             index++;
             result = DrawBox(result, "Files", ref index, limit);
-            int rowsLeft = (int)(0.33 * Console.WindowHeight) % 3;
-            if (rowsLeft != 0)
-            {
-                var toAdd = new string[rowsLeft];
-                Array.Fill(toAdd, "");
-                result.AddRange(toAdd);
-            }
 
             return result;
         }
@@ -147,14 +140,13 @@ namespace GitApp
         {
             leftSide = DrawCommitBox(leftSide);
 
-            for (int i = 0; i < rightSide.Count; i++)
+            for (int i = 0; i < leftSide.Count; i++)
             {
-                if (i < leftSide.Count)
+                Console.Write(leftSide[i]);
+                if (i < rightSide.Count)
                 {
-                    Console.Write(leftSide[i]);
+                    Console.WriteLine(rightSide[i]);
                 }
-
-                Console.WriteLine(rightSide[i]);
             }
         }
 
@@ -168,15 +160,15 @@ namespace GitApp
                 i++;
             }
             while (i < size);
-            result = i != size - 1 ? PageUtilities.TruncateText(result.TrimEnd() + "  ", result.Length + 2) : result;
+            result = i != size - 1 ? PageUtilities.TruncateText(result.TrimEnd() + "  ", result.Length + 2) : result.TrimEnd();
             return result;
         }
 
         private List<string> GetLeftSide()
         {
             var width = Console.WindowWidth;
-            var additionalLength = new[] { 14, 10, 10, 4 };
-            var additionalLengthForCurrent = new[] { 14, 10, 10, 8 };
+            var additionalLength = new[] { 14, 10, 9, 4 };
+            var additionalLengthForCurrent = new[] { 14, 10, 9, 8 };
             var leftSideColumnSize = (int)(float)(0.15 * width);
             var leftSideCommits = AddCommitsToLeftSide();
             var leftSideTemp = new List<string>();
