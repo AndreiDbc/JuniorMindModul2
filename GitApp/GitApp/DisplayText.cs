@@ -142,7 +142,7 @@ namespace GitApp
 
             for (int i = 0; i < leftSide.Count; i++)
             {
-                Console.Write(leftSide[i]);
+                Console.Write(i < rightSide.Count ? leftSide[i] : leftSide[i] + "\n");
                 if (i < rightSide.Count)
                 {
                     Console.WriteLine(rightSide[i]);
