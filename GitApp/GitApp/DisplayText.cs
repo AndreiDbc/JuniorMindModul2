@@ -177,7 +177,7 @@ namespace GitApp
             var width = Console.WindowWidth;
             var additionalLength = new[] { 14, 10, 10, 4 };
             var additionalLengthForCurrent = new[] { 14, 10, 10, 8 };
-            var leftSideColumnSize = (int)(0.2 * width);
+            var leftSideColumnSize = (int)(float)(0.15 * width);
             var leftSideCommits = AddCommitsToLeftSide();
             var leftSideTemp = new List<string>();
             leftSideCommits.ForEach(line =>
