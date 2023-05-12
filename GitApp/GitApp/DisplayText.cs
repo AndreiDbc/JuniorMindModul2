@@ -53,16 +53,42 @@ namespace GitApp
 
         private static List<string> FormateRightSide(int limit, string info, string message, string files)
         {
+            var width = Console.WindowWidth;
+            var height = Console.WindowHeight;
+            var rightSideLineSize = (int)(0.4 * width);
+            var rightBoxSize = rightSideLineSize * (int)(height * 0.33);
+            var rightBoxMarginDimension = 2 * (height / 3) + 2 * (rightSideLineSize - 2);
             var result = new List<string>();
-            int index = 0;
-            result.AddRange(SplitRow(info.Split("\n"), limit - 1));
-            result = DrawBox(result, "Info", ref index, limit);
-            result.AddRange(SplitRow(message.Split("\n"), limit - 1));
-            index++;
-            result = DrawBox(result, "Message", ref index, limit);
-            result.AddRange(SplitRow(files.Split("\n"), limit - 1));
-            index++;
-            result = DrawBox(result, "Files", ref index, limit);
+            int boxHeight = (int)(Console.WindowHeight * 0.33);
+            var infoTemp = SplitRow(info.Split("\n"), rightSideLineSize - 2);
+            var infoBox = DrawBox(FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Info", limit, boxHeight, 0);
+            result.AddRange(infoBox);
+            var messageTemp = SplitRow(message.Split("\n"), rightSideLineSize - 2);
+            var messageBox = DrawBox(FitTextInsideBox(messageTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Message", limit, boxHeight, infoBox.Count);
+            result.AddRange(messageBox);
+            var filesTemp = SplitRow(files.Split("\n"), rightSideLineSize - 2);
+            var filesBox = DrawBox(FitTextInsideBox(filesTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Files", limit, boxHeight, infoBox.Count + messageBox.Count);
+            result.AddRange(filesBox);
+
+            return result;
+        }
+
+        private static List<string> FitTextInsideBox(List<string> list, int availableSpace, int rowSize)
+        {
+            var result = new List<string>();
+            var currentSize = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                var element = list[i];
+                currentSize += PageUtilities.GetLinesSizeForRightBox(element, rowSize);
+                if (currentSize >= availableSpace)
+                {
+                    result.Add(PageUtilities.TruncateText(i == list.Count - 1 ? element : element.Trim() + " ", rowSize));
+                    break;
+                }
+
+                result.Add(element);
+            }
 
             return result;
         }
@@ -81,25 +107,30 @@ namespace GitApp
             return result;
         }
 
-        private static List<string> DrawBox(List<string> list, string boxName, ref int index, int limit)
+        private static List<string> DrawBox(List<string> list, string boxName, int limit, int boxHeight, int currentSpaceOccupation)
         {
-            list.Insert(index, "┌" + boxName + new string('─', limit - boxName.Length - 1) + "┐");
-            index++;
+            int index = 1;
+            list.Insert(0, "┌" + boxName + new string('─', limit - boxName.Length - 2) + "┐");
             do
             {
+                if (currentSpaceOccupation + 1 == Console.WindowHeight)
+                {
+                    break;
+                }
+
                 if (index < list.Count)
                 {
-                    list[index] = "\x1b[0m│" + list[index] + "│".PadLeft(limit - list[index].Length);
+                    list[index] = "\x1b[0m│" + list[index] + "│".PadLeft(limit - list[index].Length - 1);
                 }
                 else
                 {
-                    list.Add("\x1b[0m│" + "│".PadLeft(limit));
+                    list.Add("\x1b[0m│" + "│".PadLeft(limit - 1));
                 }
 
                 index++;
             }
-            while (((list.Count + 1) % (Console.WindowHeight / 3) != 0 && list.Count + 1 < Console.WindowHeight) || !list[^1].StartsWith("\x1b[0m│"));
-            list.Add("\x1b[0m└" + new string('─', limit - 1) + "┘");
+            while (index + 1!= boxHeight);
+            list.Add("\x1b[0m└" + new string('─', limit - 2) + "┘");
             return list;
         }
 
@@ -107,26 +138,26 @@ namespace GitApp
         {
             var limit = (int)(0.6 * Console.WindowWidth);
             const string boxName = "Commits";
-            const int lengthToSubstract = 3;
+            const int lengthToSubstract = 2;
             list.Insert(0, "┌" + boxName + new string('─', limit - boxName.Length - lengthToSubstract) + "┐");
             var index = 1;
             do
             {
                 if (index < list.Count)
                 {
-                    var padLength = limit + 5 - (list[index].Length - GetFormatingCodeAndLength(list[index]).length);
+                    var padLength = limit + 6 - (list[index].Length - GetFormatingCodeAndLength(list[index]).length);
                     var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
                     list[index] = "\x1b[0m│" + list[index] + toPad;
                 }
                 else
                 {
-                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(limit + 5));
+                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(limit + 6));
                 }
 
                 index++;
             }
             while (list.Count % Console.WindowHeight != 0 && !list[^1].StartsWith("\x1b[0m│"));
-            list.Add("\x1b[0m└" + new string('─', limit - 3) + "┘");
+            list.Add("\x1b[0m└" + new string('─', limit - 2) + "┘");
             return list;
         }
 
@@ -150,32 +181,12 @@ namespace GitApp
             }
         }
 
-        private static string FitTextInsideBox(string[] lines, int size)
-        {
-            var result = "";
-            var i = 0;
-            do
-            {
-                if (i == lines[i].Length - 1)
-                {
-                    result += lines[i];
-                    break;
-                }
-
-                result += lines[i] + "\n";
-                i++;
-            }
-            while (i < size);
-            result = i != size - 1 ? PageUtilities.TruncateText(result.TrimEnd() + "  ", result.Length + 2) : result.TrimEnd();
-            return result;
-        }
-
         private List<string> GetLeftSide()
         {
             var width = Console.WindowWidth;
-            var additionalLength = new[] { 14, 10, 9, 4 };
-            var additionalLengthForCurrent = new[] { 14, 10, 9, 8 };
-            var leftSideColumnSize = (int)(float)(0.15 * width);
+            var additionalLength = new[] { 14, 10, 10, 4 };
+            var additionalLengthForCurrent = new[] { 14, 10, 10, 8 };
+            var leftSideColumnSize = (int)((float)(0.15 * (width - 2)));
             var leftSideCommits = AddCommitsToLeftSide();
             var leftSideTemp = new List<string>();
             leftSideCommits.ForEach(line =>
@@ -187,12 +198,12 @@ namespace GitApp
                     if (element.Contains("\u001b[7m"))
                     {
                         toAdd += element.Length > leftSideColumnSize + additionalLengthForCurrent[i]
-                        ? PageUtilities.TruncateText(element, leftSideColumnSize + additionalLengthForCurrent[i]) + " "
+                        ? PageUtilities.TruncateText(element, leftSideColumnSize + additionalLengthForCurrent[i] - 1) + " "
                         : element + " ";
                     }
                     else if (element.Length > leftSideColumnSize + additionalLength[i])
                     {
-                        toAdd += PageUtilities.TruncateText(element, leftSideColumnSize + additionalLength[i]) + " ";
+                        toAdd += PageUtilities.TruncateText(element, leftSideColumnSize + additionalLength[i] - 1) + " ";
                     }
                     else
                     {
@@ -260,25 +271,13 @@ namespace GitApp
         private void WriteCommitFiles(KeyInteractor keyInteractor)
         {
             Console.Clear();
-
             var width = Console.WindowWidth;
-            var height = Console.WindowHeight;
             var currentCommit = commits.GetElementAt(commits.Current);
-            var rightSideLineSize = (int)(0.4 * (float)width);
-            var rightBoxSize = (int)(0.33 * rightSideLineSize * height);
+            var rightSideLineSize = (int)(0.4 * width);
             var info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
-            info = PageUtilities.GetLinesSizeForRightBox(info, rightSideLineSize) > rightBoxSize
-                ? FitTextInsideBox(info.Split("\n"), rightBoxSize / rightSideLineSize)
-                : info;
             var files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
-            files = PageUtilities.GetLinesSizeForRightBox(files, rightSideLineSize) > rightBoxSize
-                ? FitTextInsideBox(files.Split("\n"), rightBoxSize / rightSideLineSize)
-                : files;
-            var message = PageUtilities.GetLinesSizeForRightBox(currentCommit.Message, rightSideLineSize) > rightBoxSize
-                ? FitTextInsideBox(currentCommit.Message.Split("\n"), rightBoxSize / rightSideLineSize)
-                : currentCommit.Message;
             var leftSide = GetLeftSide();
-            DisplaySplitScreen(leftSide, FormateRightSide(rightSideLineSize, info, message, files));
+            DisplaySplitScreen(leftSide, FormateRightSide(rightSideLineSize, info, currentCommit.Message, files));
 
             do
             {
@@ -286,23 +285,12 @@ namespace GitApp
                 (commits.Index, commits.Current) = keyInteractor.KeySwitch(leftSide, false);
                 leftSide = GetLeftSide();
                 width = Console.WindowWidth;
-                height = Console.WindowHeight;
-                rightSideLineSize = (int)(0.4 * (float)width);
-                rightBoxSize = (int)(0.33 * rightSideLineSize * height);
+                rightSideLineSize = (int)(0.4 * width);
                 currentCommit = commits.GetElementAt(commits.Current);
                 info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
-                info = PageUtilities.GetLinesSizeForRightBox(info, rightSideLineSize) > rightBoxSize
-                    ? FitTextInsideBox(info.Split("\n"), rightBoxSize / rightSideLineSize)
-                    : info;
                 files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
-                files = PageUtilities.GetLinesSizeForRightBox(files, rightSideLineSize) > rightBoxSize
-                    ? FitTextInsideBox(files.Split("\n"), rightBoxSize / rightSideLineSize)
-                    : files;
-                message = PageUtilities.GetLinesSizeForRightBox(currentCommit.Message, rightSideLineSize) > rightBoxSize
-                    ? FitTextInsideBox(currentCommit.Message.Split("\n"), rightBoxSize / rightSideLineSize)
-                    : currentCommit.Message;
                 Console.Clear();
-                DisplaySplitScreen(leftSide, FormateRightSide(rightSideLineSize, info, message, files));
+                DisplaySplitScreen(leftSide, FormateRightSide(rightSideLineSize, info, currentCommit.Message, files));
             }
             while (keyInteractor.KeyInfo != ConsoleKey.Escape);
         }

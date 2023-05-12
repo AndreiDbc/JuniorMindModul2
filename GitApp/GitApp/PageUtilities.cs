@@ -21,6 +21,11 @@ namespace GitApp
             var i = 0;
             do
             {
+                if (size < 3 || i == element.Length - 1)
+                {
+                    break;
+                }
+
                 toAdd += element[i];
                 i++;
             }
