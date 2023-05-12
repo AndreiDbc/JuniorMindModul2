@@ -51,7 +51,7 @@ namespace GitApp
             Console.ReadKey();
         }
 
-        private static List<string> FormateRightSide(int limit, string info, string message, string files)
+        private static List<string> FormateRightSide(string info, string message, string files)
         {
             var width = Console.WindowWidth;
             var height = Console.WindowHeight;
@@ -61,13 +61,13 @@ namespace GitApp
             var result = new List<string>();
             int boxHeight = (int)(Console.WindowHeight * 0.33);
             var infoTemp = SplitRow(info.Split("\n"), rightSideLineSize - 2);
-            var infoBox = DrawBox(FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Info", limit, boxHeight, 0);
+            var infoBox = DrawBox(FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Info", rightSideLineSize, boxHeight, 0);
             result.AddRange(infoBox);
             var messageTemp = SplitRow(message.Split("\n"), rightSideLineSize - 2);
-            var messageBox = DrawBox(FitTextInsideBox(messageTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Message", limit, boxHeight, infoBox.Count);
+            var messageBox = DrawBox(FitTextInsideBox(messageTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Message", rightSideLineSize, boxHeight, infoBox.Count);
             result.AddRange(messageBox);
             var filesTemp = SplitRow(files.Split("\n"), rightSideLineSize - 2);
-            var filesBox = DrawBox(FitTextInsideBox(filesTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Files", limit, boxHeight, infoBox.Count + messageBox.Count);
+            var filesBox = DrawBox(FitTextInsideBox(filesTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Files", rightSideLineSize, boxHeight, infoBox.Count + messageBox.Count);
             result.AddRange(filesBox);
 
             return result;
@@ -129,7 +129,7 @@ namespace GitApp
 
                 index++;
             }
-            while (index + 1!= boxHeight);
+            while (index + 1 != boxHeight);
             list.Add("\x1b[0m└" + new string('─', limit - 2) + "┘");
             return list;
         }
@@ -271,26 +271,22 @@ namespace GitApp
         private void WriteCommitFiles(KeyInteractor keyInteractor)
         {
             Console.Clear();
-            var width = Console.WindowWidth;
             var currentCommit = commits.GetElementAt(commits.Current);
-            var rightSideLineSize = (int)(0.4 * width);
             var info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
             var files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
             var leftSide = GetLeftSide();
-            DisplaySplitScreen(leftSide, FormateRightSide(rightSideLineSize, info, currentCommit.Message, files));
+            DisplaySplitScreen(leftSide, FormateRightSide(info, currentCommit.Message, files));
 
             do
             {
                 keyInteractor.KeyInfo = Console.ReadKey().Key;
                 (commits.Index, commits.Current) = keyInteractor.KeySwitch(leftSide, false);
                 leftSide = GetLeftSide();
-                width = Console.WindowWidth;
-                rightSideLineSize = (int)(0.4 * width);
                 currentCommit = commits.GetElementAt(commits.Current);
                 info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
                 files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
                 Console.Clear();
-                DisplaySplitScreen(leftSide, FormateRightSide(rightSideLineSize, info, currentCommit.Message, files));
+                DisplaySplitScreen(leftSide, FormateRightSide(info, currentCommit.Message, files));
             }
             while (keyInteractor.KeyInfo != ConsoleKey.Escape);
         }
