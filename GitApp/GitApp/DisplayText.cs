@@ -55,16 +55,23 @@ namespace GitApp
         {
             var width = Console.WindowWidth;
             var height = Console.WindowHeight;
-            var rightSideLineSize = (int)(0.4 * width);
+            var rightSideLineSize = width - (int)(0.6 * width);
             var rightBoxSize = rightSideLineSize * (int)(height * 0.33);
             var rightBoxMarginDimension = 2 * (height / 3) + 2 * (rightSideLineSize - 2);
             var result = new List<string>();
-            int boxHeight = (int)(Console.WindowHeight * 0.33);
+            int boxHeight = Console.WindowHeight / 3;
             var infoTemp = SplitRow(info.Split("\n"), rightSideLineSize - 2);
             var infoBox = DrawBox(FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Info", rightSideLineSize, boxHeight, 0);
             result.AddRange(infoBox);
             var messageTemp = SplitRow(message.Split("\n"), rightSideLineSize - 2);
-            var messageBox = DrawBox(FitTextInsideBox(messageTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Message", rightSideLineSize, boxHeight, infoBox.Count);
+            var additionalHeight = 0;
+            additionalHeight += height % 3 == 0 ? 0 : height % 3;
+            var messageBox = DrawBox(
+                FitTextInsideBox(messageTemp, rightBoxSize - rightBoxMarginDimension + additionalHeight * rightSideLineSize, rightSideLineSize - 2),
+                "Message",
+                rightSideLineSize,
+                boxHeight + additionalHeight,
+                infoBox.Count);
             result.AddRange(messageBox);
             var filesTemp = SplitRow(files.Split("\n"), rightSideLineSize - 2);
             var filesBox = DrawBox(FitTextInsideBox(filesTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Files", rightSideLineSize, boxHeight, infoBox.Count + messageBox.Count);
@@ -81,7 +88,7 @@ namespace GitApp
             {
                 var element = list[i];
                 currentSize += PageUtilities.GetLinesSizeForRightBox(element, rowSize);
-                if (currentSize >= availableSpace)
+                if (currentSize >= availableSpace - 3)
                 {
                     result.Add(PageUtilities.TruncateText(i == list.Count - 1 ? element : element.Trim() + " ", rowSize));
                     break;
