@@ -56,10 +56,11 @@ namespace GitApp
             var width = Console.WindowWidth;
             var height = Console.WindowHeight;
             var rightSideLineSize = width - (int)(0.6 * width);
-            var rightBoxSize = rightSideLineSize * (int)(height * 0.33);
-            var rightBoxMarginDimension = 2 * (height / 3) + 2 * (rightSideLineSize - 2);
-            var result = new List<string>();
             int boxHeight = Console.WindowHeight / 3;
+            var rightBoxSize = rightSideLineSize * boxHeight;
+            var rightBoxMarginDimension = 2 * boxHeight + 2 * (rightSideLineSize - 2);
+            var result = new List<string>();
+
             var infoTemp = SplitRow(info.Split("\n"), rightSideLineSize - 2);
             var infoBox = DrawBox(FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Info", rightSideLineSize, boxHeight, 0);
             result.AddRange(infoBox);
@@ -90,8 +91,7 @@ namespace GitApp
                 currentSize += PageUtilities.GetLinesSizeForRightBox(element, rowSize);
                 if (currentSize >= availableSpace - 3)
                 {
-                    var temp = i == list.Count - 1 ? element : element.Trim() + " ";
-                    result.Add(currentSize == availableSpace ? temp : PageUtilities.TruncateText(temp, rowSize));
+                    result.Add(currentSize <= availableSpace && i == list.Count - 1 ? element : PageUtilities.TruncateText(element.Trim() + " ", rowSize));
                     break;
                 }
 
