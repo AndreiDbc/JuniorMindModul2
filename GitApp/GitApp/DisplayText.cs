@@ -90,7 +90,8 @@ namespace GitApp
                 currentSize += PageUtilities.GetLinesSizeForRightBox(element, rowSize);
                 if (currentSize >= availableSpace - 3)
                 {
-                    result.Add(PageUtilities.TruncateText(i == list.Count - 1 ? element : element.Trim() + " ", rowSize));
+                    var temp = i == list.Count - 1 ? element : element.Trim() + " ";
+                    result.Add(currentSize == availableSpace ? temp : PageUtilities.TruncateText(temp, rowSize));
                     break;
                 }
 
