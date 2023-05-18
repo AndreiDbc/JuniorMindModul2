@@ -36,9 +36,9 @@ namespace GitApp
             var temp = new List<Commit>();
             temp.AddRange(page);
             var toWrite = GetCommits(initialText, page);
-            var codeLength = GetFormatingCodeAndLength(toWrite[^2]);
+            var codeLength = PageUtilities.GetFormatingCodesLength(toWrite[^2]);
             toWrite[^2] = commitTextSize > availableSpace
-                ? PageUtilities.TruncateText(toWrite[^2], windowWidth + codeLength.length)
+                ? PageUtilities.TruncateText(toWrite[^2], windowWidth + codeLength)
                 : toWrite[^2];
             toWrite.ForEach(line => Console.WriteLine(line));
             ConsoleKey key;
@@ -165,7 +165,7 @@ namespace GitApp
             {
                 if (index < list.Count)
                 {
-                    var padLength = limit + 6 - (list[index].Length - GetFormatingCodeAndLength(list[index]).length);
+                    var padLength = limit + 6 - (list[index].Length - PageUtilities.GetFormatingCodesLength(list[index]));
                     var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
                     list[index] = "\x1b[0m│" + list[index] + toPad;
                 }
@@ -179,12 +179,6 @@ namespace GitApp
             while (list.Count % consoleWrapper.WindowHeight != 0 && !list[^1].StartsWith("\x1b[0m│"));
             list.Add("\x1b[0m└" + new string('─', limit - 2) + "┘");
             return list;
-        }
-
-        private static (int length, IEnumerable<string> codes) GetFormatingCodeAndLength(string element)
-        {
-            IEnumerable<string> codes = new[] { "\x1b[0m", "\x1b[7m", "\x1b[48;5;27m", "\x1b[48;5;46m", "\x1b[48;5;196m", "\u001b[38;5;27m", "\u001b[38;5;46m", "\u001b[38;5;196m" };
-            return (codes.Aggregate(0, (result, code) => element.Contains(code) ? code.Length + result : result), codes.Where(code => element.Contains(code)));
         }
 
         private static void DisplaySplitScreen(List<string> leftSide, List<string> rightSide, IConsoleWrapper consoleWrapper)
@@ -344,7 +338,7 @@ namespace GitApp
 
             var toWrite = GetCommits(initialText, page);
             isPageLargerThanWindow = commitTextSize > availableSpace;
-            toWrite[^2] = isPageLargerThanWindow ? PageUtilities.TruncateText(toWrite[^2], windowWidth + GetFormatingCodeAndLength(toWrite[^2]).length) : toWrite[^2];
+            toWrite[^2] = isPageLargerThanWindow ? PageUtilities.TruncateText(toWrite[^2], windowWidth + PageUtilities.GetFormatingCodesLength(toWrite[^2])) : toWrite[^2];
             toWrite.ForEach(line => Console.WriteLine(line));
         }
     }

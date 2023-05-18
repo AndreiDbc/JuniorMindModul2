@@ -52,15 +52,10 @@ namespace GitApp
             return result;
         }
 
-        public static int GetTextSizeForRightSide(string[] lines)
+        public static int GetFormatingCodesLength(string element)
         {
-            var result = 0;
-            foreach (var line in lines)
-            {
-                result += line.Length;
-            }
-
-            return result;
+            IEnumerable<string> codes = new[] { "\x1b[0m", "\x1b[7m", "\x1b[48;5;27m", "\x1b[48;5;46m", "\x1b[48;5;196m", "\u001b[38;5;27m", "\u001b[38;5;46m", "\u001b[38;5;196m" };
+            return codes.Aggregate(0, (result, code) => element.Contains(code) ? code.Length + result : result);
         }
 
         public (List<Commit> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
@@ -88,12 +83,6 @@ namespace GitApp
         {
             return phrase.Length / Console.WindowWidth * Console.WindowWidth
                     + (phrase.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
-        }
-
-        private static int GetFormatingCodesLength(string element)
-        {
-            IEnumerable<string> codes = new[] { "\x1b[0m", "\x1b[7m", "\x1b[48;5;27m", "\x1b[48;5;46m", "\x1b[48;5;196m", "\u001b[38;5;27m", "\u001b[38;5;46m", "\u001b[38;5;196m" };
-            return codes.Aggregate(0, (result, code) => element.Contains(code) ? code.Length + result : result);
         }
     }
 }
