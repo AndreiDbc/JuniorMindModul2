@@ -32,7 +32,7 @@ namespace GitApp
             var initialTextSize = initialData.GetTextSize();
             var availableSpace = windowSize - initialTextSize;
             var pageOptions = new PageUtilities(commits.GetText());
-            (var page, commitTextSize) = pageOptions.GetPageDataAndSize(commits.Index, availableSpace);
+            (var page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace);
             var temp = new List<Commit>();
             temp.AddRange(page);
             var toWrite = GetCommits(initialText, page);
@@ -195,6 +195,28 @@ namespace GitApp
             }
         }
 
+        private (List<Commit> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
+        {
+            var result = new List<Commit>();
+            var commitsList = commits.GetText();
+            int textSize = 0;
+            do
+            {
+                if (index > commitsList.Count - 1)
+                {
+                    break;
+                }
+
+                result.Add(commitsList.ElementAt(index));
+                index++;
+                var element = result[^1].GetElement();
+                textSize += PageUtilities.GetTextSize(element) - PageUtilities.GetFormatingCodesLength(element);
+            }
+            while (textSize < availableSpace);
+
+            return (result, textSize);
+        }
+
         private List<string> GetLeftSide(IConsoleWrapper consoleWrapper)
         {
             var leftSideColumnSize = (int)(0.15 * (consoleWrapper.WindowWidth - 2));
@@ -327,7 +349,7 @@ namespace GitApp
             var commitsToString = new List<string>();
             page.ForEach(line => commitsToString.Add(line.GetElement()));
             (commits.Index, commits.Current) = keyInteractor.KeySwitch(commitsToString, isPageLargerThanWindow, consoleWrapper.WindowWidth);
-            (page, commitTextSize) = pageOptions.GetPageDataAndSize(commits.Index, availableSpace);
+            (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace);
             var temp = new List<Commit>();
             temp.AddRange(page);
 

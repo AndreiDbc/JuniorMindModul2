@@ -58,28 +58,7 @@ namespace GitApp
             return codes.Aggregate(0, (result, code) => element.Contains(code) ? code.Length + result : result);
         }
 
-        public (List<Commit> list, int textSize) GetPageDataAndSize(int index, int availableSpace)
-        {
-            var result = new List<Commit>();
-            int textSize = 0;
-            do
-            {
-                if (index > list.Count - 1)
-                {
-                    break;
-                }
-
-                result.Add(list.ElementAt(index));
-                index++;
-                var element = result[^1].GetElement();
-                textSize += GetTextSize(element) - GetFormatingCodesLength(element);
-            }
-            while (textSize < availableSpace);
-
-            return (result, textSize);
-        }
-
-        private static int GetTextSize(string phrase)
+        public static int GetTextSize(string phrase)
         {
             return phrase.Length / Console.WindowWidth * Console.WindowWidth
                     + (phrase.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
