@@ -8,20 +8,20 @@ namespace GitApp
 {
     public class PageUtilities
     {
-        private readonly List<Commit> list;
+        private readonly string element;
 
-        public PageUtilities(List<Commit> list)
+        public PageUtilities(string element)
         {
-            this.list = list;
+            this.element = element;
         }
 
-        public static string TruncateText(string element, int size)
+        public string TruncateText(int size)
         {
             string toAdd = "";
             var i = 0;
             do
             {
-                if (size < 3 || i == element.Length - 1)
+                if (size <= 3 || i == element.Length - 1)
                 {
                     break;
                 }
@@ -33,14 +33,7 @@ namespace GitApp
             return toAdd + "...";
         }
 
-        public static int GetSize(List<string> page)
-        {
-            int result = 0;
-            page.ForEach(line => result += GetTextSize(line) - GetFormatingCodesLength(line));
-            return result;
-        }
-
-        public static int GetLinesSizeForRightBox(string element, int size)
+        public int GetOccupancyRate(int size)
         {
             int result = 0;
             foreach (var line in element.Split("\n"))
@@ -52,16 +45,10 @@ namespace GitApp
             return result;
         }
 
-        public static int GetFormatingCodesLength(string element)
+        public int GetFormatingCodesLength()
         {
             IEnumerable<string> codes = new[] { "\x1b[0m", "\x1b[7m", "\x1b[48;5;27m", "\x1b[48;5;46m", "\x1b[48;5;196m", "\u001b[38;5;27m", "\u001b[38;5;46m", "\u001b[38;5;196m" };
             return codes.Aggregate(0, (result, code) => element.Contains(code) ? code.Length + result : result);
-        }
-
-        public static int GetTextSize(string phrase)
-        {
-            return phrase.Length / Console.WindowWidth * Console.WindowWidth
-                    + (phrase.Length % Console.WindowWidth == 0 ? 0 : 1) * Console.WindowWidth;
         }
     }
 }
