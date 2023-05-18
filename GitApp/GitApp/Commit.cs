@@ -53,7 +53,7 @@ namespace GitApp
                     var monthNames = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames;
                     var monthIndex = Array.IndexOf(monthNames, temp[4]) + 1;
                     var day = temp[5].Length == 1 ? "0" + temp[5] : temp[5];
-                    var commitDate = new DateTime(int.Parse(temp[7]), monthIndex, int.Parse(day), int.Parse(hhmmss[0]), int.Parse(hhmmss[1]),int.Parse(hhmmss[2]));
+                    var commitDate = new DateTime(int.Parse(temp[7]), monthIndex, int.Parse(day), int.Parse(hhmmss[0]), int.Parse(hhmmss[1]), int.Parse(hhmmss[2]));
                     var timeDiference = DateTime.Now.Subtract(commitDate);
                     return commitDate.Year + "-"
                         + (commitDate.Month.ToString().Length == 1 ? "0" + commitDate.Month : commitDate.Month) + "-"
@@ -108,7 +108,7 @@ namespace GitApp
                 Author = GetAuthorName()[7..].Trim(),
                 Date = GetDate(temp),
                 Message = GetMessage(temp),
-                Sha = temp[0][7..]
+                Sha = temp[0][7..47]
             };
         }
 

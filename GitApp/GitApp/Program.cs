@@ -11,7 +11,7 @@ namespace GitApp
             var manager = new GitManager("git", new GitProcessRunner());
             var commits = new FullCommits(manager.GetLog());
             var display = new DisplayText(commits);
-            display.Display();
+            display.Display(new ConsoleWrapper());
         }
     }
 }

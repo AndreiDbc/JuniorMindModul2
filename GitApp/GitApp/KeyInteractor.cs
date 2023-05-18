@@ -17,11 +17,11 @@ namespace GitApp
 
         public ConsoleKey KeyInfo { get; set; }
 
-        public (int index, int current) KeySwitch(List<string> page, bool isPageLargerThanWindow)
+        public (int index, int current) KeySwitch(List<string> page, bool isPageLargerThanWindow, int consoleWidth)
         {
             return KeyInfo switch
             {
-                ConsoleKey.DownArrow => InteractWithDownArrow(page, isPageLargerThanWindow),
+                ConsoleKey.DownArrow => InteractWithDownArrow(page, isPageLargerThanWindow, consoleWidth),
                 ConsoleKey.UpArrow => InteractWithUpArrow(page),
                 ConsoleKey.PageDown => InteractWithPageDown(page),
                 ConsoleKey.PageUp => InteractWithPageUp(page),
@@ -50,7 +50,7 @@ namespace GitApp
             return (SetToZeroOrDontChange(commits.Index - page.Count), SetToZeroOrDontChange(commits.Current - page.Count));
         }
 
-        private (int index, int current) InteractWithDownArrow(List<string> page, bool isPageLargerThanWindow)
+        private (int index, int current) InteractWithDownArrow(List<string> page, bool isPageLargerThanWindow, int consoleWidth)
         {
             var lastPageElement = RemoveFormatingCodes(page[^1]);
             var list = commits.GetText();
@@ -60,7 +60,7 @@ namespace GitApp
             {
                 commits.Index++;
                 commits.Index = isPageLargerThanWindow
-                    ? commits.Index + list[commits.Current].GetElement().Length / Console.WindowWidth
+                    ? commits.Index + list[commits.Current].GetElement().Length / consoleWidth
                     : commits.Index;
             }
 
