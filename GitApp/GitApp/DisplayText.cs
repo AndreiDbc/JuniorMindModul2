@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    class DisplayText
+    public class DisplayText
     {
         private readonly FullCommits commits;
 
@@ -21,20 +21,17 @@ namespace GitApp
             this.commits = commits;
         }
 
-        public void Display(IConsoleWrapper consoleWrapper)
+        public void Display(IConsoleWrapper consoleWrapper, string initialData)
         {
-            var gitManager = new GitManager("git", new GitProcessRunner());
-            var initialData = new InitialData(gitManager);
-            var initialText = initialData.GetText();
             var commitTextSize = 0;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth - windowWidth;
-            var initialTextSize = initialData.GetTextSize();
+            var initialTextSize = new PageUtilities(initialData).GetOccupancyRate(consoleWrapper.WindowWidth);
             var availableSpace = windowSize - initialTextSize;
             (var page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
             var temp = new List<Commit>();
             temp.AddRange(page);
-            var toWrite = GetCommits(initialText, page);
+            var toWrite = GetCommits(initialData, page);
             var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
             var codeLength = lastPageElementUtilities.GetFormatingCodesLength();
             toWrite[^2] = commitTextSize > availableSpace
@@ -45,7 +42,7 @@ namespace GitApp
             do
             {
                 key = consoleWrapper.ReadKey().Key;
-                Write(key, initialData, ref commitTextSize, ref page, consoleWrapper);
+                Write(key, initialData, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
             }
             while (!key.Equals(ConsoleKey.Escape));
             Console.ReadKey();
@@ -128,7 +125,13 @@ namespace GitApp
             return result;
         }
 
-        private static List<string> DrawBox(List<string> list, string boxName, int limit, int boxHeight, int windowHeight, int currentSpaceOccupation)
+        private static List<string> DrawBox(
+            List<string> list,
+            string boxName,
+            int limit,
+            int boxHeight,
+            int windowHeight,
+            int currentSpaceOccupation)
         {
             int index = 1;
             list.Insert(0, "┌" + boxName + new string('─', limit - boxName.Length - 2) + "┐");
@@ -182,7 +185,10 @@ namespace GitApp
             return list;
         }
 
-        private static void DisplaySplitScreen(List<string> leftSide, List<string> rightSide, IConsoleWrapper consoleWrapper)
+        private static void DisplaySplitScreen(
+            List<string> leftSide,
+            List<string> rightSide,
+            IConsoleWrapper consoleWrapper)
         {
             leftSide = DrawCommitBox(leftSide, consoleWrapper);
 
@@ -333,7 +339,8 @@ namespace GitApp
 
         private void Write(
             ConsoleKey keyInfo,
-            InitialData initialData,
+            string initialText,
+            int initialTextSize,
             ref int commitTextSize,
             ref List<Commit> page,
             IConsoleWrapper consoleWrapper)
@@ -344,9 +351,7 @@ namespace GitApp
             };
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
-            var initialTextSize = initialData.GetTextSize();
             var availableSpace = windowSize - initialTextSize - windowWidth;
-            var initialText = initialData.GetText();
             var isPageLargerThanWindow = commitTextSize > availableSpace;
             var commitsToString = new List<string>();
             page.ForEach(line => commitsToString.Add(line.GetElement()));
