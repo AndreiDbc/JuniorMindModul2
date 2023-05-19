@@ -1,6 +1,7 @@
 ﻿using Castle.Components.DictionaryAdapter.Xml;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -15,10 +16,12 @@ namespace GitApp
     public class DisplayText
     {
         private readonly FullCommits commits;
+        private TextWriter writer;
 
-        public DisplayText(FullCommits commits)
+        public DisplayText(FullCommits commits, TextWriter writer)
         {
             this.commits = commits;
+            this.writer = writer;
         }
 
         public void Display(IConsoleWrapper consoleWrapper, string initialData)
@@ -37,15 +40,17 @@ namespace GitApp
             toWrite[^2] = commitTextSize > availableSpace
                 ? lastPageElementUtilities.TruncateText(windowWidth + codeLength)
                 : toWrite[^2];
-            toWrite.ForEach(line => Console.WriteLine(line));
+            toWrite.ForEach(line => writer.WriteLine(line));
+            consoleWrapper.Write(writer.ToString().Trim());
             ConsoleKey key;
             do
             {
                 key = consoleWrapper.ReadKey().Key;
+                consoleWrapper.Clear();
+                writer = new StringWriter();
                 Write(key, initialData, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
             }
             while (!key.Equals(ConsoleKey.Escape));
-            Console.ReadKey();
         }
 
         private static List<string> FormateRightSide(string info, string message, string files, IConsoleWrapper consoleWrapper)
@@ -185,7 +190,7 @@ namespace GitApp
             return list;
         }
 
-        private static void DisplaySplitScreen(
+        private void DisplaySplitScreen(
             List<string> leftSide,
             List<string> rightSide,
             IConsoleWrapper consoleWrapper)
@@ -194,12 +199,14 @@ namespace GitApp
 
             for (int i = 0; i < leftSide.Count; i++)
             {
-                Console.Write(i < rightSide.Count ? leftSide[i] : leftSide[i] + "\n");
+                writer.Write(i < rightSide.Count ? leftSide[i] : leftSide[i] + "\n");
                 if (i < rightSide.Count)
                 {
-                    Console.WriteLine(rightSide[i]);
+                    writer.WriteLine(rightSide[i]);
                 }
             }
+
+            consoleWrapper.Write(writer.ToString().Trim());
         }
 
         private (List<Commit> list, int textSize) GetPageDataAndSize(int index, int availableSpace, int lineSize)
@@ -292,8 +299,7 @@ namespace GitApp
 
         private List<string> GetCommits(string initialText, List<Commit> page)
         {
-            Console.Clear();
-            Console.WriteLine(initialText);
+            writer.WriteLine(initialText);
             var result = new List<string>();
             page.ForEach(commit =>
             {
@@ -312,19 +318,20 @@ namespace GitApp
             return result;
         }
 
-        private void WriteCommitFiles(KeyInteractor keyInteractor, IConsoleWrapper initialConsoleWrapper)
+        private void WriteCommitFiles(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper)
         {
-            Console.Clear();
+            consoleWrapper.Clear();
             var currentCommit = commits.GetElementAt(commits.Current);
             var info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
             var files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
-            var leftSide = GetLeftSide(initialConsoleWrapper);
-            DisplaySplitScreen(leftSide, FormateRightSide(info, currentCommit.Message, files, initialConsoleWrapper), initialConsoleWrapper);
+            var leftSide = GetLeftSide(consoleWrapper);
+            DisplaySplitScreen(leftSide, FormateRightSide(info, currentCommit.Message, files, consoleWrapper), consoleWrapper);
             ConsoleKey key;
             do
             {
-                var consoleWrapper = new ConsoleWrapper();
                 key = consoleWrapper.ReadKey().Key;
+                consoleWrapper.Clear();
+                writer = new StringWriter();
                 keyInteractor.KeyInfo = key;
                 (commits.Index, commits.Current) = keyInteractor.KeySwitch(leftSide, false, consoleWrapper.WindowWidth);
                 leftSide = GetLeftSide(consoleWrapper);
@@ -349,6 +356,13 @@ namespace GitApp
             {
                 KeyInfo = keyInfo
             };
+
+            if (keyInfo.Equals(ConsoleKey.Enter))
+            {
+                WriteCommitFiles(keyInteractor, consoleWrapper);
+            }
+
+            writer = new StringWriter();
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
             var availableSpace = windowSize - initialTextSize - windowWidth;
@@ -359,17 +373,12 @@ namespace GitApp
             (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
             var temp = new List<Commit>();
             temp.AddRange(page);
-
-            if (keyInfo.Equals(ConsoleKey.Enter))
-            {
-                WriteCommitFiles(keyInteractor, consoleWrapper);
-            }
-
             var toWrite = GetCommits(initialText, page);
             isPageLargerThanWindow = commitTextSize > availableSpace;
             var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
             toWrite[^2] = isPageLargerThanWindow ? lastPageElementUtilities.TruncateText(windowWidth + lastPageElementUtilities.GetFormatingCodesLength()) : toWrite[^2];
-            toWrite.ForEach(line => Console.WriteLine(line));
+            toWrite.ForEach(line => writer.WriteLine(line));
+            consoleWrapper.Write(writer.ToString().Trim());
         }
     }
 }

@@ -33,5 +33,17 @@ namespace GitApp.Tests
         {
             return consoleKey;
         }
+
+        public void Write(string text)
+        {
+        }
+
+        public void WriteLine(string text)
+        {
+        }
+
+        public void Clear()
+        {
+        }
     }
 }

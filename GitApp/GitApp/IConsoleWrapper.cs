@@ -15,5 +15,11 @@ namespace GitApp
         public ConsoleKeyInfo ReadKey();
 
         public void SetCursorPosition(int left, int top);
+
+        public void Clear();
+
+        public void WriteLine(string text);
+
+        public void Write(string text);
     }
 }
