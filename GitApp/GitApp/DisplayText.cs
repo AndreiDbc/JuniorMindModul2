@@ -253,7 +253,7 @@ namespace GitApp
             return (result, textSize);
         }
 
-        private List<string> GetLeftSide(int columnWidth, int windowHeight)
+        private List<string> GetLeftSide(int rowWidth, int windowHeight)
         {
             var additionalLength = new[] { 14, 10, 10, 4 };
             var additionalLengthForCurrent = new[] { 14, 10, 10, 8 };
@@ -262,19 +262,19 @@ namespace GitApp
             leftSideCommits.ForEach(line =>
             {
                 var toAdd = "";
-                for (int i = 0; i < line.Count; i++)
+                for (int i = 0; i < line.Count - 1; i++)
                 {
                     var element = line[i];
                     var elementUtilities = new PageUtilities(element);
-                    if (element.Contains("\u001b[7m"))
+                    if (line[0].Contains("\u001b[7m"))
                     {
-                        toAdd += element.Length > columnWidth + additionalLengthForCurrent[i]
-                        ? elementUtilities.TruncateText(columnWidth + additionalLengthForCurrent[i] - 1) + " "
+                        toAdd += element.Length + 1 > rowWidth + additionalLengthForCurrent[i]
+                        ? elementUtilities.TruncateText(rowWidth + additionalLengthForCurrent[i] - 1) + " "
                         : element + " ";
                     }
-                    else if (element.Length > columnWidth + additionalLength[i])
+                    else if (element.Length + 1 > rowWidth + additionalLength[i])
                     {
-                        toAdd += elementUtilities.TruncateText(columnWidth + additionalLength[i] - 1) + " ";
+                        toAdd += elementUtilities.TruncateText(rowWidth + additionalLength[i] - 1) + " ";
                     }
                     else
                     {
@@ -282,6 +282,13 @@ namespace GitApp
                     }
                 }
 
+                var additionalLengthForMessage = rowWidth * 3 +
+                (line[0].Contains("\u001b[7m") ? additionalLengthForCurrent.Sum()
+                : additionalLength.Sum()) -
+                toAdd.Length;
+                toAdd += toAdd.Length + line[3].Length - additionalLengthForMessage > rowWidth * 4
+                ? new PageUtilities(line[3]).TruncateText(rowWidth + additionalLengthForMessage)
+                : line[3];
                 leftSideTemp.Add(toAdd.Trim());
             });
 
