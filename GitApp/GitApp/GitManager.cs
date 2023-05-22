@@ -12,9 +12,9 @@ namespace GitApp
     public class GitManager
     {
         private readonly string fileName;
-        private readonly GitProcessRunner commandRunner;
+        private readonly IProcessRunner commandRunner;
 
-        public GitManager(string fileName, GitProcessRunner processRunner)
+        public GitManager(string fileName, IProcessRunner processRunner)
         {
             this.fileName = fileName;
             this.commandRunner = processRunner;

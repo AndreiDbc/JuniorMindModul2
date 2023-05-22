@@ -8,10 +8,11 @@ namespace GitApp
     {
         static void Main()
         {
-            var manager = new GitManager("git", new GitProcessRunner());
+            var processRunner = new GitProcessRunner();
+            var manager = new GitManager("git", processRunner);
             var commits = new FullCommits(manager.GetLog());
             TextWriter writer = new StringWriter();
-            var display = new DisplayText(commits, writer);
+            var display = new DisplayText(commits, writer, processRunner);
             var initialData = new InitialData(manager);
             display.Display(new ConsoleWrapper(), initialData.GetText());
             writer.Flush();

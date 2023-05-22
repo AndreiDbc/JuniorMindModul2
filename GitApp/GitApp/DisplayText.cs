@@ -15,14 +15,19 @@ namespace GitApp
 {
     public class DisplayText
     {
+        private readonly IProcessRunner processRunner;
         private readonly FullCommits commits;
         private TextWriter writer;
 
-        public DisplayText(FullCommits commits, TextWriter writer)
+        public DisplayText(FullCommits commits, TextWriter writer, IProcessRunner processRunner)
         {
             this.commits = commits;
             this.writer = writer;
+            this.processRunner = processRunner;
+            IsRightSideInUse = false;
         }
+
+        private bool IsRightSideInUse { get; set; }
 
         public void Display(IConsoleWrapper consoleWrapper, string initialData)
         {
@@ -53,11 +58,8 @@ namespace GitApp
             while (!key.Equals(ConsoleKey.Escape));
         }
 
-        private static List<string> FormateRightSide(string info, string message, string files, IConsoleWrapper consoleWrapper)
+        private static List<string> FormateRightSide(string info, string message, string files, int height, int rightSideLineSize)
         {
-            var width = consoleWrapper.WindowWidth;
-            var height = consoleWrapper.WindowHeight;
-            var rightSideLineSize = width - (int)(0.6 * width);
             int boxHeight = height / 3;
             var rightBoxSize = rightSideLineSize * boxHeight;
             var rightBoxMarginDimension = 2 * boxHeight + 2 * (rightSideLineSize - 2);
@@ -163,31 +165,50 @@ namespace GitApp
             return list;
         }
 
-        private static List<string> DrawCommitBox(List<string> list, IConsoleWrapper consoleWrapper)
+        private static List<string> DrawCommitBox(List<string> list, int windowHeight, int width)
         {
-            var limit = (int)(0.6 * consoleWrapper.WindowWidth);
             const string boxName = "Commits";
             const int lengthToSubstract = 2;
-            list.Insert(0, "┌" + boxName + new string('─', limit - boxName.Length - lengthToSubstract) + "┐");
+            list.Insert(0, "┌" + boxName + new string('─', width - boxName.Length - lengthToSubstract) + "┐");
             var index = 1;
             do
             {
                 if (index < list.Count)
                 {
-                    var padLength = limit + 6 - (list[index].Length - new PageUtilities(list[index]).GetFormatingCodesLength());
+                    var padLength = width + 6 - (list[index].Length - new PageUtilities(list[index]).GetFormatingCodesLength());
                     var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
                     list[index] = "\x1b[0m│" + list[index] + toPad;
                 }
                 else
                 {
-                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(limit + 6));
+                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(width + 6));
                 }
 
                 index++;
             }
-            while (list.Count % consoleWrapper.WindowHeight != 0 && !list[^1].StartsWith("\x1b[0m│"));
-            list.Add("\x1b[0m└" + new string('─', limit - 2) + "┘");
+            while (list.Count % windowHeight != 0 && !list[^1].StartsWith("\x1b[0m│"));
+            list.Add("\x1b[0m└" + new string('─', width - 2) + "┘");
             return list;
+        }
+
+        private void SelectSideAndWrite(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper, List<string> leftSide, string info, string message, string files)
+        {
+            var result = new List<string>();
+            if (keyInteractor.KeyInfo == ConsoleKey.Spacebar)
+            {
+                IsRightSideInUse = !IsRightSideInUse;
+            }
+
+            result = IsRightSideInUse
+                   ? FormateRightSide(info, message, files, consoleWrapper.WindowHeight, consoleWrapper.WindowWidth)
+                   : leftSide;
+
+            foreach (var line in result)
+            {
+                writer.WriteLine(line);
+            }
+
+            consoleWrapper.Write(writer.ToString().Trim());
         }
 
         private void DisplaySplitScreen(
@@ -195,7 +216,7 @@ namespace GitApp
             List<string> rightSide,
             IConsoleWrapper consoleWrapper)
         {
-            leftSide = DrawCommitBox(leftSide, consoleWrapper);
+            leftSide = DrawCommitBox(leftSide, consoleWrapper.WindowHeight, (int)(0.6 * consoleWrapper.WindowWidth));
 
             for (int i = 0; i < leftSide.Count; i++)
             {
@@ -232,12 +253,11 @@ namespace GitApp
             return (result, textSize);
         }
 
-        private List<string> GetLeftSide(IConsoleWrapper consoleWrapper)
+        private List<string> GetLeftSide(int columnWidth, int windowHeight)
         {
-            var leftSideColumnSize = (int)(0.15 * (consoleWrapper.WindowWidth - 2));
             var additionalLength = new[] { 14, 10, 10, 4 };
             var additionalLengthForCurrent = new[] { 14, 10, 10, 8 };
-            var leftSideCommits = AddCommitsToLeftSide(consoleWrapper.WindowHeight - 2);
+            var leftSideCommits = AddCommitsToLeftSide(windowHeight - 2);
             var leftSideTemp = new List<string>();
             leftSideCommits.ForEach(line =>
             {
@@ -248,13 +268,13 @@ namespace GitApp
                     var elementUtilities = new PageUtilities(element);
                     if (element.Contains("\u001b[7m"))
                     {
-                        toAdd += element.Length > leftSideColumnSize + additionalLengthForCurrent[i]
-                        ? elementUtilities.TruncateText(leftSideColumnSize + additionalLengthForCurrent[i] - 1) + " "
+                        toAdd += element.Length > columnWidth + additionalLengthForCurrent[i]
+                        ? elementUtilities.TruncateText(columnWidth + additionalLengthForCurrent[i] - 1) + " "
                         : element + " ";
                     }
-                    else if (element.Length > leftSideColumnSize + additionalLength[i])
+                    else if (element.Length > columnWidth + additionalLength[i])
                     {
-                        toAdd += elementUtilities.TruncateText(leftSideColumnSize + additionalLength[i] - 1) + " ";
+                        toAdd += elementUtilities.TruncateText(columnWidth + additionalLength[i] - 1) + " ";
                     }
                     else
                     {
@@ -318,14 +338,35 @@ namespace GitApp
             return result;
         }
 
+        private void SelectScreen(IConsoleWrapper consoleWrapper, KeyInteractor keyInteractor, ref List<string> leftSideCommits, string info, string message, string files)
+        {
+            var height = consoleWrapper.WindowHeight;
+            var width = consoleWrapper.WindowWidth;
+
+            if (height < 15 && width < 50)
+            {
+                leftSideCommits = GetLeftSide((int)(0.15 * (width - 2)), height);
+                var leftSide = DrawCommitBox(leftSideCommits, height, width);
+                SelectSideAndWrite(keyInteractor, consoleWrapper, leftSide, info, message, files);
+            }
+            else
+            {
+                leftSideCommits = GetLeftSide((int)(0.15 * (width - 2)), height);
+                DisplaySplitScreen(
+                    leftSideCommits,
+                    FormateRightSide(info, message, files, height, width - (int)(0.6 * width)),
+                    consoleWrapper);
+            }
+        }
+
         private void WriteCommitFiles(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper)
         {
             consoleWrapper.Clear();
             var currentCommit = commits.GetElementAt(commits.Current);
             var info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
-            var files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
-            var leftSide = GetLeftSide(consoleWrapper);
-            DisplaySplitScreen(leftSide, FormateRightSide(info, currentCommit.Message, files, consoleWrapper), consoleWrapper);
+            var files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
+            var leftSide = new List<string>();
+            SelectScreen(consoleWrapper, keyInteractor, ref leftSide, info, currentCommit.Message, files);
             ConsoleKey key;
             do
             {
@@ -334,12 +375,11 @@ namespace GitApp
                 writer = new StringWriter();
                 keyInteractor.KeyInfo = key;
                 (commits.Index, commits.Current) = keyInteractor.KeySwitch(leftSide, false, consoleWrapper.WindowWidth);
-                leftSide = GetLeftSide(consoleWrapper);
                 currentCommit = commits.GetElementAt(commits.Current);
                 info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
-                files = new GitManager("git", new GitProcessRunner()).GetCommitModifiedFileNames(currentCommit.Id);
-                Console.Clear();
-                DisplaySplitScreen(leftSide, FormateRightSide(info, currentCommit.Message, files, consoleWrapper), consoleWrapper);
+                files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
+                consoleWrapper.Clear();
+                SelectScreen(consoleWrapper, keyInteractor, ref leftSide, info, currentCommit.Message, files);
             }
             while (key != ConsoleKey.Escape);
         }

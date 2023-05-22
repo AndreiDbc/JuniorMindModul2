@@ -8,11 +8,18 @@ namespace GitApp.Tests
 {
     public class FakeConsole : IConsoleWrapper
     {
-        private readonly ConsoleKeyInfo consoleKey;
+        private ConsoleKeyInfo[] keySequence;
+        private ConsoleKeyInfo lastPressedKey;
+        private int currentKeyIndex;
+        public StringWriter StringWriter;
+        public string lastFrame;
 
-        public FakeConsole(ConsoleKeyInfo consoleKey)
+        public FakeConsole( ConsoleKeyInfo[] keySequence, StringWriter stringWriter)
         {
-            this.consoleKey = consoleKey;
+            this.keySequence = keySequence;
+            lastPressedKey = new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false);
+            currentKeyIndex = 0;
+            StringWriter = stringWriter;
         }
 
         public int WindowWidth { get; set; }
@@ -31,7 +38,13 @@ namespace GitApp.Tests
 
         public ConsoleKeyInfo ReadKey()
         {
-            return consoleKey;
+            currentKeyIndex++;
+            if (currentKeyIndex > keySequence.Length)
+            {
+                return lastPressedKey;
+            }
+
+            return keySequence[currentKeyIndex - 1];
         }
 
         public void Write(string text)
@@ -44,6 +57,7 @@ namespace GitApp.Tests
 
         public void Clear()
         {
+            lastFrame += StringWriter.ToString();
         }
     }
 }
