@@ -70,7 +70,7 @@ namespace GitApp.Tests
                 "\r\n\u001b[0m\u001b[38;5;27mfae78e6 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFixed date column arrangement on left side." +
                 "\r\n\u001b[0m\u001b[38;5;27mf4ad294 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mGetLeftSide method's leftSideColumnSize variable is now 15% of console window's width." +
                 "\r\n\u001b[0m\u001b[38;5;27md3d8ef7 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-08 \u001b[0mFixed an issue that caused not to display the correct date." +
-                "\r\nPress 'Esc' to exit.\r\n";
+                "\r\n\u001b[0mPress 'Esc' to exit.\r\n";
             var actualOutput = fakeConsole.lastFrame;
             Assert.Equal(expected, actualOutput);
         }

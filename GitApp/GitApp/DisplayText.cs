@@ -43,7 +43,7 @@ namespace GitApp
             var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
             var codeLength = lastPageElementUtilities.GetFormatingCodesLength();
             toWrite[^2] = commitTextSize > availableSpace
-                ? lastPageElementUtilities.TruncateText(windowWidth + codeLength)
+                ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + codeLength)
                 : toWrite[^2];
             toWrite.ForEach(line => writer.WriteLine(line));
             consoleWrapper.Write(writer.ToString().Trim());
@@ -175,13 +175,13 @@ namespace GitApp
             {
                 if (index < list.Count)
                 {
-                    var padLength = width + 6 - (list[index].Length - new PageUtilities(list[index]).GetFormatingCodesLength());
+                    var padLength = width + 2 - (list[index].Length - new PageUtilities(list[index]).GetFormatingCodesLength());
                     var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
                     list[index] = "\x1b[0m│" + list[index] + toPad;
                 }
                 else
                 {
-                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(width + 6));
+                    list.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(width + 2));
                 }
 
                 index++;
@@ -333,7 +333,7 @@ namespace GitApp
                         + "\x1b[38;5;196m" + commit.Date + " "
                         + "\u001b[0m" + commit.Message);
             });
-            result.Add("Press 'Esc' to exit.");
+            result.Add("\u001b[0mPress 'Esc' to exit.");
 
             return result;
         }
@@ -407,17 +407,19 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
             var availableSpace = windowSize - initialTextSize - windowWidth;
+            (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
             var isPageLargerThanWindow = commitTextSize > availableSpace;
             var commitsToString = new List<string>();
             page.ForEach(line => commitsToString.Add(line.GetElement()));
             (commits.Index, commits.Current) = keyInteractor.KeySwitch(commitsToString, isPageLargerThanWindow, consoleWrapper.WindowWidth);
-            (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
             var temp = new List<Commit>();
             temp.AddRange(page);
             var toWrite = GetCommits(initialText, page);
             isPageLargerThanWindow = commitTextSize > availableSpace;
             var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
-            toWrite[^2] = isPageLargerThanWindow ? lastPageElementUtilities.TruncateText(windowWidth + lastPageElementUtilities.GetFormatingCodesLength()) : toWrite[^2];
+            toWrite[^2] = isPageLargerThanWindow
+                ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + lastPageElementUtilities.GetFormatingCodesLength())
+                : toWrite[^2];
             toWrite.ForEach(line => writer.WriteLine(line));
             consoleWrapper.Write(writer.ToString().Trim());
         }
