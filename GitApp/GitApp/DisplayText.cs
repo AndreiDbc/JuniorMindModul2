@@ -402,6 +402,7 @@ namespace GitApp
                 WriteCommitFiles(keyInteractor, consoleWrapper);
             }
 
+            consoleWrapper.Clear();
             writer = new StringWriter();
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
