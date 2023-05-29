@@ -198,13 +198,13 @@ namespace GitApp
             int[] additionalLength,
             string toAdd)
         {
-            var selectCodesLengthForMessage = line[0].Contains("\u001b[7m") ? 8 : 4;
+            var selectAditionalLengthForMessage = line[0].Contains("\u001b[7m") ? 8 : 4;
             var additionalLengthForMessage = rowWidth * 3 +
             (line[0].Contains("\u001b[7m") ? additionalLengthForCurrent.Sum()
             : additionalLength.Sum()) -
             toAdd.Length;
-            toAdd += line[3].Length + selectCodesLengthForMessage > rowWidth + selectCodesLengthForMessage + additionalLengthForMessage
-            ? new PageUtilities(line[3]).TruncateText(rowWidth + additionalLengthForMessage + selectCodesLengthForMessage)
+            toAdd += line[3].Length + selectAditionalLengthForMessage > rowWidth + selectAditionalLengthForMessage + additionalLengthForMessage
+            ? new PageUtilities(line[3]).TruncateText(rowWidth + additionalLengthForMessage + selectAditionalLengthForMessage)
             : line[3];
 
             return toAdd;
@@ -361,7 +361,7 @@ namespace GitApp
 
             if (height < 15 && width < 50)
             {
-                leftSideCommits = GetLeftSide((int)(0.15 * (width - 2)), height);
+                leftSideCommits = GetLeftSide((int)(0.25 * (width - 2)), height);
                 var leftSide = DrawCommitBox(leftSideCommits, height, width);
                 SelectSideAndWrite(keyInteractor, consoleWrapper, leftSide, info, message, files);
             }
