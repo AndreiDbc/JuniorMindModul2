@@ -191,6 +191,25 @@ namespace GitApp
             return list;
         }
 
+        private static string GetMessage(
+            List<string> line,
+            int rowWidth,
+            int[] additionalLengthForCurrent,
+            int[] additionalLength,
+            string toAdd)
+        {
+            var selectCodesLengthForMessage = line[0].Contains("\u001b[7m") ? 8 : 4;
+            var additionalLengthForMessage = rowWidth * 3 +
+            (line[0].Contains("\u001b[7m") ? additionalLengthForCurrent.Sum()
+            : additionalLength.Sum()) -
+            toAdd.Length;
+            toAdd += line[3].Length + selectCodesLengthForMessage > rowWidth + selectCodesLengthForMessage + additionalLengthForMessage
+            ? new PageUtilities(line[3]).TruncateText(rowWidth + additionalLengthForMessage + selectCodesLengthForMessage)
+            : line[3];
+
+            return toAdd;
+        }
+
         private void SelectSideAndWrite(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper, List<string> leftSide, string info, string message, string files)
         {
             var result = new List<string>();
@@ -255,8 +274,8 @@ namespace GitApp
 
         private List<string> GetLeftSide(int rowWidth, int windowHeight)
         {
-            var additionalLength = new[] { 14, 10, 10, 4 };
-            var additionalLengthForCurrent = new[] { 14, 10, 10, 8 };
+            var additionalLength = new[] { 14, 10, 10 };
+            var additionalLengthForCurrent = new[] { 14, 10, 10 };
             var leftSideCommits = AddCommitsToLeftSide(windowHeight - 2);
             var leftSideTemp = new List<string>();
             leftSideCommits.ForEach(line =>
@@ -282,20 +301,10 @@ namespace GitApp
                     }
                 }
 
-                var additionalLengthForMessage = rowWidth * 3 +
-                (line[0].Contains("\u001b[7m") ? additionalLengthForCurrent.Sum()
-                : additionalLength.Sum()) -
-                toAdd.Length;
-                toAdd += toAdd.Length + line[3].Length - additionalLengthForMessage > rowWidth * 4
-                ? new PageUtilities(line[3]).TruncateText(rowWidth + additionalLengthForMessage)
-                : line[3];
-                leftSideTemp.Add(toAdd.Trim());
+                leftSideTemp.Add(GetMessage(line, rowWidth, additionalLengthForCurrent, additionalLength, toAdd).Trim());
             });
 
-            var leftSide = new List<string>();
-            leftSideTemp.ForEach(commit => leftSide.Add(commit));
-
-            return leftSide;
+            return leftSideTemp;
         }
 
         private List<List<string>> AddCommitsToLeftSide(int limit)
