@@ -395,7 +395,7 @@ namespace GitApp
                 writer = new StringWriter();
                 keyInteractor.KeyInfo = key;
                 (commits.Index, commits.Current) = keyInteractor.KeySwitch(
-                    leftSideCommits, leftSideCommits[^1][14..21], false, consoleWrapper.WindowWidth);
+                    leftSideCommits, leftSideCommits[^1][14..21], leftSideCommits[0][14..21], false, consoleWrapper.WindowWidth);
                 currentCommit = commits.GetElementAt(commits.Current);
                 info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
                 files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
@@ -428,11 +428,11 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
             var availableSpace = windowSize - initialTextSize - windowWidth;
-            (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
             var isPageLargerThanWindow = commitTextSize > availableSpace;
             var commitsToString = new List<string>();
             page.ForEach(line => commitsToString.Add(line.GetElement()));
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(commitsToString, page[^1].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
+            (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
             var temp = new List<Commit>();
             temp.AddRange(page);
             var toWrite = GetCommits(initialText, page);

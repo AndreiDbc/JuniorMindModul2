@@ -17,37 +17,21 @@ namespace GitApp
 
         public ConsoleKey KeyInfo { get; set; }
 
-        public (int index, int current) KeySwitch(List<string> page, string lastCommitIdOnPage, bool isPageLargerThanWindow, int consoleWidth)
+        public (int index, int current) KeySwitch(List<string> page, string lastCommitIdOnPage, string firstCommitOnPage, bool isPageLargerThanWindow, int consoleWidth)
         {
             return KeyInfo switch
             {
                 ConsoleKey.DownArrow => InteractWithDownArrow(lastCommitIdOnPage, isPageLargerThanWindow, consoleWidth),
-                ConsoleKey.UpArrow => InteractWithUpArrow(lastCommitIdOnPage),
+                ConsoleKey.UpArrow => InteractWithUpArrow(firstCommitOnPage),
                 ConsoleKey.PageDown => InteractWithPageDown(page, lastCommitIdOnPage),
                 ConsoleKey.PageUp => InteractWithPageUp(page),
                 _ => (commits.Index, commits.Current)
             };
         }
 
-        private static int SetToZeroOrDontChange(int number)
-        {
-            return number < 0 ? 0 : number;
-        }
-
-        private static string RemoveFormatingCodes(string element)
-        {
-            var result = element;
-            foreach (var code in new[] { "\x1b[0m", "\x1b[7m", "\x1b[48;5;27m", "\x1b[48;5;46m", "\x1b[48;5;196m", "\u001b[38;5;27m", "\u001b[38;5;46m", "\u001b[38;5;196m" })
-            {
-                result = result.Replace(code, "");
-            }
-
-            return result;
-        }
-
         private (int index, int current) InteractWithPageUp(List<string> page)
         {
-            return (SetToZeroOrDontChange(commits.Index - page.Count), SetToZeroOrDontChange(commits.Current - page.Count));
+            return (Math.Max(0, commits.Index - page.Count), Math.Max(0, commits.Current - page.Count));
         }
 
         private (int index, int current) InteractWithDownArrow(string lastCommitIdOnPage, bool isPageLargerThanWindow, int consoleWidth)
@@ -63,38 +47,30 @@ namespace GitApp
                     : commits.Index;
             }
 
-            return (SetToLastOrDontChange(commits.Index), SetToLastOrDontChange(commits.Current + 1));
+            return (Math.Min(list.Count - 1, commits.Index), Math.Min(list.Count - 1, ++commits.Current));
         }
 
-        private (int index, int current) InteractWithUpArrow(string id)
+        private (int index, int current) InteractWithUpArrow(string firstCommitOnPage)
         {
             var list = commits.GetText();
-            if (list[commits.Current].Id.Equals(id))
+            if (list[commits.Current].Id.Equals(firstCommitOnPage))
             {
                 commits.Index--;
             }
 
-            return (SetToZeroOrDontChange(commits.Index), SetToZeroOrDontChange(commits.Current - 1));
+            return (Math.Max(0, commits.Index), Math.Max(0, --commits.Current));
         }
 
         private (int index, int current) InteractWithPageDown(List<string> page, string lastCommitIdOnPage)
         {
             var list = commits.GetText();
-            commits.Current = SetToLastOrDontChange(commits.Current + page.Count);
+            commits.Current = Math.Min(list.Count - 1, commits.Current + page.Count);
             if (lastCommitIdOnPage.Equals(list[^1].Id))
             {
                 return (commits.Index, commits.Current);
             }
 
-            return (SetToLastOrDontChange(commits.Index + page.Count), commits.Current);
-        }
-
-        private int SetToLastOrDontChange(int number)
-        {
-            var list = commits.GetText();
-            return number > list.Count - 1
-                ? list.Count - 1
-                : number;
+            return (Math.Min(list.Count - 1, commits.Index + page.Count), commits.Current);
         }
     }
 }
