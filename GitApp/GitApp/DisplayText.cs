@@ -311,10 +311,17 @@ namespace GitApp
         private List<List<string>> AddCommitsToLeftSide(int limit)
         {
             var result = new List<List<string>>();
+            bool doesPageContainCurrent = false;
             for (int i = 0; i < limit; i++)
             {
                 var toAdd = commits.GetElementAt(i + commits.Index);
-                result.Add(toAdd.Id.Equals(commits.GetElementAt(commits.Current).Id)
+                var currentCommit = commits.GetElementAt(commits.Current);
+                if (toAdd.Id.Equals(currentCommit.Id))
+                {
+                    doesPageContainCurrent = true;
+                }
+
+                result.Add(toAdd.Id.Equals(currentCommit.Id)
                     ? new List<string>
                     {
                         "\x1b[7m\x1b[48;5;27m" + toAdd.Id,
@@ -324,12 +331,14 @@ namespace GitApp
                     }
                     : new List<string>
                     {
-                        "\u001b[0m\x1b[38;5;27m" + toAdd.Id,
+                        "\x1b[0m\x1b[38;5;27m" + toAdd.Id,
                         "\x1b[38;5;46m" + toAdd.Author,
                         "\x1b[38;5;196m" + toAdd.Date,
                         "\x1b[0m" + toAdd.Message
                     });
             }
+
+            result = SetCurrent(result, doesPageContainCurrent);
 
             return result;
         }
@@ -345,14 +354,35 @@ namespace GitApp
                         + "\x1b[48;5;46m" + commit.Author + " "
                         + "\x1b[48;5;196m" + commit.Date + " "
                         + "\x1b[0m\x1b[7m" + commit.Message
-                        : "\u001b[0m\x1b[38;5;27m" + commit.Id + " "
+                        : "\x1b[0m\x1b[38;5;27m" + commit.Id + " "
                         + "\x1b[38;5;46m" + commit.Author + " "
                         + "\x1b[38;5;196m" + commit.Date + " "
-                        + "\u001b[0m" + commit.Message);
+                        + "\x1b[0m" + commit.Message);
             });
             result.Add("\u001b[0mPress 'Esc' to exit.");
 
             return result;
+        }
+
+        private List<List<string>> SetCurrent(List<List<string>> list, bool doesPageContainCurrent)
+        {
+            if (!doesPageContainCurrent)
+            {
+                var temp = list[0][0].ToCharArray();
+                temp[2] = '7';
+                temp[6] = '4';
+                list[0][0] = new string(temp);
+                temp = list[0][1].ToCharArray();
+                temp[2] = '4';
+                list[0][1] = new string(temp);
+                temp = list[0][2].ToCharArray();
+                temp[2] = '4';
+                list[0][2] = new string(temp);
+                list[0][3] = list[0][3].Insert(4, "\x1b[7m");
+                commits.Current = commits.Index;
+            }
+
+            return list;
         }
 
         private void SelectScreen(IConsoleWrapper consoleWrapper, KeyInteractor keyInteractor, ref List<string> leftSideCommits, string info, string message, string files)
@@ -433,6 +463,7 @@ namespace GitApp
             page.ForEach(line => commitsToString.Add(line.GetElement()));
             (commits.Index, commits.Current) = keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
             (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
+            commits.Current = page.Any(commit => commits.GetElementAt(commits.Current).Id.Equals(commit.Id)) ? commits.Current : commits.Index;
             var temp = new List<Commit>();
             temp.AddRange(page);
             var toWrite = GetCommits(initialText, page);

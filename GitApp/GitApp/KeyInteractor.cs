@@ -17,7 +17,12 @@ namespace GitApp
 
         public ConsoleKey KeyInfo { get; set; }
 
-        public (int index, int current) KeySwitch(List<string> page, string lastCommitIdOnPage, string firstCommitOnPage, bool isPageLargerThanWindow, int consoleWidth)
+        public (int index, int current) KeySwitch(
+            List<string> page,
+            string lastCommitIdOnPage,
+            string firstCommitOnPage,
+            bool isPageLargerThanWindow,
+            int consoleWidth)
         {
             return KeyInfo switch
             {
