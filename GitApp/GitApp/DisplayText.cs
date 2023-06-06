@@ -257,7 +257,7 @@ namespace GitApp
             int textSize = 0;
             do
             {
-                if (index > commitsList.Count - 1)
+                if (index > commitsList.Count - 1 || textSize >= availableSpace)
                 {
                     break;
                 }
@@ -266,9 +266,9 @@ namespace GitApp
                 index++;
                 var element = result[^1].GetElement();
                 var elementUtilities = new PageUtilities(element);
-                textSize += elementUtilities.GetOccupancyRate(lineSize) - elementUtilities.GetFormatingCodesLength();
+                textSize += elementUtilities.GetOccupancyRate(lineSize);
             }
-            while (textSize < availableSpace);
+            while (textSize <= availableSpace);
 
             return (result, textSize);
         }
@@ -431,6 +431,7 @@ namespace GitApp
                 files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
                 consoleWrapper.Clear();
                 SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, info, currentCommit.Message, files);
+                Thread.Sleep(150);
             }
             while (key != ConsoleKey.Escape);
         }
@@ -474,6 +475,7 @@ namespace GitApp
                 : toWrite[^2];
             toWrite.ForEach(line => writer.WriteLine(line));
             consoleWrapper.Write(writer.ToString().Trim());
+            Thread.Sleep(150);
         }
     }
 }
