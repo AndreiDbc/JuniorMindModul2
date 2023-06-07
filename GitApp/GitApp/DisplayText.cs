@@ -343,10 +343,11 @@ namespace GitApp
         {
             var result = new List<List<string>>();
             bool doesPageContainCurrent = false;
+            var currentCommit = commits.GetElementAt(commits.Current);
             for (int i = 0; i < commitList.Count; i++)
             {
                 var toAdd = commitList[i];
-                var currentCommit = commits.GetElementAt(commits.Current);
+
                 if (toAdd.Id.Equals(currentCommit.Id))
                 {
                     doesPageContainCurrent = true;
@@ -378,17 +379,18 @@ namespace GitApp
         {
             writer.WriteLine(initialText);
             var result = new List<string>();
+            var currentCommit = commits.GetElementAt(commits.Current);
             page.ForEach(commit =>
             {
-                result.Add(commit.Id.Equals(commits.GetElementAt(commits.Current).Id)
+                result.Add(commit.Id.Equals(currentCommit.Id)
                         ? "\x1b[7m\x1b[48;5;27m" + commit.Id + " "
                         + "\x1b[48;5;46m" + commit.Author + " "
                         + "\x1b[48;5;196m" + commit.Date + " "
-                        + "\x1b[0m\x1b[7m" + commit.Message
+                        + "\x1b[0m\x1b[7m" + commit.Message + "\x1b[0m"
                         : "\x1b[0m\x1b[38;5;27m" + commit.Id + " "
                         + "\x1b[38;5;46m" + commit.Author + " "
                         + "\x1b[38;5;196m" + commit.Date + " "
-                        + "\x1b[0m" + commit.Message);
+                        + "\x1b[0m" + commit.Message + "\x1b[0m");
             });
             result.Add("\u001b[0mPress 'Esc' to exit.");
 
@@ -491,9 +493,9 @@ namespace GitApp
                 KeyInfo = keyInfo
             };
 
-            consoleWrapper.Clear();
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
+
             if (initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize)
             {
                 consoleWrapper.Write("Increase window size!");
@@ -505,6 +507,7 @@ namespace GitApp
                     WriteCommitFiles(keyInteractor, consoleWrapper);
                 }
 
+                consoleWrapper.Clear();
                 writer = new StringWriter();
                 var availableSpace = windowSize - initialTextSize - windowWidth;
                 var isPageLargerThanWindow = commitTextSize > availableSpace;
@@ -512,18 +515,19 @@ namespace GitApp
                 page.ForEach(line => commitsToString.Add(line.GetElement()));
                 (commits.Index, commits.Current) = page.Count == 0 ? (0, 0) : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
                 (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
-                commits.Current = page.Any(commit => commits.GetElementAt(commits.Current).Id.Equals(commit.Id)) ? commits.Current : commits.Index;
+                var currentCommit = commits.GetElementAt(commits.Current);
+                commits.Current = page.Any(commit => currentCommit.Id.Equals(commit.Id)) ? commits.Current : commits.Index;
                 var temp = new List<Commit>();
                 temp.AddRange(page);
                 var toWrite = GetCommits(initialText, page);
                 isPageLargerThanWindow = commitTextSize > availableSpace;
                 var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
                 toWrite[^2] = isPageLargerThanWindow
-                    ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + lastPageElementUtilities.GetFormatingCodesLength())
-                    : toWrite[^2];
+                    ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + lastPageElementUtilities.GetFormatingCodesLength()) + "\u001b[0m"
+                    : toWrite[^2] + "\u001b[0m";
                 toWrite.ForEach(line => writer.WriteLine(line));
                 consoleWrapper.Write(writer.ToString().Trim());
-                Thread.Sleep(150);
+                Thread.Sleep(100);
             }
         }
     }
