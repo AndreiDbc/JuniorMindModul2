@@ -33,20 +33,30 @@ namespace GitApp
         {
             var commitTextSize = 0;
             var windowWidth = consoleWrapper.WindowWidth;
-            var windowSize = consoleWrapper.WindowHeight * windowWidth - windowWidth;
-            var initialTextSize = new PageUtilities(initialData).GetOccupancyRate(consoleWrapper.WindowWidth);
-            var availableSpace = windowSize - initialTextSize;
-            (var page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
-            var temp = new List<Commit>();
-            temp.AddRange(page);
-            var toWrite = GetCommits(initialData, page);
-            var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
-            var codeLength = lastPageElementUtilities.GetFormatingCodesLength();
-            toWrite[^2] = commitTextSize > availableSpace
-                ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + codeLength)
-                : toWrite[^2];
-            toWrite.ForEach(line => writer.WriteLine(line));
-            consoleWrapper.Write(writer.ToString().Trim());
+            var windowSize = consoleWrapper.WindowHeight * windowWidth;
+            var initialText = new PageUtilities(initialData);
+            var initialTextSize = initialText.GetOccupancyRate(windowWidth);
+            var page = new List<Commit>();
+            if (initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize)
+            {
+                consoleWrapper.Write("Increase window size!");
+            }
+            else
+            {
+                var availableSpace = windowSize - initialTextSize - windowWidth;
+                (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, windowWidth);
+                var temp = new List<Commit>();
+                temp.AddRange(page);
+                var toWrite = GetCommits(initialData, page);
+                var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
+                var codeLength = lastPageElementUtilities.GetFormatingCodesLength();
+                toWrite[^2] = commitTextSize > availableSpace
+                    ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + codeLength)
+                    : toWrite[^2];
+                toWrite.ForEach(line => writer.WriteLine(line));
+                consoleWrapper.Write(writer.ToString().Trim());
+            }
+
             ConsoleKey key;
             do
             {
@@ -445,18 +455,25 @@ namespace GitApp
             {
                 key = consoleWrapper.ReadKey().Key;
                 consoleWrapper.Clear();
-                writer = new StringWriter();
-                keyInteractor.KeyInfo = key;
-                (commits.Index, commits.Current) = keyInteractor.KeySwitch(
-                    leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
-                currentCommit = commits.GetElementAt(commits.Current);
-                commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
-                info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
-                files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
-                consoleWrapper.Clear();
-                data = new[] { info, currentCommit.Message, files };
-                SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data);
-                Thread.Sleep(150);
+                if (consoleWrapper.WindowHeight < 9)
+                {
+                    consoleWrapper.Write("Increase window size!");
+                }
+                else
+                {
+                    writer = new StringWriter();
+                    keyInteractor.KeyInfo = key;
+                    (commits.Index, commits.Current) = keyInteractor.KeySwitch(
+                        leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
+                    currentCommit = commits.GetElementAt(commits.Current);
+                    commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
+                    info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
+                    files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
+                    consoleWrapper.Clear();
+                    data = new[] { info, currentCommit.Message, files };
+                    SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data);
+                    Thread.Sleep(150);
+                }
             }
             while (key != ConsoleKey.Escape);
         }
@@ -474,33 +491,40 @@ namespace GitApp
                 KeyInfo = keyInfo
             };
 
-            if (keyInfo.Equals(ConsoleKey.Enter))
-            {
-                WriteCommitFiles(keyInteractor, consoleWrapper);
-            }
-
             consoleWrapper.Clear();
-            writer = new StringWriter();
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
-            var availableSpace = windowSize - initialTextSize - windowWidth;
-            var isPageLargerThanWindow = commitTextSize > availableSpace;
-            var commitsToString = new List<string>();
-            page.ForEach(line => commitsToString.Add(line.GetElement()));
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
-            (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
-            commits.Current = page.Any(commit => commits.GetElementAt(commits.Current).Id.Equals(commit.Id)) ? commits.Current : commits.Index;
-            var temp = new List<Commit>();
-            temp.AddRange(page);
-            var toWrite = GetCommits(initialText, page);
-            isPageLargerThanWindow = commitTextSize > availableSpace;
-            var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
-            toWrite[^2] = isPageLargerThanWindow
-                ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + lastPageElementUtilities.GetFormatingCodesLength())
-                : toWrite[^2];
-            toWrite.ForEach(line => writer.WriteLine(line));
-            consoleWrapper.Write(writer.ToString().Trim());
-            Thread.Sleep(150);
+            if (initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize)
+            {
+                consoleWrapper.Write("Increase window size!");
+            }
+            else
+            {
+                if (keyInfo.Equals(ConsoleKey.Enter))
+                {
+                    WriteCommitFiles(keyInteractor, consoleWrapper);
+                }
+
+                writer = new StringWriter();
+                var availableSpace = windowSize - initialTextSize - windowWidth;
+                var isPageLargerThanWindow = commitTextSize > availableSpace;
+                var commitsToString = new List<string>();
+                page.ForEach(line => commitsToString.Add(line.GetElement()));
+                (commits.Index, commits.Current) = page.Count == 0 ? (0, 0) : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
+                (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
+                commits.Current = page.Any(commit => commits.GetElementAt(commits.Current).Id.Equals(commit.Id)) ? commits.Current : commits.Index;
+                var temp = new List<Commit>();
+                temp.AddRange(page);
+                var toWrite = GetCommits(initialText, page);
+                isPageLargerThanWindow = commitTextSize > availableSpace;
+                var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
+                toWrite[^2] = isPageLargerThanWindow
+                    ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + lastPageElementUtilities.GetFormatingCodesLength())
+                    : toWrite[^2];
+                toWrite.ForEach(line => writer.WriteLine(line));
+                consoleWrapper.Write(writer.ToString().Trim());
+                Thread.Sleep(150);
+            }
         }
     }
 }
