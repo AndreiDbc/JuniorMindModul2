@@ -63,7 +63,7 @@ namespace GitApp
                 key = consoleWrapper.ReadKey().Key;
                 consoleWrapper.Clear();
                 writer = new StringWriter();
-                Write(key, initialData, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
+                UpdatePage(key, initialData, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
             }
             while (!key.Equals(ConsoleKey.Escape));
         }
@@ -442,7 +442,7 @@ namespace GitApp
             }
         }
 
-        private void WriteCommitFiles(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper)
+        private void UpdateExtendedPage(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper)
         {
             consoleWrapper.Clear();
             var currentCommit = commits.GetElementAt(commits.Current);
@@ -480,7 +480,7 @@ namespace GitApp
             while (key != ConsoleKey.Escape);
         }
 
-        private void Write(
+        private void UpdatePage(
             ConsoleKey keyInfo,
             string initialText,
             int initialTextSize,
@@ -504,7 +504,7 @@ namespace GitApp
             {
                 if (keyInfo.Equals(ConsoleKey.Enter))
                 {
-                    WriteCommitFiles(keyInteractor, consoleWrapper);
+                    UpdateExtendedPage(keyInteractor, consoleWrapper);
                 }
 
                 consoleWrapper.Clear();
