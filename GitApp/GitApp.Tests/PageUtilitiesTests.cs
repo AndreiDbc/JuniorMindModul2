@@ -39,15 +39,23 @@ namespace GitApp.Tests
         }
 
         [Fact]
-        public void GetFormatingCodesLengthIsCalledElementDoesntContainAnyCodesShouldReturnZero()
+        public void GetFormatingCodesLengthAndStringWithoutCodesIsCalledElementDoesntContainAnyCodesShouldReturnLengthZero()
         {
-            Assert.Equal(0, new PageUtilities("asa sasas ").GetFormatingCodesLength());
+            Assert.Equal(0, new PageUtilities("asa sasas ").GetFormatingCodesLengthAndStringWithoutCodes().length);
         }
 
         [Fact]
-        public void GetFormatingCodesLengthIsCalledShouldReturnCodesLength()
+        public void GetFormatingCodesLengthAndStringWithoutCodesIsCalledShouldReturnCodesLength()
         {
-            Assert.Equal(14, new PageUtilities(" \u001b[0masdasd\nasd \u001b[48;5;27mdsd d").GetFormatingCodesLength());
+            Assert.Equal(14, new PageUtilities(" \u001b[0masdasd\nasd \u001b[48;5;27mdsd d").GetFormatingCodesLengthAndStringWithoutCodes().length);
+        }
+
+        [Fact]
+        public void GetFormatingCodesLengthAndStringWithoutCodesIsCalledShouldReturnClearedString()
+        {
+            var value = new PageUtilities(" \u001b[0mzasdasd\nasd \u001b[48;5;27mzdsd d").GetFormatingCodesLengthAndStringWithoutCodes().clearedString;
+            const string expected = " zasdasd\nasd zdsd d";
+            Assert.Equal(expected, value);
         }
     }
 }

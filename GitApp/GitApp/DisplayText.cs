@@ -29,41 +29,38 @@ namespace GitApp
 
         private bool IsRightSideInUse { get; set; }
 
-        public void Display(IConsoleWrapper consoleWrapper, string initialData)
+        public void Display(IConsoleWrapper consoleWrapper, string initialText)
         {
             var commitTextSize = 0;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
-            var initialText = new PageUtilities(initialData);
-            var initialTextSize = initialText.GetOccupancyRate(windowWidth);
+            var initialTextUtilities = new PageUtilities(initialText);
+            var initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
             var page = new List<Commit>();
-            if (initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize)
-            {
-                consoleWrapper.Write("Increase window size!");
-            }
-            else
-            {
-                var availableSpace = windowSize - initialTextSize - windowWidth;
-                (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, windowWidth);
-                var temp = new List<Commit>();
-                temp.AddRange(page);
-                var toWrite = GetCommits(initialData, page);
-                var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
-                var codeLength = lastPageElementUtilities.GetFormatingCodesLength();
-                toWrite[^2] = commitTextSize > availableSpace
-                    ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + codeLength)
-                    : toWrite[^2];
-                toWrite.ForEach(line => writer.WriteLine(line));
-                consoleWrapper.Write(writer.ToString().Trim());
-            }
+            ConsoleKey key = ConsoleKey.NoName;
+            Write(
+                    initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize
+                        ? new List<string>()
+                        : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper),
+                    initialTextSize,
+                    consoleWrapper,
+                    initialText);
 
-            ConsoleKey key;
             do
             {
                 key = consoleWrapper.ReadKey().Key;
                 consoleWrapper.Clear();
                 writer = new StringWriter();
-                UpdatePage(key, initialData, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
+                windowWidth = consoleWrapper.WindowWidth;
+                windowSize = consoleWrapper.WindowHeight * windowWidth;
+                initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
+                Write(
+                    initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize
+                        ? new List<string>()
+                        : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper),
+                    initialTextSize,
+                    consoleWrapper,
+                    initialText);
             }
             while (!key.Equals(ConsoleKey.Escape));
         }
@@ -186,7 +183,7 @@ namespace GitApp
             {
                 if (index < result.Count)
                 {
-                    var padLength = width + 2 - (result[index].Length - new PageUtilities(result[index]).GetFormatingCodesLength());
+                    var padLength = width + 2 - (result[index].Length - new PageUtilities(result[index]).GetFormatingCodesLengthAndStringWithoutCodes().length);
                     var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
                     result[index] = "\x1b[0m│" + result[index] + toPad;
                 }
@@ -221,7 +218,27 @@ namespace GitApp
             return toAdd;
         }
 
-        private void SelectSideAndWrite(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper, List<string> leftSide, string info, string message, string files)
+        private static List<string> DisplaySplitScreen(
+            List<string> leftSide,
+            List<string> rightSide,
+            IConsoleWrapper consoleWrapper)
+        {
+            leftSide = DrawCommitBox(leftSide, consoleWrapper.WindowHeight, (int)(0.6 * consoleWrapper.WindowWidth));
+            var result = new List<string>();
+
+            for (int i = 0; i < leftSide.Count; i++)
+            {
+                result.Add(i < rightSide.Count ? leftSide[i] : leftSide[i] + "\n");
+                if (i < rightSide.Count)
+                {
+                    result[i] += rightSide[i];
+                }
+            }
+
+            return result;
+        }
+
+        private List<string> SelectSideAndWrite(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper, List<string> leftSide, string info, string message, string files)
         {
             var result = new List<string>();
             if (keyInteractor.KeyInfo == ConsoleKey.Spacebar)
@@ -233,31 +250,7 @@ namespace GitApp
                    ? FormateRightSide(info, message, files, consoleWrapper.WindowHeight, consoleWrapper.WindowWidth)
                    : leftSide;
 
-            foreach (var line in result)
-            {
-                writer.WriteLine(line);
-            }
-
-            consoleWrapper.Write(writer.ToString().Trim());
-        }
-
-        private void DisplaySplitScreen(
-            List<string> leftSide,
-            List<string> rightSide,
-            IConsoleWrapper consoleWrapper)
-        {
-            leftSide = DrawCommitBox(leftSide, consoleWrapper.WindowHeight, (int)(0.6 * consoleWrapper.WindowWidth));
-
-            for (int i = 0; i < leftSide.Count; i++)
-            {
-                writer.Write(i < rightSide.Count ? leftSide[i] : leftSide[i] + "\n");
-                if (i < rightSide.Count)
-                {
-                    writer.WriteLine(rightSide[i]);
-                }
-            }
-
-            consoleWrapper.Write(writer.ToString().Trim());
+            return result;
         }
 
         private (List<Commit> list, int textSize) GetPageDataAndSize(int index, int availableSpace, int lineSize)
@@ -418,27 +411,44 @@ namespace GitApp
             return list;
         }
 
-        private void SelectScreen(IConsoleWrapper consoleWrapper, KeyInteractor keyInteractor, ref List<string> leftSideCommits, List<Commit> commitList, string[] data)
+        private new List<string> SelectScreen(IConsoleWrapper consoleWrapper, KeyInteractor keyInteractor, ref List<string> leftSideCommits, List<Commit> commitList, string[] data)
         {
             var height = consoleWrapper.WindowHeight;
             var width = consoleWrapper.WindowWidth;
-
+            var leftSide = new List<string>();
             if (height < 15 && width < 50)
             {
                 leftSideCommits = GetLeftSide((int)(0.25 * (width - 2)), commitList);
-                List<string> leftSide;
                 leftSide = DrawCommitBox(leftSideCommits, height, width);
-                SelectSideAndWrite(keyInteractor, consoleWrapper, leftSide, data[0], data[1], data[2]);
+                return SelectSideAndWrite(keyInteractor, consoleWrapper, leftSide, data[0], data[1], data[2]);
+            }
+
+            leftSideCommits = GetLeftSide((int)(0.15 * (width - 2)), commitList);
+            leftSide.AddRange(leftSideCommits);
+
+            return DisplaySplitScreen(
+                leftSide,
+                FormateRightSide(data[0], data[1], data[2], height, width - (int)(0.6 * width)),
+                consoleWrapper);
+        }
+
+        private void Write(List<string> toWrite, int initialTextSize, IConsoleWrapper consoleWrapper, string initialText = "")
+        {
+            var width = consoleWrapper.WindowWidth;
+            var windowSize = consoleWrapper.WindowHeight * width;
+            if (initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(width) >= windowSize)
+            {
+                consoleWrapper.Clear();
+                writer = new StringWriter();
+                consoleWrapper.Write("Increase window size!");
             }
             else
             {
-                leftSideCommits = GetLeftSide((int)(0.15 * (width - 2)), commitList);
-                List<string> leftSide = new List<string>();
-                leftSide.AddRange(leftSideCommits);
-                DisplaySplitScreen(
-                    leftSide,
-                    FormateRightSide(data[0], data[1], data[2], height, width - (int)(0.6 * width)),
-                    consoleWrapper);
+                consoleWrapper.Clear();
+                writer = new StringWriter();
+                writer.WriteLine(initialText);
+                toWrite.ForEach(line => writer.WriteLine(line));
+                consoleWrapper.Write(writer.ToString().Trim());
             }
         }
 
@@ -451,40 +461,36 @@ namespace GitApp
             var leftSideCommits = new List<string>();
             var commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
             var data = new[] { info, currentCommit.Message, files };
-            SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data);
+            Write(
+                SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data),
+                0,
+                consoleWrapper);
             ConsoleKey key;
             do
             {
                 key = consoleWrapper.ReadKey().Key;
+                keyInteractor.KeyInfo = key;
+                (commits.Index, commits.Current) = keyInteractor.KeySwitch(
+                    leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
+                currentCommit = commits.GetElementAt(commits.Current);
+                commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
+                info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
+                files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
                 consoleWrapper.Clear();
-                if (consoleWrapper.WindowHeight < 9)
-                {
-                    consoleWrapper.Write("Increase window size!");
-                }
-                else
-                {
-                    writer = new StringWriter();
-                    keyInteractor.KeyInfo = key;
-                    (commits.Index, commits.Current) = keyInteractor.KeySwitch(
-                        leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
-                    currentCommit = commits.GetElementAt(commits.Current);
-                    commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
-                    info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
-                    files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
-                    consoleWrapper.Clear();
-                    data = new[] { info, currentCommit.Message, files };
-                    SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data);
-                    Thread.Sleep(150);
-                }
+                data = new[] { info, currentCommit.Message, files };
+                Write(
+                    SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data),
+                    0,
+                    consoleWrapper);
             }
             while (key != ConsoleKey.Escape);
         }
 
-        private void UpdatePage(
+        private List<string> UpdatePage(
             ConsoleKey keyInfo,
             string initialText,
             int initialTextSize,
-            ref int commitTextSize,
+            ref int commitOcupancyRate,
             ref List<Commit> page,
             IConsoleWrapper consoleWrapper)
         {
@@ -496,39 +502,35 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
 
-            if (initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize)
+            if (keyInfo.Equals(ConsoleKey.Enter))
             {
-                consoleWrapper.Write("Increase window size!");
+                UpdateExtendedPage(keyInteractor, consoleWrapper);
             }
-            else
-            {
-                if (keyInfo.Equals(ConsoleKey.Enter))
-                {
-                    UpdateExtendedPage(keyInteractor, consoleWrapper);
-                }
 
-                consoleWrapper.Clear();
-                writer = new StringWriter();
-                var availableSpace = windowSize - initialTextSize - windowWidth;
-                var isPageLargerThanWindow = commitTextSize > availableSpace;
-                var commitsToString = new List<string>();
-                page.ForEach(line => commitsToString.Add(line.GetElement()));
-                (commits.Index, commits.Current) = page.Count == 0 ? (0, 0) : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
-                (page, commitTextSize) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
-                var currentCommit = commits.GetElementAt(commits.Current);
-                commits.Current = page.Any(commit => currentCommit.Id.Equals(commit.Id)) ? commits.Current : commits.Index;
-                var temp = new List<Commit>();
-                temp.AddRange(page);
-                var toWrite = GetCommits(initialText, page);
-                isPageLargerThanWindow = commitTextSize > availableSpace;
-                var lastPageElementUtilities = new PageUtilities(toWrite[^2]);
-                toWrite[^2] = isPageLargerThanWindow
-                    ? lastPageElementUtilities.TruncateText(commitTextSize - availableSpace + lastPageElementUtilities.GetFormatingCodesLength()) + "\u001b[0m"
-                    : toWrite[^2] + "\u001b[0m";
-                toWrite.ForEach(line => writer.WriteLine(line));
-                consoleWrapper.Write(writer.ToString().Trim());
-                Thread.Sleep(100);
+            var availableSpace = windowSize - initialTextSize - windowWidth;
+            var isPageLargerThanWindow = commitOcupancyRate > availableSpace;
+            var commitsToString = new List<string>();
+            var commitsOcupancyRateExceptLast = 0;
+            page.ForEach(line => commitsToString.Add(line.GetElement()));
+            (commits.Index, commits.Current) = page.Count == 0 ? (0, 0) : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
+            (page, commitOcupancyRate) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
+            var currentCommit = commits.GetElementAt(commits.Current);
+            commits.Current = page.Any(commit => currentCommit.Id.Equals(commit.Id)) ? commits.Current : commits.Index;
+            var toWrite = GetCommits(initialText, page);
+            isPageLargerThanWindow = commitOcupancyRate > availableSpace;
+            for (int i = 0; i < toWrite.Count - 2; i++)
+            {
+                var temp = new PageUtilities(toWrite[i]).GetFormatingCodesLengthAndStringWithoutCodes().clearedString;
+                commitsOcupancyRateExceptLast += new PageUtilities(temp).GetOccupancyRate(windowWidth);
             }
+
+            var lastPageElementUtilities = new PageUtilities(toWrite[^2][..^4]);
+            var truncationSize = availableSpace - commitsOcupancyRateExceptLast + lastPageElementUtilities.GetFormatingCodesLengthAndStringWithoutCodes().length;
+            toWrite[^2] = isPageLargerThanWindow
+                ? lastPageElementUtilities.TruncateText(truncationSize)
+                : toWrite[^2];
+            toWrite[^2] += "\u001b[0m";
+            return toWrite;
         }
     }
 }

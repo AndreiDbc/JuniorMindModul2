@@ -45,7 +45,7 @@ namespace GitApp
             return result;
         }
 
-        public int GetFormatingCodesLength()
+        public (int length, string clearedString) GetFormatingCodesLengthAndStringWithoutCodes()
         {
             var temp = new string(element);
             foreach (var code in new[] { "\x1b[0m", "\x1b[7m", "\x1b[48;5;27m", "\x1b[48;5;46m", "\x1b[48;5;196m", "\u001b[38;5;27m", "\u001b[38;5;46m", "\u001b[38;5;196m" })
@@ -53,7 +53,7 @@ namespace GitApp
                 temp = temp.Replace(code, "");
             }
 
-            return element.Length - temp.Length;
+            return (element.Length - temp.Length, temp);
         }
     }
 }
