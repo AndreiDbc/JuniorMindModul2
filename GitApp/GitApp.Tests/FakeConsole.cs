@@ -13,6 +13,7 @@ namespace GitApp.Tests
         private int currentKeyIndex;
         public StringWriter StringWriter;
         public string lastFrame;
+        private bool keyAvailable;
 
         public FakeConsole( ConsoleKeyInfo[] keySequence, StringWriter stringWriter)
         {
@@ -20,6 +21,11 @@ namespace GitApp.Tests
             lastPressedKey = new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false);
             currentKeyIndex = 0;
             StringWriter = stringWriter;
+        }
+
+        public bool KeyAvailable()
+        {
+            return keyAvailable;
         }
 
         public int WindowWidth { get; set; }

@@ -17,14 +17,16 @@ namespace GitApp
     {
         private readonly IProcessRunner processRunner;
         private readonly FullCommits commits;
+        private readonly GitManager gitManager;
         private TextWriter writer;
 
-        public DisplayText(FullCommits commits, TextWriter writer, IProcessRunner processRunner)
+        public DisplayText(FullCommits commits, TextWriter writer, IProcessRunner processRunner, GitManager gitManager)
         {
             this.commits = commits;
             this.writer = writer;
             this.processRunner = processRunner;
             IsRightSideInUse = false;
+            this.gitManager = gitManager;
         }
 
         private bool IsRightSideInUse { get; set; }
@@ -37,27 +39,37 @@ namespace GitApp
             var initialTextUtilities = new PageUtilities(initialText);
             var initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
             var page = new List<Commit>();
+            var toDisplay = new List<string>();
             ConsoleKey key = ConsoleKey.NoName;
-            Write(
-                    initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize
+            toDisplay = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize
                         ? new List<string>()
-                        : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper),
+                        : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
+            Write(
+                    toDisplay,
                     initialTextSize,
                     consoleWrapper,
                     initialText);
-
             do
             {
-                key = consoleWrapper.ReadKey().Key;
+                if (consoleWrapper.KeyAvailable())
+                {
+                    toDisplay = UpdateBuffer(initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
+                }
+                else
+                {
+                    key = consoleWrapper.ReadKey().Key;
+                }
+
                 consoleWrapper.Clear();
                 writer = new StringWriter();
                 windowWidth = consoleWrapper.WindowWidth;
                 windowSize = consoleWrapper.WindowHeight * windowWidth;
                 initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
-                Write(
-                    initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize
+                toDisplay = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize
                         ? new List<string>()
-                        : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper),
+                        : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
+                Write(
+                    toDisplay,
                     initialTextSize,
                     consoleWrapper,
                     initialText);
@@ -238,7 +250,44 @@ namespace GitApp
             return result;
         }
 
-        private List<string> SelectSideAndWrite(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper, List<string> leftSide, string info, string message, string files)
+        private List<string> UpdateBuffer(string initialText, int initialTextSize, ref int commitTextSize, ref List<Commit> page, IConsoleWrapper consoleWrapper)
+        {
+            var keyList = new List<ConsoleKey>();
+            var result = new List<string>();
+            while (consoleWrapper.KeyAvailable())
+            {
+                keyList.Add(consoleWrapper.ReadKey().Key);
+            }
+
+            foreach (var keyInUse in keyList)
+            {
+                result = UpdatePage(keyInUse, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
+            }
+
+            return result;
+        }
+
+        private void UpdateBufferForExtendedPage(
+            IConsoleWrapper consoleWrapper,
+            KeyInteractor keyInteractor,
+            ref List<string> leftSideCommits,
+            List<Commit> commitList,
+            Commit currentCommit)
+        {
+            var keyList = new List<ConsoleKey>();
+            var result = new List<string>();
+            while (consoleWrapper.KeyAvailable())
+            {
+                keyList.Add(consoleWrapper.ReadKey().Key);
+            }
+
+            foreach (var keyInUse in keyList)
+            {
+                leftSideCommits = GetLeftSide(consoleWrapper.WindowWidth, commitList);
+            }
+        }
+
+        private List<string> SelectSide(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper, List<string> leftSide, string info, string message, string files)
         {
             var result = new List<string>();
             if (keyInteractor.KeyInfo == ConsoleKey.Spacebar)
@@ -411,7 +460,7 @@ namespace GitApp
             return list;
         }
 
-        private new List<string> SelectScreen(IConsoleWrapper consoleWrapper, KeyInteractor keyInteractor, ref List<string> leftSideCommits, List<Commit> commitList, string[] data)
+        private List<string> SelectScreen(IConsoleWrapper consoleWrapper, KeyInteractor keyInteractor, ref List<string> leftSideCommits, List<Commit> commitList, string[] data)
         {
             var height = consoleWrapper.WindowHeight;
             var width = consoleWrapper.WindowWidth;
@@ -420,7 +469,7 @@ namespace GitApp
             {
                 leftSideCommits = GetLeftSide((int)(0.25 * (width - 2)), commitList);
                 leftSide = DrawCommitBox(leftSideCommits, height, width);
-                return SelectSideAndWrite(keyInteractor, consoleWrapper, leftSide, data[0], data[1], data[2]);
+                return SelectSide(keyInteractor, consoleWrapper, leftSide, data[0], data[1], data[2]);
             }
 
             leftSideCommits = GetLeftSide((int)(0.15 * (width - 2)), commitList);
@@ -452,38 +501,58 @@ namespace GitApp
             }
         }
 
-        private void UpdateExtendedPage(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper)
+        private void DisplayExtendedPage(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper)
         {
             consoleWrapper.Clear();
             var currentCommit = commits.GetElementAt(commits.Current);
             var info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
-            var files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
+            var files = gitManager.GetCommitModifiedFileNames(currentCommit.Id);
             var leftSideCommits = new List<string>();
             var commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
             var data = new[] { info, currentCommit.Message, files };
+            var toDisplay = SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data);
             Write(
-                SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data),
+                toDisplay,
                 0,
                 consoleWrapper);
-            ConsoleKey key;
+            ConsoleKey key = ConsoleKey.NoName;
             do
             {
-                key = consoleWrapper.ReadKey().Key;
-                keyInteractor.KeyInfo = key;
-                (commits.Index, commits.Current) = keyInteractor.KeySwitch(
-                    leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
-                currentCommit = commits.GetElementAt(commits.Current);
-                commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
-                info = "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha;
-                files = new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id);
+                if (consoleWrapper.KeyAvailable())
+                {
+                   UpdateBufferForExtendedPage(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, currentCommit);
+                }
+                else
+                {
+                    key = consoleWrapper.ReadKey().Key;
+                }
+
+                toDisplay = UpdateExtendedPage(key, consoleWrapper, keyInteractor, ref leftSideCommits, commitList, currentCommit);
                 consoleWrapper.Clear();
-                data = new[] { info, currentCommit.Message, files };
-                Write(
-                    SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data),
-                    0,
-                    consoleWrapper);
+                Write(toDisplay, 0, consoleWrapper);
             }
             while (key != ConsoleKey.Escape);
+        }
+
+        private List<string> UpdateExtendedPage(
+            ConsoleKey key,
+            IConsoleWrapper consoleWrapper,
+            KeyInteractor keyInteractor,
+            ref List<string> leftSideCommits,
+            List<Commit> commitList,
+            Commit currentCommit)
+        {
+            keyInteractor.KeyInfo = key;
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(
+                leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
+            commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
+            var data = new[]
+            {
+                "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha,
+                currentCommit.Message,
+                new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id)
+            };
+            return SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data);
         }
 
         private List<string> UpdatePage(
@@ -504,7 +573,7 @@ namespace GitApp
 
             if (keyInfo.Equals(ConsoleKey.Enter))
             {
-                UpdateExtendedPage(keyInteractor, consoleWrapper);
+                DisplayExtendedPage(keyInteractor, consoleWrapper);
             }
 
             var availableSpace = windowSize - initialTextSize - windowWidth;
