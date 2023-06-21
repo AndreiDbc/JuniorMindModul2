@@ -520,7 +520,7 @@ namespace GitApp
                 var temp = GetTextToRedraw(toWrite, consoleWrapper);
                 temp.ForEach(element => writer.WriteLine(element));
                 consoleWrapper.SetCursorPosition(0, 0);
-                consoleWrapper.Write(writer.ToString()[..^1]);
+                consoleWrapper.Write(writer.ToString()[..^1].TrimStart());
             }
         }
 
@@ -552,7 +552,7 @@ namespace GitApp
                     leftSideCommits = GetLeftSide((int)(0.25 * (consoleWrapper.WindowWidth - 2)), commitList);
                 }
 
-                toDisplay = UpdateExtendedPage(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, commits.GetElementAt(commits.Current));
+                toDisplay = UpdateExtendedPage(consoleWrapper, keyInteractor, leftSideCommits, commitList, commits.GetElementAt(commits.Current));
                 Write(toDisplay, 0, consoleWrapper);
                 Thread.Sleep(100);
             }
@@ -562,7 +562,7 @@ namespace GitApp
         private List<string> UpdateExtendedPage(
             IConsoleWrapper consoleWrapper,
             KeyInteractor keyInteractor,
-            ref List<string> leftSideCommits,
+            List<string> leftSideCommits,
             List<Commit> commitList,
             Commit currentCommit)
         {
