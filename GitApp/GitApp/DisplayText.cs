@@ -267,24 +267,22 @@ namespace GitApp
             return result;
         }
 
-        private void UpdateBufferForExtendedPage(
+        private List<string> UpdateBufferForExtendedPage(
             IConsoleWrapper consoleWrapper,
             KeyInteractor keyInteractor,
             ref List<string> leftSideCommits,
-            List<Commit> commitList,
-            Commit currentCommit)
+            ref List<Commit> commitList)
         {
-            var keyList = new List<ConsoleKey>();
             var result = new List<string>();
             while (consoleWrapper.KeyAvailable())
             {
-                keyList.Add(consoleWrapper.ReadKey().Key);
+                keyInteractor.KeyInfo = consoleWrapper.ReadKey().Key;
+                (commits.Index, commits.Current) = keyInteractor.KeySwitch(leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
+                commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
+                result = GetLeftSide((int)(0.25 * (consoleWrapper.WindowWidth - 2)), commitList);
             }
 
-            foreach (var keyInUse in keyList)
-            {
-                leftSideCommits = GetLeftSide(consoleWrapper.WindowWidth, commitList);
-            }
+            return result;
         }
 
         private List<string> SelectSide(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper, List<string> leftSide, string info, string message, string files)
@@ -460,14 +458,13 @@ namespace GitApp
             return list;
         }
 
-        private List<string> SelectScreen(IConsoleWrapper consoleWrapper, KeyInteractor keyInteractor, ref List<string> leftSideCommits, List<Commit> commitList, string[] data)
+        private List<string> SelectScreen(IConsoleWrapper consoleWrapper, KeyInteractor keyInteractor, List<string> leftSideCommits, List<Commit> commitList, string[] data)
         {
             var height = consoleWrapper.WindowHeight;
             var width = consoleWrapper.WindowWidth;
             var leftSide = new List<string>();
             if (height < 15 && width < 50)
             {
-                leftSideCommits = GetLeftSide((int)(0.25 * (width - 2)), commitList);
                 leftSide = DrawCommitBox(leftSideCommits, height, width);
                 return SelectSide(keyInteractor, consoleWrapper, leftSide, data[0], data[1], data[2]);
             }
@@ -510,7 +507,7 @@ namespace GitApp
             var leftSideCommits = new List<string>();
             var commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
             var data = new[] { info, currentCommit.Message, files };
-            var toDisplay = SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data);
+            var toDisplay = SelectScreen(consoleWrapper, keyInteractor, leftSideCommits, commitList, data);
             Write(
                 toDisplay,
                 0,
@@ -520,14 +517,19 @@ namespace GitApp
             {
                 if (consoleWrapper.KeyAvailable())
                 {
-                   UpdateBufferForExtendedPage(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, currentCommit);
+                   leftSideCommits = UpdateBufferForExtendedPage(consoleWrapper, keyInteractor, ref leftSideCommits, ref commitList);
                 }
                 else
                 {
                     key = consoleWrapper.ReadKey().Key;
+                    keyInteractor.KeyInfo = key;
+                    (commits.Index, commits.Current) = keyInteractor.KeySwitch(
+                        leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
+                    commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
+                    leftSideCommits = GetLeftSide((int)(0.25 * (consoleWrapper.WindowWidth - 2)), commitList);
                 }
 
-                toDisplay = UpdateExtendedPage(key, consoleWrapper, keyInteractor, ref leftSideCommits, commitList, currentCommit);
+                toDisplay = UpdateExtendedPage(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, commits.GetElementAt(commits.Current));
                 consoleWrapper.Clear();
                 Write(toDisplay, 0, consoleWrapper);
             }
@@ -535,24 +537,19 @@ namespace GitApp
         }
 
         private List<string> UpdateExtendedPage(
-            ConsoleKey key,
             IConsoleWrapper consoleWrapper,
             KeyInteractor keyInteractor,
             ref List<string> leftSideCommits,
             List<Commit> commitList,
             Commit currentCommit)
         {
-            keyInteractor.KeyInfo = key;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(
-                leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
-            commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
             var data = new[]
             {
                 "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha,
                 currentCommit.Message,
-                new GitManager("git", processRunner).GetCommitModifiedFileNames(currentCommit.Id)
+                gitManager.GetCommitModifiedFileNames(currentCommit.Id)
             };
-            return SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data);
+            return SelectScreen(consoleWrapper, keyInteractor, leftSideCommits, commitList, data);
         }
 
         private List<string> UpdatePage(
