@@ -510,6 +510,7 @@ namespace GitApp
             if (initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(width) >= windowSize)
             {
                 writer = new StringWriter();
+                consoleWrapper.Clear();
                 consoleWrapper.Write("Increase window size!");
             }
             else
