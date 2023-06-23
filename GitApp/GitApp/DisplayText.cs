@@ -464,9 +464,18 @@ namespace GitApp
             }
             else
             {
-                writer = new StringWriter();
                 toWrite.InsertRange(0, initialText.Split("\n"));
                 var temp = GetTextToRedraw(toWrite, consoleWrapper);
+                if (writer.ToString().Replace("\n", "").Replace("\r", "").Length > temp.Aggregate(0, (result, element) =>
+                {
+                    result += element.Length;
+                    return result;
+                }))
+                {
+                    consoleWrapper.Clear();
+                }
+
+                writer = new StringWriter();
                 temp.ForEach(element => writer.WriteLine(element));
                 consoleWrapper.SetCursorPosition(0, 0);
                 consoleWrapper.Write(writer.ToString()[..^1].TrimStart());
@@ -537,14 +546,13 @@ namespace GitApp
                 KeyInfo = keyInfo
             };
 
-            var windowWidth = consoleWrapper.WindowWidth;
-            var windowSize = consoleWrapper.WindowHeight * windowWidth;
-
             if (keyInfo.Equals(ConsoleKey.Enter))
             {
                 DisplayExtendedPage(keyInteractor, consoleWrapper);
             }
 
+            var windowWidth = consoleWrapper.WindowWidth;
+            var windowSize = consoleWrapper.WindowHeight * windowWidth;
             var availableSpace = windowSize - initialTextSize - windowWidth;
             var isPageLargerThanWindow = commitOcupancyRate > availableSpace;
             var commitsToString = new List<string>();
