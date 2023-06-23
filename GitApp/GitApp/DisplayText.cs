@@ -15,16 +15,14 @@ namespace GitApp
 {
     public class DisplayText
     {
-        private readonly IProcessRunner processRunner;
         private readonly FullCommits commits;
         private readonly GitManager gitManager;
         private TextWriter writer;
 
-        public DisplayText(FullCommits commits, TextWriter writer, IProcessRunner processRunner, GitManager gitManager)
+        public DisplayText(FullCommits commits, TextWriter writer, GitManager gitManager)
         {
             this.commits = commits;
             this.writer = writer;
-            this.processRunner = processRunner;
             IsRightSideInUse = false;
             this.gitManager = gitManager;
         }
