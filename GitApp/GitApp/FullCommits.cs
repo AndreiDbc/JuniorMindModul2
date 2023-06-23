@@ -9,17 +9,24 @@ namespace GitApp
     public class FullCommits
     {
         private readonly string rawLogData;
+        private readonly List<Commit> list;
 
         public FullCommits(string rawLogData)
         {
             this.rawLogData = rawLogData;
             Current = 0;
             Index = 0;
+            list = GetText();
         }
 
         public int Current { get; set; }
 
         public int Index { get; set; }
+
+        public Commit this[int index]
+        {
+            get => list[index];
+        }
 
         public List<Commit> GetText()
         {
@@ -31,11 +38,6 @@ namespace GitApp
             }
 
             return commits;
-        }
-
-        public Commit GetElementAt(int index)
-        {
-            return GetText().ElementAt(index);
         }
     }
 }

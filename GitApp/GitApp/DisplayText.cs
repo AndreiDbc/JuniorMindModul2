@@ -387,7 +387,7 @@ namespace GitApp
         {
             writer.WriteLine(initialText);
             var result = new List<string>();
-            var currentCommit = commits.GetElementAt(commits.Current);
+            var currentCommit = commits[commits.Current];
             page.ForEach(commit =>
             {
                 result.Add(commit.Id.Equals(currentCommit.Id)
@@ -476,7 +476,7 @@ namespace GitApp
         private void DisplayExtendedPage(KeyInteractor keyInteractor, IConsoleWrapper consoleWrapper)
         {
             var leftSideCommits = new List<string>();
-            var currentCommit = commits.GetElementAt(commits.Current);
+            var currentCommit = commits[commits.Current];
             var commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
             var data = new[]
             {
@@ -494,7 +494,7 @@ namespace GitApp
                 (commits.Index, commits.Current) = keyInteractor
                     .KeySwitch(leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
                 commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
-                currentCommit = commits.GetElementAt(commits.Current);
+                currentCommit = commits[commits.Current];
                 data = new[]
                 {
                     "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha,
@@ -537,7 +537,7 @@ namespace GitApp
                 ? (0, 0)
                 : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth);
             (page, commitOcupancyRate) = GetPageDataAndSize(commits.Index, availableSpace, consoleWrapper.WindowWidth);
-            var currentCommit = commits.GetElementAt(commits.Current);
+            var currentCommit = commits[commits.Current];
             commits.Current = page.Any(commit => currentCommit.Id.Equals(commit.Id)) ? commits.Current : commits.Index;
             var toWrite = GetCommits(initialText, page);
             isPageLargerThanWindow = commitOcupancyRate > availableSpace;
