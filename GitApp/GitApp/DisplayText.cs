@@ -48,7 +48,6 @@ namespace GitApp
             do
             {
                 key = consoleWrapper.ReadKey().Key;
-                writer = new StringWriter();
                 windowWidth = consoleWrapper.WindowWidth;
                 windowSize = consoleWrapper.WindowHeight * windowWidth;
                 initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
