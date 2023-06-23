@@ -45,34 +45,14 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, $"show --pretty=\"\" --name-only {commit}"));
         }
 
-        public string GetCommitId()
-        {
-            return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%h\""));
-        }
-
-        public string GetCommitAuthorName()
-        {
-            return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%an\""));
-        }
-
-        public string GetCommitDate()
-        {
-            return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%ar\""));
-        }
-
-        public string GetCommitMessage()
-        {
-            return commandRunner.RunCommand(new GitCommand(fileName, "log --format=\"%s\""));
-        }
-
-        public string GetSHA(string commitID)
-        {
-            return commandRunner.RunCommand(new GitCommand(fileName, $"rev-parse {commitID}"));
-        }
-
         public string GetLog()
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "log"));
+        }
+
+        public string GetDiffBetweenConsecutiveCommits(string oldId, string newId, string fileName)
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, $"diff {oldId} {newId} -- {fileName}"));
         }
     }
 }
