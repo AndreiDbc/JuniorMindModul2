@@ -39,10 +39,11 @@ namespace GitApp
             var page = new List<Commit>();
             var toDisplay = new List<string>();
             ConsoleKey key = ConsoleKey.NoName;
-            toDisplay = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize
+            var isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
+            toDisplay = isWindowToSmall
                         ? new List<string>()
                         : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
-            Write(toDisplay, initialTextSize, consoleWrapper, initialText);
+            Write(toDisplay, consoleWrapper, isWindowToSmall, initialText);
 
             do
             {
@@ -51,10 +52,11 @@ namespace GitApp
                 windowWidth = consoleWrapper.WindowWidth;
                 windowSize = consoleWrapper.WindowHeight * windowWidth;
                 initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
-                toDisplay = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize
+                isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
+                toDisplay = isWindowToSmall
                         ? new List<string>()
                         : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page, consoleWrapper);
-                Write(toDisplay, initialTextSize, consoleWrapper, initialText);
+                Write(toDisplay, consoleWrapper, isWindowToSmall, initialText);
             }
             while (!key.Equals(ConsoleKey.Escape));
         }
@@ -450,11 +452,11 @@ namespace GitApp
                 consoleWrapper);
         }
 
-        private void Write(List<string> toWrite, int initialTextSize, IConsoleWrapper consoleWrapper, string initialText = "")
+        private void Write(List<string> toWrite, IConsoleWrapper consoleWrapper, bool isWindowToSmall, string initialText = "")
         {
             var width = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * width;
-            if (initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(width) >= windowSize)
+            if (isWindowToSmall)
             {
                 writer = new StringWriter();
                 consoleWrapper.Clear();
@@ -482,27 +484,44 @@ namespace GitApp
                 currentCommit.Message,
                 gitManager.GetCommitModifiedFileNames(currentCommit.Id)
             };
-            var toDisplay = SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data, currentCommit);
-            Write(toDisplay, 0, consoleWrapper);
+            var isWindowToSmall = consoleWrapper.WindowWidth < 9;
+            var toDisplay = isWindowToSmall
+                ? new List<string>()
+                : SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data, currentCommit);
+            Write(toDisplay, consoleWrapper, isWindowToSmall);
             ConsoleKey key;
             do
             {
                 key = consoleWrapper.ReadKey().Key;
-                keyInteractor.KeyInfo = key;
-                (commits.Index, commits.Current) = keyInteractor
-                    .KeySwitch(leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
-                commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
-                currentCommit = commits[commits.Current];
-                data = new[]
-                {
+                isWindowToSmall = consoleWrapper.WindowHeight < 9;
+                toDisplay = isWindowToSmall
+                ? new List<string>()
+                : UpdateExtendedPage(key, keyInteractor, ref leftSideCommits, ref commitList, consoleWrapper);
+                Write(toDisplay, consoleWrapper, isWindowToSmall);
+            }
+            while (key != ConsoleKey.Escape);
+        }
+
+        private List<string> UpdateExtendedPage(
+            ConsoleKey key,
+            KeyInteractor keyInteractor,
+            ref List<string> leftSideCommits,
+            ref List<Commit> commitList,
+            IConsoleWrapper consoleWrapper)
+        {
+            keyInteractor.KeyInfo = key;
+            (commits.Index, commits.Current) = keyInteractor
+                .KeySwitch(leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth);
+            commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
+            var currentCommit = commits[commits.Current];
+            var data = new[]
+            {
                     "Author: " + currentCommit.Author + "\nDate: " + currentCommit.Date + "\nSHA: " + currentCommit.Sha,
                     currentCommit.Message,
                     gitManager.GetCommitModifiedFileNames(currentCommit.Id)
-                };
-                toDisplay = SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data, currentCommit);
-                Write(toDisplay, 0, consoleWrapper);
-            }
-            while (key != ConsoleKey.Escape);
+            };
+
+            return SelectScreen(consoleWrapper, keyInteractor, ref leftSideCommits, commitList, data, currentCommit);
         }
 
         private List<string> UpdatePage(
