@@ -520,15 +520,8 @@ namespace GitApp
             var availableSpace = rowSize * (windowHeight - 2);
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
             var diff = gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement());
-            var leftSideElements = GetLeftSideModifiedFiles(modifiedFiles, modifiedFiles.Current, modifiedFiles.Index);
-            var leftSide = DrawLeftBox(leftSideElements, consoleWrapper.WindowHeight, (int)(0.6 * windowWidth - 2), "Files");
-            var toFit = new PageUtilities(diff).GetOccupancyRate(rowSize) > availableSpace
-                ? new PageUtilities(diff).TruncateText(availableSpace)
-                : diff;
-            var fittedText = FitTextInsideBox(SplitRow(toFit.Split("\n"), rowSize), availableSpace, rowSize);
-            var rightSide = DrawBox(fittedText, "Diff", rowSize + 2, windowHeight, availableSpace, fittedText.Count);
             (var page, _) = GetPageDataAndSize(modifiedFiles, modifiedFiles.Index, availableSpace, rowSize, false);
-            var toDisplay = MergeSides(leftSide, rightSide);
+            var toDisplay = UpdateDiffPage(modifiedFiles, diff, rowSize, availableSpace);
             Write(toDisplay, windowHeight < 3);
             ConsoleKey key;
             do
@@ -563,7 +556,7 @@ namespace GitApp
                 : diff;
             var fittedText = FitTextInsideBox(SplitRow(toFit.Split("\n"), rowSize), availableSpace, rowSize);
             var rightSide = DrawBox(fittedText, "Diff", rowSize + 2, height, availableSpace, fittedText.Count);
-            return MergeSides(leftSide, rightSide);
+            return SelectScreen(leftSide, rightSide);
         }
 
         private List<string> GetLeftSideModifiedFiles(ModifiedFiles modifiedFiles, int current, int index)
