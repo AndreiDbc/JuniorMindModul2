@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    public class File
+    public class File : IElement
     {
         private readonly string rawFileDetails;
 
