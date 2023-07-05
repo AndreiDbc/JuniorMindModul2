@@ -235,7 +235,7 @@ namespace GitApp
             return toAdd;
         }
 
-        private static List<string> DisplaySplitScreen(List<string> leftSide, List<string> rightSide, IConsoleWrapper consoleWrapper)
+        private static List<string> MergeSides(List<string> leftSide, List<string> rightSide)
         {
             var result = new List<string>();
 
