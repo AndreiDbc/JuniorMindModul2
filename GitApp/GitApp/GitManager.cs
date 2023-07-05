@@ -54,5 +54,10 @@ namespace GitApp
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"diff {oldId} {newId} -- {fileName}"));
         }
+
+        public string GetRepoPath()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "rev-parse --show-toplevel"));
+        }
     }
 }
