@@ -17,15 +17,20 @@ namespace GitApp
     {
         private readonly FullCommits commits;
         private readonly GitManager gitManager;
+        private readonly IConsoleWrapper consoleWrapper;
         private TextWriter writer;
 
-        public DisplayText(FullCommits commits, TextWriter writer, GitManager gitManager)
+        public DisplayText(FullCommits commits, TextWriter writer, GitManager gitManager, IConsoleWrapper consoleWrapper)
         {
             this.commits = commits;
             this.writer = writer;
-            IsRightSideInUse = false;
             this.gitManager = gitManager;
+            this.consoleWrapper = consoleWrapper;
+            IsRightSideInUse = false;
+            WasWindowResizedSmaller = false;
         }
+
+        private bool WasWindowResizedSmaller { get; set; }
 
         private bool IsRightSideInUse { get; set; }
 
