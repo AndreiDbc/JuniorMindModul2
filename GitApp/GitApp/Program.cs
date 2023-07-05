@@ -12,9 +12,9 @@ namespace GitApp
             var manager = new GitManager("git", processRunner);
             var commits = new FullCommits(manager.GetLog());
             TextWriter writer = new StringWriter();
-            var display = new DisplayText(commits, writer, manager);
+            var display = new DisplayText(commits, writer, manager, new ConsoleWrapper());
             var initialData = new InitialData(manager);
-            display.Display(new ConsoleWrapper(), initialData.GetText());
+            display.Display(initialData.GetText());
             writer.Flush();
             writer.Close();
         }
