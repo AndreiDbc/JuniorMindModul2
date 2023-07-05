@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    public class ModifiedFiles
+    public class ModifiedFiles : IInteractor<IElement>
     {
         private readonly string rawData;
         private readonly List<IElement> list;
@@ -23,6 +23,14 @@ namespace GitApp
         public int Current { get; set; }
 
         public int Index { get; set; }
+
+        public IElement this[int index]
+        {
+            get
+            {
+                return list[index];
+            }
+        }
 
         public List<IElement> GetText()
         {
