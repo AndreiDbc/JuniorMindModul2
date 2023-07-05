@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    public class FullCommits
+    public class FullCommits : IInteractor<IElement>
     {
         private readonly string rawLogData;
-        private readonly List<Commit> list;
+        private readonly List<IElement> list;
 
         public FullCommits(string rawLogData)
         {
@@ -23,14 +23,17 @@ namespace GitApp
 
         public int Index { get; set; }
 
-        public Commit this[int index]
+        public IElement this[int index]
         {
-            get => list[index];
+            get
+            {
+                return list[index];
+            }
         }
 
-        public List<Commit> GetText()
+        public List<IElement> GetText()
         {
-            var commits = new List<Commit>();
+            var commits = new List<IElement>();
             var str = rawLogData.Split("\n\n");
             for (int i = 0; i < str.Length; i += 2)
             {
