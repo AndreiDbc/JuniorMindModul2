@@ -50,9 +50,9 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "log"));
         }
 
-        public string GetDiffBetweenConsecutiveCommits(string oldId, string newId, string fileName)
+         public string GetDiffBetweenConsecutiveCommits(string oldId, string newId, string repositoryPath, string filePath)
         {
-            return commandRunner.RunCommand(new GitCommand(fileName, $"diff {oldId} {newId} -- {fileName}"));
+            return commandRunner.RunCommand(new GitCommand(fileName, $"diff {oldId} {newId} -- {filePath}", repositoryPath));
         }
 
         public string GetRepoPath()
