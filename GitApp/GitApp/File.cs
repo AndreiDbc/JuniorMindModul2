@@ -8,5 +8,12 @@ namespace GitApp
 {
     public class File
     {
+        private readonly string rawFileDetails;
+
+        public File(string rawFileDetails)
+        {
+            this.rawFileDetails = rawFileDetails;
+        }
+
     }
 }
