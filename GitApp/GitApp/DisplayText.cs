@@ -393,7 +393,7 @@ namespace GitApp
             return result;
         }
 
-        private List<string> GetCommits(string initialText, List<IElement> page)
+        private List<string> GetCommits(List<IElement> page)
         {
             var result = new List<string>();
             var currentCommit = commits[commits.Current];
@@ -675,7 +675,7 @@ namespace GitApp
             (page, commitOcupancyRate) = GetPageDataAndSize(commits, commits.Index, availableSpace, consoleWrapper.WindowWidth, true);
             var currentCommit = commits[commits.Current];
             commits.Current = page.Any(commit => currentCommit.Id.Equals(commit.Id)) ? commits.Current : commits.Index;
-            var toWrite = GetCommits(initialText, page);
+            var toWrite = GetCommits(page);
             isPageLargerThanWindow = commitOcupancyRate > availableSpace;
             for (int i = 0; i < toWrite.Count - 2; i++)
             {
