@@ -27,10 +27,16 @@ namespace GitApp
                     CreateNoWindow = true
                 }
             };
+
+            if (command.Path != "")
+            {
+                process.StartInfo.WorkingDirectory = command.Path;
+            }
+
             process.Start();
-            var branch = process.StandardOutput.ReadToEnd();
+            var result = process.StandardOutput.ReadToEnd();
             process.Dispose();
-            return branch.Trim();
+            return result.Trim();
         }
     }
 }
