@@ -515,6 +515,96 @@ namespace GitApp
             while (key != ConsoleKey.Escape);
         }
 
+        private void DisplayDiffPage(IConsoleWrapper consoleWrapper, IElement currentCommit, IElement previousCommit)
+        {
+            consoleWrapper.Clear();
+            var repoPath = gitManager.GetRepoPath();
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowWidth = consoleWrapper.WindowWidth;
+            var windowSize = windowHeight * windowWidth;
+            var windowSizeTemp = windowSize;
+            var rowSize = windowWidth - (int)(0.6 * windowWidth);
+            var availableSpace = rowSize * (windowHeight - 2);
+            var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
+            var diff = gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement());
+            var leftSideElements = GetLeftSideModifiedFiles(modifiedFiles, modifiedFiles.Current, modifiedFiles.Index);
+            var leftSide = DrawLeftBox(leftSideElements, consoleWrapper.WindowHeight, (int)(0.6 * windowWidth - 2), "Files");
+            var toFit = new PageUtilities(diff).GetOccupancyRate(rowSize) > availableSpace
+                ? new PageUtilities(diff).TruncateText(availableSpace)
+                : diff;
+            var fittedText = FitTextInsideBox(SplitRow(toFit.Split("\n"), rowSize), availableSpace, rowSize);
+            var rightSide = DrawBox(fittedText, "Diff", rowSize + 2, windowHeight, availableSpace, fittedText.Count);
+            (var page, _) = GetPageDataAndSize(modifiedFiles, modifiedFiles.Index, availableSpace, rowSize, false);
+            var toDisplay = MergeSides(leftSide, rightSide);
+            Write(toDisplay, windowHeight < 3);
+            ConsoleKey key;
+            do
+            {
+                var keyInteractor = new KeyInteractor<IElement>(modifiedFiles);
+                key = consoleWrapper.ReadKey().Key;
+                keyInteractor.KeyInfo = key;
+                windowSize = windowHeight * consoleWrapper.WindowWidth;
+                WasWindowResizedSmaller = windowSize < windowSizeTemp;
+                windowSizeTemp = windowSize;
+                (modifiedFiles.Index, modifiedFiles.Current) = keyInteractor.KeySwitch(toDisplay, page[^1].Id, page[0].Id, false, windowWidth, page[^1].GetElement().Length - 41);
+                var filePath = modifiedFiles[modifiedFiles.Current].GetElement();
+                diff = gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, filePath);
+                windowHeight = consoleWrapper.WindowHeight;
+                windowWidth = consoleWrapper.WindowWidth;
+                rowSize = windowWidth - (int)(0.6 * windowWidth);
+                availableSpace = rowSize * (windowHeight - 2);
+                toDisplay = UpdateDiffPage(modifiedFiles, diff, rowSize, availableSpace);
+                Write(toDisplay, windowHeight < 3);
+            }
+            while (key != ConsoleKey.Escape && key != ConsoleKey.LeftArrow);
+        }
+
+        private List<string> UpdateDiffPage(ModifiedFiles modifiedFiles, string diff, int rowSize, int availableSpace)
+        {
+            var height = consoleWrapper.WindowHeight;
+            var width = consoleWrapper.WindowWidth;
+            var leftSideElements = GetLeftSideModifiedFiles(modifiedFiles, modifiedFiles.Current, modifiedFiles.Index);
+            var leftSide = DrawLeftBox(leftSideElements, consoleWrapper.WindowHeight, (int)(0.6 * width - 2), "Files");
+            var toFit = new PageUtilities(diff).GetOccupancyRate(rowSize) > availableSpace
+                ? new PageUtilities(diff).TruncateText(availableSpace)
+                : diff;
+            var fittedText = FitTextInsideBox(SplitRow(toFit.Split("\n"), rowSize), availableSpace, rowSize);
+            var rightSide = DrawBox(fittedText, "Diff", rowSize + 2, height, availableSpace, fittedText.Count);
+            return MergeSides(leftSide, rightSide);
+        }
+
+        private List<string> GetLeftSideModifiedFiles(ModifiedFiles modifiedFiles, int current, int index)
+        {
+            var result = new List<string>();
+            var modifiedFilesList = modifiedFiles.GetText();
+            var currentElement = modifiedFiles[current];
+            var occupancyRate = 0;
+            var height = consoleWrapper.WindowHeight;
+            var width = consoleWrapper.WindowWidth;
+            var rowSize = (int)(0.6 * width - 2);
+            var availableSpace = rowSize * (height - 2);
+            do
+            {
+                if (occupancyRate >= availableSpace || index > modifiedFilesList.Count - 1)
+                {
+                    break;
+                }
+
+                var toAdd = modifiedFiles[index].GetElement();
+                var toAddUtilities = new PageUtilities(toAdd);
+                result.Add((currentElement.Id == modifiedFiles[index].Id ? "\x1b[7m" : "\x1b[0m")
+                    + (toAdd.Length > rowSize ? toAddUtilities.TruncateText(rowSize - 2) : toAdd));
+                occupancyRate += toAddUtilities.GetOccupancyRate(rowSize);
+                index++;
+            }
+            while (occupancyRate <= availableSpace);
+            var lastElementUtilities = new PageUtilities(result[^1]);
+            result[^1] = occupancyRate > availableSpace
+                ? lastElementUtilities.TruncateText(availableSpace - occupancyRate - lastElementUtilities.GetOccupancyRate(rowSize))
+                : result[^1];
+            return result;
+        }
+
         private List<string> UpdateExtendedPage(
             ConsoleKey key,
             KeyInteractor keyInteractor,
