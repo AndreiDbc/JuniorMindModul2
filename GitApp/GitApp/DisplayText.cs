@@ -188,9 +188,8 @@ namespace GitApp
             return result;
         }
 
-        private static List<string> DrawCommitBox(List<string> list, int windowHeight, int width)
+        private static List<string> DrawLeftBox(List<string> list, int windowHeight, int width, string boxName)
         {
-            const string boxName = "Commits";
             const int lengthToSubstract = 2;
             var result = new List<string>();
             result.AddRange(list);
@@ -206,12 +205,12 @@ namespace GitApp
                 }
                 else
                 {
-                    result.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(width + 2));
+                    result.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(width + 3));
                 }
 
                 index++;
             }
-            while (result.Count % windowHeight != 0 && !result[^1].StartsWith("\x1b[0m│"));
+            while (result.Count <= windowHeight - 2 || !result[^1].StartsWith("\x1b[0m│"));
             result.Add("\x1b[0m└" + new string('─', width - 2) + "┘");
             return result;
         }
