@@ -17,9 +17,9 @@ namespace GitApp
         public string Sha;
     }
 
-    public class Commit
+    public class Commit : IElement
     {
-        public readonly string Id;
+        public readonly string CommitId;
         public readonly string Author;
         public readonly string Date;
         public readonly string Message;
@@ -30,16 +30,18 @@ namespace GitApp
         {
             this.rawCommitDetails = rawCommitDetails;
             var props = ExtractProperties();
-            this.Id = props.Id;
+            this.CommitId = props.Id;
             this.Author = props.Author;
             this.Date = props.Date;
             this.Message = props.Message;
             this.Sha = props.Sha;
         }
 
+        public string Id { get => CommitId; }
+
         public string GetElement()
         {
-            return Id + " " + Author + " " + Date + " " + Message;
+            return CommitId + "\n" + Author + "\n" + Date + "\n" + Message + "\n" + Sha;
         }
 
         private static string GetDate(string[] data)
