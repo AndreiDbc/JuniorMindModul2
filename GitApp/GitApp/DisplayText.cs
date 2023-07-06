@@ -48,7 +48,7 @@ namespace GitApp
             var isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
             toDisplay = isWindowToSmall
                         ? new List<string>()
-                        : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page);
+                        : UpdatePage(key, initialTextSize, ref commitTextSize, ref page);
             Write(toDisplay, isWindowToSmall, initialText);
             var windowSizeTemp = windowSize;
 
@@ -63,7 +63,7 @@ namespace GitApp
                 isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
                 toDisplay = isWindowToSmall
                         ? new List<string>()
-                        : UpdatePage(key, initialText, initialTextSize, ref commitTextSize, ref page);
+                        : UpdatePage(key, initialTextSize, ref commitTextSize, ref page);
                 Write(toDisplay, isWindowToSmall, initialText);
             }
             while (!key.Equals(ConsoleKey.Escape));
@@ -464,17 +464,38 @@ namespace GitApp
             }
         }
 
+        private void UpdateLeftSideVariables(ref List<IElement> elements, ref List<string> leftSide, bool isWindowToSmall, IInteractor<IElement> interactor = null)
+        {
+            var windowWidth = consoleWrapper.WindowWidth;
+            var windowHeight = consoleWrapper.WindowHeight;
+            if (isWindowToSmall)
+            {
+                return;
+            }
+
+            if (interactor == null)
+            {
+                elements = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
+                leftSide = consoleWrapper.WindowHeight < 15 && consoleWrapper.WindowWidth < 50
+                    ? GetLeftSide((int)(0.25 * (consoleWrapper.WindowWidth - 2)), elements, commits[commits.Current])
+                    : GetLeftSide((int)(0.15 * (consoleWrapper.WindowWidth - 2)), elements, commits[commits.Current]);
+            }
+            else
+            {
+                elements = GetPageDataAndSize(interactor, interactor.Index, ((int)(0.6 * windowWidth) - 2) * (windowHeight - 2), (int)(0.6 * windowWidth) - 2, false).list;
+                leftSide = GetLeftSideModifiedFiles(interactor, interactor.Current, interactor.Index);
+            }
+        }
+
         private void DisplayExtendedPage(KeyInteractor<IElement> keyInteractor)
         {
-            var currentCommit = commits[commits.Current];
-            var commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * consoleWrapper.WindowWidth;
             var windowSizeTemp = windowSize;
             var isWindowToSmall = windowHeight < 9;
-            var leftSideCommits = consoleWrapper.WindowHeight < 15 && consoleWrapper.WindowWidth < 50
-                ? GetLeftSide((int)(0.25 * (consoleWrapper.WindowWidth - 2)), commitList, currentCommit)
-                : GetLeftSide((int)(0.15 * (consoleWrapper.WindowWidth - 2)), commitList, currentCommit);
+            var commitList = new List<IElement>();
+            var leftSideCommits = new List<string>();
+            UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall);
             var toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateExtendedPage(leftSideCommits);
@@ -492,14 +513,10 @@ namespace GitApp
                 (commits.Index, commits.Current) = keyInteractor
                     .KeySwitch(leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
-                currentCommit = commits[commits.Current];
-                commitList = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 isWindowToSmall = consoleWrapper.WindowHeight < 9;
-                leftSideCommits = consoleWrapper.WindowHeight < 15 && consoleWrapper.WindowWidth < 50
-                ? GetLeftSide((int)(0.25 * (consoleWrapper.WindowWidth - 2)), commitList, currentCommit)
-                : GetLeftSide((int)(0.15 * (consoleWrapper.WindowWidth - 2)), commitList, currentCommit);
+                UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall);
                 toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateExtendedPage(leftSideCommits);
@@ -518,48 +535,72 @@ namespace GitApp
             var windowSizeTemp = windowSize;
             var rowSize = windowWidth - (int)(0.6 * windowWidth);
             var availableSpace = rowSize * (windowHeight - 2);
+            var isWindowToSmall = windowHeight < 3;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
+            var leftSideElements = new List<string>();
             var diff = gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement());
-            (var page, _) = GetPageDataAndSize(modifiedFiles, modifiedFiles.Index, availableSpace, rowSize, false);
-            var toDisplay = UpdateDiffPage(modifiedFiles, diff, rowSize, availableSpace);
+            var page = new List<IElement>();
+            UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles);
+            var toDisplay = isWindowToSmall
+                ? new List<string>()
+                : UpdateDiffPage(leftSideElements, diff, rowSize, availableSpace);
             Write(toDisplay, windowHeight < 3);
             ConsoleKey key;
             do
             {
                 var keyInteractor = new KeyInteractor<IElement>(modifiedFiles);
                 key = consoleWrapper.ReadKey().Key;
+                windowHeight = consoleWrapper.WindowHeight;
+                windowWidth = consoleWrapper.WindowWidth;
+                isWindowToSmall = windowHeight < 3;
+                rowSize = windowWidth - (int)(0.6 * windowWidth);
+                availableSpace = rowSize * (windowHeight - 2);
                 keyInteractor.KeyInfo = key;
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                (modifiedFiles.Index, modifiedFiles.Current) = keyInteractor.KeySwitch(toDisplay, page[^1].Id, page[0].Id, false, windowWidth, page[^1].GetElement().Length - 41);
+                (modifiedFiles.Index, modifiedFiles.Current) = keyInteractor.KeySwitch(leftSideElements, page[^1].Id, page[0].Id, false, windowWidth, page[^1].GetElement().Length);
+                UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles);
                 var filePath = modifiedFiles[modifiedFiles.Current].GetElement();
                 diff = gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, filePath);
-                windowHeight = consoleWrapper.WindowHeight;
-                windowWidth = consoleWrapper.WindowWidth;
-                rowSize = windowWidth - (int)(0.6 * windowWidth);
-                availableSpace = rowSize * (windowHeight - 2);
-                toDisplay = UpdateDiffPage(modifiedFiles, diff, rowSize, availableSpace);
+                toDisplay = isWindowToSmall
+                    ? new List<string>()
+                    : UpdateDiffPage(leftSideElements, diff, rowSize, availableSpace);
                 Write(toDisplay, windowHeight < 3);
             }
             while (key != ConsoleKey.Escape && key != ConsoleKey.LeftArrow);
         }
 
-        private List<string> UpdateDiffPage(ModifiedFiles modifiedFiles, string diff, int rowSize, int availableSpace)
+        private List<string> UpdateDiffPage(List<string> leftSide, string diff, int rowSize, int availableSpace)
         {
-            var height = consoleWrapper.WindowHeight;
-            var width = consoleWrapper.WindowWidth;
-            var leftSideElements = GetLeftSideModifiedFiles(modifiedFiles, modifiedFiles.Current, modifiedFiles.Index);
-            var leftSide = DrawLeftBox(leftSideElements, consoleWrapper.WindowHeight, (int)(0.6 * width - 2), "Files");
-            var toFit = new PageUtilities(diff).GetOccupancyRate(rowSize) > availableSpace
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowWidth = consoleWrapper.WindowWidth;
+            var windowSize = windowHeight * windowWidth;
+            var toFit = "";
+            List<string> fittedText;
+            List<string> rightSide;
+            if (windowHeight < 15 && windowWidth < 50)
+            {
+                var maximumTextSize = (windowHeight - 2) * (windowWidth - 2);
+                toFit = new PageUtilities(diff).GetOccupancyRate(windowWidth - 2) > maximumTextSize
+                ? new PageUtilities(diff).TruncateText(maximumTextSize)
+                : diff;
+                fittedText = FitTextInsideBox(SplitRow(toFit.Split("\n"), windowWidth - 2), maximumTextSize, windowWidth - 2);
+                rightSide = DrawBox(fittedText, "Diff", windowWidth, windowHeight, windowSize, fittedText.Count);
+            }
+            else
+            {
+                toFit = new PageUtilities(diff).GetOccupancyRate(rowSize) > availableSpace
                 ? new PageUtilities(diff).TruncateText(availableSpace)
                 : diff;
-            var fittedText = FitTextInsideBox(SplitRow(toFit.Split("\n"), rowSize), availableSpace, rowSize);
-            var rightSide = DrawBox(fittedText, "Diff", rowSize + 2, height, availableSpace, fittedText.Count);
-            return SelectScreen(leftSide, rightSide);
+                fittedText = FitTextInsideBox(SplitRow(toFit.Split("\n"), rowSize), availableSpace, rowSize);
+                rightSide = DrawBox(fittedText, "Diff", rowSize + 2, windowHeight, availableSpace, fittedText.Count);
+            }
+
+            return SelectScreen(DrawLeftBox(leftSide, windowHeight, (int)(0.6 * windowWidth - 2), "Files"), rightSide);
         }
 
-        private List<string> GetLeftSideModifiedFiles(ModifiedFiles modifiedFiles, int current, int index)
+        private List<string> GetLeftSideModifiedFiles(IInteractor<IElement> modifiedFiles, int current, int index)
         {
             var result = new List<string>();
             var modifiedFilesList = modifiedFiles.GetText();
@@ -604,7 +645,9 @@ namespace GitApp
 
             var width = consoleWrapper.WindowWidth;
             var height = consoleWrapper.WindowHeight;
-            var rightSide = FormateRightSide(data[0], data[1], data[2], height, width - (int)(0.6 * width));
+            var rightSide = consoleWrapper.WindowHeight < 15 && consoleWrapper.WindowWidth < 50
+                ? FormateRightSide(data[0], data[1], data[2], height, width)
+                : FormateRightSide(data[0], data[1], data[2], height, width - (int)(0.6 * width));
 
             return SelectScreen(
                 DrawLeftBox(leftSideCommits, height, height < 15 && width < 50 ? width : (int)(0.6 * width), "Commits"),
@@ -613,7 +656,6 @@ namespace GitApp
 
         private List<string> UpdatePage(
             ConsoleKey keyInfo,
-            string initialText,
             int initialTextSize,
             ref int commitOcupancyRate,
             ref List<IElement> page)
