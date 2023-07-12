@@ -149,7 +149,7 @@ namespace GitApp
             {
                 if (index < result.Count)
                 {
-                    var padLength = width + 2 - (result[index].Length - new PageUtilities(result[index]).GetFormatingCodesLengthAndStringWithoutCodes().length);
+                    var padLength = width + 2 - (result[index].Length - new PageUtilities(result[index]).FormatingCodesStringUtilities().length);
                     var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
                     result[index] = "\x1b[0m│" + result[index] + toPad;
                 }
@@ -276,7 +276,7 @@ namespace GitApp
             toWrite.ForEach(element =>
             {
                 var elementUtilities = new PageUtilities(element);
-                var clearedElement = elementUtilities.GetFormatingCodesLengthAndStringWithoutCodes().clearedString;
+                var clearedElement = elementUtilities.FormatingCodesStringUtilities().clearedString;
                 var padLength = new PageUtilities(clearedElement).GetOccupancyRate(consoleWrapper.WindowWidth) - clearedElement.Length;
                 var toPad = new string(' ', padLength);
                 result.Add(clearedElement.Length % consoleWrapper.WindowWidth != 0 ? element + toPad : element);
@@ -691,12 +691,12 @@ namespace GitApp
             isPageLargerThanWindow = commitOcupancyRate > availableSpace;
             for (int i = 0; i < toWrite.Count - 2; i++)
             {
-                var temp = new PageUtilities(toWrite[i]).GetFormatingCodesLengthAndStringWithoutCodes().clearedString;
+                var temp = new PageUtilities(toWrite[i]).FormatingCodesStringUtilities().clearedString;
                 commitsOcupancyRateExceptLast += new PageUtilities(temp).GetOccupancyRate(windowWidth);
             }
 
             var lastPageElementUtilities = new PageUtilities(toWrite[^2][..^4]);
-            var truncationSize = availableSpace - commitsOcupancyRateExceptLast + lastPageElementUtilities.GetFormatingCodesLengthAndStringWithoutCodes().length;
+            var truncationSize = availableSpace - commitsOcupancyRateExceptLast + lastPageElementUtilities.FormatingCodesStringUtilities().length;
             toWrite[^2] = isPageLargerThanWindow
                 ? lastPageElementUtilities.TruncateText(truncationSize)
                 : toWrite[^2];
