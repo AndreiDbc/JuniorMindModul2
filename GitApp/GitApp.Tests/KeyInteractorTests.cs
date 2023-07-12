@@ -145,7 +145,7 @@ namespace GitApp.Tests
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"};
             keyInteractor.KeyInfo = ConsoleKey.DownArrow;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", true, 120, commits[commits.Current].GetElement().Length - 40);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", true, 38, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(8, commits.Current);
             Assert.Equal(7, commits.Index);
         }

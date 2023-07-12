@@ -18,6 +18,15 @@ namespace GitApp.Tests
             return command.Argument switch
             {
                 "branch --show-current" => "master",
+                "show --pretty=\"\" --name-only 7f37022"=> 
+                "GitApp/GitApp/ConsoleWrapper.cs\n" +
+                "GitApp/GitApp/DisplayText.cs\n"+
+                "GitApp/GitApp/IElement.cs\n"+
+                "GitApp/GitApp/Program.cs\n"+
+                "GitApp/GitApp/InitialData.cs\n"+
+                "GitApp/GitApp/IInteractor.cs\n"+
+                "GitApp/GitApp.Tests/DisplayTextTests.cs\n" +
+                "GitApp/GitApp.Tests/FakeConsole.cs",
                 _ => "",
             };
         }

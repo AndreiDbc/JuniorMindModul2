@@ -20,6 +20,8 @@ namespace GitApp.Tests
             this.keySequence = keySequence;
             lastPressedKey = new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false);
             currentKeyIndex = 0;
+            WindowHeight = 0;
+            WindowWidth = 0;
             StringWriter = stringWriter;
         }
 
@@ -55,6 +57,7 @@ namespace GitApp.Tests
 
         public void Write(string text)
         {
+            StringWriter.Write(text);
         }
 
         public void WriteLine(string text)
@@ -63,7 +66,6 @@ namespace GitApp.Tests
 
         public void Clear()
         {
-            lastFrame += StringWriter.ToString();
         }
     }
 }

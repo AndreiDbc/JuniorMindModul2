@@ -27,7 +27,7 @@ namespace GitApp
             this.writer = writer;
             this.gitManager = gitManager;
             this.consoleWrapper = consoleWrapper;
-            IsRightSideInUse = false;
+            IsRightSideInUse = true;
             WasWindowResizedSmaller = false;
         }
 
