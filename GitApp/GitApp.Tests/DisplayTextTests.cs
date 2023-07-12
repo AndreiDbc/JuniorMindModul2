@@ -48,16 +48,18 @@ namespace GitApp.Tests
                 "\nAuthor: Andrei Daboc <99188105+AndreiDbc@users.noreply.github.com>" +
                 "\nDate:   Mon May 8 14:37:15 2023 +0300" +
                 "\n\n    Fixed an issue that caused not to display the correct date.\r\n";
+
+        const string initialText = "Current branch name: master\r\nOutgoing: 0\r\nIncoming: 0\r\nBranches: * master";
+
         [Fact]
         public void DisplayIsCalledShouldDisplayText()
         {
-            ConsoleKeyInfo[] keyinfo =new[] { new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false) };
-            var fakeProcessRunner = new FakeGitProcessRunner();
+            ConsoleKeyInfo[] keyinfo = new[] { new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false) };
             StringWriter writer = new StringWriter();
             var fakeConsole = new FakeConsole(keyinfo, writer);
             fakeConsole.WindowHeight = 30;
             fakeConsole.WindowWidth = 120;
-            var display = new DisplayText(new FullCommits(Commits), writer, fakeProcessRunner);
+            var display = new DisplayText(new FullCommits(Commits), writer, fakeConsole);
             display.Display(fakeConsole, "");
             const string expected = 
                 "\r\n\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTextInsideBox method." +

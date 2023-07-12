@@ -8,9 +8,9 @@ namespace GitApp
 {
     public class ConsoleWrapper : IConsoleWrapper
     {
-        public int WindowWidth => Console.WindowWidth;
+        public int WindowWidth { get => Console.WindowWidth; set => Console.WindowWidth = value; }
 
-        public int WindowHeight => Console.WindowHeight;
+        public int WindowHeight { get => Console.WindowHeight; set => Console.WindowHeight = value; }
 
         public void SetCursorPosition(int left, int top)
         {

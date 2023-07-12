@@ -15,7 +15,7 @@ namespace GitApp.Tests
         public string lastFrame;
         private bool keyAvailable;
 
-        public FakeConsole( ConsoleKeyInfo[] keySequence, StringWriter stringWriter)
+        public FakeConsole(ConsoleKeyInfo[] keySequence, StringWriter stringWriter)
         {
             this.keySequence = keySequence;
             lastPressedKey = new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false);

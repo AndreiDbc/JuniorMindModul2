@@ -8,9 +8,9 @@ namespace GitApp
 {
     public interface IConsoleWrapper
     {
-        public int WindowWidth { get; }
+        public int WindowWidth { get; set; }
 
-        public int WindowHeight { get; }
+        public int WindowHeight { get; set;  }
 
         public ConsoleKeyInfo ReadKey();
 

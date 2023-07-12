@@ -54,8 +54,8 @@ namespace GitApp.Tests
         [Fact]
         public void KeySwitchIsCalledKeyIsPgUpShouldReturnZeroAndZero()
         {
-            var commits = new FullCommits(Commits);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             commits.Current = 4;
             commits.Index = 4;
             var page = new List<string> { 
@@ -64,7 +64,7 @@ namespace GitApp.Tests
                 "10580c9 Andrei Daboc 2023-05-09 Modified functionality of DisplaySplitScreen method.",
                 "fae78e6 Andrei Daboc 2023-05-09 Fixed date column arrangement on left side." };
             keyInteractor.KeyInfo = ConsoleKey.PageUp;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false, 120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false, 120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(0, commits.Current);
             Assert.Equal(0, commits.Index);
         }
@@ -72,15 +72,15 @@ namespace GitApp.Tests
         [Fact]
         public void KeySwitchIsCalledKeyIsPgUpAndCurrentAndIndexAreZeroShouldReturnUnchangedNumbers()
         {
-            var commits = new FullCommits(Commits);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             var page = new List<string> {
                 "f944893 Andrei Daboc 2023-05-12 Boxes are now properly displayed at any size.",
                 "92e239d Andrei Daboc 2023-05-09 FitTextInsideBox method's loop now breaks if \"i\" is equal to current line element's length minus one.",
                 "10580c9 Andrei Daboc 2023-05-09 Modified functionality of DisplaySplitScreen method.",
                 "fae78e6 Andrei Daboc 2023-05-09 Fixed date column arrangement on left side." };
             keyInteractor.KeyInfo = ConsoleKey.PageUp;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "f944893", "f944893", false, 120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "f944893", "f944893", false, 120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(0, commits.Current);
             Assert.Equal(0, commits.Index);
         }
@@ -88,8 +88,8 @@ namespace GitApp.Tests
         [Fact]
         public void KeySwitchIsCalledDownArrowIsPressedShouldReturnCurrentPlusOne()
         {
-            var commits = new FullCommits(Commits);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             commits.Current = 4;
             commits.Index = 4;
             var page = new List<string> {
@@ -98,7 +98,7 @@ namespace GitApp.Tests
                 "10580c9 Andrei Daboc 2023-05-09 Modified functionality of DisplaySplitScreen method.",
                 "fae78e6 Andrei Daboc 2023-05-09 Fixed date column arrangement on left side." };
             keyInteractor.KeyInfo = ConsoleKey.DownArrow;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false, 120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false, 120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(5, commits.Current);
             Assert.Equal(4, commits.Index);
         }
@@ -106,8 +106,8 @@ namespace GitApp.Tests
         [Fact]
         public void KeySwitchIsCalledDownArrowIsPressedCurrentCommitIsLastOnPageShoudIncrementIndexAndCurrent()
         {
-            var commits = new FullCommits(Commits);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             commits.Current = 7;
             commits.Index = 7;
             var page = new List<string> {
@@ -116,7 +116,7 @@ namespace GitApp.Tests
                 "10580c9 Andrei Daboc 2023-05-09 Modified functionality of DisplaySplitScreen method.",
                 "fae78e6 Andrei Daboc 2023-05-09 Fixed date column arrangement on left side." };
             keyInteractor.KeyInfo = ConsoleKey.DownArrow;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false, 120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false, 120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(8, commits.Current);
             Assert.Equal(8, commits.Index);
         }
@@ -131,8 +131,8 @@ namespace GitApp.Tests
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            var commits = new FullCommits(temp);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             commits.Current = 7;
             commits.Index = 4;
             var page = new List<string> {
@@ -145,7 +145,7 @@ namespace GitApp.Tests
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"};
             keyInteractor.KeyInfo = ConsoleKey.DownArrow;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", true, 120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", true, 120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(8, commits.Current);
             Assert.Equal(7, commits.Index);
         }
@@ -153,8 +153,8 @@ namespace GitApp.Tests
         [Fact]
         public void KeySwitchIsCalledUpArrowIsPressedShouldDecreaseCurrentByOne()
         {
-            var commits = new FullCommits(Commits);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             commits.Current = 5;
             commits.Index = 4;
             var page = new List<string> {
@@ -163,7 +163,7 @@ namespace GitApp.Tests
                 "10580c9 Andrei Daboc 2023-05-09 Modified functionality of DisplaySplitScreen method.",
                 "fae78e6 Andrei Daboc 2023-05-09 Fixed date column arrangement on left side." };
             keyInteractor.KeyInfo = ConsoleKey.UpArrow;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false,  120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false,  120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(4, commits.Current);
             Assert.Equal(4, commits.Index);
         }
@@ -171,8 +171,8 @@ namespace GitApp.Tests
         [Fact]
         public void KeySwitchIsCalledUpArrowIsPressedAndCurrentElementIsFirstOnPageShouldDecreaseIndexAndCurrentByOne()
         {
-            var commits = new FullCommits(Commits);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             commits.Current = 4;
             commits.Index = 4;
             var page = new List<string> {
@@ -181,7 +181,7 @@ namespace GitApp.Tests
                 "10580c9 Andrei Daboc 2023-05-09 Modified functionality of DisplaySplitScreen method.",
                 "fae78e6 Andrei Daboc 2023-05-09 Fixed date column arrangement on left side." };
             keyInteractor.KeyInfo = ConsoleKey.UpArrow;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "f944893", "f944893", false, 120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "f944893", "f944893", false, 120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(3, commits.Current);
             Assert.Equal(3, commits.Index);
         }
@@ -189,8 +189,8 @@ namespace GitApp.Tests
         [Fact]
         public void KeySwitchIsCalledPageDownIsPressedShouldUpdateIndexAndCurrent()
         {
-            var commits = new FullCommits(Commits);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             commits.Current = 4;
             commits.Index = 4;
             var page = new List<string> {
@@ -199,7 +199,7 @@ namespace GitApp.Tests
                 "10580c9 Andrei Daboc 2023-05-09 Modified functionality of DisplaySplitScreen method.",
                 "fae78e6 Andrei Daboc 2023-05-09 Fixed date column arrangement on left side." };
             keyInteractor.KeyInfo = ConsoleKey.PageDown;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false, 120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "fae78e6", "f944893", false, 120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(8, commits.Current);
             Assert.Equal(8, commits.Index);
         }
@@ -207,8 +207,8 @@ namespace GitApp.Tests
         [Fact]
         public void KeySwitchIsCalledPageDownIsPressedAndIsLastPageFromCommitsShouldNotUpdateIndex()
         {
-            var commits = new FullCommits(Commits);
-            var keyInteractor = new KeyInteractor(commits);
+            IInteractor<IElement> commits = new FullCommits(Commits);
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             commits.Current = 8;
             commits.Index = 8;
             var page = new List<string> {
@@ -217,7 +217,7 @@ namespace GitApp.Tests
                 "10580c9 Andrei Daboc 2023-05-09 Modified functionality of DisplaySplitScreen method.",
                 "d3d8ef7 Andrei Daboc 2023-05-08 Fixed an issue that caused not to display the correct date" };
             keyInteractor.KeyInfo = ConsoleKey.PageDown;
-            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "d3d8ef7", "f944893", false, 120);
+            (commits.Index, commits.Current) = keyInteractor.KeySwitch(page, "d3d8ef7", "f944893", false, 120, commits[commits.Current].GetElement().Length - 40);
             Assert.Equal(9, commits.Current);
             Assert.Equal(8, commits.Index);
         }
