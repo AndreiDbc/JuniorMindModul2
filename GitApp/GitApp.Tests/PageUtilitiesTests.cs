@@ -47,7 +47,7 @@ namespace GitApp.Tests
         [Fact]
         public void FormatingCodesStringUtilitiesIsCalledShouldReturnCodesLength()
         {
-            Assert.Equal(14, new PageUtilities(" \u001b[0masdasd\nasd \u001b[48;5;27mdsd d").FormatingCodesStringUtilities().length);
+            Assert.Equal(18, new PageUtilities(" \u001b[0masdasd\nasd \u001b[48;5;27mdsd\u001b[0m d").FormatingCodesStringUtilities().length);
         }
 
         [Fact]

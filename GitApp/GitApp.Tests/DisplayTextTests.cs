@@ -89,8 +89,8 @@ namespace GitApp.Tests
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│                                              │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m└──────────────────────────────────────────────┘" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│┌Files─────────────────────────────────────────┐" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs\u001b[0m               │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/DisplayText.cs\u001b[0m                  │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs\u001b[0m               │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/IElement.cs\u001b[0m                     │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/Program.cs\u001b[0m                      │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/InitialData.cs\u001b[0m                  │" +
@@ -111,7 +111,7 @@ namespace GitApp.Tests
         const string expectedSmallRightExtendedPage =
             "┌Info───────────────────────────────────────────┐" +
             "\r\n\u001b[0m│Author: Andrei Daboc\u001b[0m                           │" +
-            "\r\n\u001b[0m│Date: 2023-05-17\u001b[0m...\u001b[0m                            │" +
+            "\r\n\u001b[0m│Date: 2023-05-17\u001b[0m...                            │" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘" +
             "\r\n┌Message────────────────────────────────────────┐" +
             "\r\n\u001b[0m│Removed temp variable from FitTextInsideBox met\u001b[0m│" +
@@ -120,10 +120,10 @@ namespace GitApp.Tests
             "\r\n\u001b[0m│                                               │" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘" +
             "\r\n┌Files──────────────────────────────────────────┐" +
-            "\r\n\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs\u001b[0m                │" +
-            "\r\n\u001b[0m│GitApp/GitApp/DisplayText.cs\u001b[0m...\u001b[0m                │" +
+            "\r\n\u001b[0m│GitApp/GitApp/DisplayText.cs\u001b[0m                   │" +
+            "\r\n\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs\u001b[0m...             │" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘\r";
-        const string expectedSmallLeftExtendedPage=
+        const string expectedSmallLeftExtendedPage =
             "┌Commits────────────────────────────────────────┐"+
             "\r\n\u001b[0m│\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei ... \u001b[48;5;196m2023-0... \u001b[0m\u001b[7mRemoved tem...    \u001b[0m│" +
             "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mFixed an is...    \u001b[0m│" +
@@ -138,7 +138,37 @@ namespace GitApp.Tests
             "\r\n\u001b[0m│                                               \u001b[0m│" +
             "\r\n\u001b[0m│                                               \u001b[0m│" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘\r";
-
+        const string expectedDiffPage =
+            "┌Files─────────────────────────────────────────────────────────────────┐┌Diff──────────────────────────────────────────┐"+
+            "\r\n\u001b[0m│\u001b[7mGitApp/GitApp/DisplayText.cs                                          \u001b[0m│\u001b[0m│diff --git a/GitApp/GitApp/DisplayText.cs b/Gi\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0mGitApp/GitApp/ConsoleWrapper.cs                                       \u001b[0m│\u001b[0m│tApp/GitApp/DisplayText.cs\r\u001b[0m                   │" +
+            "\r\n\u001b[0m│\u001b[0mGitApp/GitApp/IElement.cs                                             \u001b[0m│\u001b[0m│index 2e671a6..0802a33 100644\r\u001b[0m                │" +
+            "\r\n\u001b[0m│\u001b[0mGitApp/GitApp/Program.cs                                              \u001b[0m│\u001b[0m│--- a/GitApp/GitApp/DisplayText.cs\r\u001b[0m           │" +
+            "\r\n\u001b[0m│\u001b[0mGitApp/GitApp/InitialData.cs                                          \u001b[0m│\u001b[0m│+++ b/GitApp/GitApp/DisplayText.cs\r\u001b[0m           │" +
+            "\r\n\u001b[0m│\u001b[0mGitApp/GitApp/IInteractor.cs                                          \u001b[0m│\u001b[0m│@@ -192,11 +192,20 @@ namespace GitApp\r\u001b[0m       │" +
+            "\r\n\u001b[0m│\u001b[0mGitApp/GitApp.Tests/DisplayTextTests.cs                               \u001b[0m│\u001b[0m│         private static List<string> SplitRow(\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0mGitApp/GitApp.Tests/FakeConsole.cs                                    \u001b[0m│\u001b[0m│string[] data, int limit)\r\u001b[0m                    │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│         {\r\u001b[0m                                   │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│             var result = new List<string>();\r\u001b[0m│" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;40m+            var codes = \"\";\r\u001b[0m                 │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│             for (int i = 0; i < data.Length; \u001b[0m│" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│i++)\r\u001b[0m                                         │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│             {\r\u001b[0m                               │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;190m-                for (int j = 0, k = 1; j < da\u001b[0m│" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;190mta[i].Length; j += limit, k++)\r\u001b[0m               │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;190m+                var differenceLength = 0;\r\u001b[0m   │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;40m+                codes = \"\";\r\u001b[0m                 │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;40m+                for (int j = 0, k = 1; j < da\u001b[0m│" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;40mta[i].Length; j += limit + differenceLength, k\u001b[0m│" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;40m++)\r\u001b[0m                                          │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│                 {\r\u001b[0m                           │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;190m-                    result.Add(data[i][j..Mat\u001b[0m│" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;190mh.Min(data[i].Length, limit * k)]);\r\u001b[0m          │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;190m+                    var element = data[i][j..\u001b[0m│" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;190mMath.Min(data[i].Length, limit * k)];\r\u001b[0m        │" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;40m+                    var elementUtilities = ne\u001b[0m│" +
+            "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│\u001b[38;5;40mw PageUtilities(element);\r\u001b[0m...                 │" +
+            "\r\n\u001b[0m└──────────────────────────────────────────────────────────────────────┘\u001b[0m└──────────────────────────────────────────────┘\r";
 
         [Fact]
         public void DisplayIsCalledShouldDisplayMainText()
@@ -179,7 +209,7 @@ namespace GitApp.Tests
             ConsoleKeyInfo[] keySequence = new[]
 {
                 new ConsoleKeyInfo((char)ConsoleKey.Enter, ConsoleKey.Enter, false, false, false),
-                new ConsoleKeyInfo((char)ConsoleKey.Backspace, ConsoleKey.Backspace, false, false, false)
+                new ConsoleKeyInfo((char)ConsoleKey.Spacebar, ConsoleKey.Spacebar, false, false, false)
             };
             StringWriter writer = new StringWriter();
             var fakeConsole = new FakeConsole(keySequence, writer);
@@ -192,9 +222,38 @@ namespace GitApp.Tests
             Assert.Equal(expectedSmallMainPage +
                 expectedSmallLeftExtendedPage +
                 expectedSmallRightExtendedPage +
-                expectedSmallLeftExtendedPage +
+                expectedSmallRightExtendedPage +
                 expectedSmallMainPage +
-                expectedSmallMainPage, actualOutput);
+                expectedSmallMainPage,
+                actualOutput);
+        }
+
+        [Fact]
+        public void DisplayIsCalledEnterFollowedByRightArrowIsPressedShouldDisplayDiffPage()
+        {
+            ConsoleKeyInfo[] keySequence = new[]
+            {
+                new ConsoleKeyInfo((char)ConsoleKey.Enter, ConsoleKey.Enter, false, false, false),
+                new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false)
+            };
+            StringWriter writer = new StringWriter();
+            var fakeConsole = new FakeConsole(keySequence, writer);
+            fakeConsole.WindowHeight = 30;
+            fakeConsole.WindowWidth = 120;
+            var manager = new GitManager("git", new FakeGitProcessRunner());
+            var display = new DisplayText(new FullCommits(Commits), writer, manager, fakeConsole);
+            display.Display(initialText);
+            var actualOutput = writer.ToString();
+            Assert.Equal(
+                expectedMainPage+
+                expectedExtendedPage+
+                expectedDiffPage+
+                expectedDiffPage+
+                expectedExtendedPage+
+                expectedExtendedPage +
+                expectedMainPage +
+                expectedMainPage,
+                actualOutput);
         }
     }
 }
