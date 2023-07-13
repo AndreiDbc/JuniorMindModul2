@@ -111,7 +111,7 @@ namespace GitApp.Tests
         const string expectedSmallRightExtendedPage =
             "┌Info───────────────────────────────────────────┐" +
             "\r\n\u001b[0m│Author: Andrei Daboc                           │" +
-            "\r\n\u001b[0m│Date: 2023-05-17...                            │" +
+            "\r\n\u001b[0m│Date: 2023-05-17...\u001b[0m                            │" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘" +
             "\r\n┌Message────────────────────────────────────────┐" +
             "\r\n\u001b[0m│Removed temp variable from FitTextInsideBox met│" +
@@ -121,7 +121,7 @@ namespace GitApp.Tests
             "\r\n\u001b[0m└───────────────────────────────────────────────┘" +
             "\r\n┌Files──────────────────────────────────────────┐" +
             "\r\n\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs                │" +
-            "\r\n\u001b[0m│GitApp/GitApp/DisplayText.cs...                │" +
+            "\r\n\u001b[0m│GitApp/GitApp/DisplayText.cs...\u001b[0m                │" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘\r";
         const string expectedSmallLeftExtendedPage=
             "┌Commits────────────────────────────────────────┐"+

@@ -173,14 +173,16 @@ namespace GitApp
             {
                 var element = list[i];
                 var elementUtilities = new PageUtilities(element);
-                currentSize += elementUtilities.GetOccupancyRate(rowSize);
+                var clearedElement = elementUtilities.FormatingCodesStringUtilities().clearedString;
+                var clearedElementUtilities = new PageUtilities(clearedElement);
+                currentSize += clearedElementUtilities.GetOccupancyRate(rowSize);
                 if (currentSize > availableSpace)
                 {
                     break;
                 }
 
                 result.Add(currentSize >= availableSpace && i < list.Count - 1
-                    ? elementUtilities.TruncateText(rowSize)
+                    ? elementUtilities.TruncateText(rowSize) + "\x1b[0m"
                     : element);
             }
 
@@ -220,7 +222,9 @@ namespace GitApp
 
                 if (index < list.Count)
                 {
-                    list[index] = "\x1b[0m│" + list[index] + "│".PadLeft(limit - list[index].Length - 1);
+                    list[index] = "\x1b[0m│" +
+                        list[index] +
+                        "│".PadLeft(limit - list[index].Length - 1 + new PageUtilities(list[index]).FormatingCodesStringUtilities().length);
                 }
                 else
                 {
