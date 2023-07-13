@@ -69,9 +69,9 @@ namespace GitApp.Tests
                 "\r\n\u001b[0mPress 'Esc' to exit.                                                                                                    \r";
         const string expectedExtendedPage =
                 "┌Commits───────────────────────────────────────────────────────────────┐┌Info──────────────────────────────────────────┐" +
-                "\r\n\u001b[0m│\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTe...   \u001b[0m│\u001b[0m│Author: Andrei Daboc                          │" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issue that caused Trunc...   \u001b[0m│\u001b[0m│Date: 2023-05-17                              │" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mData is now displayed on the who...   \u001b[0m│\u001b[0m│SHA: 7f37022a20e43184a99dc063be55a27ff5afb34d │" +
+                "\r\n\u001b[0m│\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTe...   \u001b[0m│\u001b[0m│Author: Andrei Daboc\u001b[0m                          │" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issue that caused Trunc...   \u001b[0m│\u001b[0m│Date: 2023-05-17\u001b[0m                              │" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mData is now displayed on the who...   \u001b[0m│\u001b[0m│SHA: 7f37022a20e43184a99dc063be55a27ff5afb34d\u001b[0m │" +
                 "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mRemoved FormateRightSide's \"limi...   \u001b[0m│\u001b[0m│                                              │" +
                 "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf944893 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mBoxes are now properly displayed...   \u001b[0m│\u001b[0m│                                              │" +
                 "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m92e239d \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFitTextInsideBox method's loop n...   \u001b[0m│\u001b[0m│                                              │" +
@@ -79,8 +79,8 @@ namespace GitApp.Tests
                 "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mfae78e6 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFixed date column arrangement on...   \u001b[0m│\u001b[0m│                                              │" +
                 "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf4ad294 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mGetLeftSide method's leftSideCol...   \u001b[0m│\u001b[0m└──────────────────────────────────────────────┘" +
                 "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27md3d8ef7 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-08 \u001b[0mFixed an issue that caused not t...   \u001b[0m│┌Message───────────────────────────────────────┐" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│Removed temp variable from FitTextInsideBox me│" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│thod.                                         │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│Removed temp variable from FitTextInsideBox me\u001b[0m│" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│thod.\u001b[0m                                         │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│                                              │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│                                              │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│                                              │" +
@@ -89,14 +89,14 @@ namespace GitApp.Tests
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│                                              │" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m└──────────────────────────────────────────────┘" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│┌Files─────────────────────────────────────────┐" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs               │" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/DisplayText.cs                  │" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/IElement.cs                     │" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/Program.cs                      │" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/InitialData.cs                  │" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/IInteractor.cs                  │" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp.Tests/DisplayTextTests.cs       │" +
-                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp.Tests/FakeConsole.cs            │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs\u001b[0m               │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/DisplayText.cs\u001b[0m                  │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/IElement.cs\u001b[0m                     │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/Program.cs\u001b[0m                      │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/InitialData.cs\u001b[0m                  │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp/IInteractor.cs\u001b[0m                  │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp.Tests/DisplayTextTests.cs\u001b[0m       │" +
+                "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│GitApp/GitApp.Tests/FakeConsole.cs\u001b[0m            │" +
                 "\r\n\u001b[0m└──────────────────────────────────────────────────────────────────────┘\u001b[0m└──────────────────────────────────────────────┘\r";
         const string expectedSmallMainPage =
             "Current branch name: master\r                     " +
@@ -110,18 +110,18 @@ namespace GitApp.Tests
             "\r\n\u001b[0mPress 'Esc' to exit.                             \r";
         const string expectedSmallRightExtendedPage =
             "┌Info───────────────────────────────────────────┐" +
-            "\r\n\u001b[0m│Author: Andrei Daboc                           │" +
-            "\r\n\u001b[0m│Date: 2023-05-17...\u001b[0m                            │" +
+            "\r\n\u001b[0m│Author: Andrei Daboc\u001b[0m                           │" +
+            "\r\n\u001b[0m│Date: 2023-05-17\u001b[0m...\u001b[0m                            │" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘" +
             "\r\n┌Message────────────────────────────────────────┐" +
-            "\r\n\u001b[0m│Removed temp variable from FitTextInsideBox met│" +
-            "\r\n\u001b[0m│hod.                                           │" +
+            "\r\n\u001b[0m│Removed temp variable from FitTextInsideBox met\u001b[0m│" +
+            "\r\n\u001b[0m│hod.\u001b[0m                                           │" +
             "\r\n\u001b[0m│                                               │" +
             "\r\n\u001b[0m│                                               │" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘" +
             "\r\n┌Files──────────────────────────────────────────┐" +
-            "\r\n\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs                │" +
-            "\r\n\u001b[0m│GitApp/GitApp/DisplayText.cs...\u001b[0m                │" +
+            "\r\n\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs\u001b[0m                │" +
+            "\r\n\u001b[0m│GitApp/GitApp/DisplayText.cs\u001b[0m...\u001b[0m                │" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘\r";
         const string expectedSmallLeftExtendedPage=
             "┌Commits────────────────────────────────────────┐"+

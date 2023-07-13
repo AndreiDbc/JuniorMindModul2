@@ -192,11 +192,20 @@ namespace GitApp
         private static List<string> SplitRow(string[] data, int limit)
         {
             var result = new List<string>();
+            var codes = "";
             for (int i = 0; i < data.Length; i++)
             {
-                for (int j = 0, k = 1; j < data[i].Length; j += limit, k++)
+                var differenceLength = 0;
+                codes = "";
+                for (int j = 0, k = 1; j < data[i].Length; j += limit + differenceLength, k++)
                 {
-                    result.Add(data[i][j..Math.Min(data[i].Length, limit * k)]);
+                    var element = data[i][j..Math.Min(data[i].Length, limit * k)];
+                    var elementUtilities = new PageUtilities(element);
+                    var previousDifferenceLength = differenceLength;
+                    var elementCodesAndLength = elementUtilities.FormatingCodesStringUtilities();
+                    differenceLength = elementCodesAndLength.length;
+                    result.Add(codes + data[i][j..Math.Min(data[i].Length, limit * k + (previousDifferenceLength > differenceLength ? previousDifferenceLength : differenceLength))] + "\u001b[0m");
+                    codes = new PageUtilities(result[^1]).FormatingCodesStringUtilities().codes.Replace("\u001b[0m", "");
                 }
             }
 
