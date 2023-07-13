@@ -189,6 +189,55 @@ namespace GitApp
             return result;
         }
 
+        private static string RecolorDiffLine(string previous, string current, string next)
+        {
+            if (current.StartsWith("+") && previous.StartsWith("\u001b[38;5;190m-"))
+            {
+                return "\x1b[38;5;190m" + current + "\u001b[0m";
+            }
+            else if (current.StartsWith("+"))
+            {
+                return "\x1b[38;5;40m" + current + "\u001b[0m";
+            }
+            else if (current.StartsWith("-") && next.StartsWith("+"))
+            {
+                return "\u001b[38;5;190m" + current + "\u001b[0m";
+            }
+            else if (current.StartsWith("-"))
+            {
+                return "\x1b[38;5;160m" + current + "\u001b[0m";
+            }
+
+            return current;
+        }
+
+        private static string[] SetColorsToDiffText(string[] lines, int availableSpace, int lineSize)
+        {
+            var startIndex = lines[3].StartsWith("+++") ? 5 : 6;
+            var occupacyRate = 0;
+            for (int i = startIndex; i < lines.Length - 1; i++)
+            {
+                var lineUtilities = new PageUtilities(lines[i]);
+                occupacyRate += lineUtilities.GetOccupancyRate(lineSize);
+                if (occupacyRate > availableSpace)
+                {
+                    lines[i] = RecolorDiffLine(lines[i - 1], lineUtilities.TruncateText(lineSize), lines[i + 1]);
+                    return lines;
+                }
+
+                lines[i] = RecolorDiffLine(lines[i - 1], lines[i], lines[i + 1]);
+            }
+
+            var lastElement = lines[^1];
+            var secondLastElement = lines[^2];
+            lines[^1] = RecolorDiffLine(
+                secondLastElement,
+                lastElement,
+                "");
+
+            return lines;
+        }
+
         private static List<string> SplitRow(string[] data, int limit)
         {
             var result = new List<string>();
