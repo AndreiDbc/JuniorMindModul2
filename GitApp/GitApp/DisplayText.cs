@@ -76,33 +76,20 @@ namespace GitApp
             var rightBoxMarginDimension = 2 * boxHeight + 2 * (rightSideLineSize - 2);
             var result = new List<string>();
             var infoTemp = new PageUtilities(info.Split("\n")).SplitRow(rightSideLineSize - 2);
-            var infoBox = DrawBox(
-                FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2),
-                "Info",
-                rightSideLineSize,
-                boxHeight,
-                height,
-                0);
+            var infoBox = new BoxDrawer(
+                FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Info")
+                .DrawBox(rightSideLineSize, boxHeight);
             result.AddRange(infoBox);
             var messageTemp = new PageUtilities(message.Split("\n")).SplitRow(rightSideLineSize - 2);
             var additionalHeight = 0;
             additionalHeight += height % 3 == 0 ? 0 : height % 3;
-            var messageBox = DrawBox(
-                FitTextInsideBox(messageTemp, rightBoxSize - rightBoxMarginDimension + additionalHeight * (rightSideLineSize - 2), rightSideLineSize - 2),
-                "Message",
-                rightSideLineSize,
-                boxHeight + additionalHeight,
-                height,
-                infoBox.Count);
+            var messageBox = new BoxDrawer(FitTextInsideBox(messageTemp, rightBoxSize - rightBoxMarginDimension + additionalHeight * (rightSideLineSize - 2), rightSideLineSize - 2), "Message")
+                .DrawBox(rightSideLineSize, boxHeight + additionalHeight);
             result.AddRange(messageBox);
             var filesTemp = new PageUtilities(files.Split("\n")).SplitRow(rightSideLineSize - 2);
-            var filesBox = DrawBox(
-                FitTextInsideBox(filesTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2),
-                "Files",
-                rightSideLineSize,
-                boxHeight,
-                height,
-                infoBox.Count + messageBox.Count);
+            var filesBox = new BoxDrawer(
+                FitTextInsideBox(filesTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Files")
+                .DrawBox(rightSideLineSize, boxHeight);
             result.AddRange(filesBox);
 
             return result;
@@ -136,33 +123,6 @@ namespace GitApp
             while (textSize <= availableSpace);
 
             return (result, textSize);
-        }
-
-        private static List<string> DrawLeftBox(List<string> list, int windowHeight, int width, string boxName)
-        {
-            const int lengthToSubstract = 2;
-            var result = new List<string>();
-            result.AddRange(list);
-            result.Insert(0, "┌" + boxName + new string('─', width - boxName.Length - lengthToSubstract) + "┐");
-            var index = 1;
-            do
-            {
-                if (index < result.Count)
-                {
-                    var padLength = width + 2 - (result[index].Length - new PageUtilities(result[index]).FormatingCodesStringUtilities().length);
-                    var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
-                    result[index] = "\x1b[0m│" + result[index] + toPad;
-                }
-                else
-                {
-                    result.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(width + 3));
-                }
-
-                index++;
-            }
-            while (result.Count <= windowHeight - 2 || !result[^1].StartsWith("\x1b[0m│"));
-            result.Add("\x1b[0m└" + new string('─', width - 2) + "┘");
-            return result;
         }
 
         private static List<string> FitTextInsideBox(List<string> list, int availableSpace, int rowSize)
@@ -236,41 +196,6 @@ namespace GitApp
                 "");
 
             return lines;
-        }
-
-        private static List<string> DrawBox(
-            List<string> list,
-            string boxName,
-            int limit,
-            int boxHeight,
-            int windowHeight,
-            int currentSpaceOccupation)
-        {
-            int index = 1;
-            list.Insert(0, "┌" + boxName + new string('─', limit - boxName.Length - 2) + "┐");
-            do
-            {
-                if (currentSpaceOccupation + 1 == windowHeight)
-                {
-                    break;
-                }
-
-                if (index < list.Count)
-                {
-                    list[index] = "\x1b[0m│" +
-                        list[index] +
-                        "│".PadLeft(limit - list[index].Length - 1 + new PageUtilities(list[index]).FormatingCodesStringUtilities().length);
-                }
-                else
-                {
-                    list.Add("\x1b[0m│" + "│".PadLeft(limit - 1));
-                }
-
-                index++;
-            }
-            while (index + 1 != boxHeight);
-            list.Add("\x1b[0m└" + new string('─', limit - 2) + "┘");
-            return list;
         }
 
         private static string GetMessage(
@@ -628,16 +553,16 @@ namespace GitApp
                 var coloredDiff = SetColorsToDiffText(diff.Split("\n"), maximumTextSize, windowWidth - 2);
                 var splitText = new PageUtilities(coloredDiff).SplitRow(windowWidth - 2);
                 fittedText = FitTextInsideBox(splitText, maximumTextSize, windowWidth - 2);
-                rightSide = DrawBox(fittedText, "Diff", windowWidth, windowHeight, windowSize, fittedText.Count);
-                leftSide = DrawLeftBox(leftSide, windowHeight, windowWidth, "Files");
+                rightSide = new BoxDrawer(fittedText, "Diff").DrawBox(windowWidth, windowHeight);
+                leftSide = new BoxDrawer(leftSide, "Files").DrawBox(windowWidth, windowHeight);
             }
             else
             {
                 var coloredDiff = SetColorsToDiffText(diff.Split("\n"), availableSpace, rowSize - 2);
                 var splitText = new PageUtilities(coloredDiff).SplitRow(rowSize - 2);
                 fittedText = FitTextInsideBox(splitText, availableSpace, rowSize - 2);
-                rightSide = DrawBox(fittedText, "Diff", rowSize, windowHeight, windowHeight, fittedText.Count);
-                leftSide = DrawLeftBox(leftSide, windowHeight, (int)(0.6 * windowWidth), "Files");
+                rightSide = new BoxDrawer(fittedText, "Diff").DrawBox(rowSize, windowHeight);
+                leftSide = new BoxDrawer(leftSide, "Files").DrawBox((int)(0.6 * windowWidth), windowHeight);
             }
 
             return SelectScreen(leftSide, rightSide, keyInteractor);
@@ -693,7 +618,7 @@ namespace GitApp
                 : FormateRightSide(data[0], data[1], data[2], height, width - (int)(0.6 * width));
 
             return SelectScreen(
-                DrawLeftBox(leftSideCommits, height, height < 15 && width < 50 ? width : (int)(0.6 * width), "Commits"),
+                new BoxDrawer(leftSideCommits, "Commits").DrawBox(height < 15 && width < 50 ? width : (int)(0.6 * width), height),
                 rightSide,
                 keyInteractor);
         }
