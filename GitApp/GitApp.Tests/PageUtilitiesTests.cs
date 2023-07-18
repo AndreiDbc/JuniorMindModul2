@@ -65,5 +65,38 @@ namespace GitApp.Tests
             const string expected = "\u001b[0m\u001b[48;5;27m";
             Assert.Equal(expected, value);
         }
+
+        [Fact]
+        public void SplitRowIsCalledShouldSplitStrings()
+        {
+            var value = new PageUtilities(new[] { "asdafsasdfdsf", "asdg" }).SplitRow(3);
+            var expected = new List<string>() 
+            {
+                "asd" + "\u001b[0m",
+                "afs" + "\u001b[0m",
+                "asd" + "\u001b[0m",
+                "fds" + "\u001b[0m",
+                "f" + "\u001b[0m",
+                "asd" + "\u001b[0m",
+                "g" + "\u001b[0m"
+            };
+            Assert.Equal(expected, value);
+        }
+
+        [Fact]
+        public void SplitRowIsCalledStringContainsFormatingCodesShouldSplitStrings()
+        {
+            var value = new PageUtilities(new[] { "\x1b[38;5;190m" + "asdhadfgoiur t ", "rftyhfgh 433rrgf", " pdfopdfj fdneef", "\x1b[38;5;190m" + "odjcmndfkdjhrjhr" }).SplitRow(11);
+            var expected = new List<string>() 
+            { 
+                "\x1b[38;5;190m" + "asdhadfgoiu" + "\u001b[0m",
+                "\x1b[38;5;190m" + "r t " + "\u001b[0m",
+                "rftyhfgh 43" + "\u001b[0m", "3rrgf" + "\u001b[0m",
+                " pdfopdfj f" + "\u001b[0m", "dneef" + "\u001b[0m",
+                "\x1b[38;5;190m" + "odjcmndfkdj" + "\u001b[0m",
+                "\x1b[38;5;190m" + "hrjhr" + "\u001b[0m"
+            };
+            Assert.Equal(expected, value);
+        }
     }
 }

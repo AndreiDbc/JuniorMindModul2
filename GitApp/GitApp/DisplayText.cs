@@ -75,7 +75,7 @@ namespace GitApp
             var rightBoxSize = rightSideLineSize * boxHeight;
             var rightBoxMarginDimension = 2 * boxHeight + 2 * (rightSideLineSize - 2);
             var result = new List<string>();
-            var infoTemp = SplitRow(info.Split("\n"), rightSideLineSize - 2);
+            var infoTemp = new PageUtilities(info.Split("\n")).SplitRow(rightSideLineSize - 2);
             var infoBox = DrawBox(
                 FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2),
                 "Info",
@@ -84,7 +84,7 @@ namespace GitApp
                 height,
                 0);
             result.AddRange(infoBox);
-            var messageTemp = SplitRow(message.Split("\n"), rightSideLineSize - 2);
+            var messageTemp = new PageUtilities(message.Split("\n")).SplitRow(rightSideLineSize - 2);
             var additionalHeight = 0;
             additionalHeight += height % 3 == 0 ? 0 : height % 3;
             var messageBox = DrawBox(
@@ -95,7 +95,7 @@ namespace GitApp
                 height,
                 infoBox.Count);
             result.AddRange(messageBox);
-            var filesTemp = SplitRow(files.Split("\n"), rightSideLineSize - 2);
+            var filesTemp = new PageUtilities(files.Split("\n")).SplitRow(rightSideLineSize - 2);
             var filesBox = DrawBox(
                 FitTextInsideBox(filesTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2),
                 "Files",
@@ -236,32 +236,6 @@ namespace GitApp
                 "");
 
             return lines;
-        }
-
-        private static List<string> SplitRow(string[] data, int limit)
-        {
-            var result = new List<string>();
-            var codes = "";
-            for (int i = 0; i < data.Length; i++)
-            {
-                var differenceLength = 0;
-                codes = "";
-                for (int j = 0, k = 1; j < data[i].Length; j += limit + differenceLength, k++)
-                {
-                    var element = data[i][j..Math.Min(data[i].Length, limit * k)];
-                    var elementUtilities = new PageUtilities(element);
-                    var previousDifferenceLength = differenceLength;
-                    var elementCodesAndLength = elementUtilities.FormatingCodesStringUtilities();
-                    differenceLength = elementCodesAndLength.length;
-                    result.Add(
-                        codes +
-                        data[i][j..Math.Min(data[i].Length, limit * k + (previousDifferenceLength > differenceLength ? previousDifferenceLength : differenceLength))] +
-                        "\u001b[0m");
-                    codes = new PageUtilities(result[^1]).FormatingCodesStringUtilities().codes.Replace("\u001b[0m", "");
-                }
-            }
-
-            return result;
         }
 
         private static List<string> DrawBox(
@@ -652,7 +626,7 @@ namespace GitApp
             {
                 var maximumTextSize = (windowHeight - 2) * (windowWidth - 2);
                 var coloredDiff = SetColorsToDiffText(diff.Split("\n"), maximumTextSize, windowWidth - 2);
-                var splitText = SplitRow(coloredDiff, windowWidth - 2);
+                var splitText = new PageUtilities(coloredDiff).SplitRow(windowWidth - 2);
                 fittedText = FitTextInsideBox(splitText, maximumTextSize, windowWidth - 2);
                 rightSide = DrawBox(fittedText, "Diff", windowWidth, windowHeight, windowSize, fittedText.Count);
                 leftSide = DrawLeftBox(leftSide, windowHeight, windowWidth, "Files");
@@ -660,7 +634,7 @@ namespace GitApp
             else
             {
                 var coloredDiff = SetColorsToDiffText(diff.Split("\n"), availableSpace, rowSize - 2);
-                var splitText = SplitRow(coloredDiff, rowSize - 2);
+                var splitText = new PageUtilities(coloredDiff).SplitRow(rowSize - 2);
                 fittedText = FitTextInsideBox(splitText, availableSpace, rowSize - 2);
                 rightSide = DrawBox(fittedText, "Diff", rowSize, windowHeight, windowHeight, fittedText.Count);
                 leftSide = DrawLeftBox(leftSide, windowHeight, (int)(0.6 * windowWidth), "Files");
