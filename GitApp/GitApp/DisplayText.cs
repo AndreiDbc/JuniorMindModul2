@@ -72,24 +72,17 @@ namespace GitApp
         private static List<string> FormateRightSide(string info, string message, string files, int height, int rightSideLineSize)
         {
             int boxHeight = height / 3;
-            var rightBoxSize = rightSideLineSize * boxHeight;
-            var rightBoxMarginDimension = 2 * boxHeight + 2 * (rightSideLineSize - 2);
             var result = new List<string>();
             var infoTemp = new PageUtilities(info.Split("\n")).SplitRow(rightSideLineSize - 2);
-            var infoBox = new BoxDrawer(
-                FitTextInsideBox(infoTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Info")
-                .DrawBox(rightSideLineSize, boxHeight);
+            var infoBox = new BoxDrawer(infoTemp, "Info").DrawBox(rightSideLineSize, boxHeight, true);
             result.AddRange(infoBox);
             var messageTemp = new PageUtilities(message.Split("\n")).SplitRow(rightSideLineSize - 2);
             var additionalHeight = 0;
             additionalHeight += height % 3 == 0 ? 0 : height % 3;
-            var messageBox = new BoxDrawer(FitTextInsideBox(messageTemp, rightBoxSize - rightBoxMarginDimension + additionalHeight * (rightSideLineSize - 2), rightSideLineSize - 2), "Message")
-                .DrawBox(rightSideLineSize, boxHeight + additionalHeight);
+            var messageBox = new BoxDrawer(messageTemp, "Message").DrawBox(rightSideLineSize, boxHeight + additionalHeight, true);
             result.AddRange(messageBox);
             var filesTemp = new PageUtilities(files.Split("\n")).SplitRow(rightSideLineSize - 2);
-            var filesBox = new BoxDrawer(
-                FitTextInsideBox(filesTemp, rightBoxSize - rightBoxMarginDimension, rightSideLineSize - 2), "Files")
-                .DrawBox(rightSideLineSize, boxHeight);
+            var filesBox = new BoxDrawer(filesTemp, "Files").DrawBox(rightSideLineSize, boxHeight, true);
             result.AddRange(filesBox);
 
             return result;
@@ -123,31 +116,6 @@ namespace GitApp
             while (textSize <= availableSpace);
 
             return (result, textSize);
-        }
-
-        private static List<string> FitTextInsideBox(List<string> list, int availableSpace, int rowSize)
-        {
-            var result = new List<string>();
-            var currentSize = 0;
-            for (int i = 0; i < list.Count; i++)
-            {
-                var element = list[i];
-                var elementUtilities = new PageUtilities(element);
-                var clearedElement = elementUtilities.FormatingCodesStringUtilities().clearedString;
-                var clearedElementUtilities = new PageUtilities(clearedElement);
-                currentSize += clearedElement == "" ? rowSize : clearedElementUtilities.GetOccupancyRate(rowSize);
-                if (currentSize > availableSpace)
-                {
-                    result[^1] = result[^1].Length == rowSize
-                        ? new PageUtilities(result[^1]).TruncateText(rowSize)
-                        : result[^1] + "...";
-                    break;
-                }
-
-                result.Add(element);
-            }
-
-            return result;
         }
 
         private static string RecolorDiffLine(string previous, string current, string next)
@@ -552,16 +520,14 @@ namespace GitApp
                 var maximumTextSize = (windowHeight - 2) * (windowWidth - 2);
                 var coloredDiff = SetColorsToDiffText(diff.Split("\n"), maximumTextSize, windowWidth - 2);
                 var splitText = new PageUtilities(coloredDiff).SplitRow(windowWidth - 2);
-                fittedText = FitTextInsideBox(splitText, maximumTextSize, windowWidth - 2);
-                rightSide = new BoxDrawer(fittedText, "Diff").DrawBox(windowWidth, windowHeight);
+                rightSide = new BoxDrawer(splitText, "Diff").DrawBox(windowWidth, windowHeight, true);
                 leftSide = new BoxDrawer(leftSide, "Files").DrawBox(windowWidth, windowHeight);
             }
             else
             {
                 var coloredDiff = SetColorsToDiffText(diff.Split("\n"), availableSpace, rowSize - 2);
                 var splitText = new PageUtilities(coloredDiff).SplitRow(rowSize - 2);
-                fittedText = FitTextInsideBox(splitText, availableSpace, rowSize - 2);
-                rightSide = new BoxDrawer(fittedText, "Diff").DrawBox(rowSize, windowHeight);
+                rightSide = new BoxDrawer(splitText, "Diff").DrawBox(rowSize, windowHeight, true);
                 leftSide = new BoxDrawer(leftSide, "Files").DrawBox((int)(0.6 * windowWidth), windowHeight);
             }
 
