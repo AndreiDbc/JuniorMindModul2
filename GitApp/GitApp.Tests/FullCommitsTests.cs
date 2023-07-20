@@ -144,5 +144,46 @@ namespace GitApp.Tests
             Assert.Equal("d3d8ef7", output.list[9].Id);
             Assert.Equal(1200, output.textSize);
         }
+
+        [Fact]
+        public void FormateUnhighlightedSideIsCalledShouldReturnBoxes()
+        {
+            var fullCommits = new FullCommits(Commits);
+            var output = fullCommits.FormateUnhighlightedSide(30, 48, new GitManager("git", new FakeGitProcessRunner()));
+            var expected = new List<string>
+            {
+                "┌Info──────────────────────────────────────────┐",
+                "\u001b[0m│Author: Andrei Daboc\u001b[0m                          \u001b[0m│",
+                "\u001b[0m│Date: 2023-05-17\u001b[0m                              \u001b[0m│",
+                "\u001b[0m│SHA: 7f37022a20e43184a99dc063be55a27ff5afb34d\u001b[0m \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m└──────────────────────────────────────────────┘",
+                "┌Message───────────────────────────────────────┐",
+                "\u001b[0m│Removed temp variable from FitTextInsideBox me\u001b[0m\u001b[0m│",
+                "\u001b[0m│thod.\u001b[0m                                         \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m│                                              \u001b[0m│",
+                "\u001b[0m└──────────────────────────────────────────────┘",
+                "┌Files─────────────────────────────────────────┐",
+                "\u001b[0m│GitApp/GitApp/DisplayText.cs\u001b[0m                  \u001b[0m│",
+                "\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs\u001b[0m               \u001b[0m│",
+                "\u001b[0m│GitApp/GitApp/IElement.cs\u001b[0m                     \u001b[0m│",
+                "\u001b[0m│GitApp/GitApp/Program.cs\u001b[0m                      \u001b[0m│",
+                "\u001b[0m│GitApp/GitApp/InitialData.cs\u001b[0m                  \u001b[0m│",
+                "\u001b[0m│GitApp/GitApp/IInteractor.cs\u001b[0m                  \u001b[0m│",
+                "\u001b[0m│GitApp/GitApp.Tests/DisplayTextTests.cs\u001b[0m       \u001b[0m│",
+                "\u001b[0m│GitApp/GitApp.Tests/FakeConsole.cs\u001b[0m            \u001b[0m│",
+                "\u001b[0m└──────────────────────────────────────────────┘"
+            };
+            Assert.Equal(expected, output);              
+        }
     }
 }

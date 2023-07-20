@@ -96,6 +96,32 @@ namespace GitApp
             return (result, textSize);
         }
 
+        public List<string> FormateUnhighlightedSide(int height, int rightSideLineSize, GitManager gitManager)
+        {
+            var currentCommit = list[Current];
+            var currentCommitDetails = currentCommit.GetElement().Split("\n");
+            var data = new[]
+            {
+                "Author: " + currentCommitDetails[1] + "\nDate: " + currentCommitDetails[2] + "\nSHA: " + currentCommitDetails[4],
+                currentCommitDetails[3],
+                gitManager.GetCommitModifiedFileNames(currentCommit.Id)
+            };
+            int boxHeight = height / 3;
+            var result = new List<string>();
+            var infoTemp = new PageUtilities(data[0].Split("\n")).SplitRow(rightSideLineSize - 2);
+            var infoBox = new BoxDrawer(infoTemp, "Info").DrawBox(rightSideLineSize, boxHeight, true);
+            result.AddRange(infoBox);
+            var messageTemp = new PageUtilities(data[1].Split("\n")).SplitRow(rightSideLineSize - 2);
+            var additionalHeight = 0;
+            additionalHeight += height % 3 == 0 ? 0 : height % 3;
+            var messageBox = new BoxDrawer(messageTemp, "Message").DrawBox(rightSideLineSize, boxHeight + additionalHeight, true);
+            result.AddRange(messageBox);
+            var filesTemp = new PageUtilities(data[2].Split("\n")).SplitRow(rightSideLineSize - 2);
+            var filesBox = new BoxDrawer(filesTemp, "Files").DrawBox(rightSideLineSize, boxHeight, true);
+            result.AddRange(filesBox);
+            return result;
+        }
+
         private static string GetMessage(bool isCurrentElementAdded, int rowWidth, string toAdd, string line)
         {
             const int totalFormatingCodesElementsLength = 35;
