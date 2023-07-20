@@ -59,7 +59,7 @@ namespace GitApp
                 currentSize += clearedElement == "" ? rowSize : clearedElementUtilities.GetOccupancyRate(rowSize);
                 if (currentSize > availableSpace)
                 {
-                    result[^1] = result[^1].Length == rowSize
+                    result[^1] = result[^1].Length >= rowSize - 3
                         ? new PageUtilities(result[^1]).TruncateText(rowSize)
                         : result[^1] + "...";
                     break;
