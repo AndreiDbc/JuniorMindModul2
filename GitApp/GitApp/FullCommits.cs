@@ -45,7 +45,7 @@ namespace GitApp
             return commits;
         }
 
-        public List<string> GetLeftSide(int height, int width, int availableSpace, bool isScreenSplit = false)
+        public List<string> GetHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
             var result = new List<string>();
             var index = Index;
@@ -99,9 +99,9 @@ namespace GitApp
         private static string GetMessage(bool isCurrentElementAdded, int rowWidth, string toAdd, string line)
         {
             const int totalFormatingCodesElementsLength = 35;
-            var additionalLengthForMessage = rowWidth - line.Length + totalFormatingCodesElementsLength;
-            toAdd = toAdd.Length > additionalLengthForMessage
-                ? (isCurrentElementAdded ? "\u001b[0m\u001b[7m" : "\u001b[0m") + new PageUtilities(toAdd).TruncateText(additionalLengthForMessage)
+            var messageLength = rowWidth - line.Length + totalFormatingCodesElementsLength;
+            toAdd = toAdd.Length > messageLength
+                ? (isCurrentElementAdded ? "\u001b[0m\u001b[7m" : "\u001b[0m") + new PageUtilities(toAdd).TruncateText(messageLength)
                 : (isCurrentElementAdded ? "\u001b[0m\u001b[7m" : "\u001b[0m") + toAdd;
 
             return toAdd;

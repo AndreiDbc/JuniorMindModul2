@@ -224,12 +224,12 @@ namespace GitApp
             if (windowWidth < 50 && windowHeight < 15)
             {
                 elements = interactor.GetPageDataAndSize(((int)(0.6 * windowWidth) - 2) * (windowHeight - 2), (int)(0.6 * windowWidth) - 2).list;
-                leftSide = interactor.GetLeftSide(windowHeight, windowWidth - 2, (windowWidth - 2) * (windowHeight - 2), true);
+                leftSide = interactor.GetHighlightedSide(windowHeight, windowWidth - 2, (windowWidth - 2) * (windowHeight - 2), true);
             }
             else
             {
                 elements = interactor.GetPageDataAndSize(((int)(0.6 * windowWidth) - 2) * (windowHeight - 2), (int)(0.6 * windowWidth) - 2, true).list;
-                leftSide = interactor.GetLeftSide(windowHeight, (int)(0.6 * windowWidth - 2), (int)(0.6 * windowWidth - 2) * (windowHeight - 2), true);
+                leftSide = interactor.GetHighlightedSide(windowHeight, (int)(0.6 * windowWidth - 2), (int)(0.6 * windowWidth - 2) * (windowHeight - 2), true);
             }
         }
 
@@ -399,7 +399,7 @@ namespace GitApp
                 ? (0, 0)
                 : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
             (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, consoleWrapper.WindowWidth);
-            var toWrite = commits.GetLeftSide(consoleWrapper.WindowHeight - initialTextSize / windowWidth - 1, windowWidth, availableSpace);
+            var toWrite = commits.GetHighlightedSide(consoleWrapper.WindowHeight - initialTextSize / windowWidth - 1, windowWidth, availableSpace);
             toWrite.Add("\u001b[0mPress 'Esc' to exit.");
 
             return toWrite;

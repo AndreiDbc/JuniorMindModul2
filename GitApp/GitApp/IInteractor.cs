@@ -21,6 +21,6 @@ namespace GitApp
 
         public (List<IElement> list, int textSize) GetPageDataAndSize(int availableSpace, int lineSize, bool isScreenSplit = false);
 
-        public List<string> GetLeftSide(int height, int width, int availableSpace, bool isScreenSplit = false);
+        public List<string> GetHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false);
     }
 }

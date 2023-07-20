@@ -69,7 +69,7 @@ namespace GitApp
             return (result, textSize);
         }
 
-        public List<string> GetLeftSide(int height, int width, int availableSpace, bool isScreenSplit = false)
+        public List<string> GetHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
             var result = new List<string>();
             var currentElement = list[Current];
