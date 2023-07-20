@@ -60,9 +60,7 @@ namespace GitApp
 
                 result.Add(list[index]);
                 index++;
-                var element = result[^1].GetElement();
-                var elementUtilities = new PageUtilities(element);
-                textSize += elementUtilities.GetOccupancyRate(lineSize);
+                textSize += lineSize;
             }
             while (textSize <= availableSpace);
 
@@ -75,25 +73,28 @@ namespace GitApp
             var currentElement = list[Current];
             var occupancyRate = 0;
             var index = Index;
-            var rowSize = (int)(0.6 * width - 2);
+            var doesPageContainCurrent = false;
             do
             {
-                if (occupancyRate >= availableSpace || index > list.Count - 1)
+                if (list[index].Id.Equals(list[Current].Id))
                 {
-                    break;
+                    doesPageContainCurrent = true;
                 }
 
                 var toAdd = list[index].GetElement();
                 var toAddUtilities = new PageUtilities(toAdd);
                 result.Add((currentElement.Id == list[index].Id ? "\x1b[7m" : "\x1b[0m")
-                    + (toAdd.Length > rowSize ? toAddUtilities.TruncateText(rowSize - 2) : toAdd));
-                occupancyRate += toAddUtilities.GetOccupancyRate(rowSize);
+                    + (toAdd.Length > width ? toAddUtilities.TruncateText(width) : toAdd));
+                occupancyRate += width;
                 index++;
             }
-            while (occupancyRate <= availableSpace);
+            while (occupancyRate < availableSpace && index < list.Count);
+
+            Current = doesPageContainCurrent ? Current : Index;
+            result[0] = doesPageContainCurrent ? result[0] : "\x1b[7m" + result[0][4 ..];
             var lastElementUtilities = new PageUtilities(result[^1]);
             result[^1] = occupancyRate > availableSpace
-                ? lastElementUtilities.TruncateText(availableSpace - occupancyRate - lastElementUtilities.GetOccupancyRate(rowSize))
+                ? lastElementUtilities.TruncateText(availableSpace - occupancyRate - lastElementUtilities.GetOccupancyRate(width))
                 : result[^1];
             return result;
         }
