@@ -18,5 +18,9 @@ namespace GitApp
         T this[int index] { get; }
 
         public List<T> GetText();
+
+        public (List<IElement> list, int textSize) GetPageDataAndSize(int availableSpace, int lineSize, bool isScreenSplit = false);
+
+        public List<string> GetLeftSide(int height, int width, int availableSpace, bool isScreenSplit = false);
     }
 }
