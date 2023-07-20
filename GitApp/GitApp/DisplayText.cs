@@ -88,36 +88,6 @@ namespace GitApp
             return result;
         }
 
-        private static (List<IElement> list, int textSize) GetPageDataAndSize(
-            IInteractor<IElement> interactor,
-            int index,
-            int availableSpace,
-            int lineSize,
-            bool isElementCommit)
-        {
-            var result = new List<IElement>();
-            var commitsList = interactor.GetText();
-            int textSize = 0;
-            do
-            {
-                if (index > commitsList.Count - 1 || textSize >= availableSpace)
-                {
-                    break;
-                }
-
-                result.Add(commitsList[index]);
-                index++;
-                var element = isElementCommit ? result[^1].GetElement().Split("\n") : new[] { result[^1].GetElement() };
-                var elementUtilities = isElementCommit
-                    ? new PageUtilities(element[0] + " " + element[1] + " " + element[2] + " " + element[3])
-                    : new PageUtilities(element[0]);
-                textSize += elementUtilities.GetOccupancyRate(lineSize);
-            }
-            while (textSize <= availableSpace);
-
-            return (result, textSize);
-        }
-
         private static string RecolorDiffLine(string previous, string current, string next)
         {
             if (current.StartsWith("+") && previous.StartsWith("\u001b[38;5;190m-"))
@@ -166,26 +136,6 @@ namespace GitApp
             return lines;
         }
 
-        private static string GetMessage(
-            List<string> line,
-            int rowWidth,
-            int[] additionalLengthForCurrent,
-            int[] additionalLength,
-            string toAdd)
-        {
-            var selectAditionalLengthForMessage = line[0].Contains("\u001b[7m") ? 8 : 4;
-            var additionalLengthForMessage = rowWidth * 3 +
-            (line[0].Contains("\u001b[7m")
-                ? additionalLengthForCurrent.Sum()
-                : additionalLength.Sum()) -
-            toAdd.Length;
-            toAdd += line[3].Length + selectAditionalLengthForMessage > rowWidth + selectAditionalLengthForMessage + additionalLengthForMessage
-                ? new PageUtilities(line[3]).TruncateText(rowWidth + additionalLengthForMessage + selectAditionalLengthForMessage)
-                : line[3];
-
-            return toAdd;
-        }
-
         private static List<string> MergeSides(List<string> leftSide, List<string> rightSide)
         {
             var result = new List<string>();
@@ -221,140 +171,6 @@ namespace GitApp
         {
             IsRightSideInUse = keyInteractor.KeyInfo.Equals(ConsoleKey.Spacebar) ? !IsRightSideInUse : IsRightSideInUse;
             return IsRightSideInUse ? rightSide : leftSide;
-        }
-
-        private List<IElement> GetCommitsForLeftSide(int index, int windowHeight)
-        {
-            var result = new List<IElement>();
-            var commitsList = commits.GetText();
-            var count = 0;
-            do
-            {
-                if (index > commitsList.Count - 1)
-                {
-                    break;
-                }
-
-                result.Add(commitsList[index]);
-                index++;
-                count++;
-            }
-            while (count != windowHeight - 2);
-
-            return result;
-        }
-
-        private List<string> GetLeftSide(int rowWidth, List<IElement> commitList, IElement currentCommit)
-        {
-            var additionalLength = new[] { 14, 10, 10 };
-            var additionalLengthForCurrent = new[] { 14, 10, 10 };
-            var leftSideCommits = AddCommitsToLeftSide(commitList, currentCommit);
-            var leftSideTemp = new List<string>();
-            leftSideCommits.ForEach(line =>
-            {
-                var toAdd = "";
-                for (int i = 0; i < line.Count - 1; i++)
-                {
-                    var element = line[i];
-                    var elementUtilities = new PageUtilities(element);
-                    if (line[0].Contains("\u001b[7m"))
-                    {
-                        toAdd += element.Length + 1 > rowWidth + additionalLengthForCurrent[i]
-                        ? elementUtilities.TruncateText(rowWidth + additionalLengthForCurrent[i] - 1) + " "
-                        : element + " ";
-                    }
-                    else if (element.Length + 1 > rowWidth + additionalLength[i])
-                    {
-                        toAdd += elementUtilities.TruncateText(rowWidth + additionalLength[i] - 1) + " ";
-                    }
-                    else
-                    {
-                        toAdd += element + " ";
-                    }
-                }
-
-                leftSideTemp.Add(GetMessage(line, rowWidth, additionalLengthForCurrent, additionalLength, toAdd).Trim());
-            });
-
-            return leftSideTemp;
-        }
-
-        private List<List<string>> AddCommitsToLeftSide(List<IElement> commitList, IElement currentCommit)
-        {
-            var result = new List<List<string>>();
-            bool doesPageContainCurrent = false;
-            for (int i = 0; i < commitList.Count; i++)
-            {
-                var toAdd = commitList[i];
-                var toAddDetails = toAdd.GetElement().Split("\n");
-                if (toAdd.Id.Equals(currentCommit.Id))
-                {
-                    doesPageContainCurrent = true;
-                }
-
-                result.Add(toAdd.Id.Equals(currentCommit.Id)
-                    ? new List<string>
-                    {
-                        "\x1b[7m\x1b[48;5;27m" + toAddDetails[0],
-                        "\x1b[48;5;46m" + toAddDetails[1],
-                        "\x1b[48;5;196m" + toAddDetails[2],
-                        "\x1b[0m\x1b[7m" + toAddDetails[3]
-                    }
-                    : new List<string>
-                    {
-                        "\x1b[0m\x1b[38;5;27m" + toAddDetails[0],
-                        "\x1b[38;5;46m" + toAddDetails[1],
-                        "\x1b[38;5;196m" + toAddDetails[2],
-                        "\x1b[0m" + toAddDetails[3]
-                    });
-            }
-
-            result = SetCurrent(result, doesPageContainCurrent);
-
-            return result;
-        }
-
-        private List<string> GetCommits(List<IElement> page)
-        {
-            var result = new List<string>();
-            var currentCommit = commits[commits.Current];
-            page.ForEach(commit =>
-            {
-                var commitDetails = commit.GetElement().Split("\n");
-                result.Add(commit.Id.Equals(currentCommit.Id)
-                        ? "\x1b[7m\x1b[48;5;27m" + commitDetails[0] + " "
-                        + "\x1b[48;5;46m" + commitDetails[1] + " "
-                        + "\x1b[48;5;196m" + commitDetails[2] + " "
-                        + "\x1b[0m\x1b[7m" + commitDetails[3] + "\x1b[0m"
-                        : "\x1b[0m\x1b[38;5;27m" + commitDetails[0] + " "
-                        + "\x1b[38;5;46m" + commitDetails[1] + " "
-                        + "\x1b[38;5;196m" + commitDetails[2] + " "
-                        + "\x1b[0m" + commitDetails[3] + "\x1b[0m");
-            });
-            result.Add("\u001b[0mPress 'Esc' to exit.");
-
-            return result;
-        }
-
-        private List<List<string>> SetCurrent(List<List<string>> list, bool doesPageContainCurrent)
-        {
-            if (!doesPageContainCurrent)
-            {
-                var temp = list[0][0].ToCharArray();
-                temp[2] = '7';
-                temp[6] = '4';
-                list[0][0] = new string(temp);
-                temp = list[0][1].ToCharArray();
-                temp[2] = '4';
-                list[0][1] = new string(temp);
-                temp = list[0][2].ToCharArray();
-                temp[2] = '4';
-                list[0][2] = new string(temp);
-                list[0][3] = list[0][3].Insert(4, "\x1b[7m");
-                commits.Current = commits.Index;
-            }
-
-            return list;
         }
 
         private List<string> SelectScreen(List<string> leftSide, List<string> rightSide, KeyInteractor<IElement> keyInteractor)
@@ -396,7 +212,7 @@ namespace GitApp
             }
         }
 
-        private void UpdateLeftSideVariables(ref List<IElement> elements, ref List<string> leftSide, bool isWindowToSmall, IInteractor<IElement> interactor = null)
+        private void UpdateLeftSideVariables(ref List<IElement> elements, ref List<string> leftSide, bool isWindowToSmall, IInteractor<IElement> interactor)
         {
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
@@ -405,17 +221,15 @@ namespace GitApp
                 return;
             }
 
-            if (interactor == null)
+            if (windowWidth < 50 && windowHeight < 15)
             {
-                elements = GetCommitsForLeftSide(commits.Index, consoleWrapper.WindowHeight);
-                leftSide = consoleWrapper.WindowHeight < 15 && consoleWrapper.WindowWidth < 50
-                    ? GetLeftSide((int)(0.25 * (consoleWrapper.WindowWidth - 2)), elements, commits[commits.Current])
-                    : GetLeftSide((int)(0.15 * (consoleWrapper.WindowWidth - 2)), elements, commits[commits.Current]);
+                elements = interactor.GetPageDataAndSize(((int)(0.6 * windowWidth) - 2) * (windowHeight - 2), (int)(0.6 * windowWidth) - 2).list;
+                leftSide = interactor.GetLeftSide(windowHeight, windowWidth - 2, (windowWidth - 2) * (windowHeight - 2), true);
             }
             else
             {
-                elements = GetPageDataAndSize(interactor, interactor.Index, ((int)(0.6 * windowWidth) - 2) * (windowHeight - 2), (int)(0.6 * windowWidth) - 2, false).list;
-                leftSide = GetLeftSideModifiedFiles(interactor, interactor.Current, interactor.Index);
+                elements = interactor.GetPageDataAndSize(((int)(0.6 * windowWidth) - 2) * (windowHeight - 2), (int)(0.6 * windowWidth) - 2, true).list;
+                leftSide = interactor.GetLeftSide(windowHeight, (int)(0.6 * windowWidth - 2), (int)(0.6 * windowWidth - 2) * (windowHeight - 2), true);
             }
         }
 
@@ -427,7 +241,7 @@ namespace GitApp
             var isWindowToSmall = windowHeight < 9;
             var commitList = new List<IElement>();
             var leftSideCommits = new List<string>();
-            UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall);
+            UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall, commits);
             var toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateExtendedPage(leftSideCommits, keyInteractor);
@@ -448,7 +262,7 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 isWindowToSmall = consoleWrapper.WindowHeight < 9;
-                UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall);
+                UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall, commits);
                 toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateExtendedPage(leftSideCommits, keyInteractor);
@@ -512,8 +326,6 @@ namespace GitApp
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
-            var windowSize = windowHeight * windowWidth;
-            List<string> fittedText;
             List<string> rightSide;
             if (windowHeight < 15 && windowWidth < 50)
             {
@@ -532,38 +344,6 @@ namespace GitApp
             }
 
             return SelectScreen(leftSide, rightSide, keyInteractor);
-        }
-
-        private List<string> GetLeftSideModifiedFiles(IInteractor<IElement> modifiedFiles, int current, int index)
-        {
-            var result = new List<string>();
-            var modifiedFilesList = modifiedFiles.GetText();
-            var currentElement = modifiedFiles[current];
-            var occupancyRate = 0;
-            var height = consoleWrapper.WindowHeight;
-            var width = consoleWrapper.WindowWidth;
-            var rowSize = (int)(0.6 * width - 2);
-            var availableSpace = rowSize * (height - 2);
-            do
-            {
-                if (occupancyRate >= availableSpace || index > modifiedFilesList.Count - 1)
-                {
-                    break;
-                }
-
-                var toAdd = modifiedFiles[index].GetElement();
-                var toAddUtilities = new PageUtilities(toAdd);
-                result.Add((currentElement.Id == modifiedFiles[index].Id ? "\x1b[7m" : "\x1b[0m")
-                    + (toAdd.Length > rowSize ? toAddUtilities.TruncateText(rowSize - 2) : toAdd));
-                occupancyRate += toAddUtilities.GetOccupancyRate(rowSize);
-                index++;
-            }
-            while (occupancyRate <= availableSpace);
-            var lastElementUtilities = new PageUtilities(result[^1]);
-            result[^1] = occupancyRate > availableSpace
-                ? lastElementUtilities.TruncateText(availableSpace - occupancyRate - lastElementUtilities.GetOccupancyRate(rowSize))
-                : result[^1];
-            return result;
         }
 
         private List<string> UpdateExtendedPage(List<string> leftSideCommits, KeyInteractor<IElement> keyInteractor)
@@ -610,7 +390,6 @@ namespace GitApp
             var availableSpace = windowSize - initialTextSize - windowWidth;
             var isPageLargerThanWindow = commitOcupancyRate > availableSpace;
             var commitsToString = new List<string>();
-            var commitsOcupancyRateExceptLast = 0;
             page.ForEach(line =>
             {
                 var commitDetails = line.GetElement().Split("\n");
@@ -619,23 +398,10 @@ namespace GitApp
             (commits.Index, commits.Current) = page.Count == 0
                 ? (0, 0)
                 : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
-            (page, commitOcupancyRate) = GetPageDataAndSize(commits, commits.Index, availableSpace, consoleWrapper.WindowWidth, true);
-            var currentCommit = commits[commits.Current];
-            commits.Current = page.Any(commit => currentCommit.Id.Equals(commit.Id)) ? commits.Current : commits.Index;
-            var toWrite = GetCommits(page);
-            isPageLargerThanWindow = commitOcupancyRate > availableSpace;
-            for (int i = 0; i < toWrite.Count - 2; i++)
-            {
-                var temp = new PageUtilities(toWrite[i]).FormatingCodesStringUtilities().clearedString;
-                commitsOcupancyRateExceptLast += new PageUtilities(temp).GetOccupancyRate(windowWidth);
-            }
+            (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, consoleWrapper.WindowWidth);
+            var toWrite = commits.GetLeftSide(consoleWrapper.WindowHeight - initialTextSize / windowWidth - 1, windowWidth, availableSpace);
+            toWrite.Add("\u001b[0mPress 'Esc' to exit.");
 
-            var lastPageElementUtilities = new PageUtilities(toWrite[^2][..^4]);
-            var truncationSize = availableSpace - commitsOcupancyRateExceptLast + lastPageElementUtilities.FormatingCodesStringUtilities().length;
-            toWrite[^2] = isPageLargerThanWindow
-                ? lastPageElementUtilities.TruncateText(truncationSize)
-                : toWrite[^2];
-            toWrite[^2] += "\u001b[0m";
             return toWrite;
         }
     }

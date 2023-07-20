@@ -56,29 +56,29 @@ namespace GitApp.Tests
                 "\r\nOutgoing: 0\r                                                                                                            " +
                 "\r\nIncoming: 0\r                                                                                                            " +
                 "\r\nBranches: * master                                                                                                      " +
-                "\r\n\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTextInsideBox method.\u001b[0m                                     " +
-                "\r\n\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issue that caused TruncateText method to be called when not necessary.\u001b[0m         " +
-                "\r\n\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mData is now displayed on the whole console window.\u001b[0m                                      " +
-                "\r\n\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mRemoved FormateRightSide's \"limit\" parameter.\u001b[0m                                           " +
-                "\r\n\u001b[0m\u001b[38;5;27mf944893 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mBoxes are now properly displayed at any size.\u001b[0m                                           " +
-                "\r\n\u001b[0m\u001b[38;5;27m92e239d \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFitTextInsideBox method's loop now breaks if \"i\" is equal to current line element's length minus one.\u001b[0m                                                                                                           " +
-                "\r\n\u001b[0m\u001b[38;5;27m10580c9 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mModified functionality of DisplaySplitScreen method.\u001b[0m                                    " +
-                "\r\n\u001b[0m\u001b[38;5;27mfae78e6 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFixed date column arrangement on left side.\u001b[0m                                             " +
-                "\r\n\u001b[0m\u001b[38;5;27mf4ad294 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mGetLeftSide method's leftSideColumnSize variable is now 15% of console window's width.\u001b[0m  " +
-                "\r\n\u001b[0m\u001b[38;5;27md3d8ef7 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-08 \u001b[0mFixed an issue that caused not to display the correct date.\u001b[0m\u001b[0m                             " +
+                "\r\n\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTextInsideBox method.                                     " +
+                "\r\n\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issue that caused TruncateText method to be called when not necessary.         " +
+                "\r\n\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mData is now displayed on the whole console window.                                      " +
+                "\r\n\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mRemoved FormateRightSide's \"limit\" parameter.                                           " +
+                "\r\n\u001b[0m\u001b[38;5;27mf944893 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mBoxes are now properly displayed at any size.                                           " +
+                "\r\n\u001b[0m\u001b[38;5;27m92e239d \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFitTextInsideBox method's loop now breaks if \"i\" is equal to current line element's length minus one.                                                                                                           " +
+                "\r\n\u001b[0m\u001b[38;5;27m10580c9 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mModified functionality of DisplaySplitScreen method.                                    " +
+                "\r\n\u001b[0m\u001b[38;5;27mfae78e6 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFixed date column arrangement on left side.                                             " +
+                "\r\n\u001b[0m\u001b[38;5;27mf4ad294 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mGetLeftSide method's leftSideColumnSize variable is now 15% of console window's width.  " +
+                "\r\n\u001b[0m\u001b[38;5;27md3d8ef7 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-08 \u001b[0mFixed an issue that caused not to display the correct date.                             " +
                 "\r\n\u001b[0mPress 'Esc' to exit.                                                                                                    \r";
         const string expectedExtendedPage =
                 "┌Commits───────────────────────────────────────────────────────────────┐┌Info──────────────────────────────────────────┐" +
-                "\r\n\u001b[0m│\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTe...   \u001b[0m│\u001b[0m│Author: Andrei Daboc\u001b[0m                          \u001b[0m│" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issue that caused Trunc...   \u001b[0m│\u001b[0m│Date: 2023-05-17\u001b[0m                              \u001b[0m│" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mData is now displayed on the who...   \u001b[0m│\u001b[0m│SHA: 7f37022a20e43184a99dc063be55a27ff5afb34d\u001b[0m \u001b[0m│" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mRemoved FormateRightSide's \"limi...   \u001b[0m│\u001b[0m│                                              \u001b[0m│" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf944893 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mBoxes are now properly displayed...   \u001b[0m│\u001b[0m│                                              \u001b[0m│" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m92e239d \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFitTextInsideBox method's loop n...   \u001b[0m│\u001b[0m│                                              \u001b[0m│" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m10580c9 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mModified functionality of Displa...   \u001b[0m│\u001b[0m│                                              \u001b[0m│" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mfae78e6 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFixed date column arrangement on...   \u001b[0m│\u001b[0m│                                              \u001b[0m│" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf4ad294 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mGetLeftSide method's leftSideCol...   \u001b[0m│\u001b[0m└──────────────────────────────────────────────┘" +
-                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27md3d8ef7 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-08 \u001b[0mFixed an issue that caused not t...   \u001b[0m│┌Message───────────────────────────────────────┐" +
+                "\r\n\u001b[0m│\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTextI...\u001b[0m│\u001b[0m│Author: Andrei Daboc\u001b[0m                          \u001b[0m│" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issue that caused Truncate...\u001b[0m│\u001b[0m│Date: 2023-05-17\u001b[0m                              \u001b[0m│" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mData is now displayed on the whole ...\u001b[0m│\u001b[0m│SHA: 7f37022a20e43184a99dc063be55a27ff5afb34d\u001b[0m \u001b[0m│" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mRemoved FormateRightSide's \"limit\" ...\u001b[0m│\u001b[0m│                                              \u001b[0m│" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf944893 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mBoxes are now properly displayed at...\u001b[0m│\u001b[0m│                                              \u001b[0m│" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m92e239d \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFitTextInsideBox method's loop now ...\u001b[0m│\u001b[0m│                                              \u001b[0m│" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m10580c9 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mModified functionality of DisplaySp...\u001b[0m│\u001b[0m│                                              \u001b[0m│" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mfae78e6 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mFixed date column arrangement on le...\u001b[0m│\u001b[0m│                                              \u001b[0m│" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf4ad294 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-09 \u001b[0mGetLeftSide method's leftSideColumn...\u001b[0m│\u001b[0m└──────────────────────────────────────────────┘" +
+                "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27md3d8ef7 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-08 \u001b[0mFixed an issue that caused not to d...\u001b[0m│┌Message───────────────────────────────────────┐" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│Removed temp variable from FitTextInsideBox me\u001b[0m\u001b[0m│" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│thod.\u001b[0m                                         \u001b[0m│" +
                 "\r\n\u001b[0m│                                                                      \u001b[0m│\u001b[0m│                                              \u001b[0m│" +
@@ -103,10 +103,10 @@ namespace GitApp.Tests
             "\r\nOutgoing: 0\r                                     " +
             "\r\nIncoming: 0\r                                     " +
             "\r\nBranches: * master                               " +
-            "\r\n\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTextInsideBox method.\u001b[0m               " +
-            "\r\n\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issue that caused TruncateText method to be called when not necessary.\u001b[0m                                    " +
-            "\r\n\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mData is now displayed on the whole console window.\u001b[0m                " +
-            "\r\n\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mRemoved FormateRightSide's \"limit\" parameter.\u001b[0m\u001b[0m                     " +
+            "\r\n\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei Daboc \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp variable from FitTextInsideBox method.               " +
+            "\r\n\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issue that caused TruncateText method to be called when not necessary.                                    " +
+            "\r\n\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-17 \u001b[0mData is now displayed on the whole console window.                " +
+            "\r\n\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei Daboc \u001b[38;5;196m2023-05-12 \u001b[0mRemoved FormateRightSide's \"limit\" parameter.                     " +
             "\r\n\u001b[0mPress 'Esc' to exit.                             \r";
         const string expectedSmallRightExtendedPage =
             "┌Info───────────────────────────────────────────┐" +
@@ -124,22 +124,22 @@ namespace GitApp.Tests
             "\r\n\u001b[0m│GitApp/GitApp/ConsoleWrapper.cs\u001b[0m...             \u001b[0m│" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘\r";
         const string expectedSmallLeftExtendedPage =
-            "┌Commits────────────────────────────────────────┐"+
-            "\r\n\u001b[0m│\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei ... \u001b[48;5;196m2023-0... \u001b[0m\u001b[7mRemoved tem...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mFixed an is...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mData is now...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mRemoved For...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf944893 \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mBoxes are n...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m92e239d \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mFitTextInsi...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m10580c9 \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mModified fu...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mfae78e6 \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mFixed date ...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf4ad294 \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mGetLeftSide...    \u001b[0m│" +
-            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27md3d8ef7 \u001b[38;5;46mAndrei ... \u001b[38;5;196m2023-0... \u001b[0mFixed an is...    \u001b[0m│" +
+            "┌Commits────────────────────────────────────────┐" +
+            "\r\n\u001b[0m│\u001b[7m\u001b[48;5;27m7f37022 \u001b[48;5;46mAndrei D... \u001b[48;5;196m2023-05-17 \u001b[0m\u001b[7mRemoved temp ...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mbfa2684 \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-17 \u001b[0mFixed an issu...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m1db76a2 \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-17 \u001b[0mData is now d...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27madfdf0e \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-12 \u001b[0mRemoved Forma...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf944893 \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-12 \u001b[0mBoxes are now...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m92e239d \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-09 \u001b[0mFitTextInside...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27m10580c9 \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-09 \u001b[0mModified func...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mfae78e6 \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-09 \u001b[0mFixed date co...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27mf4ad294 \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-09 \u001b[0mGetLeftSide m...\u001b[0m│" +
+            "\r\n\u001b[0m│\u001b[0m\u001b[38;5;27md3d8ef7 \u001b[38;5;46mAndrei D... \u001b[38;5;196m2023-05-08 \u001b[0mFixed an issu...\u001b[0m│" +
             "\r\n\u001b[0m│                                               \u001b[0m│" +
             "\r\n\u001b[0m│                                               \u001b[0m│" +
             "\r\n\u001b[0m└───────────────────────────────────────────────┘\r";
         const string expectedDiffPage =
-            "┌Files─────────────────────────────────────────────────────────────────┐┌Diff──────────────────────────────────────────┐"+
+            "┌Files─────────────────────────────────────────────────────────────────┐┌Diff──────────────────────────────────────────┐" +
             "\r\n\u001b[0m│\u001b[7mGitApp/GitApp/DisplayText.cs                                          \u001b[0m│\u001b[0m│diff --git a/GitApp/GitApp/DisplayText.cs b/Gi\u001b[0m\u001b[0m│" +
             "\r\n\u001b[0m│\u001b[0mGitApp/GitApp/ConsoleWrapper.cs                                       \u001b[0m│\u001b[0m│tApp/GitApp/DisplayText.cs\r\u001b[0m                   \u001b[0m│" +
             "\r\n\u001b[0m│\u001b[0mGitApp/GitApp/IElement.cs                                             \u001b[0m│\u001b[0m│index 2e671a6..0802a33 100644\r\u001b[0m                \u001b[0m│" +
@@ -188,7 +188,7 @@ namespace GitApp.Tests
         [Fact]
         public void DisplayIsCalledEnterIsPressedShouldDisplayExtendedPage()
         {
-            ConsoleKeyInfo[] keySequence = new[] 
+            ConsoleKeyInfo[] keySequence = new[]
             {
                 new ConsoleKeyInfo((char)ConsoleKey.Enter, ConsoleKey.Enter, false, false, false)
             };
@@ -245,11 +245,11 @@ namespace GitApp.Tests
             display.Display(initialText);
             var actualOutput = writer.ToString();
             Assert.Equal(
-                expectedMainPage+
-                expectedExtendedPage+
-                expectedDiffPage+
-                expectedDiffPage+
-                expectedExtendedPage+
+                expectedMainPage +
+                expectedExtendedPage +
+                expectedDiffPage +
+                expectedDiffPage +
+                expectedExtendedPage +
                 expectedExtendedPage +
                 expectedMainPage +
                 expectedMainPage,
