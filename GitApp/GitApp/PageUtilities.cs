@@ -23,22 +23,23 @@ namespace GitApp
 
         public List<string> SplitRow(int limit)
         {
+            var lines = element != null ? new[] { element } : data;
             var result = new List<string>();
             var codes = "";
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 var differenceLength = 0;
                 codes = "";
-                for (int j = 0, k = 1; j < data[i].Length; j += limit + differenceLength, k++)
+                for (int j = 0, k = 1; j < lines[i].Length; j += limit + differenceLength, k++)
                 {
-                    var splitElement = data[i][j..Math.Min(data[i].Length, limit * k)];
+                    var splitElement = lines[i][j..Math.Min(lines[i].Length, limit * k)];
                     var elementUtilities = new PageUtilities(splitElement);
                     var previousDifferenceLength = differenceLength;
                     var elementCodesAndLength = elementUtilities.FormatingCodesStringUtilities();
                     differenceLength = elementCodesAndLength.length;
                     result.Add(
                         codes +
-                        data[i][j..Math.Min(data[i].Length, limit * k + (previousDifferenceLength > differenceLength ? previousDifferenceLength : differenceLength))] +
+                        lines[i][j..Math.Min(lines[i].Length, limit * k + (previousDifferenceLength > differenceLength ? previousDifferenceLength : differenceLength))] +
                         "\u001b[0m");
                     codes = new PageUtilities(result[^1]).FormatingCodesStringUtilities().codes.Replace("\u001b[0m", "");
                 }
