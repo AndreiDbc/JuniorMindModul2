@@ -69,54 +69,6 @@ namespace GitApp
             while (!key.Equals(ConsoleKey.Escape));
         }
 
-        private static string RecolorDiffLine(string previous, string current, string next)
-        {
-            if (current.StartsWith("+") && previous.StartsWith("\u001b[38;5;190m-"))
-            {
-                return "\x1b[38;5;190m" + current;
-            }
-            else if (current.StartsWith("+"))
-            {
-                return "\x1b[38;5;40m" + current;
-            }
-            else if (current.StartsWith("-") && next.StartsWith("+"))
-            {
-                return "\u001b[38;5;190m" + current;
-            }
-            else if (current.StartsWith("-"))
-            {
-                return "\x1b[38;5;160m" + current;
-            }
-
-            return current;
-        }
-
-        private static string[] SetColorsToDiffText(string[] lines, int availableSpace, int lineSize)
-        {
-            var startIndex = lines[3].StartsWith("+++") ? 5 : 6;
-            var occupacyRate = 0;
-            for (int i = startIndex; i < lines.Length - 1; i++)
-            {
-                var lineUtilities = new PageUtilities(lines[i]);
-                occupacyRate += lineUtilities.GetOccupancyRate(lineSize);
-                if (occupacyRate > availableSpace)
-                {
-                    return lines;
-                }
-
-                lines[i] = RecolorDiffLine(lines[i - 1], lines[i], lines[i + 1]);
-            }
-
-            var lastElement = lines[^1];
-            var secondLastElement = lines[^2];
-            lines[^1] = RecolorDiffLine(
-                secondLastElement,
-                lastElement,
-                "");
-
-            return lines;
-        }
-
         private static List<string> MergeSides(List<string> leftSide, List<string> rightSide)
         {
             var result = new List<string>();
@@ -264,14 +216,15 @@ namespace GitApp
             var isWindowToSmall = windowHeight < 3;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
             var leftSideElements = new List<string>();
-            var diff = gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement());
+            var diff = new Diff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement());
             var page = new List<IElement>();
             var keyInteractor = new KeyInteractor<IElement>(modifiedFiles);
             keyInteractor.KeyInfo = ConsoleKey.NoName;
             UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles);
+            var rightSide = diff.GetHighlightedSide(windowHeight, rowSize - 2, availableSpace, false);
             var toDisplay = isWindowToSmall
                 ? new List<string>()
-                : UpdateDiffPage(leftSideElements, diff, rowSize, availableSpace, keyInteractor);
+                : UpdateDiffPage(leftSideElements, rightSide, rowSize, availableSpace, keyInteractor);
             Write(toDisplay, windowHeight < 3);
             ConsoleKey key;
             do
@@ -289,10 +242,10 @@ namespace GitApp
                 (modifiedFiles.Index, modifiedFiles.Current) = keyInteractor.KeySwitch(leftSideElements, page[^1].Id, page[0].Id, false, windowWidth, page[^1].GetElement().Length);
                 UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles);
                 var filePath = modifiedFiles[modifiedFiles.Current].GetElement();
-                diff = gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, filePath);
+                diff = new Diff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, filePath);
                 toDisplay = isWindowToSmall
                     ? new List<string>()
-                    : UpdateDiffPage(leftSideElements, diff, rowSize, availableSpace, keyInteractor);
+                    : UpdateDiffPage(leftSideElements, diff.GetHighlightedSide(windowHeight, rowSize - 2, availableSpace, false), rowSize, availableSpace, keyInteractor);
                 Write(toDisplay, windowHeight < 3);
             }
             while (key != ConsoleKey.Escape && key != ConsoleKey.LeftArrow);
@@ -300,7 +253,7 @@ namespace GitApp
 
         private List<string> UpdateDiffPage(
             List<string> leftSide,
-            string diff,
+            List<string> diff,
             int rowSize,
             int availableSpace,
             KeyInteractor<IElement> keyInteractor)
@@ -310,17 +263,12 @@ namespace GitApp
             List<string> rightSide;
             if (windowHeight < 15 && windowWidth < 50)
             {
-                var maximumTextSize = (windowHeight - 2) * (windowWidth - 2);
-                var coloredDiff = SetColorsToDiffText(diff.Split("\n"), maximumTextSize, windowWidth - 2);
-                var splitText = new PageUtilities(coloredDiff).SplitRow(windowWidth - 2);
-                rightSide = new BoxDrawer(splitText, "Diff").DrawBox(windowWidth, windowHeight, true);
+                rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight, false);
                 leftSide = new BoxDrawer(leftSide, "Files").DrawBox(windowWidth, windowHeight);
             }
             else
             {
-                var coloredDiff = SetColorsToDiffText(diff.Split("\n"), availableSpace, rowSize - 2);
-                var splitText = new PageUtilities(coloredDiff).SplitRow(rowSize - 2);
-                rightSide = new BoxDrawer(splitText, "Diff").DrawBox(rowSize, windowHeight, true);
+                rightSide = new BoxDrawer(diff, "Diff").DrawBox(rowSize, windowHeight, false);
                 leftSide = new BoxDrawer(leftSide, "Files").DrawBox((int)(0.6 * windowWidth), windowHeight);
             }
 
