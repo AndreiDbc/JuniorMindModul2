@@ -48,12 +48,19 @@ namespace GitApp
             var index = startingPoint < Index ? Index : startingPoint;
             var result = new List<string>();
             var occupacyRate = 0;
-            (result, occupacyRate) = SetFirstLines(result, lines, startingPoint, width, isScreenSplit);
+            var doesPageContainCurrent = false;
+            (result, occupacyRate, doesPageContainCurrent) = SetFirstLines(result, lines, startingPoint, width, isScreenSplit);
             index = occupacyRate == 0 ? Index : index;
             for (int i = index; i < lines.Length - 1; i++)
             {
+                if (diffList[index].Id.Equals(diffList[Current].Id))
+                {
+                    doesPageContainCurrent = true;
+                }
+
                 if (occupacyRate >= availableSpace)
                 {
+                    result = SetCurrent(result, doesPageContainCurrent);
                     result = SetLastLine(result, occupacyRate, availableSpace, width, index);
                     return result;
                 }
@@ -65,6 +72,7 @@ namespace GitApp
                 index++;
             }
 
+            result = SetCurrent(result, doesPageContainCurrent);
             result = index == diffList.Count - 1
                 ? SetLastLine(result, occupacyRate, availableSpace, width, index)
                 : result;
@@ -131,18 +139,36 @@ namespace GitApp
             return list;
         }
 
-        private (List<string> lines, int occupancy) SetFirstLines(List<string> list, string[] lines, int startingPoint, int width, bool isScreenSplit)
+        private List<string> SetCurrent(List<string> list, bool doesPageContainCurrent)
+        {
+            Current = doesPageContainCurrent ? Current : Index;
+            list[0] = doesPageContainCurrent ? list[0] : "\u001b[7m" + list[0];
+            return list;
+        }
+
+        private (List<string> lines, int occupancy, bool doesPageContainCurrent) SetFirstLines(
+            List<string> list,
+            string[] lines,
+            int startingPoint,
+            int width,
+            bool isScreenSplit)
         {
             var occupancy = 0;
             if (startingPoint < Index)
             {
-                return (list, occupancy);
+                return (list, occupancy, false);
             }
 
+            var doesPageContainCurrent = false;
             var toInsert = new List<string>();
             var index = Index;
             for (int i = index; i < startingPoint; i++)
             {
+                if(diffList[index].Id.Equals(diffList[Current].Id))
+                {
+                    doesPageContainCurrent = true;
+                }
+
                 var utilities = new PageUtilities(lines[i]);
                 occupancy += utilities.GetOccupancyRate(width);
                 toInsert.AddRange(diffList[index].Id.Equals(diffList[Current].Id)
@@ -152,7 +178,7 @@ namespace GitApp
             }
 
             list.InsertRange(0, toInsert);
-            return (list, occupancy);
+            return (list, occupancy, doesPageContainCurrent);
         }
 
         private List<string> SetLastLine(List<string> list, int occupancyRate, int availableSpace, int width, int index)
