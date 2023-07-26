@@ -115,6 +115,22 @@ namespace GitApp
             return current;
         }
 
+        private static List<string> RemoveLines(List<string> list, int occupancyRate, int width, int availableSpace)
+        {
+            do
+            {
+                var lastElementUtilities = new PageUtilities(list[^1][..^4]);
+                list.RemoveAt(list.Count - 1);
+                occupancyRate -= lastElementUtilities.GetOccupancyRate(width);
+            }
+            while (occupancyRate > availableSpace);
+
+            var tmp = new PageUtilities(list[^1][..^4]);
+            list[^1] = tmp.TruncateText(width + tmp.FormatingCodesStringUtilities().length) + "\u001b[0m";
+
+            return list;
+        }
+
         private (List<string> lines, int occupancy) SetFirstLines(List<string> list, string[] lines, int startingPoint, int width, bool isScreenSplit)
         {
             var occupancy = 0;
@@ -162,16 +178,7 @@ namespace GitApp
                 return list;
             }
 
-            do
-            {
-                var lastElementUtilities = new PageUtilities(list[^1][..^4]);
-                list.RemoveAt(list.Count - 1);
-                occupancyRate -= lastElementUtilities.GetOccupancyRate(width);
-            }
-            while (occupancyRate > availableSpace);
-
-            var tmp = new PageUtilities(list[^1][..^4]);
-            list[^1] = tmp.TruncateText(width + tmp.FormatingCodesStringUtilities().length) + "\u001b[0m";
+            list = RemoveLines(list, occupancyRate, width, availableSpace);
 
             return list;
         }

@@ -94,7 +94,84 @@ namespace GitApp.Tests
             Assert.Equal(expected[17].Id, actual.list[17].Id);
             Assert.Equal(expected[18].Id, actual.list[18].Id);
             Assert.Equal(1288, actual.textSize);
+        }
 
+        [Fact]
+        public void GetHighlightedSideIsCalledShouldReturnLines()
+        {
+            var diff = new Diff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
+            var expected = new List<string>()
+            {
+                "diff --git a/GitApp/GitApp/DisplayText.cs b/Gi\u001b[0m",
+                "tApp/GitApp/DisplayText.cs\r\u001b[0m",
+                "index 2e671a6..0802a33 100644\r\u001b[0m",
+                "--- a/GitApp/GitApp/DisplayText.cs\r\u001b[0m",
+                "+++ b/GitApp/GitApp/DisplayText.cs\r\u001b[0m",
+                "@@ -192,11 +192,20 @@ namespace GitApp\r\u001b[0m",
+                "         private static List<string> SplitRow(\u001b[0m",
+                "string[] data, int limit)\r\u001b[0m",
+                "         {\r\u001b[0m",
+                "             var result = new List<string>();\r\u001b[0m",
+                "\u001b[38;5;40m+            var codes = \"\";\r\u001b[0m",
+                "             for (int i = 0; i < data.Length; \u001b[0m",
+                "i++)\r\u001b[0m",
+                "             {\r\u001b[0m",
+                "\u001b[38;5;190m-                for (int j = 0, k = 1; j < da\u001b[0m",
+                "\u001b[38;5;190mta[i].Length; j += limit, k++)\r\u001b[0m",
+                "\u001b[38;5;190m+                var differenceLength = 0;\r\u001b[0m",
+                "\u001b[38;5;40m+                codes = \"\";\r\u001b[0m",
+                "\u001b[38;5;40m+                for (int j = 0, k = 1; j < da\u001b[0m",
+                "\u001b[38;5;40mta[i].Length; j += limit + differenceLength, k\u001b[0m",
+                "\u001b[38;5;40m++)\r\u001b[0m",
+                "                 {\r\u001b[0m",
+                "\u001b[38;5;190m-                    result.Add(data[i][j..Mat\u001b[0m",
+                "\u001b[38;5;190mh.Min(data[i].Length, limit * k)]);\r\u001b[0m",
+                "\u001b[38;5;190m+                    var element = data[i][j..\u001b[0m",
+                "\u001b[38;5;190mMath.Min(data[i].Length, limit * k)];\r\u001b[0m",
+                "\u001b[38;5;40m+                    var elementUtilities = ne\u001b[0m",
+                "\u001b[38;5;40mw PageUtilities(element);\r\u001b[0m..."
+            };
+            var output = diff.GetHighlightedSide(30, 46, 1288);
+            Assert.Equal(expected, output);
+        }
+
+        [Fact]
+        public void GetHighlightedSideIsCalledDiffSideIsInUseShouldReturnLines()
+        {
+            var diff = new Diff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
+            var expected = new List<string>()
+            {
+                "\u001b[7mdiff --git a/GitApp/GitApp/DisplayText.cs b/Gi\u001b[0m",
+                "\u001b[7mtApp/GitApp/DisplayText.cs\r\u001b[0m",
+                "index 2e671a6..0802a33 100644\r\u001b[0m",
+                "--- a/GitApp/GitApp/DisplayText.cs\r\u001b[0m",
+                "+++ b/GitApp/GitApp/DisplayText.cs\r\u001b[0m",
+                "@@ -192,11 +192,20 @@ namespace GitApp\r\u001b[0m",
+                "         private static List<string> SplitRow(\u001b[0m",
+                "string[] data, int limit)\r\u001b[0m",
+                "         {\r\u001b[0m",
+                "             var result = new List<string>();\r\u001b[0m",
+                "\u001b[38;5;40m+            var codes = \"\";\r\u001b[0m",
+                "             for (int i = 0; i < data.Length; \u001b[0m",
+                "i++)\r\u001b[0m",
+                "             {\r\u001b[0m",
+                "\u001b[38;5;190m-                for (int j = 0, k = 1; j < da\u001b[0m",
+                "\u001b[38;5;190mta[i].Length; j += limit, k++)\r\u001b[0m",
+                "\u001b[38;5;190m+                var differenceLength = 0;\r\u001b[0m",
+                "\u001b[38;5;40m+                codes = \"\";\r\u001b[0m",
+                "\u001b[38;5;40m+                for (int j = 0, k = 1; j < da\u001b[0m",
+                "\u001b[38;5;40mta[i].Length; j += limit + differenceLength, k\u001b[0m",
+                "\u001b[38;5;40m++)\r\u001b[0m",
+                "                 {\r\u001b[0m",
+                "\u001b[38;5;190m-                    result.Add(data[i][j..Mat\u001b[0m",
+                "\u001b[38;5;190mh.Min(data[i].Length, limit * k)]);\r\u001b[0m",
+                "\u001b[38;5;190m+                    var element = data[i][j..\u001b[0m",
+                "\u001b[38;5;190mMath.Min(data[i].Length, limit * k)];\r\u001b[0m",
+                "\u001b[38;5;40m+                    var elementUtilities = ne\u001b[0m",
+                "\u001b[38;5;40mw PageUtilities(element);\r\u001b[0m..."
+            };
+            var output = diff.GetHighlightedSide(30, 46, 1288, true);
+            Assert.Equal(expected, output);
         }
     }
 }
