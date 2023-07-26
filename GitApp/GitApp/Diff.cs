@@ -31,13 +31,15 @@ namespace GitApp
         public List<IElement> GetText()
         {
             var result = new List<IElement>();
-            foreach (var item in diff.Split("\n"))
+            var temp = diff.Split("\n");
+            for (int i = 0; i < temp.Length; i++)
             {
-                result.Add(new DiffLine(item));
+                result.Add(new DiffLine(temp[i], i.ToString()));
             }
 
             return result;
         }
+
 
         public List<string> GetHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
