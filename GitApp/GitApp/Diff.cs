@@ -40,7 +40,6 @@ namespace GitApp
             return result;
         }
 
-
         public List<string> GetHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
             var lines = diff.Split("\n");
@@ -48,22 +47,26 @@ namespace GitApp
             var index = startingPoint < Index ? Index : startingPoint;
             var result = new List<string>();
             var occupacyRate = 0;
-            (result, occupacyRate) = SetFirst(result, lines, startingPoint, index, width);
-
+            (result, occupacyRate) = SetFirstLines(result, lines, startingPoint, width, isScreenSplit);
+            index = occupacyRate == 0 ? Index : index;
             for (int i = index; i < lines.Length - 1; i++)
             {
                 if (occupacyRate >= availableSpace)
                 {
-                    result = SetLast(result, occupacyRate, availableSpace, width);
+                    result = SetLastLine(result, occupacyRate, availableSpace, width, index);
                     return result;
                 }
 
                 var lineUtilities = new PageUtilities(lines[i]);
                 occupacyRate += lineUtilities.GetOccupancyRate(width);
-                lines[i] = (i == Current && isScreenSplit ? "\u001b[7m" : "") + RecolorDiffLine(lines[i - 1], lines[i], lines[i + 1]);
+                lines[i] = (diffList[index].Id.Equals(diffList[Current].Id) && isScreenSplit ? "\u001b[7m" : "") + RecolorDiffLine(lines[i - 1], lines[i], lines[i + 1]);
                 result.AddRange(new PageUtilities(lines[i]).SplitRow(width));
                 index++;
             }
+
+            result = index == diffList.Count - 1
+                ? SetLastLine(result, occupacyRate, availableSpace, width, index)
+                : result;
 
             return result;
         }
@@ -81,8 +84,8 @@ namespace GitApp
                 }
 
                 result.Add(diffList[index]);
-                index++;
                 textSize += new PageUtilities(diffList[index].GetElement()).GetOccupancyRate(lineSize);
+                index++;
             }
             while (textSize <= availableSpace);
 
@@ -91,7 +94,7 @@ namespace GitApp
 
         private static string RecolorDiffLine(string previous, string current, string next)
         {
-            if (current.StartsWith("+") && previous.StartsWith("\u001b[38;5;190m-"))
+            if (current.StartsWith("+") && (previous.StartsWith("\u001b[38;5;190m-") || previous.StartsWith("\u001b[7m\u001b[38;5;190m-")))
             {
                 return "\x1b[38;5;190m" + current;
             }
@@ -111,40 +114,63 @@ namespace GitApp
             return current;
         }
 
-        private static (List<string> lines, int occupancy) SetFirst(List<string> list, string[] lines, int startingPoint, int index, int width)
+        private (List<string> lines, int occupancy) SetFirstLines(List<string> list, string[] lines, int startingPoint, int width, bool isScreenSplit)
         {
-            var toInsert = new List<string>();
             var occupancy = 0;
-            for (int i = 0; i < startingPoint; i++)
+            if (startingPoint < Index)
+            {
+                return (list, occupancy);
+            }
+
+            var toInsert = new List<string>();
+            var index = Index;
+            for (int i = index; i < startingPoint; i++)
             {
                 var utilities = new PageUtilities(lines[i]);
                 occupancy += utilities.GetOccupancyRate(width);
-                toInsert.AddRange(utilities.SplitRow(width));
+                toInsert.AddRange(diffList[index].Id.Equals(diffList[Current].Id)
+                    ? new PageUtilities((isScreenSplit ? "\u001b[7m" : "") + lines[i]).SplitRow(width)
+                    : utilities.SplitRow(width));
+                index++;
             }
 
             list.InsertRange(0, toInsert);
             return (list, occupancy);
         }
 
-        private static List<string> SetLast(List<string> list, int occupancyRate, int availableSpace, int width)
+        private List<string> SetLastLine(List<string> list, int occupancyRate, int availableSpace, int width, int index)
         {
+            list[^1] = diffList[index].Id.Equals(diffList[Current].Id)
+                ? "\u001b[7m" + list[^1]
+                : list[^1];
             var utilities = new PageUtilities(list[^1][..^4]);
+
+            if (index == diffList.Count - 1)
+            {
+                list[^1] = list[^1].Length - utilities.FormatingCodesStringUtilities().length < width
+                    ? list[^1]
+                    : utilities.TruncateText(width + utilities.FormatingCodesStringUtilities().length) + "\u001b[0m";
+                return list;
+            }
+
             if (occupancyRate <= availableSpace)
             {
-                list[^1] = utilities.FormatingCodesStringUtilities().length <= width - 3
+                list[^1] = list[^1].Length - utilities.FormatingCodesStringUtilities().length <= width - 3
                     ? list[^1] + "..."
-                    : utilities.TruncateText(width) + "\u001b[0m";
+                    : utilities.TruncateText(width + utilities.FormatingCodesStringUtilities().length) + "\u001b[0m";
                 return list;
             }
 
             do
             {
+                var lastElementUtilities = new PageUtilities(list[^1][..^4]);
                 list.RemoveAt(list.Count - 1);
-                occupancyRate -= width;
+                occupancyRate -= lastElementUtilities.GetOccupancyRate(width);
             }
             while (occupancyRate > availableSpace);
 
-            list[^1] = utilities.TruncateText(width + utilities.FormatingCodesStringUtilities().length) + "\u001b[0m";
+            var tmp = new PageUtilities(list[^1][..^4]);
+            list[^1] = tmp.TruncateText(width + tmp.FormatingCodesStringUtilities().length) + "\u001b[0m";
 
             return list;
         }
