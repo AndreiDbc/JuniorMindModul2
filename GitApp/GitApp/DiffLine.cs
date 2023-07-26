@@ -9,15 +9,17 @@ namespace GitApp
     public class DiffLine : IElement
     {
         private readonly string rawDiff;
+        private readonly string index;
 
-        public DiffLine(string rawDiff)
+        public DiffLine(string rawDiff, string index)
         {
+            this.index = index;
             this.rawDiff = rawDiff;
         }
 
         public string Id
         {
-            get => rawDiff;
+            get => index;
         }
 
         public string GetElement()

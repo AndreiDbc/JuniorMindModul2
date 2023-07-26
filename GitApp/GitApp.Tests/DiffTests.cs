@@ -53,25 +53,25 @@ namespace GitApp.Tests
             var diff = new Diff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
             var expected = new List<IElement>()
             {
-                new DiffLine("diff --git a/GitApp/GitApp/DisplayText.cs b/GitApp/GitApp/DisplayText.cs\r"),
-                new DiffLine("index 2e671a6..0802a33 100644\r"),
-                new DiffLine("--- a/GitApp/GitApp/DisplayText.cs\r"),
-                new DiffLine("+++ b/GitApp/GitApp/DisplayText.cs\r"),
-                new DiffLine("@@ -192,11 +192,20 @@ namespace GitApp\r"),
-                new DiffLine("         private static List<string> SplitRow(string[] data, int limit)\r"),
-                new DiffLine("         {\r"),
-                new DiffLine("             var result = new List<string>();\r"),
-                new DiffLine("+            var codes = \"\";\r"),
-                new DiffLine("             for (int i = 0; i < data.Length; i++)\r"),
-                new DiffLine("             {\r"),
-                new DiffLine("-                for (int j = 0, k = 1; j < data[i].Length; j += limit, k++)\r"),
-                new DiffLine("+                var differenceLength = 0;\r"),
-                new DiffLine("+                codes = \"\";\r"),
-                new DiffLine("+                for (int j = 0, k = 1; j < data[i].Length; j += limit + differenceLength, k++)\r"),
-                new DiffLine("                 {\r"),
-                new DiffLine("-                    result.Add(data[i][j..Math.Min(data[i].Length, limit * k)]);\r"),
-                new DiffLine("+                    var element = data[i][j..Math.Min(data[i].Length, limit * k)];\r"),
-                new DiffLine("+                    var elementUtilities = new PageUtilities(element);\r")
+                new DiffLine("diff --git a/GitApp/GitApp/DisplayText.cs b/GitApp/GitApp/DisplayText.cs\r", "0"),
+                new DiffLine("index 2e671a6..0802a33 100644\r", "1"),
+                new DiffLine("--- a/GitApp/GitApp/DisplayText.cs\r", "2"),
+                new DiffLine("+++ b/GitApp/GitApp/DisplayText.cs\r", "3"),
+                new DiffLine("@@ -192,11 +192,20 @@ namespace GitApp\r", "4"),
+                new DiffLine("         private static List<string> SplitRow(string[] data, int limit)\r", "5"),
+                new DiffLine("         {\r", "6"),
+                new DiffLine("             var result = new List<string>();\r", "7"),
+                new DiffLine("+            var codes = \"\";\r", "8"),
+                new DiffLine("             for (int i = 0; i < data.Length; i++)\r", "9"),
+                new DiffLine("             {\r", "10"),
+                new DiffLine("-                for (int j = 0, k = 1; j < data[i].Length; j += limit, k++)\r", "11"),
+                new DiffLine("+                var differenceLength = 0;\r", "12"),
+                new DiffLine("+                codes = \"\";\r", "13"),
+                new DiffLine("+                for (int j = 0, k = 1; j < data[i].Length; j += limit + differenceLength, k++)\r", "14"),
+                new DiffLine("                 {\r", "15"),
+                new DiffLine("-                    result.Add(data[i][j..Math.Min(data[i].Length, limit * k)]);\r", "16"),
+                new DiffLine("+                    var element = data[i][j..Math.Min(data[i].Length, limit * k)];\r", "17"),
+                new DiffLine("+                    var elementUtilities = new PageUtilities(element);\r", "18")
             };
             var actual = diff.GetPageDataAndSize(1288, 46);
             Assert.Equal(expected[0].Id, actual.list[0].Id);
