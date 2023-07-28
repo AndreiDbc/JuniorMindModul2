@@ -51,7 +51,7 @@ namespace GitApp
             var doesPageContainCurrent = false;
             (result, occupacyRate, doesPageContainCurrent) = SetFirstLines(result, lines, startingPoint, width, isScreenSplit);
             index = occupacyRate == 0 ? Index : index;
-            for (int i = index; i < lines.Length - 1; i++)
+            for (int i = index; i < lines.Length; i++)
             {
                 if (diffList[index].Id.Equals(diffList[Current].Id))
                 {
@@ -61,21 +61,22 @@ namespace GitApp
                 if (occupacyRate >= availableSpace)
                 {
                     result = SetCurrent(result, doesPageContainCurrent);
-                    result = SetLastLine(result, occupacyRate, availableSpace, width, index);
+                    result[^1] = SetLastLine(result, occupacyRate, availableSpace, width);
+                    result = RemoveLines(result, occupacyRate, width, availableSpace);
                     return result;
                 }
 
                 var lineUtilities = new PageUtilities(lines[i]);
                 occupacyRate += lineUtilities.GetOccupancyRate(width);
-                lines[i] = (diffList[index].Id.Equals(diffList[Current].Id) && isScreenSplit ? "\u001b[7m" : "") + RecolorDiffLine(lines[i - 1], lines[i], lines[i + 1]);
+                lines[i] = (diffList[index].Id.Equals(diffList[Current].Id) && isScreenSplit ? "\u001b[7m" : "")
+                    + RecolorDiffLine(lines[i - 1], lines[i], index == diffList.Count - 1 ? "" : lines[i + 1]);
                 result.AddRange(new PageUtilities(lines[i]).SplitRow(width));
                 index++;
             }
 
             result = SetCurrent(result, doesPageContainCurrent);
-            result = index == diffList.Count - 1
-                ? SetLastLine(result, occupacyRate, availableSpace, width, index)
-                : result;
+            result[^1] = SetLastLine(result, occupacyRate, availableSpace, width);
+            result = RemoveLines(result, occupacyRate, width, availableSpace);
 
             return result;
         }
@@ -125,6 +126,11 @@ namespace GitApp
 
         private static List<string> RemoveLines(List<string> list, int occupancyRate, int width, int availableSpace)
         {
+            if (occupancyRate <= availableSpace)
+            {
+                return list;
+            }
+
             do
             {
                 var lastElementUtilities = new PageUtilities(list[^1][..^4]);
@@ -137,6 +143,20 @@ namespace GitApp
             list[^1] = tmp.TruncateText(width + tmp.FormatingCodesStringUtilities().length) + "\u001b[0m";
 
             return list;
+        }
+
+        private static string SetLastLine(List<string> list, int occupancyRate, int availableSpace, int width)
+        {
+            var utilities = new PageUtilities(list[^1][..^4]);
+
+            if (occupancyRate >= availableSpace)
+            {
+                list[^1] = list[^1].Length - utilities.FormatingCodesStringUtilities().length <= width - 3
+                    ? list[^1] + "..."
+                    : utilities.TruncateText(width + utilities.FormatingCodesStringUtilities().length) + "\u001b[0m";
+            }
+
+            return list[^1];
         }
 
         private List<string> SetCurrent(List<string> list, bool doesPageContainCurrent)
@@ -164,7 +184,7 @@ namespace GitApp
             var index = Index;
             for (int i = index; i < startingPoint; i++)
             {
-                if(diffList[index].Id.Equals(diffList[Current].Id))
+                if (diffList[index].Id.Equals(diffList[Current].Id))
                 {
                     doesPageContainCurrent = true;
                 }
@@ -179,34 +199,6 @@ namespace GitApp
 
             list.InsertRange(0, toInsert);
             return (list, occupancy, doesPageContainCurrent);
-        }
-
-        private List<string> SetLastLine(List<string> list, int occupancyRate, int availableSpace, int width, int index)
-        {
-            list[^1] = diffList[index].Id.Equals(diffList[Current].Id)
-                ? "\u001b[7m" + list[^1]
-                : list[^1];
-            var utilities = new PageUtilities(list[^1][..^4]);
-
-            if (index == diffList.Count - 1)
-            {
-                list[^1] = list[^1].Length - utilities.FormatingCodesStringUtilities().length < width
-                    ? list[^1]
-                    : utilities.TruncateText(width + utilities.FormatingCodesStringUtilities().length) + "\u001b[0m";
-                return list;
-            }
-
-            if (occupancyRate <= availableSpace)
-            {
-                list[^1] = list[^1].Length - utilities.FormatingCodesStringUtilities().length <= width - 3
-                    ? list[^1] + "..."
-                    : utilities.TruncateText(width + utilities.FormatingCodesStringUtilities().length) + "\u001b[0m";
-                return list;
-            }
-
-            list = RemoveLines(list, occupancyRate, width, availableSpace);
-
-            return list;
         }
     }
 }
