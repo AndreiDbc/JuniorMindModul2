@@ -217,8 +217,8 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
             var windowSizeTemp = windowSize;
-            var rowSize = windowWidth - (int)(0.6 * windowWidth);
-            var availableSpace = (rowSize - 2) * (windowHeight - 2);
+            var rowSize = SetTextWidth(false);
+            var availableSpace = rowSize * (windowHeight - 2);
             var isWindowToSmall = windowHeight < 3;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
             var leftSideElements = new List<string>();
@@ -226,13 +226,13 @@ namespace GitApp
             var page = new List<IElement>();
             var keyInteractor = new KeyInteractor<IElement>(modifiedFiles);
             keyInteractor.KeyInfo = ConsoleKey.NoName;
-            UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles, windowWidth < 50 && windowHeight < 15 ? windowWidth - 2 : ((int)(0.6 * windowWidth) - 2));
+            UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles, rowSize);
             var rightSide = windowWidth < 50 && windowHeight < 15
                     ? diff.GetHighlightedSide(windowHeight - 2, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), false)
-                    : diff.GetHighlightedSide(windowHeight - 2, rowSize - 2, availableSpace, false);
+                    : diff.GetHighlightedSide(windowHeight - 2, windowWidth - (int)(0.6 * windowWidth) - 2, availableSpace, false);
             var toDisplay = isWindowToSmall
                 ? new List<string>()
-                : UpdateDiffPage(leftSideElements, rightSide, rowSize, keyInteractor);
+                : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
             Write(toDisplay, windowHeight < 3);
             ConsoleKey key;
             do
@@ -246,22 +246,22 @@ namespace GitApp
                 windowHeight = consoleWrapper.WindowHeight;
                 windowWidth = consoleWrapper.WindowWidth;
                 isWindowToSmall = windowHeight < 3;
-                rowSize = windowWidth - (int)(0.6 * windowWidth);
-                availableSpace = (rowSize - 2) * (windowHeight - 2);
+                rowSize = SetTextWidth(false);
+                availableSpace = rowSize * (windowHeight - 2);
                 keyInteractor.KeyInfo = key;
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 (modifiedFiles.Index, modifiedFiles.Current) = keyInteractor.KeySwitch(leftSideElements, page[^1].Id, page[0].Id, false, windowWidth, page[^1].GetElement().Length);
-                UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles, windowWidth < 50 && windowHeight < 15 ? windowWidth - 2 : ((int)(0.6 * windowWidth) - 2));
+                UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles, rowSize);
                 var filePath = modifiedFiles[modifiedFiles.Current].GetElement();
                 diff = new Diff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, filePath);
                 rightSide = windowWidth < 50 && windowHeight < 15
                     ? diff.GetHighlightedSide(windowHeight - 2, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), false)
-                    : diff.GetHighlightedSide(windowHeight - 2, rowSize - 2, availableSpace, false);
+                    : diff.GetHighlightedSide(windowHeight - 2, windowWidth - (int)(0.6 * windowWidth) - 2, availableSpace, false);
                 toDisplay = isWindowToSmall
                     ? new List<string>()
-                    : UpdateDiffPage(leftSideElements, rightSide, rowSize, keyInteractor);
+                    : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
                 Write(toDisplay, windowHeight < 3);
             }
             while (key != ConsoleKey.Escape && key != ConsoleKey.LeftArrow);
@@ -273,42 +273,43 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
             var windowSizeTemp = windowSize;
-            var rowSize = windowWidth - (int)(0.6 * windowWidth);
-            var availableSpace = (rowSize - 2) * (windowHeight - 2);
-            (var page, var pageSize) = windowWidth < 50 && windowHeight < 15
-                ? diff.GetPageDataAndSize((windowHeight - 2) * (windowWidth - 2), windowWidth - 2, true)
-                : diff.GetPageDataAndSize(availableSpace, rowSize - 2, true);
-            var highlightedDiff = windowWidth < 50 && windowHeight < 15
-                ? diff.GetHighlightedSide(windowHeight - 2, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), true)
-                : diff.GetHighlightedSide(windowHeight - 2, rowSize - 2, availableSpace, true);
+            var rowSize = SetTextWidth(false);
+            var availableSpace = rowSize * (windowHeight - 2);
+            (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rowSize, true);
+            var highlightedDiff = diff.GetHighlightedSide(windowHeight - 2, rowSize, availableSpace, true);
             var keyInteractor = new KeyInteractor<IElement>(diff);
             var toDisplay = windowHeight < 3
                 ? new List<string>()
-                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize, keyInteractor);
+                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor);
             Write(toDisplay, windowHeight < 3);
             do
             {
                 keyInteractor.KeyInfo = consoleWrapper.ReadKey().Key;
                 windowHeight = consoleWrapper.WindowHeight;
-                windowWidth = consoleWrapper.WindowWidth;
-                rowSize = windowWidth - (int)(0.6 * windowWidth);
-                availableSpace = (rowSize - 2) * (windowHeight - 2);
+                rowSize = SetTextWidth(false);
+                availableSpace = rowSize * (windowHeight - 2);
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 (diff.Index, diff.Current) = keyInteractor.KeySwitch(highlightedDiff, page[^1].Id, page[0].Id, pageSize > availableSpace, rowSize - 2, diff[diff.Current].GetElement().Length);
-                (page, pageSize) = windowWidth < 50 && windowHeight < 15
-                ? diff.GetPageDataAndSize((windowHeight - 2) * (windowWidth - 2), windowWidth - 2, true)
-                : diff.GetPageDataAndSize(availableSpace, rowSize - 2, true);
-                highlightedDiff = windowWidth < 50 && windowHeight < 15
-                ? diff.GetHighlightedSide(windowHeight - 2, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), true)
-                : diff.GetHighlightedSide(windowHeight - 2, rowSize - 2, availableSpace, true);
+                (page, pageSize) = diff.GetPageDataAndSize(availableSpace, rowSize, true);
+                highlightedDiff = diff.GetHighlightedSide(windowHeight - 2, rowSize, availableSpace, true);
                 toDisplay = windowHeight < 3
                 ? new List<string>()
-                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize, keyInteractor);
+                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor);
                 Write(toDisplay, windowHeight < 3);
             }
             while (keyInteractor.KeyInfo != ConsoleKey.Escape && keyInteractor.KeyInfo != ConsoleKey.LeftArrow);
+        }
+
+        private int SetTextWidth(bool forLeftSide)
+        {
+            var windowWidth = consoleWrapper.WindowWidth;
+            var result = forLeftSide ? (int)(0.6 * windowWidth) - 2 : windowWidth - (int)(0.6 * windowWidth) - 2;
+            var windowHeight = consoleWrapper.WindowHeight;
+            return windowWidth < 50 && windowHeight < 15
+                ? windowWidth - 2
+                : result;
         }
 
         private List<string> UpdateDiffPage(
