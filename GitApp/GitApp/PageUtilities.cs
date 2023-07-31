@@ -94,7 +94,8 @@ namespace GitApp
                 "\x1b[38;5;196m",
                 "\x1b[38;5;190m",
                 "\x1b[38;5;40m",
-                "\x1b[38;5;160m"
+                "\x1b[38;5;160m",
+                "\x1b[38;5;166m"
             })
             {
                 var temp = clearedString.Replace(code, "");

@@ -280,7 +280,7 @@ namespace GitApp
             var keyInteractor = new KeyInteractor<IElement>(diff);
             var toDisplay = windowHeight < 3
                 ? new List<string>()
-                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor);
+                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
             Write(toDisplay, windowHeight < 3);
             do
             {
@@ -296,7 +296,7 @@ namespace GitApp
                 highlightedDiff = diff.GetHighlightedSide(windowHeight - 2, rowSize, availableSpace, true);
                 toDisplay = windowHeight < 3
                 ? new List<string>()
-                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor);
+                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
                 Write(toDisplay, windowHeight < 3);
             }
             while (keyInteractor.KeyInfo != ConsoleKey.Escape && keyInteractor.KeyInfo != ConsoleKey.LeftArrow);
@@ -316,19 +316,20 @@ namespace GitApp
             List<string> leftSide,
             List<string> diff,
             int rowSize,
-            KeyInteractor<IElement> keyInteractor)
+            KeyInteractor<IElement> keyInteractor,
+            bool shouldColorBoxLines = false)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             List<string> rightSide;
             if (windowHeight < 15 && windowWidth < 50)
             {
-                rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight, false);
+                rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight, false, shouldColorBoxLines);
                 leftSide = new BoxDrawer(leftSide, "Files").DrawBox(windowWidth, windowHeight);
             }
             else
             {
-                rightSide = new BoxDrawer(diff, "Diff").DrawBox(rowSize, windowHeight, false);
+                rightSide = new BoxDrawer(diff, "Diff").DrawBox(rowSize, windowHeight, false, shouldColorBoxLines);
                 leftSide = new BoxDrawer(leftSide, "Files").DrawBox((int)(0.6 * windowWidth), windowHeight);
             }
 

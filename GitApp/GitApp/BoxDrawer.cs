@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -18,31 +19,33 @@ namespace GitApp
             this.boxName = boxName;
         }
 
-        public List<string> DrawBox(int boxWidth, int windowHeight, bool shouldFitText = false)
+        public List<string> DrawBox(int boxWidth, int windowHeight, bool shouldFitText = false, bool shouldColorLines = false)
         {
             const int lengthToSubstract = 2;
             var result = new List<string>();
             result.AddRange(text);
             result = shouldFitText ? FitTextInsideBox((boxWidth - 2) * (windowHeight - 2), boxWidth - 2) : result;
-            result.Insert(0, "┌" + boxName + new string('─', boxWidth - boxName.Length - lengthToSubstract) + "┐");
+            var lineColor = shouldColorLines ? "\x1b[38;5;166m" : "\u001b[0m";
+            result.Insert(0, lineColor + "┌" + boxName + new string('─', boxWidth - boxName.Length - lengthToSubstract) + "┐");
             var index = 1;
+
             do
             {
                 if (index < result.Count)
                 {
-                    var padLength = boxWidth + 2 - (result[index].Length - new PageUtilities(result[index]).FormatingCodesStringUtilities().length);
-                    var toPad = padLength <= 0 ? "\u001b[0m│" : "\u001b[0m│".PadLeft(padLength + 1);
-                    result[index] = "\x1b[0m│" + result[index] + toPad;
+                    var padLength = boxWidth + 2 - "\u001b[0m".Length - (result[index].Length - new PageUtilities(result[index]).FormatingCodesStringUtilities().length);
+                    var toPad = padLength <= 0 ? lineColor + "│" : lineColor + "│".PadLeft(padLength + 1);
+                    result[index] = lineColor + "│\u001b[0m" + result[index] + toPad;
                 }
                 else
                 {
-                    result.Add("\x1b[0m│" + "\u001b[0m│".PadLeft(boxWidth + 3));
+                    result.Add(lineColor + "│" + "│".PadLeft(boxWidth - 1));
                 }
 
                 index++;
             }
-            while (result.Count <= windowHeight - 2 || !result[^1].StartsWith("\x1b[0m│"));
-            result.Add("\x1b[0m└" + new string('─', boxWidth - 2) + "┘");
+            while (result.Count <= windowHeight - 2 || !result[^1].StartsWith(lineColor + "│"));
+            result.Add(lineColor + "└" + new string('─', boxWidth - 2) + "┘");
             return result;
         }
 
