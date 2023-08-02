@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace GitApp
 {
-    public class Diff : IInteractor<IElement>
+    public class CommitsDiff : IInteractor<IElement>
     {
         private readonly string diff;
         private readonly List<IElement> diffList;
 
-        public Diff(GitManager gitManager, string oldId, string newId, string repoPath, string filePath)
+        public CommitsDiff(GitManager gitManager, string oldId, string newId, string repoPath, string filePath)
         {
             diff = gitManager.GetDiffBetweenConsecutiveCommits(oldId, newId, repoPath, filePath);
             diffList = GetText();
