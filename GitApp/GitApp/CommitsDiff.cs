@@ -61,7 +61,7 @@ namespace GitApp
                 if (occupacyRate >= availableSpace)
                 {
                     result = SetCurrent(result, doesPageContainCurrent);
-                    result[^1] = SetLastLine(result, occupacyRate, availableSpace, width);
+                    result[^1] = SetLastLine(result, occupacyRate, availableSpace, width, index);
                     result = RemoveLines(result, occupacyRate, width, availableSpace);
                     return result;
                 }
@@ -75,7 +75,7 @@ namespace GitApp
             }
 
             result = SetCurrent(result, doesPageContainCurrent);
-            result[^1] = SetLastLine(result, occupacyRate, availableSpace, width);
+            result[^1] = SetLastLine(result, occupacyRate, availableSpace, width, index);
             result = RemoveLines(result, occupacyRate, width, availableSpace);
 
             return result;
@@ -145,11 +145,11 @@ namespace GitApp
             return list;
         }
 
-        private static string SetLastLine(List<string> list, int occupancyRate, int availableSpace, int width)
+        private string SetLastLine(List<string> list, int occupancyRate, int availableSpace, int width, int index)
         {
             var utilities = new PageUtilities(list[^1][..^4]);
 
-            if (occupancyRate > availableSpace)
+            if (occupancyRate > availableSpace || index < diffList.Count)
             {
                 list[^1] = list[^1].Length - utilities.FormatingCodesStringUtilities().length <= width - 3
                     ? list[^1] + "..."
