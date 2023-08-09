@@ -22,7 +22,14 @@ namespace GitApp
 
         public string GetElement()
         {
-            return rawFileDetails;
+            var result = rawFileDetails;
+            if (rawFileDetails.Contains(" "))
+            {
+                var temp = rawFileDetails.Split(" ");
+                result = temp.Length == 3 ? temp[2] : temp[1];
+            }
+
+            return result;
         }
 
         private string GetId()

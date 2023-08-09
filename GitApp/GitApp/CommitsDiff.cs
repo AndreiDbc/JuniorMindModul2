@@ -20,6 +20,16 @@ namespace GitApp
             Index = 0;
         }
 
+        public CommitsDiff(GitManager gitManager, string filePath, bool shouldGetUnstaged)
+        {
+            diff = shouldGetUnstaged
+                ? gitManager.GetUnstagedDiff(filePath, gitManager.GetRepoPath())
+                : gitManager.GetStagedDiff(filePath, gitManager.GetRepoPath());
+            diffList = GetText();
+            Current = 0;
+            Index = 0;
+        }
+
         public int Current { get; set; }
 
         public int Index { get; set; }
