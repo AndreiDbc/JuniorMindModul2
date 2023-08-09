@@ -149,7 +149,7 @@ namespace GitApp
         {
             var utilities = new PageUtilities(list[^1][..^4]);
 
-            if (occupancyRate >= availableSpace)
+            if (occupancyRate > availableSpace)
             {
                 list[^1] = list[^1].Length - utilities.FormatingCodesStringUtilities().length <= width - 3
                     ? list[^1] + "..."
