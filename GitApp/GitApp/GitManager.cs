@@ -60,19 +60,19 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "rev-parse --show-toplevel"));
         }
 
-        public string GetDiffFiles(string repositoryPath)
+        public string GetUnstagedFiles(string repositoryPath)
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "status --short", repositoryPath));
         }
 
-        public string GetStagedDiff(string path, string repositoryPath)
+        public string GetStagedFiles()
         {
-            return commandRunner.RunCommand(new GitCommand(fileName, $"diff --staged {path}", repositoryPath));
+            return commandRunner.RunCommand(new GitCommand(fileName, "diff --staged --name-only"));
         }
 
-        public string GetUnstagedDiff(string path, string repositoryPath)
+        public string GetUnstagedDiff(string filePath, string repositoryPath)
         {
-            return commandRunner.RunCommand(new GitCommand(fileName, $"diff {path}", repositoryPath));
+            return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
         }
     }
 }
