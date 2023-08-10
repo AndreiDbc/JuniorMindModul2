@@ -200,7 +200,7 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
             var windowSizeTemp = windowSize;
-            var isWindowToSmall = windowHeight < 9;
+            var isWindowToSmall = windowHeight < 10;
             var commitList = new List<IElement>();
             var leftSideCommits = new List<string>();
             UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall, commits, windowWidth < 50 && windowHeight < 15 ? windowWidth - 2 : ((int)(0.6 * windowWidth) - 2));
@@ -220,11 +220,12 @@ namespace GitApp
                 keyInteractor.KeyInfo = key;
                 (commits.Index, commits.Current) = keyInteractor
                     .KeySwitch(leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
+                windowHeight = consoleWrapper.WindowHeight;
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                isWindowToSmall = consoleWrapper.WindowHeight < 9;
-                UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall, commits, windowWidth < 50 && windowHeight < 15 ? windowWidth - 2 : ((int)(0.6 * windowWidth) - 2));
+                isWindowToSmall = consoleWrapper.WindowHeight < 10;
+                UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall, commits, new TextWidthSetter(consoleWrapper).SetTextWidth(true));
                 toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateExtendedPage(leftSideCommits, keyInteractor);
