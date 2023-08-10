@@ -20,7 +20,9 @@ namespace GitApp
         private readonly FullCommits commits;
         private readonly GitManager gitManager;
         private readonly IConsoleWrapper consoleWrapper;
+        private readonly ConsoleKey[] menuKeys;
         private TextWriter writer;
+        ConsoleKey key;
 
         public DisplayText(FullCommits commits, TextWriter writer, GitManager gitManager, IConsoleWrapper consoleWrapper)
         {
@@ -30,64 +32,27 @@ namespace GitApp
             this.consoleWrapper = consoleWrapper;
             IsRightSideInUse = false;
             WasWindowResizedSmaller = false;
+            menuKeys = new[] { ConsoleKey.D1, ConsoleKey.D2 };
+            key = ConsoleKey.NoName;
         }
 
         private bool WasWindowResizedSmaller { get; set; }
 
         private bool IsRightSideInUse { get; set; }
 
-        public void DisplayLog()
+        public void Display()
         {
-            var commitTextSize = 0;
-            var windowWidth = consoleWrapper.WindowWidth;
-            var windowSize = consoleWrapper.WindowHeight * windowWidth;
-            var initialText = new InitialData(gitManager).GetText();
-            var initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
-            var page = new List<IElement>();
-            var toDisplay = new List<string>();
-            ConsoleKey key = ConsoleKey.NoName;
-            var isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
-            toDisplay = isWindowToSmall
-                        ? new List<string>()
-                        : UpdatePage(key, initialText, ref commitTextSize, ref page);
-            Write(toDisplay, isWindowToSmall);
-            var windowSizeTemp = windowSize;
-
+            DisplayStatus();
             do
             {
-                key = consoleWrapper.ReadKey().Key;
-                windowWidth = consoleWrapper.WindowWidth;
-                windowSize = consoleWrapper.WindowHeight * windowWidth;
-                WasWindowResizedSmaller = windowSize < windowSizeTemp;
-                windowSizeTemp = windowSize;
-                initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
-                isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
-                toDisplay = isWindowToSmall
-                        ? new List<string>()
-                        : UpdatePage(key, initialText, ref commitTextSize, ref page);
-                Write(toDisplay, isWindowToSmall);
-            }
-            while (!key.Equals(ConsoleKey.Escape));
-        }
-
-        private void DisplayStatus()
-        {
-            ConsoleKey key = ConsoleKey.NoName;
-            var repoPath = gitManager.GetRepoPath();
-            var files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath));
-            var windowHeight = consoleWrapper.WindowHeight;
-            var windowWidth = consoleWrapper.WindowWidth;
-            var unstagedHeight = (windowHeight - 1) / 2 + windowHeight % 2 - 4;
-            var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
-            var page = files.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
-            var leftSide = files[files.Current].GetElement() == ""
-                   ? new List<string>()
-                   : files.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
-            Write(UpdateStatusPage(ref page, ref leftSide, key, files, repoPath), consoleWrapper.WindowHeight < 6);
-            do
-            {
-                key = consoleWrapper.ReadKey().Key;
-                Write(UpdateStatusPage(ref page, ref leftSide, key, files, repoPath), consoleWrapper.WindowHeight < 6);
+                if (key.Equals(ConsoleKey.D1))
+                {
+                    DisplayStatus();
+                }
+                else if (key.Equals(ConsoleKey.D2))
+                {
+                    DisplayLog();
+                }
             }
             while (key != ConsoleKey.Escape);
         }
@@ -106,6 +71,75 @@ namespace GitApp
             }
 
             return result;
+        }
+
+        private void DisplayLog()
+        {
+            var commitTextSize = 0;
+            var windowWidth = consoleWrapper.WindowWidth;
+            var windowSize = consoleWrapper.WindowHeight * windowWidth;
+            var initialText = new InitialData(gitManager).GetText();
+            var initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
+            var page = new List<IElement>();
+            var toDisplay = new List<string>();
+            var isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
+            toDisplay = isWindowToSmall
+                        ? new List<string>()
+                        : UpdatePage(initialText, ref commitTextSize, ref page);
+            Write(toDisplay, isWindowToSmall);
+            var windowSizeTemp = windowSize;
+
+            do
+            {
+                key = consoleWrapper.ReadKey().Key;
+                if (key.Equals(ConsoleKey.Enter))
+                {
+                    DisplayExtendedPage();
+                }
+
+                if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
+                {
+                    break;
+                }
+
+                windowWidth = consoleWrapper.WindowWidth;
+                windowSize = consoleWrapper.WindowHeight * windowWidth;
+                WasWindowResizedSmaller = windowSize < windowSizeTemp;
+                windowSizeTemp = windowSize;
+                initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
+                isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
+                toDisplay = isWindowToSmall
+                        ? new List<string>()
+                        : UpdatePage(initialText, ref commitTextSize, ref page);
+                Write(toDisplay, isWindowToSmall);
+            }
+            while (true);
+        }
+
+        private void DisplayStatus()
+        {
+            var repoPath = gitManager.GetRepoPath();
+            var files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath));
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowWidth = consoleWrapper.WindowWidth;
+            var unstagedHeight = (windowHeight - 1) / 2 + windowHeight % 2 - 4;
+            var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
+            var page = files.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
+            var leftSide = files[files.Current].GetElement() == ""
+                   ? new List<string>()
+                   : files.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
+            Write(UpdateStatusPage(ref page, ref leftSide, files, repoPath), consoleWrapper.WindowHeight < 6);
+            do
+            {
+                key = consoleWrapper.ReadKey().Key;
+                if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
+                {
+                    break;
+                }
+
+                Write(UpdateStatusPage(ref page, ref leftSide, files, repoPath), consoleWrapper.WindowHeight < 6);
+            }
+            while (true);
         }
 
         private List<string> GetTextToRedraw(List<string> toWrite)
@@ -194,8 +228,9 @@ namespace GitApp
             }
         }
 
-        private void DisplayExtendedPage(KeyInteractor<IElement> keyInteractor)
+        private void DisplayExtendedPage()
         {
+            var keyInteractor = new KeyInteractor<IElement>(commits);
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
@@ -208,16 +243,20 @@ namespace GitApp
                 ? new List<string>()
                 : UpdateExtendedPage(leftSideCommits, keyInteractor);
             Write(toDisplay, isWindowToSmall);
-            ConsoleKey key;
             do
             {
                 key = consoleWrapper.ReadKey().Key;
-                if (key == ConsoleKey.RightArrow)
+                keyInteractor.KeyInfo = key;
+                if (keyInteractor.KeyInfo == ConsoleKey.RightArrow)
                 {
                     DisplayDiffPage(commits[commits.Current], commits[commits.Current + 1]);
                 }
 
-                keyInteractor.KeyInfo = key;
+                if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
+                {
+                    break;
+                }
+
                 (commits.Index, commits.Current) = keyInteractor
                     .KeySwitch(leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
                 windowHeight = consoleWrapper.WindowHeight;
@@ -231,7 +270,7 @@ namespace GitApp
                 : UpdateExtendedPage(leftSideCommits, keyInteractor);
                 Write(toDisplay, isWindowToSmall);
             }
-            while (key != ConsoleKey.Escape);
+            while (true);
         }
 
         private void DisplayDiffPage(IElement currentCommit, IElement previousCommit)
@@ -258,13 +297,18 @@ namespace GitApp
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
             Write(toDisplay, windowHeight < 3);
-            ConsoleKey key;
             do
             {
                 key = consoleWrapper.ReadKey().Key;
-                if (key.Equals(ConsoleKey.RightArrow))
+                keyInteractor.KeyInfo = key;
+                if (keyInteractor.KeyInfo.Equals(ConsoleKey.RightArrow))
                 {
                     GetHighlightedDiffPage(diff, leftSideElements);
+                }
+
+                if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || keyInteractor.KeyInfo.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
+                {
+                    break;
                 }
 
                 windowHeight = consoleWrapper.WindowHeight;
@@ -272,7 +316,6 @@ namespace GitApp
                 isWindowToSmall = windowHeight < 3;
                 rowSize = SetTextWidth(false);
                 availableSpace = rowSize * (windowHeight - 3);
-                keyInteractor.KeyInfo = key;
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
@@ -288,7 +331,7 @@ namespace GitApp
                     : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
                 Write(toDisplay, windowHeight < 3);
             }
-            while (key != ConsoleKey.Escape && key != ConsoleKey.LeftArrow);
+            while (true);
         }
 
         private void GetHighlightedDiffPage(CommitsDiff diff, List<string> leftSideElements)
@@ -308,7 +351,13 @@ namespace GitApp
             Write(toDisplay, windowHeight < 3);
             do
             {
-                keyInteractor.KeyInfo = consoleWrapper.ReadKey().Key;
+                key = consoleWrapper.ReadKey().Key;
+                keyInteractor.KeyInfo = key;
+                if (keyInteractor.KeyInfo == ConsoleKey.Escape || keyInteractor.KeyInfo == ConsoleKey.LeftArrow || menuKeys.Contains(key))
+                {
+                    break;
+                }
+
                 windowHeight = consoleWrapper.WindowHeight;
                 rowSize = SetTextWidth(false);
                 availableSpace = rowSize * (windowHeight - 3);
@@ -323,7 +372,7 @@ namespace GitApp
                 : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
                 Write(toDisplay, windowHeight < 3);
             }
-            while (keyInteractor.KeyInfo != ConsoleKey.Escape && keyInteractor.KeyInfo != ConsoleKey.LeftArrow);
+            while (true);
         }
 
         private int SetTextWidth(bool forLeftSide)
@@ -375,20 +424,14 @@ namespace GitApp
         }
 
         private List<string> UpdatePage(
-            ConsoleKey keyInfo,
             string initialText,
             ref int commitOcupancyRate,
             ref List<IElement> page)
         {
             var keyInteractor = new KeyInteractor<IElement>(commits)
             {
-                KeyInfo = keyInfo
+                KeyInfo = key
             };
-
-            if (keyInfo.Equals(ConsoleKey.Enter))
-            {
-                DisplayExtendedPage(keyInteractor);
-            }
 
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
@@ -412,7 +455,7 @@ namespace GitApp
             return toWrite;
         }
 
-        private List<string> UpdateStatusPage(ref List<IElement> page, ref List<string> leftSide, ConsoleKey key, ModifiedFiles unstaged, string repoPath)
+        private List<string> UpdateStatusPage(ref List<IElement> page, ref List<string> leftSide, ModifiedFiles unstaged, string repoPath)
         {
             var keyInteractor = new KeyInteractor<IElement>(unstaged);
             keyInteractor.KeyInfo = key;

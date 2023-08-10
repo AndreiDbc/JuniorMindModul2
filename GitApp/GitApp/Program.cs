@@ -13,7 +13,7 @@ namespace GitApp
             var commits = new FullCommits(manager.GetLog());
             TextWriter writer = new StringWriter();
             var display = new DisplayText(commits, writer, manager, new ConsoleWrapper());
-            display.DisplayLog();
+            display.Display();
             writer.Flush();
             writer.Close();
         }
