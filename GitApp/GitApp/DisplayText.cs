@@ -36,7 +36,7 @@ namespace GitApp
 
         private bool IsRightSideInUse { get; set; }
 
-        public void Display()
+        public void DisplayLog()
         {
             var commitTextSize = 0;
             var windowWidth = consoleWrapper.WindowWidth;
