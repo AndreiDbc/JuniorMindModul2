@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace GitApp.Tests
 {
-    public class CommitsDiffTests
+    public class DiffTests
     {
         [Fact]
         public void GetTextIsCalledShouldReturnText()
         {
-            var diff = new CommitsDiff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
+            var diff = new Diff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
             var expected = new List<string>()
             {
                 "diff --git a/GitApp/GitApp/DisplayText.cs b/Gi\u001b[0m",
@@ -50,7 +50,7 @@ namespace GitApp.Tests
         [Fact]
         public void GetPageDataAndSizeIsCalledShouldReturnPageAndSize()
         {
-            var diff = new CommitsDiff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
+            var diff = new Diff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
             var expected = new List<IElement>()
             {
                 new DiffLine("diff --git a/GitApp/GitApp/DisplayText.cs b/GitApp/GitApp/DisplayText.cs\r", "0"),
@@ -99,7 +99,7 @@ namespace GitApp.Tests
         [Fact]
         public void GetHighlightedSideIsCalledShouldReturnLines()
         {
-            var diff = new CommitsDiff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
+            var diff = new Diff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
             var expected = new List<string>()
             {
                 "diff --git a/GitApp/GitApp/DisplayText.cs b/Gi\u001b[0m",
@@ -138,7 +138,7 @@ namespace GitApp.Tests
         [Fact]
         public void GetHighlightedSideIsCalledDiffSideIsInUseShouldReturnLines()
         {
-            var diff = new CommitsDiff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
+            var diff = new Diff(new GitManager("git", new FakeGitProcessRunner()), "bfa2684", "7f37022", "", "GitApp/GitApp/DisplayText.cs");
             var expected = new List<string>()
             {
                 "\u001b[7mdiff --git a/GitApp/GitApp/DisplayText.cs b/Gi\u001b[0m",

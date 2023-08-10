@@ -292,7 +292,7 @@ namespace GitApp
             var isWindowToSmall = windowHeight < 3;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
             var leftSideElements = new List<string>();
-            var diff = new CommitsDiff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement());
+            var diff = new Diff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement());
             var page = new List<IElement>();
             var keyInteractor = new KeyInteractor<IElement>(modifiedFiles);
             keyInteractor.KeyInfo = ConsoleKey.NoName;
@@ -329,7 +329,7 @@ namespace GitApp
                 (modifiedFiles.Index, modifiedFiles.Current) = keyInteractor.KeySwitch(leftSideElements, page[^1].Id, page[0].Id, false, windowWidth, page[^1].GetElement().Length);
                 UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles, rowSize);
                 var filePath = modifiedFiles[modifiedFiles.Current].GetElement();
-                diff = new CommitsDiff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, filePath);
+                diff = new Diff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, filePath);
                 rightSide = windowWidth < 50 && windowHeight < 15
                     ? diff.GetHighlightedSide(windowHeight - 3, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), false)
                     : diff.GetHighlightedSide(windowHeight - 3, windowWidth - (int)(0.6 * windowWidth) - 2, availableSpace, false);
@@ -341,7 +341,7 @@ namespace GitApp
             while (true);
         }
 
-        private void GetHighlightedDiffPage(CommitsDiff diff, List<string> leftSideElements)
+        private void GetHighlightedDiffPage(Diff diff, List<string> leftSideElements)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
@@ -478,7 +478,7 @@ namespace GitApp
                    : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
             var leftSideTemp = new List<string>();
             leftSideTemp.AddRange(new BoxDrawer(leftSide, "Unstaged").DrawBox((int)(0.6 * windowWidth), unstagedHeight + 2));
-            var diff = new CommitsDiff(gitManager, unstaged[unstaged.Current].GetElement(), gitManager.GetRepoPath());
+            var diff = new Diff(gitManager, unstaged[unstaged.Current].GetElement(), gitManager.GetRepoPath());
             var rightSide = new BoxDrawer(
                 diff[0].GetElement() == ""
                     ? new List<string>()
