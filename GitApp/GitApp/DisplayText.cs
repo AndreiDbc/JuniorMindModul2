@@ -122,6 +122,8 @@ namespace GitApp
             var files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath));
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
+            var windowSize = windowHeight * windowWidth;
+            var windowSizeTemp = windowSize;
             var unstagedHeight = (windowHeight - 1) / 2 + windowHeight % 2 - 4;
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
             var page = files.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
@@ -137,6 +139,11 @@ namespace GitApp
                     break;
                 }
 
+                windowHeight = consoleWrapper.WindowHeight;
+                windowWidth = consoleWrapper.WindowWidth;
+                windowSize = windowHeight * windowWidth;
+                WasWindowResizedSmaller = windowSize < windowSizeTemp;
+                windowSizeTemp = windowSize;
                 Write(UpdateStatusPage(ref page, ref leftSide, files, repoPath), consoleWrapper.WindowHeight < 6);
             }
             while (true);
