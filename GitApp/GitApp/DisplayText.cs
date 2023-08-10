@@ -16,6 +16,7 @@ namespace GitApp
 {
     public class DisplayText
     {
+        private const string MenuBar = "\u001b[0mStatus [1] | Log [2]";
         private readonly FullCommits commits;
         private readonly GitManager gitManager;
         private readonly IConsoleWrapper consoleWrapper;
@@ -35,21 +36,21 @@ namespace GitApp
 
         private bool IsRightSideInUse { get; set; }
 
-        public void Display(string initialText)
+        public void Display()
         {
             var commitTextSize = 0;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
-            var initialTextUtilities = new PageUtilities(initialText);
-            var initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
+            var initialText = new InitialData(gitManager).GetText();
+            var initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
             var page = new List<IElement>();
             var toDisplay = new List<string>();
             ConsoleKey key = ConsoleKey.NoName;
             var isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
             toDisplay = isWindowToSmall
                         ? new List<string>()
-                        : UpdatePage(key, initialTextSize, ref commitTextSize, ref page);
-            Write(toDisplay, isWindowToSmall, initialText);
+                        : UpdatePage(key, initialText, ref commitTextSize, ref page);
+            Write(toDisplay, isWindowToSmall);
             var windowSizeTemp = windowSize;
 
             do
@@ -59,12 +60,12 @@ namespace GitApp
                 windowSize = consoleWrapper.WindowHeight * windowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
+                initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
                 isWindowToSmall = initialTextSize + new PageUtilities("\nPress 'Esc' to exit.").GetOccupancyRate(windowWidth) >= windowSize;
                 toDisplay = isWindowToSmall
                         ? new List<string>()
-                        : UpdatePage(key, initialTextSize, ref commitTextSize, ref page);
-                Write(toDisplay, isWindowToSmall, initialText);
+                        : UpdatePage(key, initialText, ref commitTextSize, ref page);
+                Write(toDisplay, isWindowToSmall);
             }
             while (!key.Equals(ConsoleKey.Escape));
         }
@@ -76,7 +77,7 @@ namespace GitApp
             var files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath));
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
-            var unstagedHeight = windowHeight / 2 + windowHeight % 2 - 4;
+            var unstagedHeight = (windowHeight - 1) / 2 + windowHeight % 2 - 4;
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
             var page = files.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
             var leftSide = files[files.Current].GetElement() == ""
@@ -140,7 +141,7 @@ namespace GitApp
             return MergeSides(leftSide, rightSide);
         }
 
-        private void Write(List<string> toWrite, bool isWindowToSmall, string initialText = "")
+        private void Write(List<string> toWrite, bool isWindowToSmall)
         {
             var width = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * width;
@@ -152,7 +153,7 @@ namespace GitApp
             }
             else
             {
-                toWrite.InsertRange(0, initialText.Split("\n"));
+                toWrite.Insert(0, MenuBar);
                 var temp = GetTextToRedraw(toWrite);
                 if (WasWindowResizedSmaller)
                 {
@@ -183,13 +184,13 @@ namespace GitApp
 
             if (windowWidth < 50 && windowHeight < 15)
             {
-                elements = interactor.GetPageDataAndSize(width * (windowHeight - 2), width - 2).list;
-                leftSide = interactor.GetHighlightedSide(windowHeight, windowWidth - 2, (windowWidth - 2) * (windowHeight - 2), true);
+                elements = interactor.GetPageDataAndSize(width * (windowHeight - 3), width - 2).list;
+                leftSide = interactor.GetHighlightedSide(windowHeight - 3, width, width * (windowHeight - 3), true);
             }
             else
             {
-                elements = interactor.GetPageDataAndSize(width * (windowHeight - 2), (int)(0.6 * windowWidth) - 2, true).list;
-                leftSide = interactor.GetHighlightedSide(windowHeight, width, width * (windowHeight - 2), true);
+                elements = interactor.GetPageDataAndSize(width * (windowHeight - 3), width, true).list;
+                leftSide = interactor.GetHighlightedSide(windowHeight - 3, width, width * (windowHeight - 3), true);
             }
         }
 
@@ -240,7 +241,7 @@ namespace GitApp
             var windowSize = windowHeight * windowWidth;
             var windowSizeTemp = windowSize;
             var rowSize = SetTextWidth(false);
-            var availableSpace = rowSize * (windowHeight - 2);
+            var availableSpace = rowSize * (windowHeight - 3);
             var isWindowToSmall = windowHeight < 3;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
             var leftSideElements = new List<string>();
@@ -250,8 +251,8 @@ namespace GitApp
             keyInteractor.KeyInfo = ConsoleKey.NoName;
             UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles, rowSize);
             var rightSide = windowWidth < 50 && windowHeight < 15
-                    ? diff.GetHighlightedSide(windowHeight - 2, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), false)
-                    : diff.GetHighlightedSide(windowHeight - 2, windowWidth - (int)(0.6 * windowWidth) - 2, availableSpace, false);
+                    ? diff.GetHighlightedSide(windowHeight - 3, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), false)
+                    : diff.GetHighlightedSide(windowHeight - 3, windowWidth - (int)(0.6 * windowWidth) - 2, availableSpace, false);
             var toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
@@ -269,7 +270,7 @@ namespace GitApp
                 windowWidth = consoleWrapper.WindowWidth;
                 isWindowToSmall = windowHeight < 3;
                 rowSize = SetTextWidth(false);
-                availableSpace = rowSize * (windowHeight - 2);
+                availableSpace = rowSize * (windowHeight - 3);
                 keyInteractor.KeyInfo = key;
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
@@ -279,8 +280,8 @@ namespace GitApp
                 var filePath = modifiedFiles[modifiedFiles.Current].GetElement();
                 diff = new CommitsDiff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, filePath);
                 rightSide = windowWidth < 50 && windowHeight < 15
-                    ? diff.GetHighlightedSide(windowHeight - 2, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), false)
-                    : diff.GetHighlightedSide(windowHeight - 2, windowWidth - (int)(0.6 * windowWidth) - 2, availableSpace, false);
+                    ? diff.GetHighlightedSide(windowHeight - 3, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), false)
+                    : diff.GetHighlightedSide(windowHeight - 3, windowWidth - (int)(0.6 * windowWidth) - 2, availableSpace, false);
                 toDisplay = isWindowToSmall
                     ? new List<string>()
                     : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
@@ -296,9 +297,9 @@ namespace GitApp
             var windowSize = windowHeight * windowWidth;
             var windowSizeTemp = windowSize;
             var rowSize = SetTextWidth(false);
-            var availableSpace = rowSize * (windowHeight - 2);
+            var availableSpace = rowSize * (windowHeight - 3);
             (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rowSize, true);
-            var highlightedDiff = diff.GetHighlightedSide(windowHeight - 2, rowSize, availableSpace, true);
+            var highlightedDiff = diff.GetHighlightedSide(windowHeight - 3, rowSize, availableSpace, true);
             var keyInteractor = new KeyInteractor<IElement>(diff);
             var toDisplay = windowHeight < 3
                 ? new List<string>()
@@ -309,13 +310,13 @@ namespace GitApp
                 keyInteractor.KeyInfo = consoleWrapper.ReadKey().Key;
                 windowHeight = consoleWrapper.WindowHeight;
                 rowSize = SetTextWidth(false);
-                availableSpace = rowSize * (windowHeight - 2);
+                availableSpace = rowSize * (windowHeight - 3);
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 (diff.Index, diff.Current) = keyInteractor.KeySwitch(highlightedDiff, page[^1].Id, page[0].Id, pageSize > availableSpace, rowSize - 2, diff[diff.Current].GetElement().Length);
                 (page, pageSize) = diff.GetPageDataAndSize(availableSpace, rowSize, true);
-                highlightedDiff = diff.GetHighlightedSide(windowHeight - 2, rowSize, availableSpace, true);
+                highlightedDiff = diff.GetHighlightedSide(windowHeight - 3, rowSize, availableSpace, true);
                 toDisplay = windowHeight < 3
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
@@ -346,13 +347,13 @@ namespace GitApp
             List<string> rightSide;
             if (windowHeight < 15 && windowWidth < 50)
             {
-                rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight, false, shouldColorBoxLines);
-                leftSide = new BoxDrawer(leftSide, "Files").DrawBox(windowWidth, windowHeight);
+                rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight - 1, false, shouldColorBoxLines);
+                leftSide = new BoxDrawer(leftSide, "Files").DrawBox(windowWidth, windowHeight - 1);
             }
             else
             {
-                rightSide = new BoxDrawer(diff, "Diff").DrawBox(rowSize, windowHeight, false, shouldColorBoxLines);
-                leftSide = new BoxDrawer(leftSide, "Files").DrawBox((int)(0.6 * windowWidth), windowHeight);
+                rightSide = new BoxDrawer(diff, "Diff").DrawBox(rowSize, windowHeight - 1, false, shouldColorBoxLines);
+                leftSide = new BoxDrawer(leftSide, "Files").DrawBox((int)(0.6 * windowWidth), windowHeight - 1);
             }
 
             return SelectScreen(leftSide, rightSide, keyInteractor);
@@ -363,18 +364,18 @@ namespace GitApp
             var width = consoleWrapper.WindowWidth;
             var height = consoleWrapper.WindowHeight;
             var rightSide = consoleWrapper.WindowHeight < 15 && consoleWrapper.WindowWidth < 50
-                ? commits.FormateUnhighlightedSide(height, width, gitManager)
-                : commits.FormateUnhighlightedSide(height, width - (int)(0.6 * width), gitManager);
+                ? commits.FormateUnhighlightedSide(height - 1, width, gitManager)
+                : commits.FormateUnhighlightedSide(height - 1, width - (int)(0.6 * width), gitManager);
 
             return SelectScreen(
-                new BoxDrawer(leftSideCommits, "Commits").DrawBox(height < 15 && width < 50 ? width : (int)(0.6 * width), height),
+                new BoxDrawer(leftSideCommits, "Commits").DrawBox(height < 15 && width < 50 ? width : (int)(0.6 * width), height - 1),
                 rightSide,
                 keyInteractor);
         }
 
         private List<string> UpdatePage(
             ConsoleKey keyInfo,
-            int initialTextSize,
+            string initialText,
             ref int commitOcupancyRate,
             ref List<IElement> page)
         {
@@ -390,7 +391,9 @@ namespace GitApp
 
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
-            var availableSpace = windowSize - initialTextSize - windowWidth;
+            var initialTextUtilities = new PageUtilities(initialText);
+            var initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
+            var availableSpace = windowSize - initialTextSize - 2 * windowWidth;
             var isPageLargerThanWindow = commitOcupancyRate > availableSpace;
             var commitsToString = new List<string>();
             page.ForEach(line =>
@@ -402,9 +405,9 @@ namespace GitApp
                 ? (0, 0)
                 : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
             (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, consoleWrapper.WindowWidth);
-            var toWrite = commits.GetHighlightedSide(consoleWrapper.WindowHeight - initialTextSize / windowWidth - 1, windowWidth, availableSpace);
+            var toWrite = commits.GetHighlightedSide(consoleWrapper.WindowHeight - initialTextSize / windowWidth - 2, windowWidth, availableSpace);
             toWrite.Add("\u001b[0mPress 'Esc' to exit.");
-
+            toWrite.InsertRange(0, initialText.Split("\n"));
             return toWrite;
         }
 
@@ -414,8 +417,8 @@ namespace GitApp
             keyInteractor.KeyInfo = key;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
-            var diffAvailableSpace = (windowWidth - (int)(0.6 * windowWidth) - 2) * (windowHeight - 2);
-            var unstagedHeight = windowHeight / 2 + windowHeight % 2 - 2;
+            var diffAvailableSpace = (windowWidth - (int)(0.6 * windowWidth) - 2) * (windowHeight - 3);
+            var unstagedHeight = (windowHeight - 1) / 2 + (windowHeight - 1) % 2 - 2;
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
             (unstaged.Index, unstaged.Current) = keyInteractor.KeySwitch(leftSide, page[^1].Id, page[0].Id, false, (int)(0.6 * windowWidth) - 2, unstaged[unstaged.Current].GetElement().Length);
             page = unstaged.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
@@ -428,12 +431,12 @@ namespace GitApp
             var rightSide = new BoxDrawer(
                 diff[0].GetElement() == ""
                     ? new List<string>()
-                    : diff.GetHighlightedSide(windowHeight - 2, windowWidth - (int)(0.6 * windowWidth) - 2, diffAvailableSpace, false), "Diff")
-                .DrawBox(windowWidth - (int)(0.6 * windowWidth), windowHeight);
+                    : diff.GetHighlightedSide(windowHeight - 3, windowWidth - (int)(0.6 * windowWidth) - 2, diffAvailableSpace, false), "Diff")
+                .DrawBox(windowWidth - (int)(0.6 * windowWidth), windowHeight - 1);
             var staged = new ModifiedFiles(gitManager.GetStagedFiles());
-            var stagedToString = staged.GetHighlightedSide(windowHeight / 2 - 2, (int)(0.6 * windowWidth) - 2, (windowHeight / 2 - 2) * (int)(0.6 * windowWidth) - 2);
+            var stagedToString = staged.GetHighlightedSide((windowHeight - 1) / 2 - 2, (int)(0.6 * windowWidth) - 2, ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
             stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
-            stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), windowHeight / 2, true);
+            stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), (windowHeight - 1) / 2, true);
             leftSideTemp.AddRange(stagedToString);
 
             return MergeSides(leftSideTemp, rightSide);
