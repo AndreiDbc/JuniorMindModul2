@@ -11,6 +11,7 @@ namespace GitApp
     {
         private readonly string diff;
         private readonly List<IElement> diffList;
+        private readonly bool shouldGetHunks;
 
         public Diff(GitManager gitManager, string oldId, string newId, string repoPath, string filePath)
         {
@@ -18,6 +19,7 @@ namespace GitApp
             diffList = GetText();
             Current = 0;
             Index = 0;
+            shouldGetHunks = false;
         }
 
         public Diff(GitManager gitManager, string filePath, string repositorypPath)
@@ -26,6 +28,7 @@ namespace GitApp
             diffList = GetText();
             Current = 0;
             Index = 0;
+            shouldGetHunks = true;
         }
 
         public int Current { get; set; }
@@ -39,14 +42,7 @@ namespace GitApp
 
         public List<IElement> GetText()
         {
-            var result = new List<IElement>();
-            var temp = diff.Split("\n");
-            for (int i = 0; i < temp.Length; i++)
-            {
-                result.Add(new DiffLine(temp[i], i.ToString()));
-            }
-
-            return result;
+            return shouldGetHunks ? GetHunks() : GetDiffLines();
         }
 
         public List<string> GetHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
@@ -151,6 +147,64 @@ namespace GitApp
             list[^1] = tmp.TruncateText(width + tmp.FormatingCodesStringUtilities().length) + "\u001b[0m";
 
             return list;
+        }
+
+        private static (string data, int index) GetHunk(int index, string[] lines)
+        {
+            var result = "";
+            do
+            {
+                result += lines[index] + "\n";
+                index++;
+            }
+            while (!lines[index].StartsWith("@@"));
+
+            return (result, index);
+        }
+
+        private static string GetFileData(string[] lines)
+        {
+            var result = "";
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("@@"))
+                {
+                    break;
+                }
+
+                result += lines + "\n";
+            }
+
+            return result;
+        }
+
+        private List<IElement> GetDiffLines()
+        {
+            var result = new List<IElement>();
+            var temp = diff.Split("\n");
+            for (int i = 0; i < temp.Length; i++)
+            {
+                result.Add(new DiffLine(temp[i], i.ToString()));
+            }
+
+            return result;
+        }
+
+        private List<IElement> GetHunks()
+        {
+            var hunks = new List<IElement>();
+            var lines = diff.Split("\n");
+            var fileData = GetFileData(lines);
+            var index = fileData.Split("\n").Length;
+            do
+            {
+                var temp = GetHunk(index, lines);
+                index = temp.index;
+                hunks.Add(new Hunk(temp.data, fileData, hunks.Count.ToString()));
+            }
+            while (index < lines.Length);
+
+            return hunks;
         }
 
         private string SetLastLine(List<string> list, int occupancyRate, int availableSpace, int width, int index)
