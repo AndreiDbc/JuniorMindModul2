@@ -262,7 +262,7 @@ namespace GitApp
                 index = temp.Item2;
                 hunks.Add(new Hunk(temp.Item1, fileData, hunks.Count.ToString()));
             }
-            while (index < lines.Length - 1);
+            while (index < lines.Length - 1 && fileData != "");
 
             return hunks;
         }
