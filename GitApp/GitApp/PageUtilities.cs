@@ -69,7 +69,7 @@ namespace GitApp
         public int GetOccupancyRate(int size)
         {
             int result = 0;
-            foreach (var line in element.Split("\n"))
+            foreach (var line in element == null ? data : element.Split("\n"))
             {
                 result += line.Length / size * size
                     + (line.Length % size == 0 ? 0 : 1) * size;
