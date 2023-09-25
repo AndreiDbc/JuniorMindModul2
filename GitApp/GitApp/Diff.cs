@@ -258,9 +258,9 @@ namespace GitApp
             var index = fileData.Split("\n").Length;
             do
             {
-                var temp = GetHunk(index + 1, lines);
-                index = temp.index;
-                hunks.Add(new Hunk(temp.data, fileData, hunks.Count.ToString()));
+                var temp = fileData == "" ? ("", -1) : GetHunk(index + 1, lines);
+                index = temp.Item2;
+                hunks.Add(new Hunk(temp.Item1, fileData, hunks.Count.ToString()));
             }
             while (index < lines.Length - 1);
 
