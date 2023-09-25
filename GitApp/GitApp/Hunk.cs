@@ -23,7 +23,7 @@ namespace GitApp
 
         public string GetElement()
         {
-            return fileData + "\n" + rawData;
+            return fileData + "\n\x1b\n" + rawData;
         }
     }
 }
