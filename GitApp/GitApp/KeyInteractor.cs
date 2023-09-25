@@ -50,9 +50,10 @@ namespace GitApp
             if (currentId.Equals(lastCommitIdOnPage) && currentId != list[^1].Id)
             {
                 interactor.Index++;
-                interactor.Index = isPageLargerThanWindow
-                    ? interactor.Index + currentElementLength / consoleWidth
-                    : interactor.Index;
+                if (isPageLargerThanWindow)
+                {
+                    interactor.Index++;
+                }
             }
 
             return (Math.Min(list.Count - 1, interactor.Index), Math.Min(list.Count - 1, ++interactor.Current));
