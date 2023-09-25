@@ -16,19 +16,19 @@ namespace GitApp
         public Diff(GitManager gitManager, string oldId, string newId, string repoPath, string filePath)
         {
             diff = gitManager.GetDiffBetweenConsecutiveCommits(oldId, newId, repoPath, filePath);
+            shouldGetHunks = false;
             diffList = GetText();
             Current = 0;
             Index = 0;
-            shouldGetHunks = false;
         }
 
         public Diff(GitManager gitManager, string filePath, string repositorypPath)
         {
             diff = gitManager.GetUnstagedDiff(filePath, repositorypPath);
+            shouldGetHunks = true;
             diffList = GetText();
             Current = 0;
             Index = 0;
-            shouldGetHunks = true;
         }
 
         public int Current { get; set; }
@@ -47,42 +47,9 @@ namespace GitApp
 
         public List<string> GetHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
-            var lines = diff.Split("\n");
-            var startingPoint = lines[3].StartsWith("+++") ? 5 : 6;
-            var index = startingPoint < Index ? Index : startingPoint;
-            var result = new List<string>();
-            var occupacyRate = 0;
-            var doesPageContainCurrent = false;
-            (result, occupacyRate, doesPageContainCurrent) = SetFirstLines(result, lines, startingPoint, width, isScreenSplit);
-            index = occupacyRate == 0 ? Index : index;
-            for (int i = index; i < lines.Length; i++)
-            {
-                if (diffList[index].Id.Equals(diffList[Current].Id))
-                {
-                    doesPageContainCurrent = true;
-                }
-
-                if (occupacyRate >= availableSpace)
-                {
-                    result = SetCurrent(result, doesPageContainCurrent);
-                    result[^1] = SetLastLine(result, occupacyRate, availableSpace, width, index);
-                    result = RemoveLines(result, occupacyRate, width, availableSpace);
-                    return result;
-                }
-
-                var lineUtilities = new PageUtilities(lines[i]);
-                occupacyRate += lineUtilities.GetOccupancyRate(width);
-                lines[i] = (diffList[index].Id.Equals(diffList[Current].Id) && isScreenSplit ? "\u001b[7m" : "")
-                    + RecolorDiffLine(lines[i - 1], lines[i], index == diffList.Count - 1 ? "" : lines[i + 1]);
-                result.AddRange(new PageUtilities(lines[i]).SplitRow(width));
-                index++;
-            }
-
-            result = SetCurrent(result, doesPageContainCurrent);
-            result[^1] = SetLastLine(result, occupacyRate, availableSpace, width, index);
-            result = RemoveLines(result, occupacyRate, width, availableSpace);
-
-            return result;
+            return shouldGetHunks
+                ? GetHighlightedHunks(height, width, availableSpace, isScreenSplit)
+                : GetHighlightedDiffLines(height, width, availableSpace, isScreenSplit);
         }
 
         public (List<IElement> list, int textSize) GetPageDataAndSize(int availableSpace, int lineSize, bool isScreenSplit = false)
@@ -137,7 +104,7 @@ namespace GitApp
 
             do
             {
-                var lastElementUtilities = new PageUtilities(list[^1][..^4]);
+                var lastElementUtilities = new PageUtilities(new PageUtilities(list[^1][..^4]).FormatingCodesStringUtilities().clearedString);
                 list.RemoveAt(list.Count - 1);
                 occupancyRate -= lastElementUtilities.GetOccupancyRate(width);
             }
@@ -151,15 +118,20 @@ namespace GitApp
 
         private static (string data, int index) GetHunk(int index, string[] lines)
         {
-            var result = "";
+            var result = lines[index - 1];
             do
             {
+                if (lines[index].StartsWith("@@"))
+                {
+                    break;
+                }
+
                 result += lines[index] + "\n";
                 index++;
             }
-            while (!lines[index].StartsWith("@@"));
+            while (index < lines.Length);
 
-            return (result, index);
+            return (result.Trim(), index);
         }
 
         private static string GetFileData(string[] lines)
@@ -172,8 +144,96 @@ namespace GitApp
                     break;
                 }
 
-                result += lines + "\n";
+                result += line + "\n";
             }
+
+            return result.Trim();
+        }
+
+        private List<string> GetHighlightedHunks(int height, int width, int availableSpace, bool isScreenSplit = false)
+        {
+            var result = new List<string>();
+            var doesPageContainCurrent = false;
+            var firstElement = diffList[Index].GetElement().Split("\n\x1b\n");
+            var fileUtilities = new PageUtilities(firstElement[0].Split("\n"));
+            var occupacyRate = 0;
+
+            for (int i = Index; i < diffList.Count; i++)
+            {
+                if (diffList[i].Id.Equals(diffList[Current].Id))
+                {
+                    doesPageContainCurrent = true;
+                }
+
+                if (occupacyRate >= availableSpace)
+                {
+                    break;
+                }
+
+                if (i == 0)
+                {
+                    result.AddRange(fileUtilities.SplitRow(width));
+                    occupacyRate = fileUtilities.GetOccupancyRate(width);
+                }
+
+                var element = diffList[i].GetElement().Split("\n\x1b\n")[1].Split("\n");
+                element = diffList[i].Id.Equals(diffList[Current].Id) && isScreenSplit ? element.Select(line => "\u001b[7m" + line).ToArray<string>() : element;
+                var elementUtilities = new PageUtilities(element);
+                occupacyRate += elementUtilities.GetOccupancyRate(width);
+                result.AddRange(elementUtilities.SplitRow(width));
+            }
+
+            for (int i = 0; i < result.Count && isScreenSplit && !doesPageContainCurrent; i++)
+            {
+                if (result[i].StartsWith("@@") && i != 0)
+                {
+                    break;
+                }
+
+                result[i] = "\u001b[7m" + result[i];
+            }
+
+            Current = doesPageContainCurrent ? Current : Index;
+            result = RemoveLines(result, occupacyRate, width, availableSpace);
+            return result;
+        }
+
+        private List<string> GetHighlightedDiffLines(int height, int width, int availableSpace, bool isScreenSplit = false)
+        {
+            var lines = diff.Split("\n");
+            var startingPoint = lines[3].StartsWith("+++") ? 5 : 6;
+            var index = startingPoint < Index ? Index : startingPoint;
+            var result = new List<string>();
+            var occupacyRate = 0;
+            var doesPageContainCurrent = false;
+            (result, occupacyRate, doesPageContainCurrent) = SetFirstLines(result, lines, startingPoint, width, isScreenSplit);
+            index = occupacyRate == 0 ? Index : index;
+            for (int i = index; i < lines.Length; i++)
+            {
+                if (diffList[index].Id.Equals(diffList[Current].Id))
+                {
+                    doesPageContainCurrent = true;
+                }
+
+                if (occupacyRate >= availableSpace)
+                {
+                    result = SetCurrent(result, doesPageContainCurrent);
+                    result[^1] = SetLastLine(result, occupacyRate, availableSpace, width, index);
+                    result = RemoveLines(result, occupacyRate, width, availableSpace);
+                    return result;
+                }
+
+                var lineUtilities = new PageUtilities(lines[i]);
+                occupacyRate += lineUtilities.GetOccupancyRate(width);
+                lines[i] = (diffList[index].Id.Equals(diffList[Current].Id) && isScreenSplit ? "\u001b[7m" : "")
+                    + RecolorDiffLine(lines[i - 1], lines[i], index == diffList.Count - 1 ? "" : lines[i + 1]);
+                result.AddRange(new PageUtilities(lines[i]).SplitRow(width));
+                index++;
+            }
+
+            result = SetCurrent(result, doesPageContainCurrent);
+            result[^1] = SetLastLine(result, occupacyRate, availableSpace, width, index);
+            result = RemoveLines(result, occupacyRate, width, availableSpace);
 
             return result;
         }
@@ -198,11 +258,11 @@ namespace GitApp
             var index = fileData.Split("\n").Length;
             do
             {
-                var temp = GetHunk(index, lines);
+                var temp = GetHunk(index + 1, lines);
                 index = temp.index;
                 hunks.Add(new Hunk(temp.data, fileData, hunks.Count.ToString()));
             }
-            while (index < lines.Length);
+            while (index < lines.Length - 1);
 
             return hunks;
         }
