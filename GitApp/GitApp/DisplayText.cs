@@ -130,10 +130,15 @@ namespace GitApp
             var leftSide = files[files.Current].GetElement() == ""
                    ? new List<string>()
                    : files.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
-            Write(UpdateStatusPage(ref page, ref leftSide, files, repoPath), consoleWrapper.WindowHeight < 6);
+            Write(UpdateStatusPage(ref page, ref leftSide, files, repoPath), consoleWrapper.WindowHeight < 7);
             do
             {
                 key = consoleWrapper.ReadKey().Key;
+                if (key.Equals(ConsoleKey.RightArrow))
+                {
+                    DisplayHighlightedHunksPage(new Diff(gitManager, files[files.Current].GetElement(), gitManager.GetRepoPath()), leftSide);
+                }
+
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
                     break;
@@ -144,7 +149,50 @@ namespace GitApp
                 windowSize = windowHeight * windowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
+
                 Write(UpdateStatusPage(ref page, ref leftSide, files, repoPath), consoleWrapper.WindowHeight < 6);
+            }
+            while (true);
+        }
+
+        private void DisplayHighlightedHunksPage(Diff diff, List<string> leftSide)
+        {
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowWidth = consoleWrapper.WindowWidth;
+            var windowSize = windowHeight * windowWidth;
+            var windowSizeTemp = windowSize;
+            var rightSideWidth = new TextWidthSetter(consoleWrapper).SetTextWidth(false);
+            var availableSpace = rightSideWidth * (windowHeight - 3);
+            var rightSide = diff[diff.Current].GetElement() == ""
+                ? new List<string>()
+                : diff.GetHighlightedSide(windowHeight - 3, rightSideWidth, availableSpace, true);
+            var keyInteractor = new KeyInteractor<IElement>(diff);
+            (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
+
+            Write(UpdateDiffPage(leftSide, rightSide, rightSideWidth + 2, keyInteractor, true), windowHeight < 7);
+            do
+            {
+                key = consoleWrapper.ReadKey().Key;
+                keyInteractor.KeyInfo = key;
+                if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || menuKeys.Contains(key) || keyInteractor.KeyInfo.Equals(ConsoleKey.LeftArrow))
+                {
+                    break;
+                }
+
+                windowHeight = consoleWrapper.WindowHeight;
+                rightSideWidth = new TextWidthSetter(consoleWrapper).SetTextWidth(false);
+                availableSpace = rightSideWidth * (windowHeight - 3);
+                windowHeight = consoleWrapper.WindowHeight;
+                windowWidth = consoleWrapper.WindowWidth;
+                windowSize = windowHeight * windowWidth;
+                (diff.Index, diff.Current) = keyInteractor.KeySwitch(rightSide, page[^1].Id, page[0].Id, pageSize > availableSpace, rightSideWidth, diff[diff.Current].GetElement().Length);
+                (page, pageSize) = diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
+                rightSide = diff[diff.Current].GetElement() == ""
+                    ? new List<string>()
+                    : diff.GetHighlightedSide(windowHeight - 3, rightSideWidth, availableSpace, true);
+                WasWindowResizedSmaller = windowSize < windowSizeTemp;
+                windowSizeTemp = windowSize;
+                Write(UpdateDiffPage(leftSide, rightSide, rightSideWidth + 2, keyInteractor, true), windowHeight < 7);
             }
             while (true);
         }
@@ -273,8 +321,8 @@ namespace GitApp
                 isWindowToSmall = consoleWrapper.WindowHeight < 10;
                 UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall, commits, new TextWidthSetter(consoleWrapper).SetTextWidth(true));
                 toDisplay = isWindowToSmall
-                ? new List<string>()
-                : UpdateExtendedPage(leftSideCommits, keyInteractor);
+                    ? new List<string>()
+                    : UpdateExtendedPage(leftSideCommits, keyInteractor);
                 Write(toDisplay, isWindowToSmall);
             }
             while (true);
