@@ -150,6 +150,21 @@ namespace GitApp
             return result.Trim();
         }
 
+        private static List<string> SetCurrentHunk(List<string> result, bool isScreenSplit, bool doesPageContainCurrent)
+        {
+            for (int i = 0; i < result.Count && isScreenSplit && !doesPageContainCurrent; i++)
+            {
+                if (result[i].StartsWith("@@") && i != 0)
+                {
+                    break;
+                }
+
+                result[i] = "\u001b[7m" + result[i];
+            }
+
+            return result;
+        }
+
         private List<string> GetHighlightedHunks(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
             var result = new List<string>();
@@ -183,16 +198,7 @@ namespace GitApp
                 result.AddRange(elementUtilities.SplitRow(width));
             }
 
-            for (int i = 0; i < result.Count && isScreenSplit && !doesPageContainCurrent; i++)
-            {
-                if (result[i].StartsWith("@@") && i != 0)
-                {
-                    break;
-                }
-
-                result[i] = "\u001b[7m" + result[i];
-            }
-
+            result = SetCurrentHunk(result, isScreenSplit, doesPageContainCurrent);
             Current = doesPageContainCurrent ? Current : Index;
             result = RemoveLines(result, occupacyRate, width, availableSpace);
             return result;
