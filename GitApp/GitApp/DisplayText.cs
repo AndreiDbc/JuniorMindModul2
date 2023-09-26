@@ -168,8 +168,7 @@ namespace GitApp
                 : diff.GetHighlightedSide(windowHeight - 3, rightSideWidth, availableSpace, true);
             var keyInteractor = new KeyInteractor<IElement>(diff);
             (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
-
-            Write(UpdateDiffPage(leftSide, rightSide, rightSideWidth + 2, keyInteractor, true), windowHeight < 7);
+            Write(UpdateHighlightedHunksPage(rightSide, keyInteractor), windowHeight < 7);
             do
             {
                 key = consoleWrapper.ReadKey().Key;
@@ -192,7 +191,7 @@ namespace GitApp
                     : diff.GetHighlightedSide(windowHeight - 3, rightSideWidth, availableSpace, true);
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                Write(UpdateDiffPage(leftSide, rightSide, rightSideWidth + 2, keyInteractor, true), windowHeight < 7);
+                Write(UpdateHighlightedHunksPage(rightSide, keyInteractor), windowHeight < 7);
             }
             while (true);
         }
@@ -459,6 +458,42 @@ namespace GitApp
             {
                 rightSide = new BoxDrawer(diff, "Diff").DrawBox(rowSize, windowHeight - 1, false, shouldColorBoxLines);
                 leftSide = new BoxDrawer(leftSide, "Files").DrawBox((int)(0.6 * windowWidth), windowHeight - 1);
+            }
+
+            return SelectScreen(leftSide, rightSide, keyInteractor);
+        }
+
+        private List<string> UpdateHighlightedHunksPage(
+            List<string> diff,
+            KeyInteractor<IElement> keyInteractor)
+        {
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowWidth = consoleWrapper.WindowWidth;
+            var unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(gitManager.GetRepoPath()));
+            var staged = new ModifiedFiles(gitManager.GetStagedFiles());
+            var unstagedHeight = (windowHeight - 1) / 2 + (windowHeight - 1) % 2 - 2;
+            List<string> rightSide;
+            List<string> leftSide;
+            if (windowHeight < 15 && windowWidth < 50)
+            {
+                rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight - 1, false, true);
+                leftSide = new BoxDrawer(unstaged.GetHighlightedSide(unstagedHeight, windowWidth - 2, (unstagedHeight - 2) * (windowWidth - 2)), "Unstaged").DrawBox(windowWidth, unstagedHeight + 2);
+                var stagedToString = staged.GetHighlightedSide(windowHeight - unstagedHeight - 2, (int)(0.6 * windowWidth) - 2, ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
+                stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
+                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(windowWidth, windowHeight - unstagedHeight -3, true);
+                leftSide.AddRange(stagedToString);
+            }
+            else
+            {
+                var textwidth = new TextWidthSetter(consoleWrapper);
+                var leftSideWidth = textwidth.SetTextWidth(true);
+                rightSide = new BoxDrawer(diff, "Diff").DrawBox(textwidth.SetTextWidth(false) + 2, windowHeight - 1, false, true);
+                leftSide = new BoxDrawer(unstaged.GetHighlightedSide(unstagedHeight, leftSideWidth, (unstagedHeight - 2) * (windowWidth - 2)), "Unstaged")
+                    .DrawBox((int)(0.6 * windowWidth), unstagedHeight + 2);
+                var stagedToString = staged.GetHighlightedSide(windowHeight - unstagedHeight - 2, (int)(0.6 * windowWidth) - 2, ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
+                stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
+                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), windowHeight - unstagedHeight - 3, true);
+                leftSide.AddRange(stagedToString);
             }
 
             return SelectScreen(leftSide, rightSide, keyInteractor);
