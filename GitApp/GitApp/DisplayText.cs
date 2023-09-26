@@ -480,7 +480,7 @@ namespace GitApp
                 leftSide = new BoxDrawer(unstaged.GetHighlightedSide(unstagedHeight, windowWidth - 2, (unstagedHeight - 2) * (windowWidth - 2)), "Unstaged").DrawBox(windowWidth, unstagedHeight + 2);
                 var stagedToString = staged.GetHighlightedSide(windowHeight - unstagedHeight - 2, (int)(0.6 * windowWidth) - 2, ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
                 stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
-                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(windowWidth, windowHeight - unstagedHeight -3, true);
+                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(windowWidth, windowHeight - unstagedHeight - 3, true);
                 leftSide.AddRange(stagedToString);
             }
             else
