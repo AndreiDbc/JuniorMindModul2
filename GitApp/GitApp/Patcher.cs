@@ -28,6 +28,33 @@ namespace GitApp
             this.gitManager = gitManager;
         }
 
+        public void Stage()
+        {
+            string patchFileName = "patch_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".patch";
+            var path = GetPathWithoutFileName();
+            System.IO.File.Create(path).Close();
+            using (StreamWriter patchFileWriter = new StreamWriter(patchFileName))
+            {
+                ApplyPatch(patchFileWriter);
+                gitManager.Stage(patchFileName);
+                patchFileWriter.Close();
+            }
+
+            System.IO.File.Delete(path + patchFileName);
+        }
+
+        public void StageAll()
+        {
+            var allHunks = diff.GetText();
+            for (int i = 0; i < allHunks.Count; i++)
+            {
+                var data = diff[i].GetElement().Split("\n\x1b\n");
+                fileData = data[0];
+                elementDiff = data[1];
+                Stage();
+            }
+        }
+
         private void ApplyPatch(StreamWriter patchFileWriter)
         {
             var startLine = GetStartingLineIndex();
