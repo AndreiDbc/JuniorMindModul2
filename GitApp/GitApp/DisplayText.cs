@@ -185,7 +185,7 @@ namespace GitApp
                     var index = diff.Index - 1;
                     var current = diff.Current - 1;
                     var filePath = repoPath + "/" + diff[diff.Current].GetElement();
-                    new Patcher(diff[diff.Current], filePath).Stage();
+                    new Patcher(diff[diff.Current], filePath, gitManager).Stage();
                     diff = new Diff(gitManager, filePath, repoPath);
                     diff.Current = current;
                     diff.Index = index;

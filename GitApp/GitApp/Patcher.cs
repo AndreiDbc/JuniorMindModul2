@@ -14,12 +14,13 @@ namespace GitApp
         private string fileData;
         private string elementDiff;
 
-        public Patcher(IElement hunk, string filePath)
+        public Patcher(IElement hunk, string filePath, GitManager gitManager)
         {
             var data = hunk.GetElement().Split("\n\x1b\n");
             fileData = data[0];
             elementDiff = data[1];
             this.filePath = filePath;
+            this.gitManager = gitManager;
         }
 
         public Patcher(Diff diff, GitManager gitManager)
