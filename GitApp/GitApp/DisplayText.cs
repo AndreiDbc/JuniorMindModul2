@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 using System.Runtime.ExceptionServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -136,7 +137,8 @@ namespace GitApp
                 key = consoleWrapper.ReadKey().Key;
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
-                    DisplayHighlightedHunksPage(new Diff(gitManager, files[files.Current].GetElement(), gitManager.GetRepoPath()), leftSide);
+                    var currentFile = files[files.Current].GetElement();
+                    DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), leftSide, repoPath);
                 }
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
@@ -155,7 +157,7 @@ namespace GitApp
             while (true);
         }
 
-        private void DisplayHighlightedHunksPage(Diff diff, List<string> leftSide)
+        private void DisplayHighlightedHunksPage(Diff diff, List<string> leftSide, string repoPath)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
@@ -169,6 +171,7 @@ namespace GitApp
             var keyInteractor = new KeyInteractor<IElement>(diff);
             (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
             Write(UpdateHighlightedHunksPage(rightSide, keyInteractor), windowHeight < 7);
+
             do
             {
                 key = consoleWrapper.ReadKey().Key;
@@ -176,6 +179,22 @@ namespace GitApp
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || menuKeys.Contains(key) || keyInteractor.KeyInfo.Equals(ConsoleKey.LeftArrow))
                 {
                     break;
+                }
+                else if (keyInteractor.KeyInfo.Equals(ConsoleKey.Enter))
+                {
+                    var index = diff.Index - 1;
+                    var current = diff.Current - 1;
+                    var filePath = repoPath + "/" + diff[diff.Current].GetElement();
+                    new Patcher(diff[diff.Current], filePath).Stage();
+                    diff = new Diff(gitManager, filePath, repoPath);
+                    diff.Current = current;
+                    diff.Index = index;
+                }
+                else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
+                {
+                    var filePath = repoPath + "/" + diff[diff.Current].GetElement();
+                    new Patcher(diff, gitManager).StageAll();
+                    diff = new Diff(gitManager, filePath, repoPath);
                 }
 
                 windowHeight = consoleWrapper.WindowHeight;
