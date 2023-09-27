@@ -118,7 +118,7 @@ namespace GitApp
 
         private static (string data, int index) GetHunk(int index, string[] lines)
         {
-            var result = lines[index - 1];
+            var result = lines[index - 1] + "\n";
             do
             {
                 if (lines[index].StartsWith("@@"))
@@ -141,6 +141,7 @@ namespace GitApp
             {
                 if (line.StartsWith("@@"))
                 {
+                    result += line;
                     break;
                 }
 
