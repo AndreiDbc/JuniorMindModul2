@@ -8,11 +8,12 @@ namespace GitApp
 {
     public class GitCommand
     {
-        public GitCommand(string fileName, string argument, string path = "")
+        public GitCommand(string fileName, string argument, string path = "", MemoryStream streamData = null)
         {
             this.FileName = fileName;
             this.Argument = argument;
             this.Path = path;
+            this.StreamData = streamData;
         }
 
         public string FileName { get; }
@@ -20,5 +21,7 @@ namespace GitApp
         public string Argument { get; }
 
         public string Path { get; }
+
+        public MemoryStream StreamData { get; }
     }
 }
