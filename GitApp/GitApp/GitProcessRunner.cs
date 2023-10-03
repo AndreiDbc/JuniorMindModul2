@@ -14,6 +14,11 @@ namespace GitApp
             return GetCommandOutput(command);
         }
 
+        public void ApplyCommand(GitCommand command)
+        {
+            AddData(command);
+        }
+
         private static string GetCommandOutput(GitCommand command)
         {
             var process = new Process
@@ -37,6 +42,32 @@ namespace GitApp
             var result = process.StandardOutput.ReadToEnd();
             process.Dispose();
             return result.Trim();
+        }
+
+        private static void AddData(GitCommand command)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = command.FileName,
+                    Arguments = command.Argument,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            process.Start();
+
+            using (var gitStdin = process.StandardInput.BaseStream)
+            using (command.StreamData)
+            {
+                command.StreamData.Seek(0, SeekOrigin.Begin);
+                command.StreamData.CopyTo(gitStdin);
+            }
+
+            process.Close();
         }
     }
 }
