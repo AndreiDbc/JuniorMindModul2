@@ -138,7 +138,7 @@ namespace GitApp
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
                     var currentFile = files[files.Current].GetElement();
-                    DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), leftSide, repoPath);
+                    DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), leftSide, repoPath, repoPath + "/" + files[files.Current].GetElement());
                 }
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
@@ -157,7 +157,7 @@ namespace GitApp
             while (true);
         }
 
-        private void DisplayHighlightedHunksPage(Diff diff, List<string> leftSide, string repoPath)
+        private void DisplayHighlightedHunksPage(Diff diff, List<string> leftSide, string repoPath, string filePath)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
@@ -182,17 +182,15 @@ namespace GitApp
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.Enter))
                 {
-                    var index = diff.Index - 1;
-                    var current = diff.Current - 1;
-                    var filePath = repoPath + "/" + diff[diff.Current].GetElement();
-                    new Patcher(diff[diff.Current], filePath, gitManager).Stage();
+                    var index = diff.Index == 0 ? 0 : diff.Index - 1;
+                    var current = diff.Current == 0 ? 0 : diff.Current - 1;
+                    new Patcher(diff[diff.Current], repoPath, filePath, gitManager).Stage(commits[0]);
                     diff = new Diff(gitManager, filePath, repoPath);
                     diff.Current = current;
                     diff.Index = index;
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
-                    var filePath = repoPath + "/" + diff[diff.Current].GetElement();
                     new Patcher(diff, gitManager).StageAll();
                     diff = new Diff(gitManager, filePath, repoPath);
                 }
