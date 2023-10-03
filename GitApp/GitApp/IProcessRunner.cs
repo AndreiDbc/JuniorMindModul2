@@ -9,5 +9,7 @@ namespace GitApp
     public interface IProcessRunner
     {
         public string RunCommand(GitCommand command);
+
+        public void ApplyCommand(GitCommand command);
     }
 }
