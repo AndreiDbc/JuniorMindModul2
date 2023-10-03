@@ -11,16 +11,18 @@ namespace GitApp
         private readonly string filePath;
         private readonly Diff diff;
         private readonly GitManager gitManager;
-        private string fileData;
-        private string elementDiff;
+        private readonly string fileData;
+        private readonly string elementDiff;
+        private readonly string repositoryPath;
 
-        public Patcher(IElement hunk, string filePath, GitManager gitManager)
+        public Patcher(IElement hunk, string filePath, string repositoryPath, GitManager gitManager)
         {
             var data = hunk.GetElement().Split("\n\x1b\n");
             fileData = data[0];
             elementDiff = data[1];
             this.filePath = filePath;
             this.gitManager = gitManager;
+            this.repositoryPath = repositoryPath;
         }
 
         public Patcher(Diff diff, GitManager gitManager)
@@ -29,58 +31,31 @@ namespace GitApp
             this.gitManager = gitManager;
         }
 
-        public void Stage()
+        public void Stage(IElement commit)
         {
-            string patchFileName = "patch_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".patch";
-            var path = GetPathWithoutFileName();
-            System.IO.File.Create(path).Close();
-            using (StreamWriter patchFileWriter = new StreamWriter(patchFileName))
+            using (MemoryStream patchFileWriter = new MemoryStream())
             {
-                ApplyPatch(patchFileWriter);
-                gitManager.Stage(patchFileName);
+                WritePatch(patchFileWriter, commit);
+                gitManager.Stage(patchFileWriter, repositoryPath);
                 patchFileWriter.Close();
             }
-
-            System.IO.File.Delete(path + patchFileName);
         }
 
         public void StageAll()
         {
-            var allHunks = diff.GetText();
-            for (int i = 0; i < allHunks.Count; i++)
-            {
-                var data = diff[i].GetElement().Split("\n\x1b\n");
-                fileData = data[0];
-                elementDiff = data[1];
-                Stage();
-            }
+            gitManager.StageFile(repositoryPath);
         }
 
-        private void ApplyPatch(StreamWriter patchFileWriter)
+        private void WritePatch(MemoryStream patchFileWriter, IElement commit)
         {
-            var startLine = GetStartingLineIndex();
-            var fileLines = System.IO.File.ReadAllLines(filePath);
-            var hunkLines = elementDiff.Split('\n');
-
-            for (int i = 0; i < hunkLines.Length; i++)
-            {
-                int lineIndex = startLine - 1 + i;
-
-                if (lineIndex < fileLines.Length)
-                {
-                    if (hunkLines[i].StartsWith("-"))
-                    {
-                        fileLines[lineIndex] = null;
-                    }
-                    else if (hunkLines[i].StartsWith("+"))
-                    {
-                        fileLines[lineIndex] = hunkLines[i][1 ..];
-                    }
-                }
-            }
-
-            string patchedContent = string.Join(Environment.NewLine, fileLines);
-            patchFileWriter.WriteLine(patchedContent);
+            var commitData = commit.GetElement().Split("\n");
+            var result = $"From {commitData[4]} {commitData[2]}" + Environment.NewLine;
+            result += $"From: {commitData[1]}" + Environment.NewLine;
+            result += $"Date: {DateTime.Now.ToString("yyyyMMdd")}" + Environment.NewLine;
+            result += "Subject: [PATCH] Contains updated data for the file." + Environment.NewLine;
+            result += Environment.NewLine + fileData + Environment.NewLine + elementDiff;
+            byte[] dataBytes = Encoding.UTF8.GetBytes(result);
+            patchFileWriter.Write(dataBytes);
         }
 
         private int GetStartingLineIndex()
