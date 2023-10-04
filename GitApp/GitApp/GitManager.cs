@@ -75,9 +75,9 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
         }
 
-        public void Stage(string patchName)
+        public void Stage(string patchName, string repoPath)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {patchName}"));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {patchName}", repoPath));
         }
 
         public void StageFile(string filePath)
