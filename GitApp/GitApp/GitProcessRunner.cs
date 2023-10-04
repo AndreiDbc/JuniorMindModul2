@@ -52,13 +52,16 @@ namespace GitApp
                 {
                     FileName = command.FileName,
                     Arguments = command.Argument,
-                    WorkingDirectory = Environment.CurrentDirectory,
                     RedirectStandardOutput = true,
-                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
+
+            if (command.Path != "")
+            {
+                process.StartInfo.WorkingDirectory = command.Path;
+            }
 
             process.Start();
             process.Dispose();
