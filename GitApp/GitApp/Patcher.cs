@@ -86,7 +86,7 @@ namespace GitApp
             {
                 if (filePath[i] == '/')
                 {
-                    return filePath[..(i + 1)];
+                    return filePath[.. (i + 1)];
                 }
             }
 

@@ -138,7 +138,7 @@ namespace GitApp
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
                     var currentFile = files[files.Current].GetElement();
-                    DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), leftSide, repoPath, repoPath + "/" + files[files.Current].GetElement());
+                    DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), files, repoPath, repoPath + "/" + files[files.Current].GetElement());
                 }
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
@@ -157,7 +157,7 @@ namespace GitApp
             while (true);
         }
 
-        private void DisplayHighlightedHunksPage(Diff diff, List<string> leftSide, string repoPath, string filePath)
+        private void DisplayHighlightedHunksPage(Diff diff, ModifiedFiles unstaged, string repoPath, string filePath)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
@@ -170,7 +170,7 @@ namespace GitApp
                 : diff.GetHighlightedSide(windowHeight - 3, rightSideWidth, availableSpace, true);
             var keyInteractor = new KeyInteractor<IElement>(diff);
             (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
-            Write(UpdateHighlightedHunksPage(rightSide, keyInteractor), windowHeight < 7);
+            Write(UpdateHighlightedHunksPage(rightSide, unstaged, keyInteractor), windowHeight < 7);
 
             do
             {
@@ -195,6 +195,8 @@ namespace GitApp
                     diff = new Diff(gitManager, filePath, repoPath);
                 }
 
+                keyInteractor = new KeyInteractor<IElement>(diff);
+                keyInteractor.KeyInfo = key;
                 windowHeight = consoleWrapper.WindowHeight;
                 rightSideWidth = new TextWidthSetter(consoleWrapper).SetTextWidth(false);
                 availableSpace = rightSideWidth * (windowHeight - 3);
@@ -208,7 +210,7 @@ namespace GitApp
                     : diff.GetHighlightedSide(windowHeight - 3, rightSideWidth, availableSpace, true);
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                Write(UpdateHighlightedHunksPage(rightSide, keyInteractor), windowHeight < 7);
+                Write(UpdateHighlightedHunksPage(rightSide, unstaged, keyInteractor), windowHeight < 7);
             }
             while (true);
         }
@@ -482,11 +484,11 @@ namespace GitApp
 
         private List<string> UpdateHighlightedHunksPage(
             List<string> diff,
+            ModifiedFiles unstaged,
             KeyInteractor<IElement> keyInteractor)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
-            var unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(gitManager.GetRepoPath()));
             var staged = new ModifiedFiles(gitManager.GetStagedFiles());
             var unstagedHeight = (windowHeight - 1) / 2 + (windowHeight - 1) % 2 - 2;
             List<string> rightSide;
