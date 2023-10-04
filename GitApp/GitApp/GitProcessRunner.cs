@@ -52,22 +52,16 @@ namespace GitApp
                 {
                     FileName = command.FileName,
                     Arguments = command.Argument,
+                    WorkingDirectory = Environment.CurrentDirectory,
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
 
             process.Start();
-
-            using (var gitStdin = process.StandardInput.BaseStream)
-            using (command.StreamData)
-            {
-                command.StreamData.Seek(0, SeekOrigin.Begin);
-                command.StreamData.CopyTo(gitStdin);
-            }
-
-            process.Close();
+            process.Dispose();
         }
     }
 }
