@@ -33,12 +33,17 @@ namespace GitApp
 
         public void Stage(IElement commit)
         {
-            using (MemoryStream patchFileWriter = new MemoryStream())
+            string patchFileName = "patch_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".patch";
+            var path = GetPathWithoutFileName();
+            System.IO.File.Create(path).Close();
+            using (StreamWriter patchFileWriter = new StreamWriter(patchFileName))
             {
-                WritePatch(patchFileWriter, commit);
-                gitManager.Stage(patchFileWriter, repositoryPath);
+                patchFileWriter.Write(WritePatchContent(commit));
+                gitManager.Stage(patchFileName);
                 patchFileWriter.Close();
             }
+
+            System.IO.File.Delete(path + patchFileName);
         }
 
         public void StageAll()
@@ -46,7 +51,7 @@ namespace GitApp
             gitManager.StageFile(repositoryPath);
         }
 
-        private void WritePatch(MemoryStream patchFileWriter, IElement commit)
+        private string WritePatchContent(IElement commit)
         {
             var commitData = commit.GetElement().Split("\n");
             var result = $"From {commitData[4]} {commitData[2]}" + Environment.NewLine;
@@ -54,8 +59,7 @@ namespace GitApp
             result += $"Date: {DateTime.Now.ToString("yyyyMMdd")}" + Environment.NewLine;
             result += "Subject: [PATCH] Contains updated data for the file." + Environment.NewLine;
             result += Environment.NewLine + fileData + Environment.NewLine + elementDiff;
-            byte[] dataBytes = Encoding.UTF8.GetBytes(result);
-            patchFileWriter.Write(dataBytes);
+            return result;
         }
 
         private int GetStartingLineIndex()
@@ -73,7 +77,7 @@ namespace GitApp
                 result += character;
             }
 
-            return int.Parse(result[1 ..]);
+            return int.Parse(result[1..]);
         }
 
         private string GetPathWithoutFileName()
@@ -82,7 +86,7 @@ namespace GitApp
             {
                 if (filePath[i] == '/')
                 {
-                    return filePath[.. (i + 1)];
+                    return filePath[..(i + 1)];
                 }
             }
 
