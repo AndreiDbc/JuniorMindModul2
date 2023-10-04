@@ -9,7 +9,6 @@ namespace GitApp
     public class Patcher
     {
         private readonly string filePath;
-        private readonly Diff diff;
         private readonly GitManager gitManager;
         private readonly string fileData;
         private readonly string elementDiff;
@@ -25,25 +24,23 @@ namespace GitApp
             this.repositoryPath = repositoryPath;
         }
 
-        public Patcher(Diff diff, GitManager gitManager)
+        public Patcher(GitManager gitManager)
         {
-            this.diff = diff;
             this.gitManager = gitManager;
         }
 
         public void Stage(IElement commit)
         {
             string patchFileName = "patch_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".patch";
-            var path = GetPathWithoutFileName();
-            System.IO.File.Create(path).Close();
+            System.IO.File.Create(filePath + "/" + patchFileName).Close();
             using (StreamWriter patchFileWriter = new StreamWriter(patchFileName))
             {
                 patchFileWriter.Write(WritePatchContent(commit));
-                gitManager.Stage(patchFileName);
+                gitManager.Stage(patchFileName, repositoryPath);
                 patchFileWriter.Close();
             }
 
-            System.IO.File.Delete(path + patchFileName);
+            System.IO.File.Delete(filePath + "/" + patchFileName);
         }
 
         public void StageAll()
@@ -60,24 +57,6 @@ namespace GitApp
             result += "Subject: [PATCH] Contains updated data for the file." + Environment.NewLine;
             result += Environment.NewLine + fileData + Environment.NewLine + elementDiff;
             return result;
-        }
-
-        private int GetStartingLineIndex()
-        {
-            var temp = fileData.Split("@@ ")[1];
-            var result = "";
-
-            foreach (var character in temp)
-            {
-                if (character.Equals(','))
-                {
-                    break;
-                }
-
-                result += character;
-            }
-
-            return int.Parse(result[1..]);
         }
 
         private string GetPathWithoutFileName()

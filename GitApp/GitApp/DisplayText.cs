@@ -185,14 +185,14 @@ namespace GitApp
                     var index = diff.Index == 0 ? 0 : diff.Index - 1;
                     var current = diff.Current == 0 ? 0 : diff.Current - 1;
                     new Patcher(diff[diff.Current], repoPath, filePath, gitManager).Stage(commits[0]);
-                    diff = new Diff(gitManager, filePath, repoPath);
+                    diff = new Diff(gitManager, unstaged[unstaged.Current].GetElement(), repoPath);
                     diff.Current = current;
                     diff.Index = index;
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
-                    new Patcher(diff, gitManager).StageAll();
-                    diff = new Diff(gitManager, filePath, repoPath);
+                    new Patcher(gitManager).StageAll();
+                    diff = new Diff(gitManager, unstaged[unstaged.Current].GetElement(), repoPath);
                 }
 
                 keyInteractor = new KeyInteractor<IElement>(diff);
