@@ -9,13 +9,11 @@ namespace GitApp
     public class Hunk : IElement
     {
         private readonly string rawData;
-        private readonly string fileData;
         private readonly string index;
 
-        public Hunk(string rawData, string fileData, string index)
+        public Hunk(string rawData, string index)
         {
             this.rawData = rawData;
-            this.fileData = fileData;
             this.index = index;
         }
 
@@ -23,7 +21,7 @@ namespace GitApp
 
         public string GetElement()
         {
-            return fileData + "\n\x1b\n" + rawData;
+            return rawData;
         }
     }
 }

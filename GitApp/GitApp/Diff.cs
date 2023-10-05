@@ -73,7 +73,7 @@ namespace GitApp
             return (result, textSize);
         }
 
-        private static string RecolorDiffLine(string previous, string current, string next)
+        private static string RecolorDiffLine(string previous, string current, string next, bool isScreenSplit = false)
         {
             if (current.StartsWith("+") && (previous.StartsWith("\u001b[38;5;190m-") || previous.StartsWith("\u001b[7m\u001b[38;5;190m-")))
             {
@@ -118,20 +118,19 @@ namespace GitApp
 
         private static (string data, int index) GetHunk(int index, string[] lines)
         {
-            var result = lines[index - 1] + "\n";
-            do
+            var result = "";
+
+            for (int i = index; i < lines.Length; i++)
             {
-                if (lines[index].StartsWith("@@"))
+                if (lines[i].StartsWith("@@") && i != index)
                 {
-                    break;
+                    return (result.Trim(), i);
                 }
 
-                result += lines[index] + "\n";
-                index++;
+                result += lines[i] + "\n";
             }
-            while (index < lines.Length);
 
-            return (result.Trim(), index);
+            return (result.Trim(), lines.Length - 1);
         }
 
         private static string GetFileData(string[] lines)
@@ -141,7 +140,6 @@ namespace GitApp
             {
                 if (line.StartsWith("@@"))
                 {
-                    result += line;
                     break;
                 }
 
@@ -170,8 +168,6 @@ namespace GitApp
         {
             var result = new List<string>();
             var doesPageContainCurrent = false;
-            var firstElement = diffList[Index].GetElement().Split("\n\x1b\n");
-            var fileUtilities = new PageUtilities(firstElement[0].Split("\n"));
             var occupacyRate = 0;
 
             for (int i = Index; i < diffList.Count; i++)
@@ -186,16 +182,10 @@ namespace GitApp
                     break;
                 }
 
-                if (i == 0)
-                {
-                    result.AddRange(fileUtilities.SplitRow(width));
-                    occupacyRate = fileUtilities.GetOccupancyRate(width);
-                }
-
-                var element = diffList[i].GetElement().Split("\n\x1b\n")[1].Split("\n");
+                var element = diffList[i].GetElement().Split("\n");
                 element = diffList[i].Id.Equals(diffList[Current].Id) && isScreenSplit ? element.Select(line => "\u001b[7m" + line).ToArray<string>() : element;
                 var elementUtilities = new PageUtilities(element);
-                occupacyRate += elementUtilities.GetOccupancyRate(width);
+                occupacyRate += elementUtilities.GetOccupancyRate(width) - (element[0].Contains("\u001b[7m") ? 4 * element.Length : 0);
                 result.AddRange(elementUtilities.SplitRow(width));
             }
 
@@ -265,9 +255,9 @@ namespace GitApp
             var index = fileData.Split("\n").Length;
             do
             {
-                var temp = fileData == "" ? ("", -1) : GetHunk(index + 1, lines);
+                var temp = fileData == "" ? ("", -1) : GetHunk(index, lines);
                 index = temp.Item2;
-                hunks.Add(new Hunk(temp.Item1, fileData, hunks.Count.ToString()));
+                hunks.Add(new Hunk(fileData + "\n" + temp.Item1, hunks.Count.ToString()));
             }
             while (index < lines.Length - 1 && fileData != "");
 

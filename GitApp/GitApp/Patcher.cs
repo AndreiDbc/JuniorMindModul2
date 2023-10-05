@@ -10,15 +10,12 @@ namespace GitApp
     {
         private readonly string filePath;
         private readonly GitManager gitManager;
-        private readonly string fileData;
-        private readonly string elementDiff;
+        private readonly string data;
         private readonly string repositoryPath;
 
         public Patcher(IElement hunk, string filePath, string repositoryPath, GitManager gitManager)
         {
-            var data = hunk.GetElement().Split("\n\x1b\n");
-            fileData = data[0];
-            elementDiff = data[1];
+            data = hunk.GetElement();
             this.filePath = filePath;
             this.gitManager = gitManager;
             this.repositoryPath = repositoryPath;
@@ -51,11 +48,11 @@ namespace GitApp
         private string WritePatchContent(IElement commit)
         {
             var commitData = commit.GetElement().Split("\n");
-            var result = $"From {commitData[4]} {commitData[2]}" + Environment.NewLine;
+            var result = $"From {commitData[4]} {commitData[2][..10]}" + Environment.NewLine;
             result += $"From: {commitData[1]}" + Environment.NewLine;
             result += $"Date: {DateTime.Now.ToString("yyyyMMdd")}" + Environment.NewLine;
             result += "Subject: [PATCH] Contains updated data for the file." + Environment.NewLine;
-            result += Environment.NewLine + fileData + Environment.NewLine + elementDiff;
+            result += Environment.NewLine + data;
             return result;
         }
 
