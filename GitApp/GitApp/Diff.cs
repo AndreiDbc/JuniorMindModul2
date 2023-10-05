@@ -185,7 +185,7 @@ namespace GitApp
                 var element = diffList[i].GetElement().Split("\n");
                 element = diffList[i].Id.Equals(diffList[Current].Id) && isScreenSplit ? element.Select(line => "\u001b[7m" + line).ToArray<string>() : element;
                 var elementUtilities = new PageUtilities(element);
-                occupacyRate += elementUtilities.GetOccupancyRate(width) - (element[0].Contains("\u001b[7m") ? 4 * element.Length : 0);
+                occupacyRate += elementUtilities.GetOccupancyRate(width);
                 result.AddRange(elementUtilities.SplitRow(width));
             }
 
