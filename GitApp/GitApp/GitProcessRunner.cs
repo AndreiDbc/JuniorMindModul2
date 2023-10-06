@@ -41,7 +41,7 @@ namespace GitApp
             process.Start();
             var result = process.StandardOutput.ReadToEnd();
             process.Dispose();
-            return result.Trim();
+            return result.TrimEnd();
         }
 
         private static void AddData(GitCommand command)
