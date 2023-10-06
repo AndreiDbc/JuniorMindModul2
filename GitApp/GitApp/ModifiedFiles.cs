@@ -39,7 +39,7 @@ namespace GitApp
             var result = new List<IElement>();
             foreach (var item in rawData.Split("\n"))
             {
-                if (shouldGetUnstaged && item.StartsWith("M"))
+                if (shouldGetUnstaged && (item.StartsWith("M") || item.StartsWith("AD")))
                 {
                     continue;
                 }
@@ -47,7 +47,7 @@ namespace GitApp
                 result.Add(new File(item));
             }
 
-            return result;
+            return result.Count == 0 ? new List<IElement>() { new File("") } : result;
         }
 
         public (List<IElement> list, int textSize) GetPageDataAndSize(

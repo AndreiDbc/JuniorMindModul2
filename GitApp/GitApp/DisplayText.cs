@@ -74,6 +74,16 @@ namespace GitApp
             return result;
         }
 
+        private bool GetExitConditionForHighlightedHunksPage(KeyInteractor<IElement> keyInteractor, ModifiedFiles unstaged)
+        {
+            var exitCondition = keyInteractor.KeyInfo.Equals(ConsoleKey.Escape);
+            exitCondition = exitCondition || menuKeys.Contains(key);
+            exitCondition = exitCondition || keyInteractor.KeyInfo.Equals(ConsoleKey.LeftArrow);
+            exitCondition = exitCondition || unstaged[unstaged.Current].GetElement() == null;
+            exitCondition = exitCondition || keyInteractor.KeyInfo.Equals(ConsoleKey.A);
+            return exitCondition;
+        }
+
         private void DisplayLog()
         {
             var commitTextSize = 0;
@@ -120,26 +130,25 @@ namespace GitApp
         private void DisplayStatus()
         {
             var repoPath = gitManager.GetRepoPath();
-            var files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
+            var unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
             var windowSizeTemp = windowSize;
             var unstagedHeight = (windowHeight - 1) / 2 + windowHeight % 2 - 4;
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
-            var page = files.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
-            var leftSide = files[files.Current].GetElement() == ""
+            var page = unstaged.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
+            var leftSide = unstaged[unstaged.Current].GetElement() == ""
                    ? new List<string>()
-                   : files.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
-            Write(UpdateStatusPage(ref page, ref leftSide, files, repoPath), consoleWrapper.WindowHeight < 7);
+                   : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
+            Write(UpdateStatusPage(ref page, ref leftSide, unstaged, repoPath), consoleWrapper.WindowHeight < 7);
             do
             {
                 key = consoleWrapper.ReadKey().Key;
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
-                    var currentFile = files[files.Current].GetElement();
-                    DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), files, repoPath, repoPath + "/" + files[files.Current].GetElement());
-                    files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
+                    var currentFile = unstaged[unstaged.Current].GetElement();
+                    DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), ref unstaged, repoPath, repoPath + "/" + unstaged[unstaged.Current].GetElement());
                 }
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
@@ -153,12 +162,12 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
 
-                Write(UpdateStatusPage(ref page, ref leftSide, files, repoPath), consoleWrapper.WindowHeight < 6);
+                Write(UpdateStatusPage(ref page, ref leftSide, unstaged, repoPath), consoleWrapper.WindowHeight < 6);
             }
             while (true);
         }
 
-        private void DisplayHighlightedHunksPage(Diff diff, ModifiedFiles unstaged, string repoPath, string filePath)
+        private void DisplayHighlightedHunksPage(Diff diff, ref ModifiedFiles unstaged, string repoPath, string filePath)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
@@ -177,16 +186,13 @@ namespace GitApp
             {
                 key = consoleWrapper.ReadKey().Key;
                 keyInteractor.KeyInfo = key;
-                if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || menuKeys.Contains(key) || keyInteractor.KeyInfo.Equals(ConsoleKey.LeftArrow))
-                {
-                    break;
-                }
-                else if (keyInteractor.KeyInfo.Equals(ConsoleKey.Enter))
+
+                if (keyInteractor.KeyInfo.Equals(ConsoleKey.Enter))
                 {
                     var index = diff.Index == 0 ? 0 : diff.Index - 1;
                     var current = diff.Current == 0 ? 0 : diff.Current - 1;
                     new Patcher(filePath, repoPath, unstaged[unstaged.Current].GetElement(), gitManager, diff[diff.Current]).Stage(commits[0]);
-                    unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath));
+                    unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
                     diff = new Diff(gitManager, unstaged[unstaged.Current].GetElement(), repoPath);
                     diff.Current = current;
                     diff.Index = index;
@@ -194,6 +200,11 @@ namespace GitApp
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
                     new Patcher(filePath, repoPath, unstaged[unstaged.Current].GetElement(), gitManager).StageAll();
+                    unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
+                }
+
+                if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged))
+                {
                     break;
                 }
 
