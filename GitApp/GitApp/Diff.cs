@@ -168,7 +168,7 @@ namespace GitApp
         {
             var result = new List<string>();
             var doesPageContainCurrent = false;
-            var occupacyRate = 0;
+            var occupancyRate = 0;
 
             for (int i = Index; i < diffList.Count; i++)
             {
@@ -177,21 +177,24 @@ namespace GitApp
                     doesPageContainCurrent = true;
                 }
 
-                if (occupacyRate >= availableSpace)
+                if (occupancyRate >= availableSpace)
                 {
                     break;
                 }
 
                 var element = diffList[i].GetElement().Split("\n");
-                element = diffList[i].Id.Equals(diffList[Current].Id) && isScreenSplit ? element.Select(line => "\u001b[7m" + line).ToArray<string>() : element;
                 var elementUtilities = new PageUtilities(element);
-                occupacyRate += elementUtilities.GetOccupancyRate(width);
+                occupancyRate += elementUtilities.GetOccupancyRate(width);
+                element = diffList[i].Id.Equals(diffList[Current].Id) && isScreenSplit
+                    ? element.Select(line => "\u001b[7m" + line).ToArray<string>()
+                    : element;
+                elementUtilities = new PageUtilities(element);
                 result.AddRange(elementUtilities.SplitRow(width));
             }
 
             result = SetCurrentHunk(result, isScreenSplit, doesPageContainCurrent);
             Current = doesPageContainCurrent ? Current : Index;
-            result = RemoveLines(result, occupacyRate, width, availableSpace);
+            result = RemoveLines(result, occupancyRate, width, availableSpace);
             return result;
         }
 
