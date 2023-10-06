@@ -11,10 +11,12 @@ namespace GitApp
     {
         private readonly string rawData;
         private readonly List<IElement> list;
+        private readonly bool shouldGetUnstaged;
 
-        public ModifiedFiles(string rawData)
+        public ModifiedFiles(string rawData, bool shouldGetUnstaged = false)
         {
             this.rawData = rawData;
+            this.shouldGetUnstaged = shouldGetUnstaged;
             list = GetText();
             Current = 0;
             Index = 0;
@@ -37,6 +39,11 @@ namespace GitApp
             var result = new List<IElement>();
             foreach (var item in rawData.Split("\n"))
             {
+                if (shouldGetUnstaged && item.StartsWith("M"))
+                {
+                    continue;
+                }
+
                 result.Add(new File(item));
             }
 
@@ -91,7 +98,7 @@ namespace GitApp
             while (occupancyRate < availableSpace && index < list.Count);
 
             Current = doesPageContainCurrent ? Current : Index;
-            result[0] = doesPageContainCurrent ? result[0] : "\x1b[7m" + result[0][4 ..];
+            result[0] = doesPageContainCurrent ? result[0] : "\x1b[7m" + result[0][4..];
             var lastElementUtilities = new PageUtilities(result[^1]);
             result[^1] = occupancyRate > availableSpace
                 ? lastElementUtilities.TruncateText(availableSpace - occupancyRate - lastElementUtilities.GetOccupancyRate(width))
