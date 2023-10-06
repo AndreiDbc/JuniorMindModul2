@@ -12,24 +12,21 @@ namespace GitApp
         private readonly GitManager gitManager;
         private readonly string data;
         private readonly string repositoryPath;
+        private readonly string fileName;
 
-        public Patcher(IElement hunk, string filePath, string repositoryPath, GitManager gitManager)
+        public Patcher(string filePath, string repositoryPath, string fileName, GitManager gitManager, IElement hunk = null)
         {
-            data = hunk.GetElement();
+            data = hunk == null ? "" : hunk.GetElement();
             this.filePath = filePath;
             this.gitManager = gitManager;
             this.repositoryPath = repositoryPath;
-        }
-
-        public Patcher(GitManager gitManager)
-        {
-            this.gitManager = gitManager;
+            this.fileName = fileName;
         }
 
         public void Stage(IElement commit)
         {
             string patchFileName = "patch_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".patch";
-            System.IO.File.Create(filePath + "/" + patchFileName).Close();
+            System.IO.File.Create(repositoryPath + "/" + patchFileName).Close();
             using (StreamWriter patchFileWriter = new StreamWriter(patchFileName))
             {
                 patchFileWriter.Write(WritePatchContent(commit));
@@ -37,12 +34,12 @@ namespace GitApp
                 patchFileWriter.Close();
             }
 
-            System.IO.File.Delete(filePath + "/" + patchFileName);
+            System.IO.File.Delete(repositoryPath + "/" + patchFileName);
         }
 
         public void StageAll()
         {
-            gitManager.StageFile(repositoryPath);
+            gitManager.StageFile(repositoryPath, fileName);
         }
 
         private string WritePatchContent(IElement commit)
@@ -53,6 +50,11 @@ namespace GitApp
             result += $"Date: {DateTime.Now.ToString("yyyyMMdd")}" + Environment.NewLine;
             result += "Subject: [PATCH] Contains updated data for the file." + Environment.NewLine;
             result += Environment.NewLine + data;
+            if (data.EndsWith("\\ No newline at end of file"))
+            {
+                return result[..^27];
+            }
+
             return result;
         }
 
