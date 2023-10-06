@@ -80,9 +80,9 @@ namespace GitApp
             commandRunner.ApplyCommand(new GitCommand(fileName, $"add {patchName}", repoPath));
         }
 
-        public void StageFile(string filePath)
+        public void StageFile(string repoPath, string toAdd)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {filePath}"));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {toAdd}", repoPath));
         }
     }
 }
