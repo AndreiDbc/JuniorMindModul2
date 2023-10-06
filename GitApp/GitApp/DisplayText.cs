@@ -120,7 +120,7 @@ namespace GitApp
         private void DisplayStatus()
         {
             var repoPath = gitManager.GetRepoPath();
-            var files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath));
+            var files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
@@ -139,6 +139,7 @@ namespace GitApp
                 {
                     var currentFile = files[files.Current].GetElement();
                     DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), files, repoPath, repoPath + "/" + files[files.Current].GetElement());
+                    files = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
                 }
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
@@ -184,15 +185,16 @@ namespace GitApp
                 {
                     var index = diff.Index == 0 ? 0 : diff.Index - 1;
                     var current = diff.Current == 0 ? 0 : diff.Current - 1;
-                    new Patcher(diff[diff.Current], repoPath, filePath, gitManager).Stage(commits[0]);
+                    new Patcher(filePath, repoPath, unstaged[unstaged.Current].GetElement(), gitManager, diff[diff.Current]).Stage(commits[0]);
+                    unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath));
                     diff = new Diff(gitManager, unstaged[unstaged.Current].GetElement(), repoPath);
                     diff.Current = current;
                     diff.Index = index;
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
-                    new Patcher(gitManager).StageAll();
-                    diff = new Diff(gitManager, unstaged[unstaged.Current].GetElement(), repoPath);
+                    new Patcher(filePath, repoPath, unstaged[unstaged.Current].GetElement(), gitManager).StageAll();
+                    break;
                 }
 
                 keyInteractor = new KeyInteractor<IElement>(diff);
