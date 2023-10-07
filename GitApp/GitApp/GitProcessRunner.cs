@@ -64,6 +64,7 @@ namespace GitApp
             }
 
             process.Start();
+            process.WaitForExit();
             process.Dispose();
         }
     }
