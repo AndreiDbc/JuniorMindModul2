@@ -47,11 +47,10 @@ namespace GitApp
             var list = interactor.GetText();
             var currentId = list[interactor.Current].Id;
             interactor.Current++;
-
             if ((currentId.Equals(lastCommitIdOnPage) && currentId != list[^1].Id) || (currentId.Equals(lastCommitIdOnPage) && isPageLargerThanWindow))
             {
                 interactor.Index++;
-                interactor.Current = Math.Min(interactor.Index, interactor.Current);
+                interactor.Index = isPageLargerThanWindow ? interactor.Index + currentElementLength / consoleWidth : interactor.Index;
             }
 
             return (Math.Min(list.Count - 1, interactor.Index), Math.Min(list.Count - 1, interactor.Current));
