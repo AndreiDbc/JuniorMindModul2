@@ -60,7 +60,7 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "rev-parse --show-toplevel"));
         }
 
-        public string GetUnstagedFiles(string repositoryPath)
+        public string GetFileStatus(string repositoryPath)
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "status --short", repositoryPath));
         }
@@ -75,9 +75,9 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
         }
 
-        public void Stage(string patchName, string repoPath)
+        public void Stage(string patchPath, string repoPath)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {patchName}", repoPath));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"git apply --cached < {patchPath}", repoPath));
         }
 
         public void StageFile(string repoPath, string toAdd)
