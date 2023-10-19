@@ -130,25 +130,31 @@ namespace GitApp
         private void DisplayStatus()
         {
             var repoPath = gitManager.GetRepoPath();
-            var unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
+            var unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
             var windowSizeTemp = windowSize;
-            var unstagedHeight = (windowHeight - 1) / 2 + windowHeight % 2 - 4;
+            var unstagedHeight = (windowHeight - 1) / 2 + (windowHeight - 1) % 2 - 2;
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
-            var page = unstaged.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
+            var page = unstaged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
             var leftSide = unstaged[unstaged.Current].GetElement() == ""
                    ? new List<string>()
                    : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
-            Write(UpdateStatusPage(ref page, ref leftSide, unstaged, repoPath), consoleWrapper.WindowHeight < 7);
+            var staged = new ModifiedFiles(gitManager.GetStagedFiles());
+            var stagedToString = staged.GetHighlightedSide(windowHeight - unstagedHeight, (int)(0.6 * windowWidth) - 2, (windowHeight - unstagedHeight) * (int)(0.6 * windowWidth) - 2);
+            stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
+            Write(UpdateStatusPage(ref page, ref leftSide, ref unstaged, repoPath, stagedToString), consoleWrapper.WindowHeight < 7);
             do
             {
                 key = consoleWrapper.ReadKey().Key;
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
                     var currentFile = unstaged[unstaged.Current].GetElement();
-                    DisplayHighlightedHunksPage(new Diff(gitManager, currentFile, repoPath), ref unstaged, repoPath, repoPath + "/" + unstaged[unstaged.Current].GetElement());
+                    DisplayHighlightedHunksPage(
+                        new Diff(gitManager.GetUnstagedDiff(currentFile, repoPath)),
+                        ref unstaged,
+                        repoPath);
                 }
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
@@ -161,13 +167,16 @@ namespace GitApp
                 windowSize = windowHeight * windowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
+                staged = new ModifiedFiles(gitManager.GetStagedFiles());
+                stagedToString = staged.GetHighlightedSide(windowHeight - unstagedHeight, (int)(0.6 * windowWidth) - 2, (windowHeight - unstagedHeight) * (int)(0.6 * windowWidth) - 2);
+                stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
 
-                Write(UpdateStatusPage(ref page, ref leftSide, unstaged, repoPath), consoleWrapper.WindowHeight < 6);
+                Write(UpdateStatusPage(ref page, ref leftSide, ref unstaged, repoPath, stagedToString), consoleWrapper.WindowHeight < 6);
             }
             while (true);
         }
 
-        private void DisplayHighlightedHunksPage(Diff diff, ref ModifiedFiles unstaged, string repoPath, string filePath)
+        private void DisplayHighlightedHunksPage(Diff diff, ref UnstagedFiles unstaged, string repoPath)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
@@ -189,18 +198,20 @@ namespace GitApp
 
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.Enter))
                 {
-                    var index = diff.Index == 0 ? 0 : diff.Index - 1;
-                    var current = diff.Current == 0 ? 0 : diff.Current - 1;
-                    new Patcher(filePath, repoPath, unstaged[unstaged.Current].GetElement(), gitManager, diff[diff.Current]).Stage(commits[0]);
-                    unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
-                    diff = new Diff(gitManager, unstaged[unstaged.Current].GetElement(), repoPath);
-                    diff.Current = current;
-                    diff.Index = index;
+                    var diffIndex = diff.Index == 0 ? 0 : diff.Index - 1;
+                    var diffCurrent = diff.Current == 0 ? 0 : diff.Current - 1;
+                    new Patcher(repoPath, gitManager, diff).StageLine();
+                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+                    var currentUnstaged = unstaged[unstaged.Current].GetElement();
+                    diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
+                    diff.Current = diffCurrent;
+                    diff.Index = diffIndex;
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
-                    new Patcher(filePath, repoPath, unstaged[unstaged.Current].GetElement(), gitManager).StageAll();
-                    unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles(repoPath), true);
+                    var shortFileName = new PageUtilities(unstaged[unstaged.Current].GetElement()).GetShortFileName();
+                    new Patcher(repoPath, gitManager, diff).StageAll(shortFileName);
+                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
                 }
 
                 if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged))
@@ -371,7 +382,7 @@ namespace GitApp
             var isWindowToSmall = windowHeight < 3;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
             var leftSideElements = new List<string>();
-            var diff = new Diff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement());
+            var diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, modifiedFiles[0].GetElement()));
             var page = new List<IElement>();
             var keyInteractor = new KeyInteractor<IElement>(modifiedFiles);
             keyInteractor.KeyInfo = ConsoleKey.NoName;
@@ -408,7 +419,7 @@ namespace GitApp
                 (modifiedFiles.Index, modifiedFiles.Current) = keyInteractor.KeySwitch(leftSideElements, page[^1].Id, page[0].Id, false, windowWidth, page[^1].GetElement().Length);
                 UpdateLeftSideVariables(ref page, ref leftSideElements, isWindowToSmall, modifiedFiles, rowSize);
                 var filePath = modifiedFiles[modifiedFiles.Current].GetElement();
-                diff = new Diff(gitManager, previousCommit.Id, currentCommit.Id, repoPath, filePath);
+                diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, repoPath, filePath));
                 rightSide = windowWidth < 50 && windowHeight < 15
                     ? diff.GetHighlightedSide(windowHeight - 3, windowWidth - 2, (windowHeight - 2) * (windowWidth - 2), false)
                     : diff.GetHighlightedSide(windowHeight - 3, windowWidth - (int)(0.6 * windowWidth) - 2, availableSpace, false);
@@ -502,16 +513,20 @@ namespace GitApp
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
-            var staged = new ModifiedFiles(gitManager.GetStagedFiles());
             var unstagedHeight = (windowHeight - 1) / 2 + (windowHeight - 1) % 2 - 2;
+            var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
+            var staged = new ModifiedFiles(gitManager.GetStagedFiles());
             List<string> rightSide;
             List<string> leftSide;
             if (windowHeight < 15 && windowWidth < 50)
             {
                 rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight - 1, false, true);
                 leftSide = new BoxDrawer(unstaged.GetHighlightedSide(unstagedHeight, windowWidth - 2, (unstagedHeight - 2) * (windowWidth - 2)), "Unstaged").DrawBox(windowWidth, unstagedHeight + 2);
-                var stagedToString = staged.GetHighlightedSide(windowHeight - unstagedHeight - 2, (int)(0.6 * windowWidth) - 2, ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
-                stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
+                var stagedToString = staged.GetHighlightedSide(
+                        windowHeight - ((windowHeight - 1) / 2 + (windowHeight - 1) % 2 - 2) - 2,
+                        (int)(0.6 * windowWidth) - 2,
+                        ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
+                stagedToString[0] = stagedToString[0].Replace("\u001b[7m", "");
                 stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(windowWidth, windowHeight - unstagedHeight - 3, true);
                 leftSide.AddRange(stagedToString);
             }
@@ -520,10 +535,13 @@ namespace GitApp
                 var textwidth = new TextWidthSetter(consoleWrapper);
                 var leftSideWidth = textwidth.SetTextWidth(true);
                 rightSide = new BoxDrawer(diff, "Diff").DrawBox(textwidth.SetTextWidth(false) + 2, windowHeight - 1, false, true);
-                leftSide = new BoxDrawer(unstaged.GetHighlightedSide(unstagedHeight, leftSideWidth, (unstagedHeight - 2) * (windowWidth - 2)), "Unstaged")
+                leftSide = new BoxDrawer(unstaged.GetHighlightedSide(unstagedHeight, leftSideWidth, unstagedAvailableSpace), "Unstaged")
                     .DrawBox((int)(0.6 * windowWidth), unstagedHeight + 2);
-                var stagedToString = staged.GetHighlightedSide(windowHeight - unstagedHeight - 2, (int)(0.6 * windowWidth) - 2, ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
-                stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
+                var stagedToString = staged.GetHighlightedSide(
+                        windowHeight - ((windowHeight - 1) / 2 + (windowHeight - 1) % 2 - 2) - 2,
+                        (int)(0.6 * windowWidth) - 2,
+                        ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
+                stagedToString[0] = stagedToString[0].Replace("\u001b[7m", "");
                 stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), windowHeight - unstagedHeight - 3, true);
                 leftSide.AddRange(stagedToString);
             }
@@ -577,7 +595,7 @@ namespace GitApp
             return toWrite;
         }
 
-        private List<string> UpdateStatusPage(ref List<IElement> page, ref List<string> leftSide, ModifiedFiles unstaged, string repoPath)
+        private List<string> UpdateStatusPage(ref List<IElement> page, ref List<string> leftSide, ref UnstagedFiles unstaged, string repoPath, List<string> stagedToString)
         {
             var keyInteractor = new KeyInteractor<IElement>(unstaged);
             keyInteractor.KeyInfo = key;
@@ -587,21 +605,19 @@ namespace GitApp
             var unstagedHeight = (windowHeight - 1) / 2 + (windowHeight - 1) % 2 - 2;
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
             (unstaged.Index, unstaged.Current) = keyInteractor.KeySwitch(leftSide, page[^1].Id, page[0].Id, false, (int)(0.6 * windowWidth) - 2, unstaged[unstaged.Current].GetElement().Length);
-            page = unstaged.GetPageDataAndSize(unstagedAvailableSpace, windowWidth - (int)(0.6 * windowWidth) - 2).list;
+            page = unstaged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
             leftSide = unstaged[unstaged.Current].GetElement() == ""
                    ? new List<string>()
                    : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
             var leftSideTemp = new List<string>();
             leftSideTemp.AddRange(new BoxDrawer(leftSide, "Unstaged").DrawBox((int)(0.6 * windowWidth), unstagedHeight + 2));
-            var diff = new Diff(gitManager, unstaged[unstaged.Current].GetElement(), gitManager.GetRepoPath());
+            var currentUnstaged = unstaged[unstaged.Current].GetElement();
+            var diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
             var rightSide = new BoxDrawer(
                 diff[0].GetElement() == ""
                     ? new List<string>()
                     : diff.GetHighlightedSide(windowHeight - 3, windowWidth - (int)(0.6 * windowWidth) - 2, diffAvailableSpace, false), "Diff")
                 .DrawBox(windowWidth - (int)(0.6 * windowWidth), windowHeight - 1);
-            var staged = new ModifiedFiles(gitManager.GetStagedFiles());
-            var stagedToString = staged.GetHighlightedSide((windowHeight - 1) / 2 - 2, (int)(0.6 * windowWidth) - 2, ((windowHeight - 1) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
-            stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
             stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), (windowHeight - 1) / 2, true);
             leftSideTemp.AddRange(stagedToString);
 
