@@ -105,5 +105,31 @@ namespace GitApp
 
             return (element.Length - clearedString.Length, clearedString, codes);
         }
+
+        public string GetShortFileName()
+        {
+            for (int i = element.Length - 1; i > -1; i--)
+            {
+                if (element[i] == '/')
+                {
+                    return element[(i + 1)..];
+                }
+            }
+
+            return "";
+        }
+
+        public string GetPreviousPath()
+        {
+            for (int i = element.Length - 1; i > -1; i--)
+            {
+                if (element[i] == '/')
+                {
+                    return element[..(i - 1)];
+                }
+            }
+
+            return "";
+        }
     }
 }
