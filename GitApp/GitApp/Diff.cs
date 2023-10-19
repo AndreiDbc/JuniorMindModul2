@@ -9,23 +9,12 @@ namespace GitApp
 {
     public class Diff : IInteractor<IElement>
     {
-        private readonly string diff;
         private readonly List<IElement> diffList;
-        private readonly bool shouldGetHunks;
+        private readonly string diff;
 
-        public Diff(GitManager gitManager, string oldId, string newId, string repoPath, string filePath)
+        public Diff(string diff)
         {
-            diff = gitManager.GetDiffBetweenConsecutiveCommits(oldId, newId, repoPath, filePath);
-            shouldGetHunks = false;
-            diffList = GetText();
-            Current = 0;
-            Index = 0;
-        }
-
-        public Diff(GitManager gitManager, string filePath, string repositorypPath)
-        {
-            diff = gitManager.GetUnstagedDiff(filePath, repositorypPath);
-            shouldGetHunks = true;
+            this.diff = diff;
             diffList = GetText();
             Current = 0;
             Index = 0;
@@ -42,14 +31,12 @@ namespace GitApp
 
         public List<IElement> GetText()
         {
-            return shouldGetHunks ? GetHunks() : GetDiffLines();
+            return GenerateElements();
         }
 
         public List<string> GetHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
-            return shouldGetHunks
-                ? GetHighlightedHunks(height, width, availableSpace, isScreenSplit)
-                : GetHighlightedDiffLines(height, width, availableSpace, isScreenSplit);
+            return GenerateHighlightedSide(height, width, availableSpace, isScreenSplit);
         }
 
         public (List<IElement> list, int textSize) GetPageDataAndSize(int availableSpace, int lineSize, bool isScreenSplit = false)
@@ -73,28 +60,6 @@ namespace GitApp
             return (result, textSize);
         }
 
-        private static string RecolorDiffLine(string previous, string current, string next, bool isScreenSplit = false)
-        {
-            if (current.StartsWith("+") && (previous.StartsWith("\u001b[38;5;190m-") || previous.StartsWith("\u001b[7m\u001b[38;5;190m-")))
-            {
-                return "\x1b[38;5;190m" + current;
-            }
-            else if (current.StartsWith("+"))
-            {
-                return "\x1b[38;5;40m" + current;
-            }
-            else if (current.StartsWith("-") && next.StartsWith("+"))
-            {
-                return "\u001b[38;5;190m" + current;
-            }
-            else if (current.StartsWith("-"))
-            {
-                return "\x1b[38;5;160m" + current;
-            }
-
-            return current;
-        }
-
         private static List<string> RemoveLines(List<string> list, int occupancyRate, int width, int availableSpace)
         {
             if (occupancyRate <= availableSpace)
@@ -116,89 +81,7 @@ namespace GitApp
             return list;
         }
 
-        private static (string data, int index) GetHunk(int index, string[] lines)
-        {
-            var result = "";
-
-            for (int i = index; i < lines.Length; i++)
-            {
-                if (lines[i].StartsWith("@@") && i != index)
-                {
-                    return (result.Trim(), i);
-                }
-
-                result += lines[i] + "\n";
-            }
-
-            return (result.Trim(), lines.Length - 1);
-        }
-
-        private static string GetFileData(string[] lines)
-        {
-            var result = "";
-            foreach (var line in lines)
-            {
-                if (line.StartsWith("@@"))
-                {
-                    break;
-                }
-
-                result += line + "\n";
-            }
-
-            return result.Trim();
-        }
-
-        private static List<string> SetCurrentHunk(List<string> result, bool isScreenSplit, bool doesPageContainCurrent)
-        {
-            for (int i = 0; i < result.Count && isScreenSplit && !doesPageContainCurrent; i++)
-            {
-                if (result[i].StartsWith("@@") && i != 0)
-                {
-                    break;
-                }
-
-                result[i] = "\u001b[7m" + result[i];
-            }
-
-            return result;
-        }
-
-        private List<string> GetHighlightedHunks(int height, int width, int availableSpace, bool isScreenSplit = false)
-        {
-            var result = new List<string>();
-            var doesPageContainCurrent = false;
-            var occupancyRate = 0;
-
-            for (int i = Index; i < diffList.Count; i++)
-            {
-                if (diffList[i].Id.Equals(diffList[Current].Id))
-                {
-                    doesPageContainCurrent = true;
-                }
-
-                if (occupancyRate >= availableSpace)
-                {
-                    break;
-                }
-
-                var element = diffList[i].GetElement().Split("\n");
-                var elementUtilities = new PageUtilities(element);
-                occupancyRate += elementUtilities.GetOccupancyRate(width);
-                element = diffList[i].Id.Equals(diffList[Current].Id) && isScreenSplit
-                    ? element.Select(line => "\u001b[7m" + line).ToArray<string>()
-                    : element;
-                elementUtilities = new PageUtilities(element);
-                result.AddRange(elementUtilities.SplitRow(width));
-            }
-
-            result = SetCurrentHunk(result, isScreenSplit, doesPageContainCurrent);
-            Current = doesPageContainCurrent ? Current : Index;
-            result = RemoveLines(result, occupancyRate, width, availableSpace);
-            return result;
-        }
-
-        private List<string> GetHighlightedDiffLines(int height, int width, int availableSpace, bool isScreenSplit = false)
+        private List<string> GenerateHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
             var lines = diff.Split("\n");
             var startingPoint = lines[3].StartsWith("+++") ? 5 : 6;
@@ -238,7 +121,29 @@ namespace GitApp
             return result;
         }
 
-        private List<IElement> GetDiffLines()
+        private static string RecolorDiffLine(string previous, string current, string next, bool isScreenSplit = false)
+        {
+            if (current.StartsWith("+") && (previous.StartsWith("\u001b[38;5;190m-") || previous.StartsWith("\u001b[7m\u001b[38;5;190m-")))
+            {
+                return "\x1b[38;5;190m" + current;
+            }
+            else if (current.StartsWith("+"))
+            {
+                return "\x1b[38;5;40m" + current;
+            }
+            else if (current.StartsWith("-") && next.StartsWith("+"))
+            {
+                return "\u001b[38;5;190m" + current;
+            }
+            else if (current.StartsWith("-"))
+            {
+                return "\x1b[38;5;160m" + current;
+            }
+
+            return current;
+        }
+
+        private List<IElement> GenerateElements()
         {
             var result = new List<IElement>();
             var temp = diff.Split("\n");
@@ -248,23 +153,6 @@ namespace GitApp
             }
 
             return result;
-        }
-
-        private List<IElement> GetHunks()
-        {
-            var hunks = new List<IElement>();
-            var lines = diff.Split("\n");
-            var fileData = GetFileData(lines);
-            var index = fileData.Split("\n").Length;
-            do
-            {
-                var temp = fileData == "" ? ("", -1) : GetHunk(index, lines);
-                index = temp.Item2;
-                hunks.Add(new Hunk(fileData + "\n" + temp.Item1, hunks.Count.ToString()));
-            }
-            while (index < lines.Length - 1 && fileData != "");
-
-            return hunks;
         }
 
         private string SetLastLine(List<string> list, int occupancyRate, int availableSpace, int width, int index)
