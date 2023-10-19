@@ -9,14 +9,12 @@ namespace GitApp
 {
     public class ModifiedFiles : IInteractor<IElement>
     {
-        private readonly string rawData;
-        private readonly List<IElement> list;
-        private readonly bool shouldGetUnstaged;
+        protected readonly string rawData;
+        protected List<IElement> list;
 
-        public ModifiedFiles(string rawData, bool shouldGetUnstaged = false)
+        public ModifiedFiles(string rawData)
         {
             this.rawData = rawData;
-            this.shouldGetUnstaged = shouldGetUnstaged;
             list = GetText();
             Current = 0;
             Index = 0;
@@ -36,18 +34,8 @@ namespace GitApp
 
         public List<IElement> GetText()
         {
-            var result = new List<IElement>();
-            foreach (var item in rawData.Split("\n"))
-            {
-                if (shouldGetUnstaged && (item.StartsWith("M") || item.StartsWith("AD")))
-                {
-                    continue;
-                }
-
-                result.Add(new File(item));
-            }
-
-            return result.Count == 0 ? new List<IElement>() { new File("") } : result;
+            var result = GetElements();
+            return result.Count == 0 ? new List<IElement>() { new File("", (-1).ToString()) } : result;
         }
 
         public (List<IElement> list, int textSize) GetPageDataAndSize(
@@ -103,6 +91,18 @@ namespace GitApp
             result[^1] = occupancyRate > availableSpace
                 ? lastElementUtilities.TruncateText(availableSpace - occupancyRate - lastElementUtilities.GetOccupancyRate(width))
                 : result[^1];
+            return result;
+        }
+
+        protected virtual List<IElement> GetElements()
+        {
+            var result = new List<IElement>();
+            var temp = rawData.Split("\n");
+            for (int i = 0; i < temp.Length; i++)
+            {
+                result.Add(new File(temp[i], i.ToString()));
+            }
+
             return result;
         }
     }
