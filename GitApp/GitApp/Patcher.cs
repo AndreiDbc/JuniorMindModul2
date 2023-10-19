@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,67 +9,123 @@ namespace GitApp
 {
     public class Patcher
     {
-        private readonly string filePath;
         private readonly GitManager gitManager;
-        private readonly string data;
         private readonly string repositoryPath;
-        private readonly string fileName;
+        private readonly Diff diff;
+        private readonly int[] headers;
+        private readonly List<IElement> elements;
 
-        public Patcher(string filePath, string repositoryPath, string fileName, GitManager gitManager, IElement hunk = null)
+        public Patcher(string repositoryPath, GitManager gitManager, Diff diff)
         {
-            data = hunk == null ? "" : hunk.GetElement();
-            this.filePath = filePath;
+            this.diff = diff;
+            elements = diff.GetText();
+            headers = GetHeaders();
             this.gitManager = gitManager;
             this.repositoryPath = repositoryPath;
-            this.fileName = fileName;
         }
 
-        public void Stage(IElement commit)
+        public void StageLine()
         {
-            string patchFileName = "patch_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".patch";
-            System.IO.File.Create(repositoryPath + "/" + patchFileName).Close();
-            using (StreamWriter patchFileWriter = new StreamWriter(patchFileName))
+            if (elements.Count == 0)
             {
-                patchFileWriter.Write(WritePatchContent(commit));
-                gitManager.Stage(patchFileName, repositoryPath);
-                patchFileWriter.Close();
+                return;
             }
 
-            System.IO.File.Delete(repositoryPath + "/" + patchFileName);
+            Stage(false);
         }
 
-        public void StageAll()
+        public void StageHunk()
+        {
+            if (elements.Count == 0)
+            {
+                return;
+            }
+
+            Stage(true);
+        }
+
+        public void StageAll(string fileName)
         {
             gitManager.StageFile(repositoryPath, fileName);
         }
 
-        private string WritePatchContent(IElement commit)
+        private int[] GetHeaders()
         {
-            var commitData = commit.GetElement().Split("\n");
-            var result = $"From {commitData[4]} {commitData[2][..10]}" + Environment.NewLine;
-            result += $"From: {commitData[1]}" + Environment.NewLine;
-            result += $"Date: {DateTime.Now.ToString("yyyyMMdd")}" + Environment.NewLine;
-            result += "Subject: [PATCH] Contains updated data for the file." + Environment.NewLine;
-            result += Environment.NewLine + data;
-            if (data.EndsWith("\\ No newline at end of file"))
+            var result = new int[0];
+            var count = 0;
+            for (int i = 0; i < elements.Count; i++)
             {
-                return result[..^27];
+                var temp = elements[i].GetElement();
+                if (temp.StartsWith("@@"))
+                {
+                    Array.Resize(ref result, result.Length + 1);
+                    result[count] = i;
+                    count++;
+                }
             }
 
             return result;
         }
 
-        private string GetPathWithoutFileName()
+        private (int start, int end, int hunkIndex) GetStartLineNumberAndHunkIndex()
         {
-            for (int i = filePath.Length - 1; i > -1; i--)
+            var currentHeaderIndex = headers.Last(index => index <= diff.Current);
+            var header = diff[currentHeaderIndex].GetElement();
+            var temp = header.Split("@@ ")[1].Split(",");
+            var start = int.Parse(temp[0][1..]);
+            var end = int.Parse(temp[1].Split(" ")[0]);
+            return (start, start + end, currentHeaderIndex);
+        }
+
+        private void GeneratePatch(bool stageHunk, (string path, string name) patchData)
+        {
+            var indeexes = GetStartLineNumberAndHunkIndex();
+            var lineNumber = indeexes.start + (diff.Current - indeexes.hunkIndex) + 1;
+            var toWrite = GetFileData();
+            if (!elements[diff.Current].GetElement().StartsWith("-") || !elements[diff.Current].GetElement().StartsWith("+"))
             {
-                if (filePath[i] == '/')
-                {
-                    return filePath[.. (i + 1)];
-                }
+                return;
             }
 
-            return "";
+            var startLine = indeexes.start + (stageHunk ? 0 : lineNumber);
+
+            for (int i = startLine; i < (stageHunk ? indeexes.end : startLine + 1); i++)
+            {
+                toWrite += diff[i].GetElement() + "\n";
+            }
+
+            System.IO.File.Create(patchData.path).Close();
+            using (StreamWriter patchFileWriter = new StreamWriter(patchData.name))
+            {
+                patchFileWriter.Write(toWrite.TrimEnd());
+                patchFileWriter.Close();
+            }
+        }
+
+        private string GetFileData()
+        {
+            var result = "";
+            for (int i = 0; i < headers[0]; i++)
+            {
+                result += diff[0].GetElement() + "\n";
+            }
+
+            return result;
+        }
+
+        private (string path, string name) GetPatchPathAndName()
+        {
+            string patchFileName = "patch_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".patch";
+
+            return (new PageUtilities(repositoryPath).GetPreviousPath() + "/" + patchFileName, patchFileName);
+        }
+
+        private void Stage(bool stageHunk)
+        {
+            var patchData = GetPatchPathAndName();
+            GeneratePatch(stageHunk, patchData);
+            gitManager.Stage(patchData.path, repositoryPath);
+            System.IO.File.Delete(patchData.path);
         }
     }
 }
