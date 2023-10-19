@@ -3,15 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit.Sdk;
 
 namespace GitApp.Tests
 {
     public class FakeGitProcessRunner : IProcessRunner
     {
+
         string IProcessRunner.RunCommand(GitCommand command)
         {
             return GetOutput(command);
         }
+
+        void IProcessRunner.ApplyCommand(GitCommand command)
+        {
+            ApplyData(command);
+        }
+
+        public bool AppliedData { get; set; }
 
         private static string GetOutput(GitCommand command)
         {
@@ -56,6 +65,15 @@ namespace GitApp.Tests
                     "                 }\r\n" +
                     "             }",
                 _ => "",
+            };
+        }
+
+        private void ApplyData(GitCommand command)
+        {
+            AppliedData = command.Argument switch
+            {
+                "add -p -- /GitApp/GitApp/DisplayText.cs" => command.Argument == "add -p -- /GitApp/GitApp/DisplayText.cs" && command.StartLine == 192 && command.EndLine == 203,
+                _ => false,
             };
         }
     }

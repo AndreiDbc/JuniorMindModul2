@@ -180,7 +180,7 @@ namespace GitApp.Tests
             fakeConsole.WindowWidth = 120;
             var manager = new GitManager("git", new FakeGitProcessRunner());
             var display = new DisplayText(new FullCommits(Commits), writer, manager, fakeConsole);
-            display.Display(initialText);
+            display.Display();
             var actualOutput = writer.ToString();
             Assert.Equal(expectedMainPage + expectedMainPage, actualOutput);
         }
@@ -198,7 +198,7 @@ namespace GitApp.Tests
             fakeConsole.WindowWidth = 120;
             var manager = new GitManager("git", new FakeGitProcessRunner());
             var display = new DisplayText(new FullCommits(Commits), writer, manager, fakeConsole);
-            display.Display(initialText);
+            display.Display();
             var actualOutput = writer.ToString();
             Assert.Equal(expectedMainPage + expectedExtendedPage + expectedExtendedPage + expectedMainPage + expectedMainPage, actualOutput);
         }
@@ -217,7 +217,7 @@ namespace GitApp.Tests
             fakeConsole.WindowWidth = 49;
             var manager = new GitManager("git", new FakeGitProcessRunner());
             var display = new DisplayText(new FullCommits(Commits), writer, manager, fakeConsole);
-            display.Display(initialText);
+            display.Display();
             var actualOutput = writer.ToString();
             Assert.Equal(expectedSmallMainPage +
                 expectedSmallLeftExtendedPage +
@@ -242,7 +242,7 @@ namespace GitApp.Tests
             fakeConsole.WindowWidth = 120;
             var manager = new GitManager("git", new FakeGitProcessRunner());
             var display = new DisplayText(new FullCommits(Commits), writer, manager, fakeConsole);
-            display.Display(initialText);
+            display.Display();
             var actualOutput = writer.ToString();
             Assert.Equal(
                 expectedMainPage +
