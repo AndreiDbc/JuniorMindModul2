@@ -81,6 +81,28 @@ namespace GitApp
             return list;
         }
 
+        private static string RecolorDiffLine(string previous, string current, string next, bool isScreenSplit = false)
+        {
+            if (current.StartsWith("+") && (previous.StartsWith("\u001b[38;5;190m-") || previous.StartsWith("\u001b[7m\u001b[38;5;190m-")))
+            {
+                return "\x1b[38;5;190m" + current;
+            }
+            else if (current.StartsWith("+"))
+            {
+                return "\x1b[38;5;40m" + current;
+            }
+            else if (current.StartsWith("-") && next.StartsWith("+"))
+            {
+                return "\u001b[38;5;190m" + current;
+            }
+            else if (current.StartsWith("-"))
+            {
+                return "\x1b[38;5;160m" + current;
+            }
+
+            return current;
+        }
+
         private List<string> GenerateHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
             var lines = diff.Split("\n");
@@ -119,28 +141,6 @@ namespace GitApp
             result = RemoveLines(result, occupacyRate, width, availableSpace);
 
             return result;
-        }
-
-        private static string RecolorDiffLine(string previous, string current, string next, bool isScreenSplit = false)
-        {
-            if (current.StartsWith("+") && (previous.StartsWith("\u001b[38;5;190m-") || previous.StartsWith("\u001b[7m\u001b[38;5;190m-")))
-            {
-                return "\x1b[38;5;190m" + current;
-            }
-            else if (current.StartsWith("+"))
-            {
-                return "\x1b[38;5;40m" + current;
-            }
-            else if (current.StartsWith("-") && next.StartsWith("+"))
-            {
-                return "\u001b[38;5;190m" + current;
-            }
-            else if (current.StartsWith("-"))
-            {
-                return "\x1b[38;5;160m" + current;
-            }
-
-            return current;
         }
 
         private List<IElement> GenerateElements()
