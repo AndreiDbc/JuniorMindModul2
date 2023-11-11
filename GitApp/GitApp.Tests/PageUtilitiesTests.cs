@@ -70,7 +70,7 @@ namespace GitApp.Tests
         public void SplitRowIsCalledShouldSplitStrings()
         {
             var value = new PageUtilities(new[] { "asdafsasdfdsf", "asdg" }).SplitRow(3);
-            var expected = new List<string>() 
+            var expected = new List<string>()
             {
                 "asd" + "\u001b[0m",
                 "afs" + "\u001b[0m",
@@ -87,8 +87,8 @@ namespace GitApp.Tests
         public void SplitRowIsCalledStringContainsFormatingCodesShouldSplitStrings()
         {
             var value = new PageUtilities(new[] { "\x1b[38;5;190m" + "asdhadfgoiur t ", "rftyhfgh 433rrgf", " pdfopdfj fdneef", "\x1b[38;5;190m" + "odjcmndfkdjhrjhr" }).SplitRow(11);
-            var expected = new List<string>() 
-            { 
+            var expected = new List<string>()
+            {
                 "\x1b[38;5;190m" + "asdhadfgoiu" + "\u001b[0m",
                 "\x1b[38;5;190m" + "r t " + "\u001b[0m",
                 "rftyhfgh 43" + "\u001b[0m", "3rrgf" + "\u001b[0m",
@@ -97,6 +97,18 @@ namespace GitApp.Tests
                 "\x1b[38;5;190m" + "hrjhr" + "\u001b[0m"
             };
             Assert.Equal(expected, value);
+        }
+
+        [Fact]
+        public void GetShortFileNameIsCalledShouldReturnFileNameWithouthPath()
+        {
+            Assert.Equal("6.txt", new PageUtilities("a\\s\\d\\f\\g\\45\\67\\gh\\6.txt").GetShortFileName());
+        }
+
+        [Fact]
+        public void GetPreviousPathIsCalledShouldGetPreviousPath()
+        {
+            Assert.Equal("a\\s\\d\\f\\g\\45\\67\\gh", new PageUtilities("a\\s\\d\\f\\g\\45\\67\\gh\\6.txt").GetPreviousPath());
         }
     }
 }

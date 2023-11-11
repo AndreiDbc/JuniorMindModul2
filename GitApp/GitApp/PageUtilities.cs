@@ -112,7 +112,7 @@ namespace GitApp
             {
                 if (element[i] == '/')
                 {
-                    return element[(i + 1)..];
+                    return element[(i + 1) ..];
                 }
             }
 
@@ -125,7 +125,7 @@ namespace GitApp
             {
                 if (element[i] == '/')
                 {
-                    return element[..(i - 1)];
+                    return element[.. i];
                 }
             }
 
