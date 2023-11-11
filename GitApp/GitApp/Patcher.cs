@@ -33,7 +33,7 @@ namespace GitApp
 
         public void StageLine(bool isLineReplaced, bool isFileInTheStagingArea, string fileName)
         {
-            if (elements.Count == 0)
+            if (elements[0].GetElement() == "")
             {
                 return;
             }
@@ -43,7 +43,7 @@ namespace GitApp
 
         public void StageHunk()
         {
-            if (elements.Count == 0)
+            if (elements[0].GetElement() == "")
             {
                 return;
             }
