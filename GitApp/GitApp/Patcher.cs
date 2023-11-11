@@ -113,9 +113,9 @@ namespace GitApp
                 previousLines += !hasReachedCurrent ? 1 : 0;
                 nextLines += hasReachedCurrent ? 1 : 0;
             }
-
-            var isLineRemoved = diff[diff.Current].GetElement().StartsWith("-") && !isLineReplaced;
-            var first = indeexes.start + (lineCount.unchanged - previousLines);
+            var currentElement = diff[diff.Current].GetElement();
+            var isLineRemoved = currentElement.StartsWith("-") && !isLineReplaced;
+            var first = indeexes.start + (lineCount.unchanged - previousLines) - (isLineReplaced && currentElement.StartsWith("+") ? 1 : 0);
             var second = isLineRemoved || isLineReplaced ? 7 : 6;
             var third = first;
             var fourth = isLineRemoved ? 6 : 7;
