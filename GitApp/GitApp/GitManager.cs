@@ -75,14 +75,33 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
         }
 
-        public void Stage(string patchPath, string repoPath)
+        public void Stage(string patchPath)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"git apply --cached < {patchPath}", repoPath));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"apply --cached \"{patchPath}\""));
         }
 
         public void StageFile(string repoPath, string toAdd)
         {
             commandRunner.ApplyCommand(new GitCommand(fileName, $"add {toAdd}", repoPath));
+        }
+
+        public string GetOriginalFileLines(string currentFileName, string repoPath)
+        {
+            return commandRunner.RunCommand(
+                new GitCommand(
+                    fileName,
+                    $"show {GetLastFileCommitId(currentFileName, repoPath)}:{currentFileName}",
+                    repoPath));
+        }
+
+        public string GetStagedFileLines(string currentFileName, string repoPath)
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, $"show :{currentFileName}", repoPath));
+        }
+
+        private string GetLastFileCommitId(string currentFileName, string repoPath)
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, $"log -n 1 --pretty=format:%H -- {currentFileName}", repoPath))[..7];
         }
     }
 }
