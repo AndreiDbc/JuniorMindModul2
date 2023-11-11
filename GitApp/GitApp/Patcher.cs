@@ -6,6 +6,7 @@ using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.IO.Enumeration;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,21 +20,27 @@ namespace GitApp
         private readonly Diff diff;
         private readonly int[] headers;
         private readonly List<IElement> elements;
+        private readonly string firstElement;
         private readonly (int start, int end, int currentHeaderStartIndex, int currentHeaderEndIndex) indeexes;
 
         public Patcher(string repositoryPath, GitManager gitManager, Diff diff)
         {
             this.diff = diff;
             elements = diff.GetText();
-            headers = GetHeaders();
-            indeexes = GetStartLineNumberAndHunkIndex();
+            firstElement = elements[0].GetElement();
+            if (firstElement != "")
+            {
+                headers = GetHeaders();
+                indeexes = GetStartLineNumberAndHunkIndex();
+            }
+
             this.gitManager = gitManager;
             this.repositoryPath = repositoryPath;
         }
 
         public void StageLine(bool isLineReplaced, bool isFileInTheStagingArea, string fileName)
         {
-            if (elements[0].GetElement() == "")
+            if (firstElement == "")
             {
                 return;
             }
@@ -43,7 +50,7 @@ namespace GitApp
 
         public void StageHunk()
         {
-            if (elements[0].GetElement() == "")
+            if (firstElement == "")
             {
                 return;
             }
