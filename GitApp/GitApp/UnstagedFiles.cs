@@ -23,7 +23,11 @@ namespace GitApp
             for (int i = 0; i < files.Length; i++)
             {
                 var item = files[i];
-                if (item.StartsWith("M") || item.StartsWith("AD"))
+                if (item.StartsWith("MM"))
+                {
+                    stagedFiles[i] = true;
+                }
+                else if (item.StartsWith("M") || item.StartsWith("AD"))
                 {
                     stagedFiles[i] = true;
                     continue;
