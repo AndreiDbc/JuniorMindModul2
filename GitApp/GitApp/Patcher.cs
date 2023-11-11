@@ -134,7 +134,7 @@ namespace GitApp
             var header = elements[indeexes.currentHeaderStartIndex].GetElement();
             var lineCount = GeLineCount(indeexes.currentHeaderStartIndex, isLineReplaced);
             var linesData = stageHunk
-                ? AddPatchLines((0, int.Parse(header.Split("@@ ")[1].Split(",")[2].Trim())), stageHunk)
+                ? AddPatchLines((0, int.Parse(header.Split("@@")[1].Split(",")[2].Trim())), stageHunk)
                 : AddPatchLines(lineCount, stageHunk, isFileInTheStagingArea, isLineReplaced, fileName);
 
             toWrite += stageHunk
@@ -281,7 +281,8 @@ namespace GitApp
 
         private (int previousLines, int nextLines) GetDiffPatchLineCount()
         {
-            return (indeexes.start - 3 < 0 ? 3 + (indeexes.start - 3) : 3, diff.Current + 3 > elements.Count ? diff.Current + 3 - elements.Count : diff.Current + 3);
+            var endLines = indeexes.end - indeexes.start - 3;
+            return (indeexes.start - 3 < 0 ? 3 + (indeexes.start - 3) : 3, endLines < 0 ? 3 + endLines : 3);
         }
     }
 }
