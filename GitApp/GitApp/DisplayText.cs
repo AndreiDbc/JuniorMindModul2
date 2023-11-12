@@ -213,39 +213,11 @@ namespace GitApp
 
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.Enter))
                 {
-                    var diffIndex = diff.Index == 0 ? 0 : diff.Index;
-                    var diffCurrent = diff.Current == 0 ? 0 : diff.Current;
-                    new Patcher(repoPath, gitManager, diff).StageHunk();
-                    var currentUnstaged = unstaged[unstaged.Current].GetElement();
-                    var unstagedIndex = unstaged.Index;
-                    var unstagedCurrent = unstaged.Current;
-                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
-                    unstaged.Current = unstagedCurrent;
-                    unstaged.Index = unstagedIndex;
-                    diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
-                    diffElements = diff.GetText();
-                    diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
-                    diff.Index = diffIndex;
+                    UpdateVariablesWhenStagingHunk(ref diff, ref unstaged, repoPath, ref diffElements);
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.S))
                 {
-                    var diffIndex = diff.Index == 0 ? 0 : diff.Index;
-                    var diffCurrent = diff.Current == 0 ? 0 : diff.Current - 1;
-                    new Patcher(repoPath, gitManager, diff)
-                        .StageLine(
-                            rightSide.Any(line => line.StartsWith("\u001b[7m\x1b[38;5;190m")),
-                            stagedList.Any(unstagedFile => unstagedFile.GetElement() == currentFile),
-                            currentFile);
-                    var currentUnstaged = unstaged[unstaged.Current].GetElement();
-                    var unstagedIndex = unstaged.Index;
-                    var unstagedCurrent = unstaged.Current;
-                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
-                    unstaged.Current = unstagedCurrent;
-                    unstaged.Index = unstagedIndex;
-                    diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
-                    diffElements = diff.GetText();
-                    diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
-                    diff.Index = diffIndex;
+                    UpdateVariablesWhenStagingLine(ref diff, repoPath, rightSide, stagedList, currentFile, ref unstaged, ref diffElements);
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
@@ -277,6 +249,55 @@ namespace GitApp
                 Write(UpdateHighlightedHunksPage(rightSide, unstaged, staged, keyInteractor), windowHeight < 7);
             }
             while (true);
+        }
+
+        private void UpdateVariablesWhenStagingHunk(ref Diff diff, ref UnstagedFiles unstaged, string repoPath, ref List<IElement> diffElements)
+        {
+            var diffIndex = diff.Index == 0 ? 0 : diff.Index;
+            var diffCurrent = diff.Current == 0 ? 0 : diff.Current;
+            var patchPath = new Patcher(repoPath, gitManager, diff).GetHunkPatchPath();
+            var currentUnstaged = unstaged[unstaged.Current].GetElement();
+            var unstagedIndex = unstaged.Index;
+            var unstagedCurrent = unstaged.Current;
+            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            unstaged.Current = unstagedCurrent;
+            unstaged.Index = unstagedIndex;
+            gitManager.Stage(patchPath);
+            System.IO.File.Delete(patchPath);
+            diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
+            diffElements = diff.GetText();
+            diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
+            diff.Index = diffIndex;
+        }
+
+        private void UpdateVariablesWhenStagingLine(
+            ref Diff diff,
+            string repoPath,
+            List<string> rightSide,
+            List<IElement> stagedList,
+            string currentFile,
+            ref UnstagedFiles unstaged,
+            ref List<IElement> diffElements)
+        {
+            var diffIndex = diff.Index == 0 ? 0 : diff.Index;
+            var diffCurrent = diff.Current == 0 ? 0 : diff.Current - 1;
+            var patchPath = new Patcher(repoPath, gitManager, diff)
+                .GetLinePatchPath(
+                    rightSide.Any(line => line.StartsWith("\u001b[7m\x1b[38;5;190m")),
+                    stagedList.Any(unstagedFile => unstagedFile.GetElement() == currentFile),
+                    currentFile);
+            var currentUnstaged = unstaged[unstaged.Current].GetElement();
+            var unstagedIndex = unstaged.Index;
+            var unstagedCurrent = unstaged.Current;
+            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            unstaged.Current = unstagedCurrent;
+            unstaged.Index = unstagedIndex;
+            gitManager.Stage(patchPath);
+            System.IO.File.Delete(patchPath);
+            diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
+            diffElements = diff.GetText();
+            diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
+            diff.Index = diffIndex;
         }
 
         private List<string> GetTextToRedraw(List<string> toWrite)
