@@ -70,6 +70,7 @@ namespace GitApp
             }
 
             process.StandardInput.Close();
+            process.WaitForExit();
             process.Dispose();
         }
 
