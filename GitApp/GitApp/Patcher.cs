@@ -38,24 +38,24 @@ namespace GitApp
             this.repositoryPath = repositoryPath;
         }
 
-        public void StageLine(bool isLineReplaced, bool isFileInTheStagingArea, string fileName)
+        public string GetLinePatchPath(bool isLineReplaced, bool isFileInTheStagingArea, string fileName)
         {
             if (firstElement == "")
             {
-                return;
+                return "";
             }
 
-            Stage(false, isFileInTheStagingArea, isLineReplaced, fileName);
+            return GetPatchPath(false, isFileInTheStagingArea, isLineReplaced, fileName);
         }
 
-        public void StageHunk()
+        public string GetHunkPatchPath()
         {
             if (firstElement == "")
             {
-                return;
+                return "";
             }
 
-            Stage(true);
+            return GetPatchPath(true);
         }
 
         public void StageAll(string fileName)
@@ -96,17 +96,16 @@ namespace GitApp
         private string FormateHeaderForSingleLine(
             (int start, int end, int currentHeaderStartIndex, int currentHeaderEndIndex) indeexes,
             (int unchanged, int changed) lineCount,
-            string data,
             bool isLineReplaced,
             string header)
         {
-            (var previousLines, var nextLines) = GetDiffPatchLineCount();
+            (var previousLines, var nextLines) = GetDiffPatchLineCount(lineCount.unchanged);
             var currentElement = diff[diff.Current].GetElement();
             var isLineRemoved = currentElement.StartsWith("-") && !isLineReplaced;
             var first = indeexes.start + (lineCount.unchanged - previousLines) - (isLineReplaced && currentElement.StartsWith("+") ? 1 : 0);
-            var second = isLineRemoved || isLineReplaced ? 1 + previousLines + nextLines : previousLines + nextLines;
+            var second = isLineRemoved || (isLineReplaced && currentElement.StartsWith("+")) ? 1 + previousLines + nextLines : previousLines + nextLines;
             var third = first;
-            var fourth = isLineRemoved ? previousLines + nextLines : 1 + previousLines + nextLines;
+            var fourth = isLineRemoved || (isLineReplaced && currentElement.StartsWith("-")) ? previousLines + nextLines : 1 + previousLines + nextLines;
 
             return $"@@ -{first},{second} +{third},{fourth} @@" + header.Split("@@")[2] + "\n";
         }
@@ -127,7 +126,7 @@ namespace GitApp
 
             toWrite += stageHunk
                 ? header + "\n"
-                : FormateHeaderForSingleLine(indeexes, lineCount, linesData, isLineReplaced, header);
+                : FormateHeaderForSingleLine(indeexes, lineCount, isLineReplaced, header);
 
             toWrite += linesData;
 
@@ -150,19 +149,12 @@ namespace GitApp
             return result;
         }
 
-        private string GetPatchPath()
+        private string GetPatchPath(bool stageHunk, bool isFileInTheStagingArea = false, bool isLineReplaced = false, string fileName = "")
         {
             string patchFileName = "patch_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".patch";
-
-            return new PageUtilities(repositoryPath).GetPreviousPath() + "/" + patchFileName;
-        }
-
-        private void Stage(bool stageHunk, bool isFileInTheStagingArea = false, bool isLineReplaced = false, string fileName = "")
-        {
-            var patchPath = GetPatchPath();
+            var patchPath = Path.GetTempPath() + patchFileName;
             GeneratePatch(stageHunk, isFileInTheStagingArea, patchPath, isLineReplaced, fileName);
-            gitManager.Stage(patchPath);
-            System.IO.File.Delete(patchPath);
+            return patchPath;
         }
 
         private bool SetExitCondition(bool isHunkBeingStaged)
@@ -183,7 +175,7 @@ namespace GitApp
         private string AddHunkLines()
         {
             var result = "";
-            for (int i = indeexes.currentHeaderStartIndex + 1; i < indeexes.currentHeaderEndIndex; i++)
+            for (int i = indeexes.currentHeaderStartIndex + 1; i < Math.Min(indeexes.currentHeaderEndIndex + 1, elements.Count); i++)
             {
                 result += diff[i].GetElement() + "\n";
             }
@@ -235,7 +227,7 @@ namespace GitApp
 
         private string FormateDiffForPatch((int unchanged, int changed) lineCount, string[] originalLines, bool isLineReplaced)
         {
-            var whiteLineCount = GetDiffPatchLineCount();
+            var whiteLineCount = GetDiffPatchLineCount(lineCount.unchanged);
             var previousLines = whiteLineCount.previousLines;
             var endLines = whiteLineCount.nextLines;
             var currentElement = diff[diff.Current].GetElement();
@@ -271,11 +263,11 @@ namespace GitApp
             return result;
         }
 
-        private (int previousLines, int nextLines) GetDiffPatchLineCount()
+        private (int previousLines, int nextLines) GetDiffPatchLineCount(int unchangedLines)
         {
             var previousLines = indeexes.start - 3 < 0 ? 3 + (indeexes.start - 4) : 3;
-            var endLines = indeexes.end - indeexes.start - 3 - previousLines;
-            return (previousLines, endLines < 0 ? 3 + endLines : 3);
+            var endLines = Math.Min(3, indeexes.end - indeexes.start - unchangedLines);
+            return (previousLines, endLines);
         }
 
         private string GetReplacedLines(string currentElement)
