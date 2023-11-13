@@ -140,7 +140,7 @@ namespace GitApp
         private void DisplayStatus()
         {
             var repoPath = gitManager.GetRepoPath();
-            var unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            var unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath, "", true));
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
@@ -222,7 +222,7 @@ namespace GitApp
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
                     new Patcher(repoPath, gitManager, diff, currentFile != "").StageAll(unstaged[unstaged.Current].GetElement());
-                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath, currentFile, currentFile == ""));
                 }
 
                 if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged, diffElements))
@@ -259,7 +259,7 @@ namespace GitApp
             var currentUnstaged = unstaged[unstaged.Current].GetElement();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
-            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath, currentFile, currentFile == ""));
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
             gitManager.Stage(patchPath);
@@ -293,7 +293,7 @@ namespace GitApp
             var currentUnstaged = unstaged[unstaged.Current].GetElement();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
-            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath, currentFile, currentFile == ""));
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
             gitManager.Stage(patchPath);

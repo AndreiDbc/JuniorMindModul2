@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Moq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -60,9 +61,15 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "rev-parse --show-toplevel"));
         }
 
-        public string GetFileStatus(string repositoryPath)
+        public string GetFileStatus(string repositoryPath, string filePath = "", bool isFileTracked = false)
         {
-            return commandRunner.RunCommand(new GitCommand(fileName, "status --short", repositoryPath));
+            if (isFileTracked)
+            {
+                return commandRunner.RunCommand(new GitCommand(fileName, "status --short", repositoryPath));
+            }
+
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"));
+            return commandRunner.RunCommand(new GitCommand(fileName, $"diff HEAD {filePath}"));
         }
 
         public string GetStagedFiles()
