@@ -133,7 +133,7 @@ namespace GitApp
                 : FormateHeaderForSingleLine(indeexes, lineCount, isLineReplaced, header);
 
             toWrite += linesData + "\n";
-
+            toWrite = toWrite.Contains("∩╗┐") ? toWrite.Replace("∩╗┐", "\ufeff") : toWrite;
             System.IO.File.Create(patchPath).Close();
             using (StreamWriter patchFileWriter = new StreamWriter(patchPath))
             {
