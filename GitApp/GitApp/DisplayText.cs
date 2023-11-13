@@ -263,7 +263,11 @@ namespace GitApp
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
             gitManager.Stage(patchPath);
-            System.IO.File.Delete(patchPath);
+            if (System.IO.File.Exists(patchPath))
+            {
+                System.IO.File.Delete(patchPath);
+            }
+
             diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
             diffElements = diff.GetText();
             diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
@@ -293,7 +297,11 @@ namespace GitApp
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
             gitManager.Stage(patchPath);
-            System.IO.File.Delete(patchPath);
+            if (System.IO.File.Exists(patchPath))
+            {
+                System.IO.File.Delete(patchPath);
+            }
+
             diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
             diffElements = diff.GetText();
             diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
