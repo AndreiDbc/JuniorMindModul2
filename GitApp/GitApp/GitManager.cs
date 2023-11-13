@@ -61,15 +61,9 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "rev-parse --show-toplevel"));
         }
 
-        public string GetFileStatus(string repositoryPath, string filePath = "", bool isFileTracked = false)
+        public string GetFileStatus(string repositoryPath)
         {
-            if (isFileTracked)
-            {
-                return commandRunner.RunCommand(new GitCommand(fileName, "status --short", repositoryPath));
-            }
-
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"));
-            return commandRunner.RunCommand(new GitCommand(fileName, $"diff HEAD {filePath}"));
+            return commandRunner.RunCommand(new GitCommand(fileName, "status --short", repositoryPath));
         }
 
         public string GetStagedFiles()
@@ -77,9 +71,15 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "diff --staged --name-only"));
         }
 
-        public string GetUnstagedDiff(string filePath, string repositoryPath)
+        public string GetUnstagedDiff(string filePath, string repositoryPath, bool isFileTracked = false)
         {
-            return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
+            if (isFileTracked)
+            {
+                return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
+            }
+
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"));
+            return commandRunner.RunCommand(new GitCommand(fileName, $"diff HEAD {filePath}"));
         }
 
         public void Stage(string patchPath)

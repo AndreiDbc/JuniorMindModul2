@@ -140,7 +140,7 @@ namespace GitApp
         private void DisplayStatus()
         {
             var repoPath = gitManager.GetRepoPath();
-            var unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath, "", true));
+            var unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = windowHeight * windowWidth;
@@ -162,7 +162,7 @@ namespace GitApp
                 {
                     var currentFile = unstaged[unstaged.Current].GetElement();
                     DisplayHighlightedHunksPage(
-                        new Diff(gitManager.GetUnstagedDiff(currentFile, repoPath)),
+                        new Diff(gitManager.GetUnstagedDiff(currentFile, repoPath, currentFile != "" && unstaged.GetText().Count >= 1)),
                         ref unstaged,
                         repoPath,
                         currentFile);
@@ -222,7 +222,7 @@ namespace GitApp
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
                     new Patcher(repoPath, gitManager, diff, currentFile != "").StageAll(unstaged[unstaged.Current].GetElement());
-                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath, currentFile, currentFile == ""));
+                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
                 }
 
                 if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged, diffElements))
@@ -259,7 +259,7 @@ namespace GitApp
             var currentUnstaged = unstaged[unstaged.Current].GetElement();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
-            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath, currentFile, currentFile == ""));
+            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
             gitManager.Stage(patchPath);
@@ -268,7 +268,7 @@ namespace GitApp
                 System.IO.File.Delete(patchPath);
             }
 
-            diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
+            diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1));
             diffElements = diff.GetText();
             diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
             diff.Index = diffIndex;
@@ -293,7 +293,7 @@ namespace GitApp
             var currentUnstaged = unstaged[unstaged.Current].GetElement();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
-            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath, currentFile, currentFile == ""));
+            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
             gitManager.Stage(patchPath);
@@ -302,7 +302,7 @@ namespace GitApp
                 System.IO.File.Delete(patchPath);
             }
 
-            diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
+            diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1));
             diffElements = diff.GetText();
             diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
             diff.Index = diffIndex;
@@ -681,7 +681,7 @@ namespace GitApp
             var leftSideTemp = new List<string>();
             leftSideTemp.AddRange(new BoxDrawer(leftSide, "Unstaged").DrawBox((int)(0.6 * windowWidth), unstagedHeight + 2));
             var currentUnstaged = unstaged[unstaged.Current].GetElement();
-            var diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath));
+            var diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, unstaged[unstaged.Current].GetElement() != "" && unstaged.GetText().Count >= 1));
             var rightSide = new BoxDrawer(
                 diff[0].GetElement() == ""
                     ? new List<string>()
