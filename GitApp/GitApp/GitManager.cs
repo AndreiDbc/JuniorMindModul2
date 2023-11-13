@@ -71,15 +71,15 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "diff --staged --name-only"));
         }
 
-        public string GetUnstagedDiff(string filePath, string repositoryPath, bool isFileTracked = false)
+        public string GetUnstagedDiff(string filePath, string repositoryPath, bool doesFileExist = false)
         {
-            if (isFileTracked)
+            var diff = commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
+            if (doesFileExist && diff == "")
             {
-                return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
+                commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"));
             }
 
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"));
-            return commandRunner.RunCommand(new GitCommand(fileName, $"diff HEAD {filePath}"));
+            return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
         }
 
         public void Stage(string patchPath)
