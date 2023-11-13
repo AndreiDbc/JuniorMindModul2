@@ -9,8 +9,6 @@ namespace GitApp
 {
     public class UnstagedFiles : ModifiedFiles
     {
-        private bool[] stagedFiles;
-
         public UnstagedFiles(string unstagedRawData) : base(unstagedRawData)
         {
         }
@@ -19,17 +17,11 @@ namespace GitApp
         {
             var result = new List<IElement>();
             var files = rawData.Split("\n");
-            InitializeArrayForStagedFiles(files);
             for (int i = 0; i < files.Length; i++)
             {
                 var item = files[i];
-                if (item.StartsWith("MM"))
+                if (item.StartsWith("AD"))
                 {
-                    stagedFiles[i] = true;
-                }
-                else if (item.StartsWith("M") || item.StartsWith("AD"))
-                {
-                    stagedFiles[i] = true;
                     continue;
                 }
 
@@ -37,17 +29,6 @@ namespace GitApp
             }
 
             return result;
-        }
-
-        private void InitializeArrayForStagedFiles(string[] files)
-        {
-            if (stagedFiles != null)
-            {
-                return;
-            }
-
-            stagedFiles = new bool[files.Length];
-            Array.Fill(stagedFiles, false);
         }
     }
 }
