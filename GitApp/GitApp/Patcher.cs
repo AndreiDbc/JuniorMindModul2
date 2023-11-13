@@ -22,8 +22,9 @@ namespace GitApp
         private readonly List<IElement> elements;
         private readonly string firstElement;
         private readonly (int start, int end, int currentHeaderStartIndex, int currentHeaderEndIndex) indeexes;
+        private readonly bool fileExists;
 
-        public Patcher(string repositoryPath, GitManager gitManager, Diff diff)
+        public Patcher(string repositoryPath, GitManager gitManager, Diff diff, bool fileExists)
         {
             this.diff = diff;
             elements = diff.GetText();
@@ -36,11 +37,12 @@ namespace GitApp
 
             this.gitManager = gitManager;
             this.repositoryPath = repositoryPath;
+            this.fileExists = fileExists;
         }
 
         public string GetLinePatchPath(bool isLineReplaced, bool isFileInTheStagingArea, string fileName)
         {
-            if (firstElement == "" || indeexes.currentHeaderStartIndex == -1)
+            if (firstElement == "" || indeexes.currentHeaderStartIndex == -1 || fileExists)
             {
                 return "";
             }
@@ -50,7 +52,7 @@ namespace GitApp
 
         public string GetHunkPatchPath()
         {
-            if (firstElement == "" || indeexes.currentHeaderStartIndex == -1)
+            if (firstElement == "" || indeexes.currentHeaderStartIndex == -1 || fileExists)
             {
                 return "";
             }

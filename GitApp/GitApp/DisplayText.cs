@@ -213,7 +213,7 @@ namespace GitApp
 
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.Enter))
                 {
-                    UpdateVariablesWhenStagingHunk(ref diff, ref unstaged, repoPath, ref diffElements);
+                    UpdateVariablesWhenStagingHunk(ref diff, ref unstaged, repoPath, ref diffElements, currentFile);
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.S))
                 {
@@ -221,7 +221,7 @@ namespace GitApp
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
-                    new Patcher(repoPath, gitManager, diff).StageAll(unstaged[unstaged.Current].GetElement());
+                    new Patcher(repoPath, gitManager, diff, currentFile != "").StageAll(unstaged[unstaged.Current].GetElement());
                     unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
                 }
 
@@ -251,11 +251,11 @@ namespace GitApp
             while (true);
         }
 
-        private void UpdateVariablesWhenStagingHunk(ref Diff diff, ref UnstagedFiles unstaged, string repoPath, ref List<IElement> diffElements)
+        private void UpdateVariablesWhenStagingHunk(ref Diff diff, ref UnstagedFiles unstaged, string repoPath, ref List<IElement> diffElements, string currentFile)
         {
             var diffIndex = diff.Index == 0 ? 0 : diff.Index;
             var diffCurrent = diff.Current == 0 ? 0 : diff.Current;
-            var patchPath = new Patcher(repoPath, gitManager, diff).GetHunkPatchPath();
+            var patchPath = new Patcher(repoPath, gitManager, diff, currentFile != "").GetHunkPatchPath();
             var currentUnstaged = unstaged[unstaged.Current].GetElement();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
@@ -285,7 +285,7 @@ namespace GitApp
         {
             var diffIndex = diff.Index == 0 ? 0 : diff.Index;
             var diffCurrent = diff.Current == 0 ? 0 : diff.Current - 1;
-            var patchPath = new Patcher(repoPath, gitManager, diff)
+            var patchPath = new Patcher(repoPath, gitManager, diff, currentFile != "")
                 .GetLinePatchPath(
                     rightSide.Any(line => line.StartsWith("\u001b[7m\x1b[38;5;190m")),
                     stagedList.Any(unstagedFile => unstagedFile.GetElement() == currentFile),
