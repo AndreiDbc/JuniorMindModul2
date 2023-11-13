@@ -40,7 +40,7 @@ namespace GitApp
 
         public string GetLinePatchPath(bool isLineReplaced, bool isFileInTheStagingArea, string fileName)
         {
-            if (firstElement == "")
+            if (firstElement == "" || indeexes.currentHeaderStartIndex == -1)
             {
                 return "";
             }
@@ -50,7 +50,7 @@ namespace GitApp
 
         public string GetHunkPatchPath()
         {
-            if (firstElement == "")
+            if (firstElement == "" || indeexes.currentHeaderStartIndex == -1)
             {
                 return "";
             }
@@ -83,13 +83,17 @@ namespace GitApp
 
         private (int start, int end, int currentHeaderStartIndex, int currentHeaderEndIndex) GetStartLineNumberAndHunkIndex()
         {
-            var currentHeaderStartIndex = headers.Last(index => index <= diff.Current);
+            var currentHeaderStartIndex = headers[0] > diff.Current ? -1 : headers.Last(index => index <= diff.Current);
+            if (currentHeaderStartIndex < 0)
+            {
+                return (-1, -1, -1, -1);
+            }
+
             var header = diff[currentHeaderStartIndex].GetElement();
             var temp = header.Split("@@ ")[1].Split(",");
             var start = int.Parse(temp[0][1..]);
             var end = int.Parse(temp[1].Split(" ")[0]);
-            var currentHeaderEndIndex = headers[headers.Length - 1] == currentHeaderStartIndex ? elements.Count : headers.First(index => index > diff.Current) - 1;
-            currentHeaderEndIndex = currentHeaderEndIndex < 0 ? elements.Count - 1 : currentHeaderEndIndex;
+            var currentHeaderEndIndex = headers[headers.Length - 1] == currentHeaderStartIndex ? elements.Count : headers.First(index => index > diff.Current);
             return (start, start + end, currentHeaderStartIndex, currentHeaderEndIndex);
         }
 
@@ -128,7 +132,7 @@ namespace GitApp
                 ? header + "\n"
                 : FormateHeaderForSingleLine(indeexes, lineCount, isLineReplaced, header);
 
-            toWrite += linesData;
+            toWrite += linesData + "\n";
 
             System.IO.File.Create(patchPath).Close();
             using (StreamWriter patchFileWriter = new StreamWriter(patchPath))
@@ -146,7 +150,7 @@ namespace GitApp
                 result += diff[i].GetElement() + "\n";
             }
 
-            return result;
+            return elements[elements.Count - 1].GetElement() == "\n" ? result[..^1] : result;
         }
 
         private string GetPatchPath(bool stageHunk, bool isFileInTheStagingArea = false, bool isLineReplaced = false, string fileName = "")
@@ -175,7 +179,7 @@ namespace GitApp
         private string AddHunkLines()
         {
             var result = "";
-            for (int i = indeexes.currentHeaderStartIndex + 1; i < Math.Min(indeexes.currentHeaderEndIndex + 1, elements.Count); i++)
+            for (int i = indeexes.currentHeaderStartIndex + 1; i < indeexes.currentHeaderEndIndex; i++)
             {
                 result += diff[i].GetElement() + "\n";
             }
