@@ -221,7 +221,7 @@ namespace GitApp
                 }
                 else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A))
                 {
-                    new Patcher(repoPath, gitManager, diff, currentFile != "").StageAll(unstaged[unstaged.Current].GetElement());
+                    gitManager.StageFile(repoPath, currentFile);
                     unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
                 }
 

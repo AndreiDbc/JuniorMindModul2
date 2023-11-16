@@ -9,6 +9,11 @@ namespace GitApp.Tests
 {
     public class FakeGitProcessRunner : IProcessRunner
     {
+        private readonly string path;
+        public FakeGitProcessRunner(string path = "")
+        {
+            this.path = path;
+        }
 
         string IProcessRunner.RunCommand(GitCommand command)
         {
@@ -17,7 +22,7 @@ namespace GitApp.Tests
 
         void IProcessRunner.ApplyCommand(GitCommand command)
         {
-            ApplyData(command);
+            ApplyData();
         }
 
         public bool AppliedData { get; set; }
@@ -28,14 +33,14 @@ namespace GitApp.Tests
             {
                 "branch --show-current" => "master",
                 "show --pretty=\"\" --name-only 7f37022" =>
-                "GitApp/GitApp/DisplayText.cs\n" +
-                "GitApp/GitApp/ConsoleWrapper.cs\n" +
-                "GitApp/GitApp/IElement.cs\n" +
-                "GitApp/GitApp/Program.cs\n" +
-                "GitApp/GitApp/InitialData.cs\n" +
-                "GitApp/GitApp/IInteractor.cs\n" +
-                "GitApp/GitApp.Tests/DisplayTextTests.cs\n" +
-                "GitApp/GitApp.Tests/FakeConsole.cs",
+                    "GitApp/GitApp/DisplayText.cs\n" +
+                    "GitApp/GitApp/ConsoleWrapper.cs\n" +
+                    "GitApp/GitApp/IElement.cs\n" +
+                    "GitApp/GitApp/Program.cs\n" +
+                    "GitApp/GitApp/InitialData.cs\n" +
+                    "GitApp/GitApp/IInteractor.cs\n" +
+                    "GitApp/GitApp.Tests/DisplayTextTests.cs\n" +
+                    "GitApp/GitApp.Tests/FakeConsole.cs",
                 "rev-parse --show-toplevel" => "",
                 "diff bfa2684 7f37022 -- GitApp/GitApp/DisplayText.cs" =>
                     "diff --git a/GitApp/GitApp/DisplayText.cs b/GitApp/GitApp/DisplayText.cs\r\n" +
@@ -64,17 +69,79 @@ namespace GitApp.Tests
                     "+                    codes = new PageUtilities(result[^1]).FormatingCodesStringUtilities().codes.Replace(\"\\u001b[0m\", \"\");\r\n" +
                     "                 }\r\n" +
                     "             }",
-                _ => "",
+                "show: GitApp/GitApp/Hunk.cs" => "//test\n" +
+                    "using System;\n" +
+                    "using System.Collections.Generic;\n" +
+                    "using System.Linq;\n" +
+                    "using System.Text;\n" +
+                    "using System.Threading.Tasks;\n" +
+                    "\n" +
+                    "namespace GitApp\n" +
+                    "{\n" +
+                    "    public class Hunk : IElement\n" +
+                    "    {\n" +
+                    "        private readonly string rawData;\n" +
+                    "        private readonly string index;\n" +
+                    "\n" +
+                    "        public Hunk(string rawData, string index)\n" +
+                    "        {\n" +
+                    "            this.rawData = rawData;\n" +
+                    "            this.index = index;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        public string Id { get => index; }\n" +
+                    "\n" +
+                    "        public string GetElement()\n" +
+                    "        {\n" +
+                    "            return rawData;\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}",
+                "log -n 1 --pretty=format:%H -- GitApp/GitApp/Hunk.cs" => "99999999999999",
+                "show 9999999:GitApp/GitApp/Hunk.cs" => "using System;\n" +
+                    "using System.Collections.Generic;\n" +
+                    "using System.Linq;\n" +
+                    "using System.Text;\n" +
+                    "using System.Threading.Tasks;\n" +
+                    "\n" +
+                    "namespace GitApp\n" +
+                    "{\n" +
+                    "    public class Hunk : IElement\n" +
+                    "    {\n" +
+                    "        private readonly string rawData;\n" +
+                    "        private readonly string index;\n" +
+                    "\n" +
+                    "        public Hunk(string rawData, string index)\n" +
+                    "        {\n" +
+                    "            this.rawData = rawData;\n" +
+                    "            this.index = index;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        public string Id { get => index; }\n" +
+                    "\n" +
+                    "        public string GetElement()\n" +
+                    "        {\n" +
+                    "            return rawData;\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}",
+                "show :TestClass"=> "using System.Text;",
+            _ => "",
             };
         }
 
-        private void ApplyData(GitCommand command)
+        private void ApplyData()
         {
-            AppliedData = command.Argument switch
+            AppliedData = FileExists();
+        }
+
+        private bool FileExists()
+        {
+            if (System.IO.File.Exists(path))
             {
-                "add -p -- /GitApp/GitApp/DisplayText.cs" => command.Argument == "add -p -- /GitApp/GitApp/DisplayText.cs" && command.StartLine == 192 && command.EndLine == 203,
-                _ => false,
-            };
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -24,6 +24,8 @@ namespace GitApp
         private readonly string firstElement;
         private readonly (int start, int end, int currentHeaderStartIndex, int currentHeaderEndIndex) indeexes;
         private readonly bool fileExists;
+        private readonly string header;
+        private readonly int splitHeaderLength;
 
         public Patcher(string repositoryPath, GitManager gitManager, Diff diff, bool fileExists)
         {
@@ -34,6 +36,8 @@ namespace GitApp
             {
                 headers = GetHeaders();
                 indeexes = GetStartLineNumberAndHunkIndex();
+                header = elements[indeexes.currentHeaderStartIndex].GetElement();
+                splitHeaderLength = header.Split("@@")[1].Trim().Split(" ")[0].Split(",").Length;
             }
 
             this.gitManager = gitManager;
@@ -59,11 +63,6 @@ namespace GitApp
             }
 
             return GetPatchPath(true);
-        }
-
-        public void StageAll(string fileName)
-        {
-            gitManager.StageFile(repositoryPath, fileName);
         }
 
         private int[] GetHeaders()
@@ -92,8 +91,8 @@ namespace GitApp
                 return (-1, -1, -1, -1);
             }
 
-            var header = diff[currentHeaderStartIndex].GetElement();
-            var temp = header.Split("@@")[1].Trim().Split(" ");
+            var tempHeader = diff[currentHeaderStartIndex].GetElement();
+            var temp = tempHeader.Split("@@")[1].Trim().Split(" ");
             var start = int.Parse(temp[0].Split(",")[0][1..]);
             var end = int.Parse(temp[temp.Length == 3 ? 2 : 1].Split(",")[1]);
             var currentHeaderEndIndex = headers[headers.Length - 1] == currentHeaderStartIndex ? elements.Count : headers.First(index => index > diff.Current);
@@ -113,10 +112,9 @@ namespace GitApp
             var second = isLineRemoved || isLineReplaced ? 1 + previousLines + nextLines : previousLines + nextLines;
             var third = first;
             var fourth = isLineRemoved ? previousLines + nextLines : 1 + previousLines + nextLines;
-            var temp = header.Split("@@")[1].Trim().Split(" ")[0].Split(",").Length;
             var test = "@@ -1,2 +1,3 @@" + header.Split("@@")[2] + "\n";
-            return temp == 1
-                ? "@@ -0,0 +1 @@" + header.Split("@@")[2] + "\n"
+            return splitHeaderLength == 1
+                ? "@@ -1 +1,2 @@" + header.Split("@@")[2] + "\n"
              : $"@@ -{first},{second} +{third},{fourth} @@" + header.Split("@@")[2] + "\n";
         }
 
@@ -128,7 +126,6 @@ namespace GitApp
                 return;
             }
 
-            var header = elements[indeexes.currentHeaderStartIndex].GetElement();
             var lineCount = GetLineCount(indeexes.currentHeaderStartIndex, isLineReplaced);
             var temp = header.Split("@@")[1].Trim().Split(" ")[0].Split(",").Length;
             var originalFile = new string[0];
@@ -136,7 +133,7 @@ namespace GitApp
             {
                 originalFile = gitManager.GetStagedFileLines(fileName, repositoryPath).Split("\n");
             }
-            else if (temp == 1 || indeexes.start == 0)
+            else if (indeexes.start == 0)
             {
                 originalFile = new string[0];
             }
@@ -151,7 +148,6 @@ namespace GitApp
                 : FormateHeaderForSingleLine(indeexes, lineCount, isLineReplaced, header);
 
             linesData = !stageHunk && !isLineReplaced && diff.Current - indeexes.currentHeaderEndIndex == indeexes.start ? linesData.Insert(1, "∩╗┐") : linesData;
-            linesData += indeexes.start == 0 ? diff[diff.Current].GetElement() + "\n" : "";
             toWrite += linesData + "\n";
             toWrite = toWrite.Contains("∩╗┐") ? toWrite.Replace("∩╗┐", "\ufeff") : toWrite;
             System.IO.File.Create(patchPath).Close();
@@ -220,7 +216,7 @@ namespace GitApp
 
             if (isLineReplaced)
             {
-                changed += diff[diff.Current].GetElement().StartsWith("-") ? 1 : (-1);
+                changed -= diff[diff.Current].GetElement().StartsWith("+") ? 1 : 0;
             }
 
             return (unchanged, changed);
@@ -238,21 +234,21 @@ namespace GitApp
             var result = "";
             var additionalNumber = 0;
             var count = 0;
-            for (int i = start; i < start + previousLines + endLines; i++)
+            for (int i = start; i < start + previousLines + endLines + 1; i++)
             {
-                var hasReachedCurrent = count == previousLines;
-                if (hasReachedCurrent && isLineReplaced)
+                var isCurrent = count == previousLines;
+                if (isCurrent && isLineReplaced)
                 {
                     result += GetReplacedLines(currentElement);
                     additionalNumber++;
                 }
-                else if (hasReachedCurrent)
+                else if (isCurrent)
                 {
                     result += diff[diff.Current].GetElement() + "\n";
                     additionalNumber += isLineRemoved ? 1 : 0;
                 }
 
-                if (i + additionalNumber > originalLines.Length - 1 && originalLines.Length != 0)
+                if (count == previousLines + endLines)
                 {
                     break;
                 }
@@ -266,27 +262,31 @@ namespace GitApp
 
         private (int previousLines, int nextLines) GetDiffPatchLineCount(bool isLineReplaced)
         {
-            var previousLines = indeexes.start - 3 < 0 ? 3 - Math.Abs(indeexes.start - 4) : 3;
-            var endLines = GetUnchangedLinesAfterCurrent(isLineReplaced, previousLines);
-            return (indeexes.start == 0 ? 0 : previousLines, endLines);
+            var lines = GetNoOfUnchangedLines(isLineReplaced);
+            return (lines.previousLines < 3 ? lines.previousLines : 3, lines.nextLines < 3 ? lines.nextLines : 3);
         }
 
-        private int GetUnchangedLinesAfterCurrent(bool isLineReplaced, int previousLines)
+        private (int previousLines, int nextLines) GetNoOfUnchangedLines(bool isLineReplaced)
         {
-            var result = 0;
-            for (int i = diff.Current; i < diff.Current + (indeexes.end - indeexes.start) - previousLines; i++)
+            var previous = 0;
+            var next = 0;
+            var hasReachedCurret = false;
+            for (int i = indeexes.currentHeaderStartIndex + 1; i < indeexes.currentHeaderEndIndex; i++)
             {
-                if (diff[i].GetElement().StartsWith("-"))
+                var current = diff[i].GetElement();
+                if (i.Equals(diff.Current))
                 {
-                    result++;
+                    hasReachedCurret = true;
+                    previous -= isLineReplaced && current.StartsWith("+") ? 1 : 0;
                 }
-                else if (diff[i].GetElement().StartsWith(" "))
+                else if (current.StartsWith("-") || current.StartsWith(" "))
                 {
-                    result++;
+                    previous += hasReachedCurret ? 0 : 1;
+                    next += hasReachedCurret ? 1 : 0;
                 }
             }
 
-            return result;
+            return (previous, next);
         }
 
         private string GetReplacedLines(string currentElement)
