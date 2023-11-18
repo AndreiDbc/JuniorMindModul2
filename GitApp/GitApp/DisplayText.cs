@@ -300,19 +300,7 @@ namespace GitApp
                 staged = new ModifiedFiles(gitManager.GetStagedFiles());
                 var stagedList = staged.GetText();
 
-                if (keyInteractor.KeyInfo.Equals(ConsoleKey.Enter) && unstagedAvailability)
-                {
-                    UpdateVariablesWhenStagingHunk(ref diff, ref unstaged, repoPath, ref diffElements, currentFile);
-                }
-                else if (keyInteractor.KeyInfo.Equals(ConsoleKey.S) && unstagedAvailability)
-                {
-                    UpdateVariablesWhenStagingLine(ref diff, repoPath, rightSide, stagedList, currentFile, ref unstaged, ref diffElements);
-                }
-                else if (keyInteractor.KeyInfo.Equals(ConsoleKey.A) && unstagedAvailability)
-                {
-                    gitManager.StageFile(repoPath, currentFile);
-                    unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
-                }
+                SelectStageOption(ref diff, ref unstaged, ref diffElements, rightSide, stagedList, repoPath, unstagedAvailability);
 
                 if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged, diffElements))
                 {
@@ -340,6 +328,36 @@ namespace GitApp
                 Write(toDisplay, windowHeight < 7);
             }
             while (true);
+        }
+
+        private void SelectStageOption(
+            ref Diff diff,
+            ref UnstagedFiles unstaged,
+            ref List<IElement> diffElements,
+            List<string> rightSide,
+            List<IElement> stagedList,
+            string repoPath,
+            bool unstagedAvailability)
+        {
+            if (!unstagedAvailability)
+            {
+                return;
+            }
+
+            var currentFile = unstaged[unstaged.Current].GetElement();
+            if (key.Equals(ConsoleKey.Enter))
+            {
+                UpdateVariablesWhenStagingHunk(ref diff, ref unstaged, repoPath, ref diffElements, currentFile);
+            }
+            else if (key.Equals(ConsoleKey.S))
+            {
+                UpdateVariablesWhenStagingLine(ref diff, repoPath, rightSide, stagedList, currentFile, ref unstaged, ref diffElements);
+            }
+            else if (key.Equals(ConsoleKey.A))
+            {
+                gitManager.StageFile(repoPath, currentFile);
+                unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            }
         }
 
         private void UpdateVariablesWhenStagingHunk(ref Diff diff, ref UnstagedFiles unstaged, string repoPath, ref List<IElement> diffElements, string currentFile)
