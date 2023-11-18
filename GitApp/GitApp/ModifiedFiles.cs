@@ -20,6 +20,11 @@ namespace GitApp
             Index = 0;
         }
 
+        public int ListCount
+        {
+            get { return list.Count; }
+        }
+
         public int Current { get; set; }
 
         public int Index { get; set; }

@@ -82,6 +82,11 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
         }
 
+        public string GetStagedDiff(string stagedFile, string repositoryPath)
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, $"diff --staged {stagedFile}", repositoryPath));
+        }
+
         public void Stage(string patchPath)
         {
             commandRunner.ApplyCommand(new GitCommand(fileName, $"apply --cached \"{patchPath}\""));
