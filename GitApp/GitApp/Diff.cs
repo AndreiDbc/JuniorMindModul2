@@ -83,6 +83,11 @@ namespace GitApp
 
         private static string RecolorDiffLine(string previous, string current, string next, bool isScreenSplit = false)
         {
+            if (current.StartsWith("+++") || current.StartsWith("---"))
+            {
+                return current;
+            }
+
             if (current.StartsWith("+") && (previous.StartsWith("\u001b[38;5;190m-") || previous.StartsWith("\u001b[7m\u001b[38;5;190m-")))
             {
                 return "\x1b[38;5;190m" + current;
@@ -106,13 +111,10 @@ namespace GitApp
         private List<string> GenerateHighlightedSide(int height, int width, int availableSpace, bool isScreenSplit = false)
         {
             var lines = diff.Split("\n");
-            var startingPoint = lines[3].StartsWith("+++") ? 5 : 6;
-            var index = startingPoint < Index ? Index : startingPoint;
+            var index = Index;
             var result = new List<string>();
             var occupacyRate = 0;
             var doesPageContainCurrent = false;
-            (result, occupacyRate, doesPageContainCurrent) = SetFirstLines(result, lines, startingPoint, width, isScreenSplit);
-            index = occupacyRate == 0 ? Index : index;
             for (int i = index; i < lines.Length; i++)
             {
                 if (diffList[index].Id.Equals(diffList[Current].Id))
@@ -131,7 +133,7 @@ namespace GitApp
                 var lineUtilities = new PageUtilities(lines[i]);
                 occupacyRate += lineUtilities.GetOccupancyRate(width);
                 lines[i] = (diffList[index].Id.Equals(diffList[Current].Id) && isScreenSplit ? "\u001b[7m" : "")
-                    + RecolorDiffLine(lines[i - 1], lines[i], index == diffList.Count - 1 ? "" : lines[i + 1]);
+                    + RecolorDiffLine(index == 0 ? "" : lines[i - 1], lines[i], index == diffList.Count - 1 ? "" : lines[i + 1]);
                 result.AddRange(new PageUtilities(lines[i]).SplitRow(width));
                 index++;
             }
@@ -174,41 +176,6 @@ namespace GitApp
             Current = doesPageContainCurrent ? Current : Index;
             list[0] = doesPageContainCurrent ? list[0] : "\u001b[7m" + list[0];
             return list;
-        }
-
-        private (List<string> lines, int occupancy, bool doesPageContainCurrent) SetFirstLines(
-            List<string> list,
-            string[] lines,
-            int startingPoint,
-            int width,
-            bool isScreenSplit)
-        {
-            var occupancy = 0;
-            if (startingPoint < Index)
-            {
-                return (list, occupancy, false);
-            }
-
-            var doesPageContainCurrent = false;
-            var toInsert = new List<string>();
-            var index = Index;
-            for (int i = index; i < startingPoint; i++)
-            {
-                if (diffList[index].Id.Equals(diffList[Current].Id))
-                {
-                    doesPageContainCurrent = true;
-                }
-
-                var utilities = new PageUtilities(lines[i]);
-                occupancy += utilities.GetOccupancyRate(width);
-                toInsert.AddRange(diffList[index].Id.Equals(diffList[Current].Id)
-                    ? new PageUtilities((isScreenSplit ? "\u001b[7m" : "") + lines[i]).SplitRow(width)
-                    : utilities.SplitRow(width));
-                index++;
-            }
-
-            list.InsertRange(0, toInsert);
-            return (list, occupancy, doesPageContainCurrent);
         }
     }
 }
