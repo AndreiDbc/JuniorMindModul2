@@ -35,6 +35,11 @@ namespace GitApp
             if (firstElement != "")
             {
                 headers = GetHeaders();
+                if (headers.Length == 0)
+                {
+                    return;
+                }
+
                 if (headers[0] > diff.Current)
                 {
                     return;
