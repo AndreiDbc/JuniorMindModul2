@@ -20,7 +20,7 @@ namespace GitApp
             for (int i = 0; i < files.Length; i++)
             {
                 var item = files[i];
-                if (item.StartsWith("AD") || item.StartsWith("M"))
+                if (item.StartsWith("AD") || item.StartsWith("M") || item.StartsWith("D"))
                 {
                     continue;
                 }
