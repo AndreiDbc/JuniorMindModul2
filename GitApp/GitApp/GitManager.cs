@@ -73,13 +73,13 @@ namespace GitApp
 
         public string GetUnstagedDiff(string filePath, string repositoryPath, bool doesFileExist = false)
         {
-            var diff = commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
+            var diff = commandRunner.RunCommand(new GitCommand(fileName, $"diff -- {filePath}", repositoryPath));
             if (doesFileExist && diff == "")
             {
                 commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"));
             }
 
-            return commandRunner.RunCommand(new GitCommand(fileName, $"diff {filePath}", repositoryPath));
+            return diff;
         }
 
         public string GetStagedDiff(string stagedFile, string repositoryPath)
