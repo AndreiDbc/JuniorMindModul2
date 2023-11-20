@@ -52,7 +52,7 @@ namespace GitApp
 
         public string GetLinePatchPath(bool isLineReplaced, bool isFileInTheStagingArea, string fileName)
         {
-            if (firstElement == "" || indeexes.currentHeaderStartIndex == -1 || !fileExists)
+            if (firstElement == "" || indeexes.currentHeaderStartIndex <= 0 || !fileExists)
             {
                 return "";
             }
@@ -62,7 +62,7 @@ namespace GitApp
 
         public string GetHunkPatchPath()
         {
-            if (firstElement == "" || indeexes.currentHeaderStartIndex == -1 || !fileExists)
+            if (firstElement == "" || indeexes.currentHeaderStartIndex <= 0 || !fileExists)
             {
                 return "";
             }
