@@ -35,6 +35,11 @@ namespace GitApp
             if (firstElement != "")
             {
                 headers = GetHeaders();
+                if (headers[0] > diff.Current)
+                {
+                    return;
+                }
+
                 indeexes = GetStartLineNumberAndHunkIndex();
                 header = elements[indeexes.currentHeaderStartIndex].GetElement();
                 splitHeaderLength = header.Split("@@")[1].Trim().Split(" ")[0].Split(",").Length;
