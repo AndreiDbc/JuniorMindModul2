@@ -98,17 +98,5 @@ namespace GitApp.Tests
             };
             Assert.Equal(expected, value);
         }
-
-        [Fact]
-        public void GetShortFileNameIsCalledShouldReturnFileNameWithouthPath()
-        {
-            Assert.Equal("6.txt", new PageUtilities("a\\s\\d\\f\\g\\45\\67\\gh\\6.txt").GetShortFileName());
-        }
-
-        [Fact]
-        public void GetPreviousPathIsCalledShouldGetPreviousPath()
-        {
-            Assert.Equal("a\\s\\d\\f\\g\\45\\67\\gh", new PageUtilities("a\\s\\d\\f\\g\\45\\67\\gh\\6.txt").GetPreviousPath());
-        }
     }
 }

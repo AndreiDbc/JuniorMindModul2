@@ -125,8 +125,78 @@ namespace GitApp.Tests
                     "        }\n" +
                     "    }\n" +
                     "}",
-                "show :TestClass"=> "using System.Text;",
-            _ => "",
+                "show :TestClass" => "using System.Text;",
+                "status --short" => " M GitApp/GitApp/Hunk.cs\n" +
+                                    " M GitApp/GitApp/DisplayText.cs\n" +
+                                    " M GitApp/GitApp/Patcher.cs\n" +
+                                    " D GitApp/GitApp/StagedFiles.cs\n" +
+                                    "AD GitApp/GitApp/TestClass.cs",
+                "diff GitApp/GitApp/Hunk.cs" => "diff --git a/GitApp/GitApp/Hunk.cs b/GitApp/GitApp/Hunk.cs\n" +
+                                                "index c0fc9dc..56855bd 100644\n" +
+                                                "--- a/GitApp/GitApp/Hunk.cs\n" +
+                                                "+++ b/GitApp/GitApp/Hunk.cs\n" +
+                                                "@@ -1,4 +1,5 @@\n" +
+                                                " ∩╗┐using System;\n" +
+                                                "+//test\n" +
+                                                " using System.Collections.Generic;\n" +
+                                                " using System.Linq;\n" +
+                                                " using System.Text;\n" +
+                                                "@@ -13,7 +14,6 @@ namespace GitApp\n" +
+                                                "\n" +
+                                                "         public Hunk(string rawData, string index)\n" +
+                                                "         {\n" +
+                                                "-            this.rawData = rawData;\n" +
+                                                "             this.index = index;\n" +
+                                                "         }\n" +
+                                                "\n" +
+                                                "@@ -21,7 +21,7 @@ namespace GitApp\n" +
+                                                "\n" +
+                                                "         public string GetElement()\n" +
+                                                "         {\n" +
+                                                "-            return rawData;\n" +
+                                                "+            return rawData;//test\n" +
+                                                "         }\n" +
+                                                "     }\n" +
+                                                " }",
+                "diff --staged --name-only" => "GitApp/GitApp/PageUtilities\n" +
+                                               "GitApp/GitApp/GitManager",
+                "diff --staged GitApp/GitApp/PageUtilities" => "diff --git a/GitApp/GitApp/PageUtilities.cs b/GitApp/GitApp/PageUtilities.cs\n" +
+                                                                "index 95cec14..dbb7d9b 100644\n" +
+                                                                "--- a/GitApp/GitApp/PageUtilities.cs\n" +
+                                                                "+++ b/GitApp/GitApp/PageUtilities.cs\n" +
+                                                                "@@ -105,31 +105,5 @@ namespace GitApp\n" +
+                                                                "\n" +
+                                                                "             return (element.Length - clearedString.Length, clearedString, codes);\n" +
+                                                                "         }\n" +
+                                                                "-\n" +
+                                                                "-        public string GetShortFileName()\n" +
+                                                                "-        {\n" +
+                                                                "-            for (int i = element.Length - 1; i > -1; i--)\n" +
+                                                                "-            {\n" +
+                                                                "-                if (element[i] == '/')\n" +
+                                                                "-                {\n" +
+                                                                "-                    return element[(i + 1) ..];\n" +
+                                                                "-                }\n" +
+                                                                "-            }\n" +
+                                                                "-\n" +
+                                                                "-            return \"\";\n" +
+                                                                "-        }\n" +
+                                                                "-\n" +
+                                                                "-        public string GetPreviousPath()\n" +
+                                                                "-        {\n" +
+                                                                "-            for (int i = element.Length - 1; i > -1; i--)\n" +
+                                                                "-            {\n" +
+                                                                "-                if (element[i] == '/')\n" +
+                                                                "-                {\n" +
+                                                                "-                    return element[.. i];\n" +
+                                                                "-                }\n" +
+                                                                "-            }\n" +
+                                                                "-\n" +
+                                                                "-        }\n" +
+                                                                "     }\n" +
+                                                                " }\n" +
+                                                                "\\ No newline at end of file",
+                _ => "",
             };
         }
 
