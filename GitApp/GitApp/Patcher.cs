@@ -128,10 +128,10 @@ namespace GitApp
              : $"@@ -{first},{second} +{third},{fourth} @@" + header.Split("@@")[2] + "\n";
         }
 
-        private void GeneratePatch(bool stageHunk, bool isFileInTheStagingArea, string patchPath, bool isLineReplaced = false, string fileName = "")
+        private void GeneratePatch(bool interactWithHunk, bool isFileInTheStagingArea, string patchPath, bool isLineReplaced = false, string fileName = "")
         {
             var toWrite = GetFileData();
-            if (SetExitCondition(stageHunk))
+            if (SetExitCondition(interactWithHunk))
             {
                 return;
             }
@@ -139,7 +139,7 @@ namespace GitApp
             var lineCount = GetLineCount(indeexes.currentHeaderStartIndex, isLineReplaced);
             var temp = header.Split("@@")[1].Trim().Split(" ")[0].Split(",").Length;
             var originalFile = new string[0];
-            if (!stageHunk && isFileInTheStagingArea)
+            if (!interactWithHunk && isFileInTheStagingArea)
             {
                 originalFile = gitManager.GetStagedFileLines(fileName, repositoryPath).Split("\n");
             }
@@ -147,17 +147,17 @@ namespace GitApp
             {
                 originalFile = new string[0];
             }
-            else if (!stageHunk)
+            else if (!interactWithHunk)
             {
                 originalFile = gitManager.GetOriginalFileLines(fileName, repositoryPath).Split("\n");
             }
 
-            var linesData = stageHunk ? AddHunkLines() : FormateDiffForPatch(lineCount, originalFile, isLineReplaced);
-            toWrite += stageHunk
+            var linesData = interactWithHunk ? AddHunkLines() : FormateDiffForPatch(lineCount, originalFile, isLineReplaced);
+            toWrite += interactWithHunk
                 ? header + "\n"
                 : FormateHeaderForSingleLine(indeexes, lineCount, isLineReplaced, header);
 
-            linesData = !stageHunk && !isLineReplaced && diff.Current - indeexes.currentHeaderEndIndex == indeexes.start ? linesData.Insert(1, "∩╗┐") : linesData;
+            linesData = !interactWithHunk && !isLineReplaced && diff.Current - indeexes.currentHeaderEndIndex == indeexes.start ? linesData.Insert(1, "∩╗┐") : linesData;
             toWrite += linesData + "\n";
             toWrite = toWrite.Contains("∩╗┐") ? toWrite.Replace("∩╗┐", "\ufeff") : toWrite;
             System.IO.File.Create(patchPath).Close();
