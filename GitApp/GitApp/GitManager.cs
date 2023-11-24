@@ -71,6 +71,31 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "diff --staged --name-only"));
         }
 
+        public void Unstage(string patchPath)
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, "apply --cached --reverse", patchPath, true));
+        }
+
+        public void UnstageFile(string filePath)
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"restore --staged {filePath}"));
+        }
+
+        public void Stash()
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, "git stash apply --index stash@{0}"));
+        }
+
+        public void ApplyAndDeleteMostRecentStash()
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, "stash pop stash@{0}"));
+        }
+
+        public void ApplyPatchInReverse(string patchPath, string targetFile)
+        {
+            commandRunner.ApplyCommand(new GitCommand("patch", $"--input={string.Join("\n", System.IO.File.ReadAllLines(patchPath))} --reverse --output={targetFile} {targetFile}"));
+        }
+
         public string GetUnstagedDiff(string filePath, string repositoryPath, bool doesFileExist = false)
         {
             var diff = commandRunner.RunCommand(new GitCommand(fileName, $"diff -- {filePath}", repositoryPath));

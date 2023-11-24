@@ -122,7 +122,6 @@ namespace GitApp
             var second = isLineRemoved || isLineReplaced ? 1 + previousLines + nextLines : previousLines + nextLines;
             var third = first;
             var fourth = isLineRemoved ? previousLines + nextLines : 1 + previousLines + nextLines;
-            var test = "@@ -1,2 +1,3 @@" + header.Split("@@")[2] + "\n";
             return splitHeaderLength == 1
                 ? "@@ -1 +1,2 @@" + header.Split("@@")[2] + "\n"
              : $"@@ -{first},{second} +{third},{fourth} @@" + header.Split("@@")[2] + "\n";
@@ -137,7 +136,6 @@ namespace GitApp
             }
 
             var lineCount = GetLineCount(indeexes.currentHeaderStartIndex, isLineReplaced);
-            var temp = header.Split("@@")[1].Trim().Split(" ")[0].Split(",").Length;
             var originalFile = new string[0];
             if (!interactWithHunk && isFileInTheStagingArea)
             {

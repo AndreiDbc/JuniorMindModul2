@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//test
 
 namespace GitApp
 {
@@ -15,6 +14,7 @@ namespace GitApp
         public Hunk(string rawData, string index)
         {
             this.rawData = rawData;
+            this.index = index;
         }
 
         public string Id { get => index; }

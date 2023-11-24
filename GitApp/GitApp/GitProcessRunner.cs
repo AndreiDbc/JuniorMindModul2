@@ -56,7 +56,7 @@ namespace GitApp
                     FileName = command.FileName,
                     Arguments = command.Argument,
                     WorkingDirectory = workingDirectory,
-                    RedirectStandardInput = true,
+                    RedirectStandardInput = command.ShouldRedirectInput,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
@@ -67,9 +67,9 @@ namespace GitApp
             if (command.ShouldRedirectInput)
             {
                 RedirectInput(process, command.Path);
+                process.StandardInput.Close();
             }
 
-            process.StandardInput.Close();
             process.WaitForExit();
             process.Dispose();
         }

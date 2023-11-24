@@ -295,6 +295,7 @@ namespace GitApp.Tests
             Assert.Equal(diffText + "\n\n", result);
         }
 
+        [Fact]
         public void GetLinePatchPathIsCalledCurrentElementIsReplacedAndStartsWithPlusEndLinesAreLessThanThreeShouldReturnPatchPath()
         {
             var diffText = "diff --git a/GitApp/GitApp/Hunk.cs b/GitApp/GitApp/Hunk.cs\n" +

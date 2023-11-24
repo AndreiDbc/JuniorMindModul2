@@ -185,7 +185,7 @@ namespace GitApp
                             ? gitManager.GetUnstagedDiff(currentFile, repoPath, currentFile != "" && unstaged.GetText().Count >= 1)
                             : gitManager.GetStagedDiff(staged[staged.Current].GetElement(), gitManager.GetRepoPath())),
                         ref unstaged,
-                        staged,
+                        ref staged,
                         repoPath,
                         currentFile,
                         unstagedAvailability);
@@ -275,7 +275,7 @@ namespace GitApp
             return unstagedAvailability;
         }
 
-        private void DisplayHighlightedHunksPage(Diff diff, ref UnstagedFiles unstaged, ModifiedFiles staged, string repoPath, string currentFile, bool unstagedAvailability)
+        private void DisplayHighlightedHunksPage(Diff diff, ref UnstagedFiles unstaged, ref ModifiedFiles staged, string repoPath, string currentFile, bool unstagedAvailability)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
@@ -297,10 +297,9 @@ namespace GitApp
             {
                 key = consoleWrapper.ReadKey().Key;
                 keyInteractor.KeyInfo = key;
-                staged = new ModifiedFiles(gitManager.GetStagedFiles());
                 var stagedList = staged.GetText();
 
-                SelectStageOption(ref diff, ref unstaged, ref diffElements, rightSide, stagedList, repoPath, unstagedAvailability);
+                SelectStageOption(ref diff, ref unstaged, ref staged, ref diffElements, rightSide, stagedList, unstagedAvailability);
 
                 if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged, diffElements))
                 {
@@ -322,7 +321,6 @@ namespace GitApp
                     : diff.GetHighlightedSide(windowHeight - 4, rightSideWidth, availableSpace, true);
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                staged = new ModifiedFiles(gitManager.GetStagedFiles());
                 toDisplay = UpdateHighlightedHunksPage(rightSide, unstaged, staged, keyInteractor, unstagedAvailability);
                 toDisplay.Insert(0, "'Esc' or Left Arrow to return" + (unstagedAvailability ? "|'Enter' add hunk |'A' stage all|'S' stage line" : ""));
                 Write(toDisplay, windowHeight < 7);
@@ -333,30 +331,37 @@ namespace GitApp
         private void SelectStageOption(
             ref Diff diff,
             ref UnstagedFiles unstaged,
+            ref ModifiedFiles staged,
             ref List<IElement> diffElements,
             List<string> rightSide,
             List<IElement> stagedList,
-            string repoPath,
             bool unstagedAvailability)
         {
-            if (!unstagedAvailability)
-            {
-                return;
-            }
-
-            var currentFile = unstaged[unstaged.Current].GetElement();
+            var currentFile = unstagedAvailability
+                ? unstaged[unstaged.Current].GetElement()
+                : staged[staged.Current].GetElement();
+            var repoPath = gitManager.GetRepoPath();
             if (key.Equals(ConsoleKey.Enter))
             {
                 UpdateVariablesWhenStagingHunk(ref diff, ref unstaged, repoPath, ref diffElements, currentFile);
             }
             else if (key.Equals(ConsoleKey.S))
             {
-                UpdateVariablesWhenStagingLine(ref diff, repoPath, rightSide, stagedList, currentFile, ref unstaged, ref diffElements);
+                UpdateVariablesWhenStagingLine(ref diff, unstagedAvailability, rightSide, stagedList, ref unstaged, ref staged, ref diffElements);
             }
             else if (key.Equals(ConsoleKey.A))
             {
-                gitManager.StageFile(repoPath, currentFile);
+                if (unstagedAvailability)
+                {
+                    gitManager.StageFile(repoPath, currentFile);
+                }
+                else
+                {
+                    gitManager.UnstageFile(currentFile);
+                }
+
                 unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+                staged = new ModifiedFiles(gitManager.GetStagedFiles());
             }
         }
 
@@ -385,33 +390,54 @@ namespace GitApp
 
         private void UpdateVariablesWhenStagingLine(
             ref Diff diff,
-            string repoPath,
+            bool unstagedAvailability,
             List<string> rightSide,
             List<IElement> stagedList,
-            string currentFile,
             ref UnstagedFiles unstaged,
+            ref ModifiedFiles staged,
             ref List<IElement> diffElements)
         {
+            var currentStaged = staged[staged.Current].GetElement();
+            var currentUnstaged = unstaged[unstaged.Current].GetElement();
+            var repoPath = gitManager.GetRepoPath();
+            var currentFile = unstagedAvailability ? currentUnstaged : currentStaged;
             var diffIndex = diff.Index == 0 ? 0 : diff.Index;
             var diffCurrent = diff.Current == 0 ? 0 : diff.Current - 1;
-            var patchPath = new Patcher(repoPath, gitManager, diff, currentFile != "")
+            var patchPath = new Patcher(gitManager.GetRepoPath(), gitManager, diff, currentFile != "")
                 .GetLinePatchPath(
                     rightSide.Any(line => line.StartsWith("\u001b[7m\x1b[38;5;190m")),
-                    stagedList.Any(unstagedFile => unstagedFile.GetElement() == currentFile),
+                    stagedList.Any(unstagedFile => unstagedFile.GetElement() == currentUnstaged),
                     currentFile);
-            var currentUnstaged = unstaged[unstaged.Current].GetElement();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
             unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
-            gitManager.Stage(patchPath);
+            var stagedIndex = staged.Index;
+            var stagedCurrent = staged.Current;
+            staged = new ModifiedFiles(gitManager.GetStagedFiles());
+            staged.Index = stagedIndex;
+            staged.Current = stagedCurrent;
+            if (unstagedAvailability)
+            {
+                gitManager.Stage(patchPath);
+            }
+            else
+            {
+                gitManager.UnstageFile(currentFile);
+                gitManager.Stash();
+                gitManager.ApplyPatchInReverse(patchPath, currentFile);
+                gitManager.ApplyAndDeleteMostRecentStash();
+            }
+
             if (System.IO.File.Exists(patchPath))
             {
                 System.IO.File.Delete(patchPath);
             }
 
-            diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1));
+            diff = unstagedAvailability
+                ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1))
+                : new Diff(gitManager.GetStagedDiff(currentStaged, repoPath));
             diffElements = diff.GetText();
             diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
             diff.Index = diffIndex;
@@ -738,11 +764,13 @@ namespace GitApp
                         ((windowHeight - 2) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
                 if (unstagedAvailability)
                 {
-                    stagedToString[staged.Current] = stagedToString[0].Replace("\u001b[7m", "");
+                    stagedToString[0] = stagedToString[0].Replace("\u001b[7m", "");
+                    stagedToString[^1] = stagedToString[^1].Replace("\u001b[7m", "");
                 }
                 else
                 {
-                    unstagedToString[unstaged.Current] = unstagedToString[0].Replace("\u001b[7m", "");
+                    unstagedToString[0] = unstagedToString[0].Replace("\u001b[7m", "");
+                    unstagedToString[^1] = unstagedToString[^1].Replace("\u001b[7m", "");
                 }
 
                 leftSide = new BoxDrawer(unstagedToString, "Unstaged").DrawBox((int)(0.6 * windowWidth), unstagedHeight + 2);
