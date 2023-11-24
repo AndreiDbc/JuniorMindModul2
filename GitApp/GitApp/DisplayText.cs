@@ -426,7 +426,9 @@ namespace GitApp
             {
                 gitManager.UnstageFile(currentFile);
                 gitManager.Stash();
-                gitManager.ApplyPatchInReverse(patchPath, currentFile);
+                gitManager.RestoreFileToMatchIndex(patchPath);
+                gitManager.ApplyPatchInReverse(patchPath);
+                gitManager.StageFile(repoPath, currentFile);
                 gitManager.ApplyAndDeleteMostRecentStash();
             }
 
