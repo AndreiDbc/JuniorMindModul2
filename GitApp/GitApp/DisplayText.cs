@@ -290,7 +290,11 @@ namespace GitApp
             (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
             var diffElements = diff.GetText();
             var toDisplay = UpdateHighlightedHunksPage(rightSide, unstaged, staged, keyInteractor, unstagedAvailability);
-            toDisplay.Insert(0, "'Esc' or Left Arrow to return" + (unstagedAvailability ? "|'Enter' add hunk |'A' stage all|'S' stage line" : ""));
+            var additionalMenuBar = "'Esc' or Left Arrow to return" +
+                (unstagedAvailability
+                    ? "|'Enter' add hunk |'A' stage all|'S' stage line"
+                    : "|'Enter' remove hunk |'A' unstage all|'S' unstage line");
+            toDisplay.Insert(0, additionalMenuBar);
             Write(toDisplay, windowHeight < 7);
 
             do
@@ -322,7 +326,7 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 toDisplay = UpdateHighlightedHunksPage(rightSide, unstaged, staged, keyInteractor, unstagedAvailability);
-                toDisplay.Insert(0, "'Esc' or Left Arrow to return" + (unstagedAvailability ? "|'Enter' add hunk |'A' stage all|'S' stage line" : ""));
+                toDisplay.Insert(0, additionalMenuBar);
                 Write(toDisplay, windowHeight < 7);
             }
             while (true);
@@ -343,11 +347,11 @@ namespace GitApp
             var repoPath = gitManager.GetRepoPath();
             if (key.Equals(ConsoleKey.Enter))
             {
-                UpdateVariablesWhenStagingHunk(ref diff, ref unstaged, repoPath, ref diffElements, currentFile);
+                UpdateVariablesWhenStagingOrUnstagingHunk(ref diff, ref unstaged, ref staged, repoPath, ref diffElements, unstagedAvailability);
             }
             else if (key.Equals(ConsoleKey.S))
             {
-                UpdateVariablesWhenStagingLine(ref diff, unstagedAvailability, rightSide, stagedList, ref unstaged, ref staged, ref diffElements);
+                UpdateVariablesWhenStagingOrUnstagingLine(ref diff, unstagedAvailability, rightSide, stagedList, ref unstaged, ref staged, ref diffElements);
             }
             else if (key.Equals(ConsoleKey.A))
             {
@@ -365,30 +369,64 @@ namespace GitApp
             }
         }
 
-        private void UpdateVariablesWhenStagingHunk(ref Diff diff, ref UnstagedFiles unstaged, string repoPath, ref List<IElement> diffElements, string currentFile)
+        private void UpdateVariablesWhenStagingOrUnstagingHunk(
+            ref Diff diff,
+            ref UnstagedFiles unstaged,
+            ref ModifiedFiles staged,
+            string repoPath,
+            ref List<IElement> diffElements,
+            bool unstagedAvailability)
         {
+            var currentUnstaged = unstaged[unstaged.Current].GetElement();
+            var currentStaged = staged[staged.Current].GetElement();
             var diffIndex = diff.Index == 0 ? 0 : diff.Index;
             var diffCurrent = diff.Current == 0 ? 0 : diff.Current;
+            var currentFile = unstagedAvailability ? currentUnstaged : currentStaged;
             var patchPath = new Patcher(repoPath, gitManager, diff, currentFile != "").GetHunkPatchPath();
-            var currentUnstaged = unstaged[unstaged.Current].GetElement();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
             unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
-            gitManager.Stage(patchPath);
+            var stagedIndex = staged.Index;
+            var stagedCurrent = staged.Current;
+            staged = new ModifiedFiles(gitManager.GetStagedFiles());
+            staged.Current = stagedCurrent;
+            staged.Index = stagedIndex;
+
+            if (unstagedAvailability)
+            {
+                gitManager.Stage(patchPath);
+            }
+            else
+            {
+                var tempFilePath = Path.GetTempPath() + "tempFile" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+                System.IO.File.Create(tempFilePath).Close();
+                var currentElementLines = System.IO.File.ReadAllLines(repoPath + "/" + currentFile);
+                currentElementLines[0] = "﻿\ufeff" + currentElementLines[0];
+                System.IO.File.WriteAllLines(tempFilePath, currentElementLines);
+                gitManager.RestoreFileToMatchIndex(currentFile);
+                gitManager.UnstageFile(currentFile);
+                gitManager.ApplyPatchInReverse(patchPath);
+                gitManager.StageFile(repoPath, currentFile);
+                System.IO.File.WriteAllLines(repoPath + "/" + currentFile, System.IO.File.ReadAllLines(tempFilePath));
+                System.IO.File.Delete(tempFilePath);
+            }
+
             if (System.IO.File.Exists(patchPath))
             {
                 System.IO.File.Delete(patchPath);
             }
 
-            diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1));
+            diff = unstagedAvailability
+                ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1))
+                : new Diff(gitManager.GetStagedDiff(currentStaged, repoPath));
             diffElements = diff.GetText();
             diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
             diff.Index = diffIndex;
         }
 
-        private void UpdateVariablesWhenStagingLine(
+        private void UpdateVariablesWhenStagingOrUnstagingLine(
             ref Diff diff,
             bool unstagedAvailability,
             List<string> rightSide,
@@ -424,12 +462,17 @@ namespace GitApp
             }
             else
             {
+                var tempFilePath = Path.GetTempPath() + "tempFile" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+                System.IO.File.Create(tempFilePath).Close();
+                var currentElementLines = System.IO.File.ReadAllLines(repoPath + "/" + currentFile);
+                currentElementLines[0] = "﻿\ufeff" + currentElementLines[0];
+                System.IO.File.WriteAllLines(tempFilePath, currentElementLines);
+                gitManager.RestoreFileToMatchIndex(currentFile);
                 gitManager.UnstageFile(currentFile);
-                gitManager.Stash();
-                gitManager.RestoreFileToMatchIndex(patchPath);
                 gitManager.ApplyPatchInReverse(patchPath);
                 gitManager.StageFile(repoPath, currentFile);
-                gitManager.ApplyAndDeleteMostRecentStash();
+                System.IO.File.WriteAllLines(repoPath + "/" + currentFile, System.IO.File.ReadAllLines(tempFilePath));
+                System.IO.File.Delete(tempFilePath);
             }
 
             if (System.IO.File.Exists(patchPath))
