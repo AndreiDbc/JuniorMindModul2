@@ -148,7 +148,7 @@ namespace GitApp
             var windowSizeTemp = windowSize;
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
-            var unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            var unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
             var unstagedElements = unstaged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
             var unstagedPageList = unstaged[unstaged.Current].GetElement() == ""
                    ? new List<string>()
@@ -203,7 +203,7 @@ namespace GitApp
                 windowSizeTemp = windowSize;
                 var unstagedTempIndex = unstaged.Index;
                 var unstagedTempCurrent = unstaged.Current;
-                unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+                unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
                 var unstagedCount = unstaged.ListCount;
                 unstaged.Index = Math.Min(unstagedTempIndex, unstagedCount - 1);
                 unstaged.Current = Math.Min(unstagedTempCurrent, unstagedCount - 1);
@@ -246,7 +246,7 @@ namespace GitApp
 
         private bool GetUnstagedAvailability(
             ref ModifiedFiles staged,
-            ref UnstagedFiles unstaged,
+            ref ModifiedFiles unstaged,
             ref bool isUnstagedInUse,
             ref bool isStagedInUse,
             bool unstagedAvailability,
@@ -275,7 +275,7 @@ namespace GitApp
             return unstagedAvailability;
         }
 
-        private void DisplayHighlightedHunksPage(Diff diff, ref UnstagedFiles unstaged, ref ModifiedFiles staged, string repoPath, string currentFile, bool unstagedAvailability)
+        private void DisplayHighlightedHunksPage(Diff diff, ref ModifiedFiles unstaged, ref ModifiedFiles staged, string repoPath, string currentFile, bool unstagedAvailability)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
@@ -334,7 +334,7 @@ namespace GitApp
 
         private void SelectStageOption(
             ref Diff diff,
-            ref UnstagedFiles unstaged,
+            ref ModifiedFiles unstaged,
             ref ModifiedFiles staged,
             ref List<IElement> diffElements,
             List<string> rightSide,
@@ -364,14 +364,14 @@ namespace GitApp
                     gitManager.UnstageFile(currentFile);
                 }
 
-                unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+                unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
                 staged = new ModifiedFiles(gitManager.GetStagedFiles());
             }
         }
 
         private void UpdateVariablesWhenStagingOrUnstagingHunk(
             ref Diff diff,
-            ref UnstagedFiles unstaged,
+            ref ModifiedFiles unstaged,
             ref ModifiedFiles staged,
             string repoPath,
             ref List<IElement> diffElements,
@@ -385,7 +385,7 @@ namespace GitApp
             var patchPath = new Patcher(repoPath, gitManager, diff, currentFile != "").GetHunkPatchPath();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
-            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
             var stagedIndex = staged.Index;
@@ -431,7 +431,7 @@ namespace GitApp
             bool unstagedAvailability,
             List<string> rightSide,
             List<IElement> stagedList,
-            ref UnstagedFiles unstaged,
+            ref ModifiedFiles unstaged,
             ref ModifiedFiles staged,
             ref List<IElement> diffElements)
         {
@@ -448,7 +448,7 @@ namespace GitApp
                     currentFile);
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
-            unstaged = new UnstagedFiles(gitManager.GetFileStatus(repoPath));
+            unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
             unstaged.Current = unstagedCurrent;
             unstaged.Index = unstagedIndex;
             var stagedIndex = staged.Index;
@@ -876,7 +876,7 @@ namespace GitApp
             ref List<IElement> stagedElements,
             ref List<string> unstagedPageList,
             ref List<string> stagedPageList,
-            ref UnstagedFiles unstaged,
+            ref ModifiedFiles unstaged,
             ref ModifiedFiles staged,
             bool isUnstagedInUse)
         {

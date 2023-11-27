@@ -61,29 +61,19 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, "rev-parse --show-toplevel"));
         }
 
-        public string GetFileStatus(string repositoryPath)
-        {
-            return commandRunner.RunCommand(new GitCommand(fileName, "status --short", repositoryPath));
-        }
-
         public string GetStagedFiles()
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "diff --staged --name-only"));
         }
 
+        public string GetUnstagedFiles()
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, "diff --name-only"));
+        }
+
         public void UnstageFile(string filePath)
         {
             commandRunner.ApplyCommand(new GitCommand(fileName, $"reset HEAD {filePath}"));
-        }
-
-        public void Stash()
-        {
-            commandRunner.ApplyCommand(new GitCommand(fileName, "git stash"));
-        }
-
-        public void ApplyAndDeleteMostRecentStash()
-        {
-            commandRunner.ApplyCommand(new GitCommand(fileName, "stash pop stash@{0}"));
         }
 
         public void ApplyPatchInReverse(string patchPath)
