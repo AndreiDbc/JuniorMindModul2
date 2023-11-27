@@ -8,12 +8,11 @@ namespace GitApp
 {
     public class GitCommand
     {
-        public GitCommand(string fileName, string argument, string path = "", bool shouldRedirectInput = false)
+        public GitCommand(string fileName, string argument, string path = "")
         {
             this.FileName = fileName;
             this.Argument = argument;
             this.Path = path;
-            this.ShouldRedirectInput = shouldRedirectInput;
         }
 
         public string FileName { get; }
@@ -21,7 +20,5 @@ namespace GitApp
         public string Argument { get; }
 
         public string Path { get; }
-
-        public bool ShouldRedirectInput { get; }
     }
 }

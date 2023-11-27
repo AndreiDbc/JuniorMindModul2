@@ -47,16 +47,14 @@ namespace GitApp
 
         private static void AddData(GitCommand command)
         {
-            var workingDirectory = GetCommandOutput(new GitCommand("git", "rev-parse --show-toplevel"));
-
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = command.FileName,
                     Arguments = command.Argument,
-                    WorkingDirectory = workingDirectory,
-                    RedirectStandardInput = command.ShouldRedirectInput,
+                    WorkingDirectory = GetCommandOutput(new GitCommand("git", "rev-parse --show-toplevel")),
+                    RedirectStandardInput = false,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
@@ -64,26 +62,8 @@ namespace GitApp
             };
 
             process.Start();
-            if (command.ShouldRedirectInput)
-            {
-                RedirectInput(process, command.Path);
-                process.StandardInput.Close();
-            }
-
             process.WaitForExit();
             process.Dispose();
-        }
-
-        private static void RedirectInput(Process process, string path)
-        {
-            using (StreamReader reader = new StreamReader(path))
-            {
-                while (!reader.EndOfStream)
-                {
-                    string line = reader.ReadLine();
-                    process.StandardInput.WriteLine(line);
-                }
-            }
         }
     }
 }
