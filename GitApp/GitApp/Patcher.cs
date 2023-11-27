@@ -32,27 +32,32 @@ namespace GitApp
             this.diff = diff;
             elements = diff.GetText();
             firstElement = elements[0].GetElement();
-            if (firstElement != "")
-            {
-                headers = GetHeaders();
-                if (headers.Length == 0)
-                {
-                    return;
-                }
-
-                if (headers[0] > diff.Current)
-                {
-                    return;
-                }
-
-                indeexes = GetStartLineNumberAndHunkIndex();
-                header = elements[indeexes.currentHeaderStartIndex].GetElement();
-                splitHeaderLength = header.Split("@@")[1].Trim().Split(" ")[0].Split(",").Length;
-            }
-
+            headers = new int[0];
+            indeexes = (-1, -1, -1, -1);
+            header = "";
+            splitHeaderLength = 0;
             this.gitManager = gitManager;
             this.repositoryPath = repositoryPath;
             this.fileExists = fileExists;
+            if (firstElement == "")
+            {
+                return;
+            }
+
+            headers = GetHeaders();
+            if (headers.Length == 0)
+            {
+                return;
+            }
+
+            if (headers[0] > diff.Current)
+            {
+                return;
+            }
+
+            indeexes = GetStartLineNumberAndHunkIndex();
+            header = elements[indeexes.currentHeaderStartIndex].GetElement();
+            splitHeaderLength = header.Split("@@")[1].Trim().Split(" ")[0].Split(",").Length;
         }
 
         public string GetLinePatchPath(bool isLineReplaced, bool isFileInTheStagingArea, string fileName)

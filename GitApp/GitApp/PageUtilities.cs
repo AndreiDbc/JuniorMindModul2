@@ -14,16 +14,18 @@ namespace GitApp
         public PageUtilities(string element)
         {
             this.element = element;
+            this.data = new string[0];
         }
 
         public PageUtilities(string[] data)
         {
             this.data = data;
+            this.element = "";
         }
 
         public List<string> SplitRow(int limit)
         {
-            var lines = element != null ? new[] { element } : data;
+            var lines = element != "" ? new[] { element } : data;
             var result = new List<string>();
             var codes = "";
             for (int i = 0; i < lines.Length; i++)
@@ -69,7 +71,7 @@ namespace GitApp
         public int GetOccupancyRate(int size)
         {
             int result = 0;
-            foreach (var line in element == null ? data : element.Split("\n"))
+            foreach (var line in element == "" ? data : element.Split("\n"))
             {
                 result += line.Length / size * size
                     + (line.Length % size == 0 ? 0 : 1) * size;

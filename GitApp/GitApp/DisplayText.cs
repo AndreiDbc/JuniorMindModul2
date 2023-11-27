@@ -543,8 +543,9 @@ namespace GitApp
 
                 writer = new StringWriter();
                 temp.ForEach(element => writer.WriteLine(element));
+                var result = writer.ToString();
                 consoleWrapper.SetCursorPosition(0, 0);
-                consoleWrapper.Write(writer.ToString()[..^1].TrimStart());
+                consoleWrapper.Write(result == null ? "" : result[.. ^1].TrimStart());
             }
         }
 
