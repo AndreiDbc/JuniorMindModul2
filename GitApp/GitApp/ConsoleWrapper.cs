@@ -17,11 +17,6 @@ namespace GitApp
             Console.SetCursorPosition(left, top);
         }
 
-        public bool KeyAvailable()
-        {
-            return Console.KeyAvailable;
-        }
-
         public ConsoleKeyInfo ReadKey()
         {
             return Console.ReadKey();

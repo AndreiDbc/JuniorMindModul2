@@ -14,8 +14,6 @@ namespace GitApp
 
         public ConsoleKeyInfo ReadKey();
 
-        public bool KeyAvailable();
-
         public void SetCursorPosition(int left, int top);
 
         public void Clear();
