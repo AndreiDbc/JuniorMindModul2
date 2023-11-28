@@ -126,6 +126,16 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, $"show :{currentFileName}", repoPath));
         }
 
+        public void StageAllFiles()
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, "add ."));
+        }
+
+        public void UnstageAllFiles()
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, "reset HEAD ."));
+        }
+
         private string GetLastFileCommitId(string currentFileName, string repoPath)
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"log -n 1 --pretty=format:%H -- {currentFileName}", repoPath))[..7];
