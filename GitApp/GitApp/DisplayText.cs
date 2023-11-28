@@ -93,14 +93,12 @@ namespace GitApp
             var commitTextSize = 0;
             var windowWidth = consoleWrapper.WindowWidth;
             var windowSize = consoleWrapper.WindowHeight * windowWidth;
-            var initialText = new InitialData(gitManager).GetText();
-            var initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
             var page = new List<IElement>();
             var toDisplay = new List<string>();
-            var isWindowToSmall = initialTextSize >= windowSize - 4 * windowWidth;
+            var isWindowToSmall = consoleWrapper.WindowHeight < 3;
             toDisplay = isWindowToSmall
                         ? new List<string>()
-                        : UpdatePage(initialText, ref commitTextSize, ref page);
+                        : UpdatePage(ref commitTextSize, ref page);
             toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details");
             Write(toDisplay, isWindowToSmall);
             var windowSizeTemp = windowSize;
@@ -128,11 +126,10 @@ namespace GitApp
                 windowSize = consoleWrapper.WindowHeight * windowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
-                isWindowToSmall = initialTextSize >= windowSize - 4 * windowWidth;
+                isWindowToSmall = consoleWrapper.WindowHeight < 3;
                 toDisplay = isWindowToSmall
                             ? new List<string>()
-                            : UpdatePage(initialText, ref commitTextSize, ref page);
+                            : UpdatePage(ref commitTextSize, ref page);
                 toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details");
                 Write(toDisplay, isWindowToSmall);
             }
@@ -867,10 +864,7 @@ namespace GitApp
                 keyInteractor);
         }
 
-        private List<string> UpdatePage(
-            string initialText,
-            ref int commitOcupancyRate,
-            ref List<IElement> page)
+        private List<string> UpdatePage(ref int commitOcupancyRate, ref List<IElement> page)
         {
             var keyInteractor = new KeyInteractor<IElement>(commits)
             {
@@ -880,9 +874,7 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
-            var initialTextUtilities = new PageUtilities(initialText);
-            var initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
-            var commitsAvailableSpace = windowSize - initialTextSize - 4 * windowWidth;
+            var commitsAvailableSpace = windowSize - 4 * windowWidth;
             var availableSpace = commitsAvailableSpace - commitsAvailableSpace / windowWidth * 2;
             var isPageLargerThanWindow = commitOcupancyRate > availableSpace;
             var commitsToString = new List<string>();
@@ -895,8 +887,7 @@ namespace GitApp
                 ? (0, 0)
                 : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, windowWidth, commits[commits.Current].GetElement().Length - 40);
             (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, windowWidth);
-            var toWrite = commits.GetHighlightedSide(windowHeight - initialTextSize / windowWidth - 4, windowWidth - 2, availableSpace);
-            toWrite.InsertRange(0, initialText.Split("\n"));
+            var toWrite = commits.GetHighlightedSide(windowHeight - 4, windowWidth - 2, availableSpace);
             return new BoxDrawer(toWrite, "Commits").DrawBox(windowWidth, windowHeight - 2, true);
         }
 
