@@ -101,7 +101,7 @@ namespace GitApp
             toDisplay = isWindowToSmall
                         ? new List<string>()
                         : UpdatePage(initialText, ref commitTextSize, ref page);
-            toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Next menu");
+            toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details");
             Write(toDisplay, isWindowToSmall);
             var windowSizeTemp = windowSize;
 
@@ -133,7 +133,7 @@ namespace GitApp
                 toDisplay = isWindowToSmall
                             ? new List<string>()
                             : UpdatePage(initialText, ref commitTextSize, ref page);
-                toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Next menu");
+                toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details");
                 Write(toDisplay, isWindowToSmall);
             }
             while (true);
