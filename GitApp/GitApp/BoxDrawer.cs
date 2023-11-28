@@ -19,7 +19,7 @@ namespace GitApp
             this.boxName = boxName;
         }
 
-        public List<string> DrawBox(int boxWidth, int windowHeight, bool shouldFitText = false, bool shouldColorLines = false)
+        public List<string> DrawBox(int boxWidth, int windowHeight, bool shouldFitText = false, bool shouldColorLines = false, string branchInfo = "")
         {
             const int lengthToSubstract = 2;
             var result = new List<string>();
@@ -45,7 +45,9 @@ namespace GitApp
                 index++;
             }
             while (result.Count <= windowHeight - 2 || !result[^1].StartsWith(lineColor + "│"));
-            result.Add(lineColor + "└" + new string('─', boxWidth - 2) + "┘");
+            result.Add(branchInfo == ""
+                ? lineColor + "└" + new string('─', boxWidth - 2) + "┘"
+                : lineColor + "└" + new string('─', boxWidth - 2 - branchInfo.Length) + $"{branchInfo}┘");
             return result;
         }
 
