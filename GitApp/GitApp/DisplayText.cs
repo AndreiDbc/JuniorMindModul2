@@ -798,6 +798,10 @@ namespace GitApp
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
             List<string> rightSide;
             List<string> leftSide;
+            var branch = gitManager.GetCurrentGitBranch();
+            var noOfCommitsToPull = gitManager.GetNumberOfCommitsToPull(branch);
+            var noOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branch);
+            var shouldDisplayNoOfCommits = noOfCommitsToPull != "" && noOfCommitsToPush != "";
             if (windowHeight < 15 && windowWidth < 50)
             {
                 rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight - 2, false, true);
@@ -816,13 +820,12 @@ namespace GitApp
                     unstagedToString[unstaged.Current] = unstagedToString[0].Replace("\u001b[7m", "");
                 }
 
-                var branch = gitManager.GetCurrentGitBranch();
                 leftSide = new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
                             (int)(0.6 * windowWidth),
                             unstagedHeight + 2,
                             false,
                             false,
-                            $"↑{gitManager.GetNumberOfCommitsToPush(branch)} ↓{gitManager.GetNumberOfCommitsToPull(branch)}" + " {" + branch + "}");
+                            shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}");
                 stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(windowWidth, windowHeight - unstagedHeight - 4, true);
                 leftSide.AddRange(stagedToString);
             }
@@ -848,13 +851,12 @@ namespace GitApp
                     unstagedToString[^1] = unstagedToString[^1].Replace("\u001b[7m", "");
                 }
 
-                var branch = gitManager.GetCurrentGitBranch();
                 leftSide = new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
                             (int)(0.6 * windowWidth),
                             unstagedHeight + 2,
                             false,
                             false,
-                            $"↑{gitManager.GetNumberOfCommitsToPush(branch)} ↓{gitManager.GetNumberOfCommitsToPull(branch)}" + " {" + branch + "}");
+                            shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}");
                 stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), windowHeight - unstagedHeight - 4, true);
                 leftSide.AddRange(stagedToString);
             }
@@ -919,6 +921,10 @@ namespace GitApp
             var unstagedToString = new List<string>();
             var stagedToString = new List<string>();
             var tempList = new List<string>();
+            var branch = gitManager.GetCurrentGitBranch();
+            var noOfCommitsToPull = gitManager.GetNumberOfCommitsToPull(branch);
+            var noOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branch);
+            var shouldDisplayNoOfCommits = noOfCommitsToPush != "" && noOfCommitsToPull != "";
             Diff diff;
 
             if (isUnstagedInUse)
@@ -938,13 +944,12 @@ namespace GitApp
                        : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
                 var currentUnstaged = unstaged[unstaged.Current].GetElement();
                 diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, gitManager.GetRepoPath(), currentUnstaged != "" && unstaged.GetText().Count >= 1));
-                var branch = gitManager.GetCurrentGitBranch();
                 tempList.AddRange(new BoxDrawer(unstagedPageList, "Unstaged").DrawBox(
                             (int)(0.6 * windowWidth),
                             unstagedHeight + 2,
                             false,
                             false,
-                            $"↑{gitManager.GetNumberOfCommitsToPush(branch)} ↓{gitManager.GetNumberOfCommitsToPull(branch)}" + " {" + branch + "}"));
+                            shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
                 stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), (windowHeight - 2) / 2, true);
                 tempList.AddRange(stagedToString);
             }
@@ -965,13 +970,12 @@ namespace GitApp
                        : staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedAvailableSpace);
                 var currentStaged = staged[staged.Current].GetElement();
                 diff = new Diff(gitManager.GetStagedDiff(currentStaged, gitManager.GetRepoPath()));
-                var branch = gitManager.GetCurrentGitBranch();
                 tempList.AddRange(new BoxDrawer(unstagedPageList, "Unstaged").DrawBox(
                             (int)(0.6 * windowWidth),
                             unstagedHeight + 2,
                             false,
                             false,
-                            $"↑{gitManager.GetNumberOfCommitsToPush(branch)} ↓{gitManager.GetNumberOfCommitsToPull(branch)}" + " {" + branch + "}"));
+                            shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
                 stagedToString = new BoxDrawer(stagedPageList, "Staged").DrawBox((int)(0.6 * windowWidth), (windowHeight - 2) / 2, true);
                 tempList.AddRange(stagedToString);
             }
