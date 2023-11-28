@@ -107,9 +107,9 @@ namespace GitApp
             commandRunner.ApplyCommand(new GitCommand(fileName, $"apply --cached \"{patchPath}\""));
         }
 
-        public void StageFile(string repoPath, string toAdd)
+        public void StageFile(string toAdd)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {toAdd}", repoPath));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {toAdd}"));
         }
 
         public string GetOriginalFileLines(string currentFileName, string repoPath)

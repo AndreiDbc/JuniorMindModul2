@@ -191,6 +191,8 @@ namespace GitApp
                         unstagedAvailability);
                 }
 
+                SelectStageOptionInLog(ref unstaged, ref staged, unstagedAvailability);
+
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
                     break;
@@ -226,6 +228,26 @@ namespace GitApp
                 Write(toDisplay, consoleWrapper.WindowHeight < 7);
             }
             while (true);
+        }
+
+        private void SelectStageOptionInLog(ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
+        {
+            if (key.Equals(ConsoleKey.Enter) && unstagedAvailability)
+            {
+                gitManager.StageFile(unstaged[unstaged.Current].GetElement());
+            }
+            else if (key.Equals(ConsoleKey.Enter))
+            {
+                gitManager.UnstageFile(staged[staged.Current].GetElement());
+            }
+            else if (key.Equals(ConsoleKey.A) && unstagedAvailability)
+            {
+                gitManager.StageAllFiles();
+            }
+            else if (key.Equals(ConsoleKey.A))
+            {
+                gitManager.UnstageAllFiles();
+            }
         }
 
         private (int index, int current) SetModifiedFileIndeexes(ModifiedFiles modifiedFilesToSet, ModifiedFiles modifiedFilesToUse, int height)
@@ -303,7 +325,7 @@ namespace GitApp
                 keyInteractor.KeyInfo = key;
                 var stagedList = staged.GetText();
 
-                SelectStageOption(ref diff, ref unstaged, ref staged, ref diffElements, rightSide, stagedList, unstagedAvailability);
+                SelectStageOptionForDiffMenu(ref diff, ref unstaged, ref staged, ref diffElements, rightSide, stagedList, unstagedAvailability);
 
                 if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged, diffElements))
                 {
@@ -332,7 +354,7 @@ namespace GitApp
             while (true);
         }
 
-        private void SelectStageOption(
+        private void SelectStageOptionForDiffMenu(
             ref Diff diff,
             ref ModifiedFiles unstaged,
             ref ModifiedFiles staged,
@@ -357,7 +379,7 @@ namespace GitApp
             {
                 if (unstagedAvailability)
                 {
-                    gitManager.StageFile(repoPath, currentFile);
+                    gitManager.StageFile(currentFile);
                 }
                 else
                 {
@@ -408,7 +430,7 @@ namespace GitApp
                 gitManager.RestoreFileToMatchIndex(currentFile);
                 gitManager.UnstageFile(currentFile);
                 gitManager.ApplyPatchInReverse(patchPath);
-                gitManager.StageFile(repoPath, currentFile);
+                gitManager.StageFile(currentFile);
                 System.IO.File.WriteAllLines(repoPath + "/" + currentFile, System.IO.File.ReadAllLines(tempFilePath));
                 System.IO.File.Delete(tempFilePath);
             }
@@ -470,7 +492,7 @@ namespace GitApp
                 gitManager.RestoreFileToMatchIndex(currentFile);
                 gitManager.UnstageFile(currentFile);
                 gitManager.ApplyPatchInReverse(patchPath);
-                gitManager.StageFile(repoPath, currentFile);
+                gitManager.StageFile(currentFile);
                 System.IO.File.WriteAllLines(repoPath + "/" + currentFile, System.IO.File.ReadAllLines(tempFilePath));
                 System.IO.File.Delete(tempFilePath);
             }
