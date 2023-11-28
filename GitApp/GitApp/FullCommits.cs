@@ -62,7 +62,9 @@ namespace GitApp
                     ? ProcessElement(index, width)
                     : ProcessElementForMainPage(index, width, height, availableSpace, occupancyRate);
                 occupancyRate += processedElement.length;
-                result.Add(processedElement.element);
+                result.AddRange(isScreenSplit
+                    ? new[] { processedElement.element }
+                    : new PageUtilities(processedElement.element).SplitRow(width, true));
 
                 index++;
             }

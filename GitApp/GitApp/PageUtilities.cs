@@ -23,7 +23,7 @@ namespace GitApp
             this.element = "";
         }
 
-        public List<string> SplitRow(int limit)
+        public List<string> SplitRow(int limit, bool isMainLogPage = false)
         {
             var lines = element != "" ? new[] { element } : data;
             var result = new List<string>();
@@ -43,7 +43,10 @@ namespace GitApp
                         codes +
                         lines[i][j..Math.Min(lines[i].Length, limit * k + (previousDifferenceLength > differenceLength ? previousDifferenceLength : differenceLength))] +
                         "\u001b[0m");
-                    codes = new PageUtilities(result[^1]).FormatingCodesStringUtilities().codes.Replace("\u001b[0m", "");
+                    var tempCodes = new PageUtilities(result[^1]).FormatingCodesStringUtilities().codes;
+                    var tempCodesLengthDifferenceIsZero = tempCodes.Replace("\u001b[0m", "").Length + 4 == tempCodes.Length;
+                    var shouldClearCodes = isMainLogPage ? !tempCodesLengthDifferenceIsZero : isMainLogPage;
+                    codes = shouldClearCodes ? "\x1b[0m" : tempCodes.Replace("\u001b[0m", "");
                 }
             }
 
@@ -104,6 +107,8 @@ namespace GitApp
                 codes += clearedString == temp ? "" : code;
                 clearedString = temp;
             }
+
+            codes += element.EndsWith("\x1b[0m") ? "\x1b[0m" : "";
 
             return (element.Length - clearedString.Length, clearedString, codes);
         }

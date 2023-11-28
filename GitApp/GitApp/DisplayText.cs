@@ -97,7 +97,7 @@ namespace GitApp
             var initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
             var page = new List<IElement>();
             var toDisplay = new List<string>();
-            var isWindowToSmall = initialTextSize >= windowSize - 2 * windowWidth;
+            var isWindowToSmall = initialTextSize >= windowSize - 4 * windowWidth;
             toDisplay = isWindowToSmall
                         ? new List<string>()
                         : UpdatePage(initialText, ref commitTextSize, ref page);
@@ -129,7 +129,7 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 initialTextSize = new PageUtilities(initialText).GetOccupancyRate(windowWidth);
-                isWindowToSmall = initialTextSize >= windowSize - 2 * windowWidth;
+                isWindowToSmall = initialTextSize >= windowSize - 4 * windowWidth;
                 toDisplay = isWindowToSmall
                             ? new List<string>()
                             : UpdatePage(initialText, ref commitTextSize, ref page);
@@ -878,10 +878,12 @@ namespace GitApp
             };
 
             var windowWidth = consoleWrapper.WindowWidth;
-            var windowSize = consoleWrapper.WindowHeight * windowWidth;
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowSize = windowHeight * windowWidth;
             var initialTextUtilities = new PageUtilities(initialText);
             var initialTextSize = initialTextUtilities.GetOccupancyRate(windowWidth);
-            var availableSpace = windowSize - initialTextSize - 2 * windowWidth;
+            var commitsAvailableSpace = windowSize - initialTextSize - 4 * windowWidth;
+            var availableSpace = commitsAvailableSpace - commitsAvailableSpace / windowWidth * 2;
             var isPageLargerThanWindow = commitOcupancyRate > availableSpace;
             var commitsToString = new List<string>();
             page.ForEach(line =>
@@ -891,11 +893,11 @@ namespace GitApp
             });
             (commits.Index, commits.Current) = page.Count == 0
                 ? (0, 0)
-                : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
-            (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, consoleWrapper.WindowWidth);
-            var toWrite = commits.GetHighlightedSide(consoleWrapper.WindowHeight - initialTextSize / windowWidth - 2, windowWidth, availableSpace);
+                : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, windowWidth, commits[commits.Current].GetElement().Length - 40);
+            (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, windowWidth);
+            var toWrite = commits.GetHighlightedSide(windowHeight - initialTextSize / windowWidth - 4, windowWidth - 2, availableSpace);
             toWrite.InsertRange(0, initialText.Split("\n"));
-            return toWrite;
+            return new BoxDrawer(toWrite, "Commits").DrawBox(windowWidth, windowHeight - 2, true);
         }
 
         private List<string> UpdateStatusPage(
