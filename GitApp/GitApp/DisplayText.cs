@@ -318,8 +318,8 @@ namespace GitApp
             var toDisplay = UpdateHighlightedHunksPage(rightSide, unstaged, staged, keyInteractor, unstagedAvailability);
             var additionalMenuBar = "\u001b[32m[Esc][←] Return " +
                 (unstagedAvailability
-                    ? "\u001b[33m[⏎] Add hunk \u001b[34m[A] Stage all\u001b[35m[S] Stage line"
-                    : "\u001b[33m[⏎] Remove hunk \u001b[34m[A] Unstage all\u001b[35m[S] Unstage line");
+                    ? "\u001b[33m[⏎] Add hunk \u001b[34m[A] Stage all \u001b[35m[S] Stage line"
+                    : "\u001b[33m[⏎] Remove hunk \u001b[34m[A] Unstage all \u001b[35m[S] Unstage line");
             toDisplay.Add(additionalMenuBar);
             Write(toDisplay, windowHeight < 7);
 
