@@ -101,7 +101,7 @@ namespace GitApp
             toDisplay = isWindowToSmall
                         ? new List<string>()
                         : UpdatePage(initialText, ref commitTextSize, ref page);
-            toDisplay.Insert(0, "'Esc' to exit|'Enter' for next menu");
+            toDisplay.Add("'Esc' to exit|'Enter' for next menu");
             Write(toDisplay, isWindowToSmall);
             var windowSizeTemp = windowSize;
 
@@ -133,7 +133,7 @@ namespace GitApp
                 toDisplay = isWindowToSmall
                             ? new List<string>()
                             : UpdatePage(initialText, ref commitTextSize, ref page);
-                toDisplay.Insert(0, "'Esc' to exit|'Enter' for next menu");
+                toDisplay.Add("'Esc' to exit|'Enter' for next menu");
                 Write(toDisplay, isWindowToSmall);
             }
             while (true);
@@ -171,7 +171,7 @@ namespace GitApp
                 ref unstaged,
                 ref staged,
                 unstagedAvailability);
-            toDisplay.Insert(0, "'Esc' to exit|Right Arrow for next menu");
+            toDisplay.Add("'Esc' to exit|Right Arrow for next menu");
             Write(toDisplay, consoleWrapper.WindowHeight < 7);
 
             do
@@ -222,7 +222,7 @@ namespace GitApp
                     ref unstaged,
                     ref staged,
                     unstagedAvailability);
-                toDisplay.Insert(0, "'Esc' to exit|Right Arrow for next menu");
+                toDisplay.Add("'Esc' to exit|Right Arrow for next menu");
                 Write(toDisplay, consoleWrapper.WindowHeight < 7);
             }
             while (true);
@@ -294,7 +294,7 @@ namespace GitApp
                 (unstagedAvailability
                     ? "|'Enter' add hunk |'A' stage all|'S' stage line"
                     : "|'Enter' remove hunk |'A' unstage all|'S' unstage line");
-            toDisplay.Insert(0, additionalMenuBar);
+            toDisplay.Add(additionalMenuBar);
             Write(toDisplay, windowHeight < 7);
 
             do
@@ -326,7 +326,7 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 toDisplay = UpdateHighlightedHunksPage(rightSide, unstaged, staged, keyInteractor, unstagedAvailability);
-                toDisplay.Insert(0, additionalMenuBar);
+                toDisplay.Add(additionalMenuBar);
                 Write(toDisplay, windowHeight < 7);
             }
             while (true);
@@ -589,7 +589,7 @@ namespace GitApp
             var toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateExtendedPage(leftSideCommits, keyInteractor);
-            toDisplay.Insert(0, "'Esc' to return|Right arrow for next menu");
+            toDisplay.Add("'Esc' to return|Right arrow for next menu");
             Write(toDisplay, isWindowToSmall);
             do
             {
@@ -616,7 +616,7 @@ namespace GitApp
                 toDisplay = isWindowToSmall
                     ? new List<string>()
                     : UpdateExtendedPage(leftSideCommits, keyInteractor);
-                toDisplay.Insert(0, "'Esc' to return|Right arrow for next menu");
+                toDisplay.Add("'Esc' to return|Right arrow for next menu");
                 Write(toDisplay, isWindowToSmall);
             }
             while (true);
@@ -645,7 +645,7 @@ namespace GitApp
             var toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
-            toDisplay.Insert(0, "'Esc' or Left Arrow to return|Right Arrow for next menu'");
+            toDisplay.Add("'Esc' or Left Arrow to return|Right Arrow for next menu'");
             Write(toDisplay, windowHeight < 4);
             do
             {
@@ -679,7 +679,7 @@ namespace GitApp
                 toDisplay = isWindowToSmall
                     ? new List<string>()
                     : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
-                toDisplay.Insert(0, "'Esc' or Left Arrow to return|Right Arrow for next menu'");
+                toDisplay.Add("'Esc' or Left Arrow to return|Right Arrow for next menu'");
                 Write(toDisplay, windowHeight < 4);
             }
             while (true);
@@ -699,7 +699,7 @@ namespace GitApp
             var toDisplay = windowHeight < 4
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
-            toDisplay.Insert(0, "'Esc' or Left Arrow to return");
+            toDisplay.Add("'Esc' or Left Arrow to return");
             Write(toDisplay, windowHeight < 4);
             do
             {
@@ -722,7 +722,7 @@ namespace GitApp
                 toDisplay = windowHeight < 3
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
-                toDisplay.Insert(0, "'Esc' or Left Arrow to return");
+                toDisplay.Add("'Esc' or Left Arrow to return");
                 Write(toDisplay, windowHeight < 4);
             }
             while (true);
