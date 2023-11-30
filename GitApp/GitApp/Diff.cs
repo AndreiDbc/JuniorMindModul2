@@ -81,28 +81,20 @@ namespace GitApp
             return list;
         }
 
-        private static string RecolorDiffLine(string previous, string current, string next, bool isScreenSplit = false)
+        private static string RecolorDiffLine(string current)
         {
             if (current.StartsWith("+++") || current.StartsWith("---"))
             {
                 return current;
             }
 
-            if (current.StartsWith("+") && (previous.StartsWith("\u001b[38;5;190m-") || previous.StartsWith("\u001b[7m\u001b[38;5;190m-")))
+            if (current.StartsWith("+"))
             {
-                return "\x1b[38;5;190m" + current;
-            }
-            else if (current.StartsWith("+"))
-            {
-                return "\x1b[38;5;40m" + current;
-            }
-            else if (current.StartsWith("-") && next.StartsWith("+"))
-            {
-                return "\u001b[38;5;190m" + current;
+                return "\x1b[38;5;40m " + current[1 ..];
             }
             else if (current.StartsWith("-"))
             {
-                return "\x1b[38;5;160m" + current;
+                return "\x1b[38;5;160m " + current[1 ..];
             }
 
             return current;
@@ -133,7 +125,7 @@ namespace GitApp
                 var lineUtilities = new PageUtilities(lines[i]);
                 occupacyRate += lineUtilities.GetOccupancyRate(width);
                 lines[i] = (diffList[index].Id.Equals(diffList[Current].Id) && isScreenSplit ? "\u001b[7m" : "")
-                    + RecolorDiffLine(index == 0 ? "" : lines[i - 1], lines[i], index == diffList.Count - 1 ? "" : lines[i + 1]);
+                    + RecolorDiffLine(lines[i]);
                 result.AddRange(new PageUtilities(lines[i]).SplitRow(width));
                 index++;
             }

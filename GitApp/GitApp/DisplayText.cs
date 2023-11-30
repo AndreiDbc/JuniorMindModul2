@@ -12,6 +12,7 @@ using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace GitApp
 {
@@ -464,9 +465,13 @@ namespace GitApp
             var currentFile = unstagedAvailability ? currentUnstaged : currentStaged;
             var diffIndex = diff.Index == 0 ? 0 : diff.Index;
             var diffCurrent = diff.Current == 0 ? 0 : diff.Current - 1;
+            var previous = diff[Math.Max(0, diff.Current - 1)].GetElement();
+            var next = diff[Math.Min(diffElements.Count - 1, diff.Current + 1)].GetElement();
+            var isLineReplaced = previous.StartsWith("-") && diff[diff.Current].GetElement().StartsWith("+");
+            isLineReplaced = isLineReplaced || (diff[diff.Current].GetElement().StartsWith("-") && next.StartsWith("+"));
             var patchPath = new Patcher(gitManager.GetRepoPath(), gitManager, diff, currentFile != "")
                 .GetLinePatchPath(
-                    rightSide.Any(line => line.StartsWith("\u001b[7m\x1b[38;5;190m")),
+                    isLineReplaced,
                     stagedList.Any(unstagedFile => unstagedFile.GetElement() == currentUnstaged),
                     currentFile);
             var unstagedIndex = unstaged.Index;
@@ -813,11 +818,13 @@ namespace GitApp
                         ((windowHeight - 2) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
                 if (unstagedAvailability)
                 {
-                    stagedToString[staged.Current] = stagedToString[0].Replace("\u001b[7m", "");
+                    stagedToString[0] = stagedToString[0].Replace("\u001b[7m", "");
+                    stagedToString[^1] = stagedToString[^1].Replace("\u001b[7m", "");
                 }
                 else
                 {
-                    unstagedToString[unstaged.Current] = unstagedToString[0].Replace("\u001b[7m", "");
+                    unstagedToString[0] = unstagedToString[0].Replace("\u001b[7m", "");
+                    unstagedToString[^1] = unstagedToString[^1].Replace("\u001b[7m", "");
                 }
 
                 leftSide = new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
@@ -970,7 +977,7 @@ namespace GitApp
                        : staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedAvailableSpace);
                 var currentStaged = staged[staged.Current].GetElement();
                 diff = new Diff(gitManager.GetStagedDiff(currentStaged, gitManager.GetRepoPath()));
-                tempList.AddRange(new BoxDrawer(unstagedPageList, "Unstaged").DrawBox(
+                tempList.AddRange(new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
                             (int)(0.6 * windowWidth),
                             unstagedHeight + 2,
                             false,
