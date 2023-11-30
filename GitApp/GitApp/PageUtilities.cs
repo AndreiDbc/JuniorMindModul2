@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,25 +29,23 @@ namespace GitApp
             var lines = element != "" ? new[] { element } : data;
             var result = new List<string>();
             var codes = "";
+            var previousDifferenceLength = 0;
+            var differenceLength = 0;
             for (int i = 0; i < lines.Length; i++)
             {
-                var differenceLength = 0;
                 codes = "";
                 for (int j = 0, k = 1; j < lines[i].Length; j += limit + differenceLength, k++)
                 {
                     var splitElement = lines[i][j..Math.Min(lines[i].Length, limit * k)];
                     var elementUtilities = new PageUtilities(splitElement);
-                    var previousDifferenceLength = differenceLength;
+                    previousDifferenceLength = previousDifferenceLength > differenceLength ? codes.Length : differenceLength;
                     var elementCodesAndLength = elementUtilities.FormatingCodesStringUtilities();
                     differenceLength = elementCodesAndLength.length;
                     result.Add(
                         codes +
                         lines[i][j..Math.Min(lines[i].Length, limit * k + (previousDifferenceLength > differenceLength ? previousDifferenceLength : differenceLength))] +
                         "\u001b[0m");
-                    var tempCodes = new PageUtilities(result[^1]).FormatingCodesStringUtilities().codes;
-                    var tempCodesLengthDifferenceIsZero = tempCodes.Replace("\u001b[0m", "").Length + 4 == tempCodes.Length;
-                    var shouldClearCodes = isMainLogPage ? !tempCodesLengthDifferenceIsZero : isMainLogPage;
-                    codes = shouldClearCodes ? "\x1b[0m" : tempCodes.Replace("\u001b[0m", "");
+                    codes = SetCodesValue(codes, result[^1], isMainLogPage);
                 }
             }
 
@@ -111,6 +110,14 @@ namespace GitApp
             codes += element.EndsWith("\x1b[0m") ? "\x1b[0m" : "";
 
             return (element.Length - clearedString.Length, clearedString, codes);
+        }
+
+        private static string SetCodesValue(string codes, string lastAdded, bool isMainLogPage)
+        {
+            var tempCodes = new PageUtilities(lastAdded).FormatingCodesStringUtilities().codes;
+            var tempCodesLengthDifferenceIsZero = tempCodes.Replace("\u001b[0m", "").Length + 4 == tempCodes.Length;
+            var shouldClearCodes = isMainLogPage ? !tempCodesLengthDifferenceIsZero : isMainLogPage;
+            return shouldClearCodes ? codes + "\x1b[0m" : tempCodes.Replace("\u001b[0m", "");
         }
     }
 }
