@@ -263,6 +263,7 @@ namespace GitApp
 
                 if (count == previousLines + endLines)
                 {
+                    result += diff.Current == elements.Count - 2 && elements[^1].GetElement() == "\\ No newline at end of file" ? "\\ No newline at end of file" : "";
                     break;
                 }
 
