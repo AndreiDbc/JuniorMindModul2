@@ -56,6 +56,11 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, $"log -1 {branchName}"));
         }
 
+        public void ChangeBranch(string branchName)
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"checkout {branchName}"));
+        }
+
         public string GetDiffBetweenConsecutiveCommits(string oldId, string newId, string repositoryPath, string filePath)
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"diff {oldId} {newId} -- {filePath}", repositoryPath));
