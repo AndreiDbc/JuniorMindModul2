@@ -36,7 +36,7 @@ namespace GitApp
             return commandRunner.RunCommand(new GitCommand(fileName, $"rev-list --count origin/{branchName} --not HEAD"));
         }
 
-        public string ShowAllBranches()
+        public string GetBranchesNames()
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "branch"));
         }
@@ -49,6 +49,11 @@ namespace GitApp
         public string GetLog()
         {
             return commandRunner.RunCommand(new GitCommand(fileName, "log"));
+        }
+
+        public string GetLastCommitMadeInBranch(string branchName)
+        {
+            return commandRunner.RunCommand(new GitCommand(fileName, $"log -1 {branchName}"));
         }
 
         public string GetDiffBetweenConsecutiveCommits(string oldId, string newId, string repositoryPath, string filePath)

@@ -25,7 +25,7 @@ namespace GitApp
         public string GetElement()
         {
             var result = rawFileDetails;
-            if (rawFileDetails.Contains(" "))
+            if (rawFileDetails.Contains(" ") && !result.StartsWith("*"))
             {
                 var temp = rawFileDetails.Split(" ");
                 result = temp.Length == 3 ? temp[2] : temp[1];

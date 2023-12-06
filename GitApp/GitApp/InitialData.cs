@@ -26,7 +26,7 @@ namespace GitApp
                     : $"Current branch name: {branch}\n" +
                     $"Outgoing: {manager.GetNumberOfCommitsToPush(branch)}\n" +
                     $"Incoming: {manager.GetNumberOfCommitsToPull(branch)}\n" +
-                    $"Branches: {manager.ShowAllBranches()}";
+                    $"Branches: {manager.GetBranchesNames()}";
         }
     }
 }

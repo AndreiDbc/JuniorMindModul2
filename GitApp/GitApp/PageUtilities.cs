@@ -70,6 +70,21 @@ namespace GitApp
             return toAdd + "...";
         }
 
+        public List<string> PadElement(int width)
+        {
+            var result = new List<string>();
+            foreach (var line in data)
+            {
+                var elementUtilities = new PageUtilities(line);
+                var clearedElement = elementUtilities.FormatingCodesStringUtilities().clearedString;
+                var padLength = new PageUtilities(clearedElement).GetOccupancyRate(width) - clearedElement.Length;
+                var toPad = new string(' ', padLength);
+                result.Add(clearedElement.Length % width != 0 ? line + toPad : line);
+            }
+
+            return result;
+        }
+
         public int GetOccupancyRate(int size)
         {
             int result = 0;

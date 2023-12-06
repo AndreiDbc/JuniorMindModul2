@@ -12,6 +12,7 @@ using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace GitApp
@@ -19,10 +20,10 @@ namespace GitApp
     public class DisplayText
     {
         private const string MenuBar = "\u001b[0mStatus [1] | Log [2]";
-        private readonly FullCommits commits;
         private readonly GitManager gitManager;
         private readonly IConsoleWrapper consoleWrapper;
         private readonly ConsoleKey[] menuKeys;
+        private FullCommits commits;
         private TextWriter writer;
         ConsoleKey key;
 
@@ -59,13 +60,13 @@ namespace GitApp
             while (key != ConsoleKey.Escape);
         }
 
-        private static List<string> MergeSides(List<string> leftSide, List<string> rightSide)
+        private static List<string> MergeSides(List<string> leftSide, List<string> rightSide, bool overlayPage = false)
         {
             var result = new List<string>();
 
             for (int i = 0; i < leftSide.Count; i++)
             {
-                result.Add(i < rightSide.Count ? leftSide[i] : leftSide[i] + "\n");
+                result.Add(i < rightSide.Count ? leftSide[i] : leftSide[i] + (overlayPage ? "" : "\n"));
                 if (i < rightSide.Count)
                 {
                     result[i] += rightSide[i];
@@ -73,6 +74,12 @@ namespace GitApp
             }
 
             return result;
+        }
+
+        private static string SetMenuBarForStatus(bool unstagedAvailability)
+        {
+            return "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu \u001b[36m[B] Branches "
+                + (unstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m");
         }
 
         private bool GetExitConditionForHighlightedHunksPage(
@@ -100,8 +107,9 @@ namespace GitApp
             toDisplay = isWindowToSmall
                         ? new List<string>()
                         : UpdatePage(ref commitTextSize, ref page);
-            toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details");
-            Write(toDisplay, isWindowToSmall);
+            toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details \u001b[36m[B] Branches");
+            toDisplay.Insert(0, MenuBar);
+            UpdateWriter(toDisplay, isWindowToSmall);
             var windowSizeTemp = windowSize;
 
             do
@@ -117,6 +125,10 @@ namespace GitApp
                 {
                     DisplayExtendedPage();
                 }
+                else if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(toDisplay);
+                }
 
                 if (menuKeys.Contains(key))
                 {
@@ -131,8 +143,9 @@ namespace GitApp
                 toDisplay = isWindowToSmall
                             ? new List<string>()
                             : UpdatePage(ref commitTextSize, ref page);
-                toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details");
-                Write(toDisplay, isWindowToSmall);
+                toDisplay.Insert(0, MenuBar);
+                toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details \u001b[36m[B] Branches");
+                UpdateWriter(toDisplay, isWindowToSmall);
             }
             while (true);
         }
@@ -169,10 +182,10 @@ namespace GitApp
                 ref unstaged,
                 ref staged,
                 unstagedAvailability);
-            var additionalMenuBar = "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu "
-                + (unstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m");
+            var additionalMenuBar = SetMenuBarForStatus(unstagedAvailability);
+            toDisplay.Insert(0, MenuBar);
             toDisplay.Add(additionalMenuBar);
-            Write(toDisplay, consoleWrapper.WindowHeight < 7);
+            UpdateWriter(toDisplay, consoleWrapper.WindowHeight < 7);
 
             do
             {
@@ -196,6 +209,10 @@ namespace GitApp
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
                     break;
+                }
+                else if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(toDisplay);
                 }
 
                 windowHeight = consoleWrapper.WindowHeight;
@@ -224,10 +241,10 @@ namespace GitApp
                     ref unstaged,
                     ref staged,
                     unstagedAvailability);
-                additionalMenuBar = "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu "
-                + (unstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m");
+                additionalMenuBar = SetMenuBarForStatus(unstagedAvailability);
                 toDisplay.Add(additionalMenuBar);
-                Write(toDisplay, consoleWrapper.WindowHeight < 7);
+                toDisplay.Insert(0, MenuBar);
+                UpdateWriter(toDisplay, consoleWrapper.WindowHeight < 7);
             }
             while (true);
         }
@@ -314,12 +331,13 @@ namespace GitApp
             (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
             var diffElements = diff.GetText();
             var toDisplay = UpdateHighlightedHunksPage(rightSide, unstaged, staged, keyInteractor, unstagedAvailability);
-            var additionalMenuBar = "\u001b[32m[Esc][←] Return " +
+            var additionalMenuBar = "\u001b[32m[Esc][←] Return \u001b[36m[B] Branches " +
                 (unstagedAvailability
                     ? "\u001b[33m[⏎] Add hunk \u001b[34m[A] Stage all \u001b[35m[S] Stage line"
                     : "\u001b[33m[⏎] Remove hunk \u001b[34m[A] Unstage all \u001b[35m[S] Unstage line");
+            toDisplay.Insert(0, MenuBar);
             toDisplay.Add(additionalMenuBar);
-            Write(toDisplay, windowHeight < 7);
+            UpdateWriter(toDisplay, windowHeight < 7);
 
             do
             {
@@ -332,6 +350,11 @@ namespace GitApp
                 if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged, diffElements))
                 {
                     break;
+                }
+
+                if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(toDisplay);
                 }
 
                 keyInteractor = new KeyInteractor<IElement>(diff);
@@ -350,8 +373,9 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 toDisplay = UpdateHighlightedHunksPage(rightSide, unstaged, staged, keyInteractor, unstagedAvailability);
+                toDisplay.Insert(0, MenuBar);
                 toDisplay.Add(additionalMenuBar);
-                Write(toDisplay, windowHeight < 7);
+                UpdateWriter(toDisplay, windowHeight < 7);
             }
             while (true);
         }
@@ -516,21 +540,6 @@ namespace GitApp
             diff.Index = diffIndex;
         }
 
-        private List<string> GetTextToRedraw(List<string> toWrite)
-        {
-            var result = new List<string>();
-            toWrite.ForEach(element =>
-            {
-                var elementUtilities = new PageUtilities(element);
-                var clearedElement = elementUtilities.FormatingCodesStringUtilities().clearedString;
-                var padLength = new PageUtilities(clearedElement).GetOccupancyRate(consoleWrapper.WindowWidth) - clearedElement.Length;
-                var toPad = new string(' ', padLength);
-                result.Add(clearedElement.Length % consoleWrapper.WindowWidth != 0 ? element + toPad : element);
-            });
-
-            return result;
-        }
-
         private List<string> SelectSide(List<string> leftSide, List<string> rightSide, KeyInteractor<IElement> keyInteractor)
         {
             IsRightSideInUse = keyInteractor.KeyInfo.Equals(ConsoleKey.Spacebar) ? !IsRightSideInUse : IsRightSideInUse;
@@ -549,10 +558,8 @@ namespace GitApp
             return MergeSides(leftSide, rightSide);
         }
 
-        private void Write(List<string> toWrite, bool isWindowToSmall)
+        private void UpdateWriter(List<string> toWrite, bool isWindowToSmall, List<string>? overlayPage = null)
         {
-            var width = consoleWrapper.WindowWidth;
-            var windowSize = consoleWrapper.WindowHeight * width;
             if (isWindowToSmall)
             {
                 writer = new StringWriter();
@@ -561,20 +568,43 @@ namespace GitApp
             }
             else
             {
-                toWrite.Insert(0, MenuBar);
-                var temp = GetTextToRedraw(toWrite);
+                var paddedPage = new PageUtilities(toWrite.ToArray()).PadElement(consoleWrapper.WindowWidth);
                 if (WasWindowResizedSmaller)
                 {
                     WasWindowResizedSmaller = false;
                     consoleWrapper.Clear();
                 }
 
-                writer = new StringWriter();
-                temp.ForEach(element => writer.WriteLine(element));
-                var result = writer.ToString();
                 consoleWrapper.SetCursorPosition(0, 0);
-                consoleWrapper.Write(result == null ? "" : result[.. ^1].TrimStart());
+                Write(paddedPage);
+
+                if (overlayPage != null)
+                {
+                    WriteOverlay(overlayPage);
+                }
             }
+        }
+
+        private void WriteOverlay(List<string> overlayPage)
+        {
+            var width = consoleWrapper.WindowWidth;
+            var height = consoleWrapper.WindowHeight;
+            var left = (int)(0.125 * width);
+            var top = (int)(0.125 * height);
+            foreach (var line in overlayPage)
+            {
+                Console.SetCursorPosition(left, top);
+                consoleWrapper.Write(line);
+                top++;
+            }
+        }
+
+        private void Write(List<string> paddedPage)
+        {
+            writer = new StringWriter();
+            paddedPage.ForEach(element => writer.WriteLine(element));
+            var result = writer.ToString();
+            consoleWrapper.Write(result == null ? "" : result[..^1].TrimStart());
         }
 
         private void UpdateLeftSideVariables(
@@ -617,8 +647,9 @@ namespace GitApp
             var toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateExtendedPage(leftSideCommits, keyInteractor);
-            toDisplay.Add("\u001b[32m[Esc] Return \u001b[33m[→] Next menu\u001b[0m");
-            Write(toDisplay, isWindowToSmall);
+            toDisplay.Insert(0, MenuBar);
+            toDisplay.Add("\u001b[32m[Esc] Return \u001b[33m[→] Next menu\u001b[0m \u001b[36m[B] Branches");
+            UpdateWriter(toDisplay, isWindowToSmall);
             do
             {
                 key = consoleWrapper.ReadKey().Key;
@@ -626,6 +657,10 @@ namespace GitApp
                 if (keyInteractor.KeyInfo == ConsoleKey.RightArrow)
                 {
                     DisplayDiffPage(commits[commits.Current], commits[commits.Current + 1]);
+                }
+                else if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(toDisplay);
                 }
 
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
@@ -644,8 +679,9 @@ namespace GitApp
                 toDisplay = isWindowToSmall
                     ? new List<string>()
                     : UpdateExtendedPage(leftSideCommits, keyInteractor);
-                toDisplay.Add("\u001b[32m[Esc] Return \u001b[33m[→] Next menu\u001b[0m");
-                Write(toDisplay, isWindowToSmall);
+                toDisplay.Add("\u001b[32m[Esc] Return \u001b[33m[→] Next menu\u001b[0m \u001b[36m[B] Branches");
+                toDisplay.Insert(0, MenuBar);
+                UpdateWriter(toDisplay, isWindowToSmall);
             }
             while (true);
         }
@@ -673,8 +709,9 @@ namespace GitApp
             var toDisplay = isWindowToSmall
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
-            toDisplay.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] Next menu\u001b[0m");
-            Write(toDisplay, windowHeight < 4);
+            toDisplay.Insert(0, MenuBar);
+            toDisplay.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] \u001b[36m[B] Branches Next menu\u001b[0m");
+            UpdateWriter(toDisplay, windowHeight < 4);
             do
             {
                 key = consoleWrapper.ReadKey().Key;
@@ -682,6 +719,10 @@ namespace GitApp
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.RightArrow))
                 {
                     GetHighlightedDiffPage(diff, leftSideElements);
+                }
+                else if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(toDisplay);
                 }
 
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || keyInteractor.KeyInfo.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
@@ -707,8 +748,9 @@ namespace GitApp
                 toDisplay = isWindowToSmall
                     ? new List<string>()
                     : UpdateDiffPage(leftSideElements, rightSide, rowSize + 2, keyInteractor);
-                toDisplay.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] Next menu\u001b[0m");
-                Write(toDisplay, windowHeight < 4);
+                toDisplay.Insert(0, MenuBar);
+                toDisplay.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] \u001b[36m[B] Branches Next menu\u001b[0m");
+                UpdateWriter(toDisplay, windowHeight < 4);
             }
             while (true);
         }
@@ -727,12 +769,18 @@ namespace GitApp
             var toDisplay = windowHeight < 4
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
-            toDisplay.Add("\u001b[32m[Esc][←] Return\u001b[0m");
-            Write(toDisplay, windowHeight < 4);
+            toDisplay.Insert(0, MenuBar);
+            toDisplay.Add("\u001b[32m[Esc][←] Return\u001b[0m \u001b[36m[B] Branches");
+            UpdateWriter(toDisplay, windowHeight < 4);
             do
             {
                 key = consoleWrapper.ReadKey().Key;
                 keyInteractor.KeyInfo = key;
+                if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(toDisplay);
+                }
+
                 if (keyInteractor.KeyInfo == ConsoleKey.Escape || keyInteractor.KeyInfo == ConsoleKey.LeftArrow || menuKeys.Contains(key))
                 {
                     break;
@@ -750,8 +798,9 @@ namespace GitApp
                 toDisplay = windowHeight < 3
                 ? new List<string>()
                 : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
-                toDisplay.Add("\u001b[32m[Esc][←] Return\u001b[0m");
-                Write(toDisplay, windowHeight < 4);
+                toDisplay.Insert(0, MenuBar);
+                toDisplay.Add("\u001b[32m[Esc][←] Return\u001b[0m \u001b[36m[B] Branches");
+                UpdateWriter(toDisplay, windowHeight < 4);
             }
             while (true);
         }
@@ -994,6 +1043,77 @@ namespace GitApp
                         : diff.GetHighlightedSide(windowHeight - 4, windowWidth - (int)(0.6 * windowWidth) - 2, diffAvailableSpace, false), "Diff")
                             .DrawBox(windowWidth - (int)(0.6 * windowWidth), windowHeight - 2);
             return MergeSides(tempList, rightSide);
+        }
+
+        private void DisplayBranchesMenu(List<string> mainPage)
+        {
+            var branchesNames = gitManager.GetBranchesNames();
+            if (branchesNames == "")
+            {
+                return;
+            }
+
+            var height = consoleWrapper.WindowHeight;
+            var width = consoleWrapper.WindowWidth;
+            var boxHeight = (int)((height - 2) * 0.75);
+            var boxWidth = (int)((width - 2) * 0.75);
+            var branches = new ModifiedFiles(branchesNames);
+            var leftSide = branches.GetHighlightedSide(boxHeight - 2, boxWidth - 2, (boxHeight - 2) * (boxWidth - 2));
+            var keyInteractor = new KeyInteractor<IElement>(branches);
+            keyInteractor.KeyInfo = ConsoleKey.NoName;
+            UpdateBranchMenu(ref branches, ref leftSide, keyInteractor, mainPage, branchesNames);
+
+            do
+            {
+                key = consoleWrapper.ReadKey().Key;
+                keyInteractor.KeyInfo = key;
+                if (keyInteractor.KeyInfo == ConsoleKey.Escape)
+                {
+                    break;
+                }
+
+                UpdateBranchMenu(ref branches, ref leftSide, keyInteractor, mainPage, branchesNames);
+            }
+            while (true);
+        }
+
+        private void UpdateBranchMenu(
+            ref ModifiedFiles branches,
+            ref List<string> leftSide,
+            KeyInteractor<IElement> keyInteractor,
+            List<string> mainPage,
+            string branchesNames)
+        {
+            var height = consoleWrapper.WindowHeight;
+            var width = consoleWrapper.WindowWidth;
+            var boxHeight = (int)((height - 2) * 0.75);
+            var boxWidth = (int)((width - 2) * 0.75);
+            List<string> leftSideTemp;
+            List<string> box;
+            var commitList = new List<Commit>();
+            var rightSide = new List<string>();
+            foreach (var branch in branchesNames.Split("\n"))
+            {
+                commitList.Add(new Commit(gitManager.GetLastCommitMadeInBranch(branch.StartsWith("*") ? branch[2..] : branch)));
+                var commit = commitList[^1].GetElement().Split("\n");
+                rightSide.Add(new PageUtilities(commit[0] + " " + commit[3]).TruncateText((int)(0.6 * (height < 15 && width < 60 ? width - 1 : boxWidth))) + "\x1b[0m");
+            }
+
+            if (height < 15 && width < 60)
+            {
+                (branches.Index, branches.Current) = keyInteractor.KeySwitch(leftSide, leftSide[^1], leftSide[0], false, (int)(0.4 * width - 1), branches[branches.Current].GetElement().Length);
+                leftSide = branches.GetHighlightedSide(height - 2, (int)(0.4 * width - 1), (height - 2) * (int)(0.4 * width - 2));
+                leftSideTemp = new PageUtilities(leftSide.ToArray()).PadElement((int)(0.4 * width - 1));
+                box = new BoxDrawer(MergeSides(leftSideTemp, rightSide, true), "Branches").DrawBox(width, height, false, true);
+                UpdateWriter(box, height < 3 && width < 50);
+                return;
+            }
+
+            (branches.Index, branches.Current) = keyInteractor.KeySwitch(leftSide, leftSide[^1], leftSide[0], false, (int)(0.4 * boxWidth - 1), branches[branches.Current].GetElement().Length);
+            leftSide = branches.GetHighlightedSide(boxHeight - 2, (int)(0.4 * boxWidth - 1), (boxHeight - 2) * (int)(0.4 * boxWidth - 1));
+            leftSideTemp = new PageUtilities(leftSide.ToArray()).PadElement((int)(0.4 * boxWidth - 1));
+            box = new BoxDrawer(MergeSides(leftSideTemp, rightSide, true), "Branches").DrawBox(boxWidth, boxHeight, false, true);
+            UpdateWriter(mainPage, height < 3 && width < 50, box);
         }
     }
 }
