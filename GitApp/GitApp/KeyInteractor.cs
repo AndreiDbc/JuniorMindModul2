@@ -59,7 +59,7 @@ namespace GitApp
         private (int index, int current) InteractWithUpArrow(string firstCommitOnPage)
         {
             var list = interactor.GetText();
-            if (list[interactor.Current].Id.Equals(firstCommitOnPage))
+            if (list[Math.Max(0, interactor.Current)].Id.Equals(firstCommitOnPage))
             {
                 interactor.Index--;
             }
