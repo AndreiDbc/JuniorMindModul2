@@ -1073,13 +1073,9 @@ namespace GitApp
                 }
                 else if (keyInteractor.KeyInfo == ConsoleKey.Enter)
                 {
-                    var branchesIndex = branches.Index;
-                    var branchesCurrent = branches.Current;
                     var currentBranchName = branches[branches.Current].GetElement();
                     gitManager.ChangeBranch(currentBranchName.StartsWith("* ") ? currentBranchName[2 ..] : currentBranchName);
                     branches = new ModifiedFiles(gitManager.GetBranchesNames());
-                    branches.Current = branchesCurrent;
-                    branches.Index = branchesIndex;
                 }
 
                 UpdateBranchMenu(ref branches, ref leftSide, keyInteractor, mainPage, branchesNames);
