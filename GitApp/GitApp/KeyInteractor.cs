@@ -45,7 +45,7 @@ namespace GitApp
         private (int index, int current) InteractWithDownArrow(string lastCommitIdOnPage, bool isPageLargerThanWindow, int consoleWidth, int currentElementLength)
         {
             var list = interactor.GetText();
-            var currentId = list[interactor.Current].Id;
+            var currentId = list[Math.Min(interactor.Current, list.Count - 1)].Id;
             interactor.Current++;
             if ((currentId.Equals(lastCommitIdOnPage) && currentId != list[^1].Id) || (currentId.Equals(lastCommitIdOnPage) && isPageLargerThanWindow))
             {
