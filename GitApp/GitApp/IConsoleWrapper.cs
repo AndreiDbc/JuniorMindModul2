@@ -12,7 +12,7 @@ namespace GitApp
 
         public int WindowHeight { get; set;  }
 
-        public ConsoleKeyInfo ReadKey();
+        public ConsoleKeyInfo ReadKey(bool intercept = false);
 
         public void SetCursorPosition(int left, int top);
 

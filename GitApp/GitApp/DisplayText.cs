@@ -182,9 +182,6 @@ namespace GitApp
                 ref unstaged,
                 ref staged,
                 unstagedAvailability);
-            var additionalMenuBar = SetMenuBarForStatus(unstagedAvailability);
-            toDisplay.Insert(0, MenuBar);
-            toDisplay.Add(additionalMenuBar);
             UpdateWriter(toDisplay, consoleWrapper.WindowHeight < 7);
 
             do
@@ -214,6 +211,10 @@ namespace GitApp
                 {
                     DisplayBranchesMenu(toDisplay);
                 }
+                else if (key.Equals(ConsoleKey.C))
+                {
+                    DisplayCommitPage(ref unstagedElements, ref stagedElements, ref unstagedPageList, ref stagedPageList, ref unstaged, ref staged, unstagedAvailability);
+                }
 
                 windowHeight = consoleWrapper.WindowHeight;
                 windowWidth = consoleWrapper.WindowWidth;
@@ -241,9 +242,6 @@ namespace GitApp
                     ref unstaged,
                     ref staged,
                     unstagedAvailability);
-                additionalMenuBar = SetMenuBarForStatus(unstagedAvailability);
-                toDisplay.Add(additionalMenuBar);
-                toDisplay.Insert(0, MenuBar);
                 UpdateWriter(toDisplay, consoleWrapper.WindowHeight < 7);
             }
             while (true);
@@ -580,17 +578,26 @@ namespace GitApp
 
                 if (overlayPage != null)
                 {
-                    WriteOverlay(overlayPage);
+                    var width = consoleWrapper.WindowWidth;
+                    var height = consoleWrapper.WindowHeight;
+                    var left = (int)(0.125 * width);
+                    var top = (int)(0.125 * height);
+                    WriteOverlay(overlayPage, ref left, ref top);
                 }
             }
         }
 
-        private void WriteOverlay(List<string> overlayPage)
+        private void WriteOverlay(List<string> overlayPage, ref int left, ref int top)
         {
             var width = consoleWrapper.WindowWidth;
             var height = consoleWrapper.WindowHeight;
-            var left = (int)(0.125 * width);
-            var top = (int)(0.125 * height);
+
+            if (height < 15 && width < 60)
+            {
+                left = 0;
+                top = 0;
+            }
+
             foreach (var line in overlayPage)
             {
                 Console.SetCursorPosition(left, top);
@@ -1042,7 +1049,11 @@ namespace GitApp
                         ? new List<string>()
                         : diff.GetHighlightedSide(windowHeight - 4, windowWidth - (int)(0.6 * windowWidth) - 2, diffAvailableSpace, false), "Diff")
                             .DrawBox(windowWidth - (int)(0.6 * windowWidth), windowHeight - 2);
-            return MergeSides(tempList, rightSide);
+            var result = MergeSides(tempList, rightSide);
+            var additionalMenuBar = SetMenuBarForStatus(isUnstagedInUse);
+            result.Insert(0, MenuBar);
+            result.Add(additionalMenuBar);
+            return result;
         }
 
         private void DisplayBranchesMenu(List<string> mainPage)
@@ -1120,6 +1131,85 @@ namespace GitApp
             leftSideTemp = new PageUtilities(leftSide.ToArray()).PadElement((int)(0.4 * boxWidth - 1));
             box = new BoxDrawer(MergeSides(leftSideTemp, rightSide, true), "Branches").DrawBox(boxWidth, boxHeight, false, true);
             UpdateWriter(mainPage, height < 3 && width < 50, box);
+        }
+
+        private void DisplayCommitPage(
+            ref List<IElement> unstagedElements,
+            ref List<IElement> stagedElements,
+            ref List<string> unstagedPageList,
+            ref List<string> stagedPageList,
+            ref ModifiedFiles unstaged,
+            ref ModifiedFiles staged,
+            bool unstagedAvailability)
+        {
+            if (staged[0].GetElement() == "")
+            {
+                return;
+            }
+
+            var mainPage = UpdateStatusPage(
+                    ref unstagedElements,
+                    ref stagedElements,
+                    ref unstagedPageList,
+                    ref stagedPageList,
+                    ref unstaged,
+                    ref staged,
+                    unstagedAvailability);
+            var windowSize = 0;
+            var windowSizeTemp = 0;
+            var commitMessage = "";
+
+            UpdateCommitPage(ref commitMessage, mainPage);
+            do
+            {
+                if (key == ConsoleKey.Escape || key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+
+                mainPage = UpdateStatusPage(
+                    ref unstagedElements,
+                    ref stagedElements,
+                    ref unstagedPageList,
+                    ref stagedPageList,
+                    ref unstaged,
+                    ref staged,
+                    unstagedAvailability);
+
+                UpdateCommitPage(ref commitMessage, mainPage);
+
+                var height = consoleWrapper.WindowHeight;
+                var width = consoleWrapper.WindowWidth;
+                windowSize = height * width;
+                WasWindowResizedSmaller = windowSizeTemp < windowSize;
+                windowSizeTemp = windowSize;
+            }
+            while (true);
+        }
+
+        private void UpdateCommitPage(ref string commitMessage, List<string> mainPage)
+        {
+            const string commitMenu = "\u001b[37m'Esc' Return \u001b[38[←] Commit";
+            var height = consoleWrapper.WindowHeight;
+            var width = consoleWrapper.WindowWidth;
+            if (height < 15 && width < 60)
+            {
+                var box = new BoxDrawer(new List<string>(), "Commit").DrawBox(width, height, false, true, "", commitMenu);
+                commitMessage = commitMessage[..Math.Min((box[0].Length - 13) * (box.Count - 2), commitMessage.Length)];
+                UpdateWriter(box, consoleWrapper.WindowHeight < 3, box);
+                commitMessage = new TextReader(1, 1, box[0].Length - 13, box.Count - 2, consoleWrapper).GetText(ref commitMessage);
+            }
+            else
+            {
+                var left = (int)(0.125 * width) + 1;
+                var top = (int)(0.125 * height) + 1;
+                var boxHeight = (int)((height - 2) * 0.75);
+                var boxWidth = (int)((width - 2) * 0.75);
+                var box = new BoxDrawer(new List<string>(), "Commit").DrawBox(boxWidth, boxHeight, false, true, "", commitMenu);
+                commitMessage = commitMessage[..Math.Min((box[0].Length - 13) * (box.Count - 3), commitMessage.Length)];
+                UpdateWriter(mainPage, consoleWrapper.WindowHeight < 3, box);
+                commitMessage = new TextReader(left, top, box[0].Length - 13, box.Count - 2, consoleWrapper).GetText(ref commitMessage);
+            }
         }
     }
 }

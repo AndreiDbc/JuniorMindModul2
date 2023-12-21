@@ -17,9 +17,9 @@ namespace GitApp
             Console.SetCursorPosition(left, top);
         }
 
-        public ConsoleKeyInfo ReadKey()
+        public ConsoleKeyInfo ReadKey(bool intercept = false)
         {
-            return Console.ReadKey();
+            return Console.ReadKey(intercept);
         }
 
         public void Clear()

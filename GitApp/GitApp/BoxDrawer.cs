@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace GitApp
             this.boxName = boxName;
         }
 
-        public List<string> DrawBox(int boxWidth, int windowHeight, bool shouldFitText = false, bool shouldColorLines = false, string branchInfo = "")
+        public List<string> DrawBox(int boxWidth, int windowHeight, bool shouldFitText = false, bool shouldColorLines = false, string branchInfo = "", string overlayMenu = "")
         {
             const int lengthToSubstract = 2;
             var result = new List<string>();
@@ -44,11 +45,26 @@ namespace GitApp
 
                 index++;
             }
-            while (result.Count <= windowHeight - 2 || !result[^1].StartsWith(lineColor + "│"));
+            while (result.Count <= windowHeight - 2 - (overlayMenu == "" ? 0 : 1) || !result[^1].StartsWith(lineColor + "│"));
+
+            AddOverlayMenu(ref result, overlayMenu, boxWidth, lineColor);
+
             result.Add(branchInfo == ""
                 ? lineColor + "└" + new string('─', boxWidth - 2) + "┘"
                 : lineColor + "└" + new string('─', boxWidth - 2 - branchInfo.Length) + $"{branchInfo}┘");
             return result;
+        }
+
+        private static void AddOverlayMenu(ref List<string> result, string overlayMenu, int boxWidth, string lineColor)
+        {
+            if (overlayMenu == "")
+            {
+                return;
+            }
+
+            var padLength = boxWidth + 2 - (overlayMenu.Length - new PageUtilities(overlayMenu).FormatingCodesStringUtilities().length);
+            var toPad = padLength <= 0 ? lineColor + "│" : lineColor + "│".PadLeft(padLength + 1);
+            result.Add(lineColor + "│" + overlayMenu + toPad);
         }
 
         private List<string> FitTextInsideBox(int availableSpace, int rowSize)
