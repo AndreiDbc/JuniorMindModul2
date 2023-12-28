@@ -110,16 +110,16 @@ namespace GitApp
             };
             int boxHeight = height / 3;
             var result = new List<string>();
-            var infoTemp = new PageUtilities(data[0].Split("\n")).SplitRow(rightSideLineSize - 2);
-            var infoBox = new BoxDrawer(infoTemp, "Info").DrawBox(rightSideLineSize, boxHeight, true);
+            var infoTemp = new PageUtilities(data[0].Split("\n")).SplitRow(rightSideLineSize);
+            var infoBox = new BoxDrawer(infoTemp, "Info").DrawBox(rightSideLineSize + 2, boxHeight, true);
             result.AddRange(infoBox);
-            var messageTemp = new PageUtilities(data[1].Split("\n")).SplitRow(rightSideLineSize - 2);
+            var messageTemp = new PageUtilities(data[1].Split("\n")).SplitRow(rightSideLineSize);
             var additionalHeight = 0;
             additionalHeight += height % 3 == 0 ? 0 : height % 3;
-            var messageBox = new BoxDrawer(messageTemp, "Message").DrawBox(rightSideLineSize, boxHeight + additionalHeight, true);
+            var messageBox = new BoxDrawer(messageTemp, "Message").DrawBox(rightSideLineSize + 2, boxHeight + additionalHeight, true);
             result.AddRange(messageBox);
-            var filesTemp = new PageUtilities(data[2].Split("\n")).SplitRow(rightSideLineSize - 2);
-            var filesBox = new BoxDrawer(filesTemp, "Files").DrawBox(rightSideLineSize, boxHeight, true);
+            var filesTemp = new PageUtilities(data[2].Split("\n")).SplitRow(rightSideLineSize);
+            var filesBox = new BoxDrawer(filesTemp, "Files").DrawBox(rightSideLineSize + 2, boxHeight, true);
             result.AddRange(filesBox);
             return result;
         }
