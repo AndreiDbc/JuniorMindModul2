@@ -139,7 +139,7 @@ namespace GitApp
             var tempCodes = new PageUtilities(lastAdded).FormatingCodesStringUtilities().codes;
             var tempCodesLengthDifferenceIsZero = tempCodes.Replace("\u001b[0m", "").Length + 4 == tempCodes.Length;
             var shouldClearCodes = isMainLogPage ? !tempCodesLengthDifferenceIsZero : isMainLogPage;
-            return shouldClearCodes ? codes + "\x1b[0m" : tempCodes.Replace("\u001b[0m", "");
+            return shouldClearCodes ? codes + "\x1b[0m" + (codes.Contains("\x1b[7m") || tempCodes.Contains("\x1b[7m") ? "\x1b[7m" : "") : tempCodes.Replace("\u001b[0m", "");
         }
     }
 }
