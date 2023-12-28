@@ -98,18 +98,12 @@ namespace GitApp
 
         private void DisplayLog()
         {
-            var commitTextSize = 0;
             var windowWidth = consoleWrapper.WindowWidth;
-            var windowSize = consoleWrapper.WindowHeight * windowWidth;
-            var page = new List<IElement>();
-            var toDisplay = new List<string>();
-            var isWindowToSmall = consoleWrapper.WindowHeight < 3;
-            toDisplay = isWindowToSmall
-                        ? new List<string>()
-                        : UpdatePage(ref commitTextSize, ref page);
-            toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details \u001b[36m[B] Branches");
-            toDisplay.Insert(0, MenuBar);
-            UpdateWriter(toDisplay, isWindowToSmall);
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowSize = windowHeight * windowWidth;
+            var isWindowToSmall = windowHeight < 5 && windowWidth < 35;
+            var menu = new LogMenu(consoleWrapper, commits);
+            WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
 
             do
@@ -127,7 +121,7 @@ namespace GitApp
                 }
                 else if (key.Equals(ConsoleKey.B))
                 {
-                    DisplayBranchesMenu(toDisplay);
+                    DisplayBranchesMenu(menu, isWindowToSmall);
                 }
 
                 if (menuKeys.Contains(key))
@@ -140,12 +134,7 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 isWindowToSmall = consoleWrapper.WindowHeight < 3;
-                toDisplay = isWindowToSmall
-                            ? new List<string>()
-                            : UpdatePage(ref commitTextSize, ref page);
-                toDisplay.Insert(0, MenuBar);
-                toDisplay.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details \u001b[36m[B] Branches");
-                UpdateWriter(toDisplay, isWindowToSmall);
+                WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }
@@ -206,10 +195,6 @@ namespace GitApp
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
                     break;
-                }
-                else if (key.Equals(ConsoleKey.B))
-                {
-                    DisplayBranchesMenu(toDisplay);
                 }
                 else if (key.Equals(ConsoleKey.C))
                 {
@@ -348,11 +333,6 @@ namespace GitApp
                 if (GetExitConditionForHighlightedHunksPage(keyInteractor, unstaged, diffElements))
                 {
                     break;
-                }
-
-                if (key.Equals(ConsoleKey.B))
-                {
-                    DisplayBranchesMenu(toDisplay);
                 }
 
                 keyInteractor = new KeyInteractor<IElement>(diff);
@@ -642,53 +622,31 @@ namespace GitApp
 
         private void DisplayExtendedPage()
         {
-            var keyInteractor = new KeyInteractor<IElement>(commits);
-            var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
+            var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
+            var menu = new CommitDetailsMenu(consoleWrapper, gitManager, commits, IsRightSideInUse);
+            var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
-            var isWindowToSmall = windowHeight < 11;
-            var commitList = new List<IElement>();
-            var leftSideCommits = new List<string>();
-            UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall, commits, windowWidth < 50 && windowHeight < 15 ? windowWidth - 2 : ((int)(0.6 * windowWidth) - 2));
-            var toDisplay = isWindowToSmall
-                ? new List<string>()
-                : UpdateExtendedPage(leftSideCommits, keyInteractor);
-            toDisplay.Insert(0, MenuBar);
-            toDisplay.Add("\u001b[32m[Esc] Return \u001b[33m[→] Next menu\u001b[0m \u001b[36m[B] Branches");
-            UpdateWriter(toDisplay, isWindowToSmall);
+            WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             do
             {
                 key = consoleWrapper.ReadKey().Key;
-                keyInteractor.KeyInfo = key;
-                if (keyInteractor.KeyInfo == ConsoleKey.RightArrow)
+                if (key == ConsoleKey.RightArrow)
                 {
                     DisplayDiffPage(commits[commits.Current], commits[commits.Current + 1]);
                 }
-                else if (key.Equals(ConsoleKey.B))
-                {
-                    DisplayBranchesMenu(toDisplay);
-                }
 
-                if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
+                if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
                     break;
                 }
 
-                (commits.Index, commits.Current) = keyInteractor
-                    .KeySwitch(leftSideCommits, commitList[^1].Id, commitList[0].Id, false, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
                 windowHeight = consoleWrapper.WindowHeight;
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                isWindowToSmall = consoleWrapper.WindowHeight < 11;
-                UpdateLeftSideVariables(ref commitList, ref leftSideCommits, isWindowToSmall, commits, new TextWidthSetter(consoleWrapper).SetTextWidth(true));
-                toDisplay = isWindowToSmall
-                    ? new List<string>()
-                    : UpdateExtendedPage(leftSideCommits, keyInteractor);
-                toDisplay.Add("\u001b[32m[Esc] Return \u001b[33m[→] Next menu\u001b[0m \u001b[36m[B] Branches");
-                toDisplay.Insert(0, MenuBar);
-                UpdateWriter(toDisplay, isWindowToSmall);
+                WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }
@@ -726,10 +684,6 @@ namespace GitApp
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.RightArrow))
                 {
                     GetHighlightedDiffPage(diff, leftSideElements);
-                }
-                else if (key.Equals(ConsoleKey.B))
-                {
-                    DisplayBranchesMenu(toDisplay);
                 }
 
                 if (keyInteractor.KeyInfo.Equals(ConsoleKey.Escape) || keyInteractor.KeyInfo.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
@@ -783,10 +737,6 @@ namespace GitApp
             {
                 key = consoleWrapper.ReadKey().Key;
                 keyInteractor.KeyInfo = key;
-                if (key.Equals(ConsoleKey.B))
-                {
-                    DisplayBranchesMenu(toDisplay);
-                }
 
                 if (keyInteractor.KeyInfo == ConsoleKey.Escape || keyInteractor.KeyInfo == ConsoleKey.LeftArrow || menuKeys.Contains(key))
                 {
@@ -1056,7 +1006,7 @@ namespace GitApp
             return result;
         }
 
-        private void DisplayBranchesMenu(List<string> mainPage)
+        private void DisplayBranchesMenu(Menu background, bool isWindowToSmall)
         {
             var branchesNames = gitManager.GetBranchesNames();
             if (branchesNames == "")
@@ -1066,17 +1016,24 @@ namespace GitApp
 
             var height = consoleWrapper.WindowHeight;
             var width = consoleWrapper.WindowWidth;
+            var windowSize = height * width;
             var boxHeight = (int)((height - 2) * 0.75);
             var boxWidth = (int)((width - 2) * 0.75);
             var branches = new ModifiedFiles(branchesNames);
             var leftSide = branches.GetHighlightedSide(boxHeight - 2, boxWidth - 2, (boxHeight - 2) * (boxWidth - 2));
             var keyInteractor = new KeyInteractor<IElement>(branches);
             keyInteractor.KeyInfo = ConsoleKey.NoName;
-            UpdateBranchMenu(ref branches, ref leftSide, keyInteractor, mainPage, branchesNames);
+            var menu = new BranchMenu(consoleWrapper, gitManager, branchesNames, branches);
+            WasWindowResizedSmaller = new MenuWriter(background.UpdateMenu(isWindowToSmall, ConsoleKey.NoName), isWindowToSmall, consoleWrapper)
+                .UpdateDisplay(WasWindowResizedSmaller, menu.UpdateMenu(isWindowToSmall, ConsoleKey.NoName));
 
             do
             {
+                var windowSizeTemp = windowSize;
                 key = consoleWrapper.ReadKey().Key;
+                height = consoleWrapper.WindowHeight;
+                width = consoleWrapper.WindowWidth;
+                windowSize = height * width;
                 keyInteractor.KeyInfo = key;
                 if (keyInteractor.KeyInfo == ConsoleKey.Escape)
                 {
@@ -1085,11 +1042,13 @@ namespace GitApp
                 else if (keyInteractor.KeyInfo == ConsoleKey.Enter)
                 {
                     var currentBranchName = branches[branches.Current].GetElement();
-                    gitManager.ChangeBranch(currentBranchName.StartsWith("* ") ? currentBranchName[2 ..] : currentBranchName);
+                    gitManager.ChangeBranch(currentBranchName.StartsWith("* ") ? currentBranchName[2..] : currentBranchName);
                     branches = new ModifiedFiles(gitManager.GetBranchesNames());
                 }
 
-                UpdateBranchMenu(ref branches, ref leftSide, keyInteractor, mainPage, branchesNames);
+                WasWindowResizedSmaller = windowSizeTemp > windowSize;
+                WasWindowResizedSmaller = new MenuWriter(background.UpdateMenu(isWindowToSmall, ConsoleKey.NoName), isWindowToSmall, consoleWrapper)
+                    .UpdateDisplay(WasWindowResizedSmaller, menu.UpdateMenu(isWindowToSmall, key));
             }
             while (true);
         }
@@ -1181,7 +1140,7 @@ namespace GitApp
                 var height = consoleWrapper.WindowHeight;
                 var width = consoleWrapper.WindowWidth;
                 windowSize = height * width;
-                WasWindowResizedSmaller = windowSizeTemp < windowSize;
+                WasWindowResizedSmaller = windowSizeTemp > windowSize;
                 windowSizeTemp = windowSize;
             }
             while (true);
@@ -1203,8 +1162,8 @@ namespace GitApp
             {
                 var left = (int)(0.125 * width) + 1;
                 var top = (int)(0.125 * height) + 1;
-                var boxHeight = (int)((height - 2) * 0.75);
-                var boxWidth = (int)((width - 2) * 0.75);
+                var boxHeight = (int)(height * 0.75 - 2);
+                var boxWidth = (int)(width * 0.75 - 2);
                 var box = new BoxDrawer(new List<string>(), "Commit").DrawBox(boxWidth, boxHeight, false, true, "", commitMenu);
                 commitMessage = commitMessage[..Math.Min((box[0].Length - 13) * (box.Count - 3), commitMessage.Length)];
                 UpdateWriter(mainPage, consoleWrapper.WindowHeight < 3, box);
