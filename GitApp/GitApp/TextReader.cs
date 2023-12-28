@@ -30,7 +30,6 @@ namespace GitApp
         public string GetText(ref string result)
         {
             ConsoleKeyInfo key;
-            currentWidth = result == "" ? currentWidth : result.Length % width;
             consoleWrapper.SetCursorPosition(leftCursorPosition, topCursorPosition);
             consoleWrapper.Write("\x1b[0m");
             new PageUtilities(result).SplitRow(width).ForEach(line =>
@@ -40,6 +39,7 @@ namespace GitApp
                 consoleWrapper.SetCursorPosition(leftCursorPosition, currentHeight);
             });
             currentHeight = result == "" ? currentHeight : currentHeight - 1;
+            currentWidth = result == "" ? currentWidth : result.Length % width;
             var windowSize = consoleWrapper.WindowWidth * consoleWrapper.WindowHeight;
             var tempWindowSize = 0;
             do
