@@ -27,19 +27,24 @@ namespace GitApp
             currentHeight = topCursorPosition;
         }
 
-        public string GetText(ref string result)
+        public (string text, ConsoleKeyInfo key) GetText(ref string result, ConsoleKeyInfo key)
         {
-            ConsoleKeyInfo key;
             consoleWrapper.SetCursorPosition(leftCursorPosition, topCursorPosition);
             consoleWrapper.Write("\x1b[0m");
-            new PageUtilities(result).SplitRow(width).ForEach(line =>
+
+            if (result != "")
             {
-                consoleWrapper.Write(line);
-                currentHeight++;
-                consoleWrapper.SetCursorPosition(leftCursorPosition, currentHeight);
-            });
-            currentHeight = result == "" ? currentHeight : currentHeight - 1;
-            currentWidth = result == "" ? currentWidth : result.Length % width;
+                new PageUtilities(result).SplitRow(width).ForEach(line =>
+                {
+                    consoleWrapper.Write(line);
+                    currentHeight++;
+                    consoleWrapper.SetCursorPosition(leftCursorPosition, currentHeight);
+                });
+                currentHeight--;
+                currentWidth = leftCursorPosition + result.Length % width;
+                AddKeyValue(ref result, key);
+            }
+
             var windowSize = consoleWrapper.WindowWidth * consoleWrapper.WindowHeight;
             var tempWindowSize = 0;
             do
@@ -47,6 +52,11 @@ namespace GitApp
                 tempWindowSize = windowSize;
                 key = consoleWrapper.ReadKey(true);
                 windowSize = consoleWrapper.WindowWidth * consoleWrapper.WindowHeight;
+                if (tempWindowSize != windowSize)
+                {
+                    return (result, key);
+                }
+
                 var resetCursorToBegining = result.Length == 0 &&
                     key.Key == ConsoleKey.Backspace;
                 var resetCursorToEnd = result.Length == width * (height - 1) &&
@@ -54,7 +64,7 @@ namespace GitApp
 
                 if (key.Equals(ConsoleKey.Enter))
                 {
-                    return result;
+                    return (result, key);
                 }
                 else if (key.Equals(ConsoleKey.Escape))
                 {
@@ -73,15 +83,10 @@ namespace GitApp
                 {
                     AddKeyValue(ref result, key);
                 }
-
-                if (tempWindowSize != windowSize)
-                {
-                    return result;
-                }
             }
             while (true);
 
-            return "";
+            return ("", key);
         }
 
         private void AddKeyValue(ref string result, ConsoleKeyInfo key)

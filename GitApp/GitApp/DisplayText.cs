@@ -1117,8 +1117,8 @@ namespace GitApp
             var windowSize = 0;
             var windowSizeTemp = 0;
             var commitMessage = "";
-
-            UpdateCommitPage(ref commitMessage, mainPage);
+            var keyInfo = new ConsoleKeyInfo((char)ConsoleKey.NoName, ConsoleKey.NoName, false, false, false);
+            UpdateCommitPage(ref commitMessage, mainPage, ref keyInfo);
             do
             {
                 if (key == ConsoleKey.Escape || key == ConsoleKey.Enter)
@@ -1135,7 +1135,7 @@ namespace GitApp
                     ref staged,
                     unstagedAvailability);
 
-                UpdateCommitPage(ref commitMessage, mainPage);
+                UpdateCommitPage(ref commitMessage, mainPage, ref keyInfo);
 
                 var height = consoleWrapper.WindowHeight;
                 var width = consoleWrapper.WindowWidth;
@@ -1146,7 +1146,7 @@ namespace GitApp
             while (true);
         }
 
-        private void UpdateCommitPage(ref string commitMessage, List<string> mainPage)
+        private void UpdateCommitPage(ref string commitMessage, List<string> mainPage, ref ConsoleKeyInfo keyInfo)
         {
             const string commitMenu = "\u001b[37m'Esc' Return \u001b[38[←] Commit";
             var height = consoleWrapper.WindowHeight;
@@ -1156,7 +1156,7 @@ namespace GitApp
                 var box = new BoxDrawer(new List<string>(), "Commit").DrawBox(width, height, false, true, "", commitMenu);
                 commitMessage = commitMessage[..Math.Min((box[0].Length - 13) * (box.Count - 2), commitMessage.Length)];
                 UpdateWriter(box, consoleWrapper.WindowHeight < 3, box);
-                commitMessage = new TextReader(1, 1, box[0].Length - 13, box.Count - 2, consoleWrapper).GetText(ref commitMessage);
+                (commitMessage, keyInfo) = new TextReader(1, 1, box[0].Length - 13, box.Count - 2, consoleWrapper).GetText(ref commitMessage, keyInfo);
             }
             else
             {
@@ -1167,7 +1167,7 @@ namespace GitApp
                 var box = new BoxDrawer(new List<string>(), "Commit").DrawBox(boxWidth, boxHeight, false, true, "", commitMenu);
                 commitMessage = commitMessage[..Math.Min((box[0].Length - 13) * (box.Count - 3), commitMessage.Length)];
                 UpdateWriter(mainPage, consoleWrapper.WindowHeight < 3, box);
-                commitMessage = new TextReader(left, top, box[0].Length - 13, box.Count - 2, consoleWrapper).GetText(ref commitMessage);
+                (commitMessage, keyInfo) = new TextReader(left, top, box[0].Length - 13, box.Count - 2, consoleWrapper).GetText(ref commitMessage, keyInfo);
             }
         }
     }
