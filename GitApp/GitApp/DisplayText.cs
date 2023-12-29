@@ -54,7 +54,7 @@ namespace GitApp
                 }
                 else if (key.Equals(ConsoleKey.D2))
                 {
-                    DisplayLog();
+                    DisplayLogMenu();
                 }
             }
             while (key != ConsoleKey.Escape);
@@ -96,7 +96,7 @@ namespace GitApp
             return exitCondition;
         }
 
-        private void DisplayLog()
+        private void DisplayLogMenu()
         {
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
@@ -117,7 +117,7 @@ namespace GitApp
 
                 if (key.Equals(ConsoleKey.Enter))
                 {
-                    DisplayExtendedPage();
+                    DisplayCommitDetailsMenu();
                 }
                 else if (key.Equals(ConsoleKey.B))
                 {
@@ -620,7 +620,7 @@ namespace GitApp
             }
         }
 
-        private void DisplayExtendedPage()
+        private void DisplayCommitDetailsMenu()
         {
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
@@ -632,14 +632,18 @@ namespace GitApp
             do
             {
                 key = consoleWrapper.ReadKey().Key;
-                if (key == ConsoleKey.RightArrow)
-                {
-                    DisplayDiffPage(commits[commits.Current], commits[commits.Current + 1]);
-                }
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
                     break;
+                }
+                else if (key == ConsoleKey.RightArrow)
+                {
+                    DisplayDiffMenu(commits[commits.Current], commits[commits.Current + 1]);
+                }
+                else if (key == ConsoleKey.B)
+                {
+                    DisplayBranchesMenu(menu, isWindowToSmall);
                 }
 
                 windowHeight = consoleWrapper.WindowHeight;
@@ -651,7 +655,7 @@ namespace GitApp
             while (true);
         }
 
-        private void DisplayDiffPage(IElement currentCommit, IElement previousCommit)
+        private void DisplayDiffMenu(IElement currentCommit, IElement previousCommit)
         {
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
@@ -669,10 +673,13 @@ namespace GitApp
 
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
-                    DisplayHighlightedDiffPage(diff, modifiedFiles);
+                    DisplayHighlightedDiffMenu(diff, modifiedFiles);
                 }
-
-                if (key.Equals(ConsoleKey.Escape) || key.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
+                else if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(menu, isWindowToSmall);
+                }
+                else if (key.Equals(ConsoleKey.Escape) || key.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
                 {
                     break;
                 }
@@ -686,7 +693,7 @@ namespace GitApp
             while (true);
         }
 
-        private void DisplayHighlightedDiffPage(Diff diff, ModifiedFiles modifiedFiles)
+        private void DisplayHighlightedDiffMenu(Diff diff, ModifiedFiles modifiedFiles)
         {
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
@@ -700,7 +707,11 @@ namespace GitApp
             {
                 key = consoleWrapper.ReadKey().Key;
 
-                if (key.Equals(ConsoleKey.Escape) || key.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
+                if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(menu, isWindowToSmall);
+                }
+                else if (key.Equals(ConsoleKey.Escape) || key.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
                 {
                     break;
                 }
