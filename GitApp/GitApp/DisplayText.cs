@@ -657,7 +657,8 @@ namespace GitApp
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
-            var menu = new DiffMenu(consoleWrapper, modifiedFiles, previousCommit, currentCommit, gitManager);
+            var diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, gitManager.GetRepoPath(), modifiedFiles[0].GetElement()));
+            var menu = new DiffMenu(consoleWrapper, modifiedFiles, diff, previousCommit, currentCommit, gitManager);
             var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
             WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
@@ -668,6 +669,7 @@ namespace GitApp
 
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
+                    DisplayHighlightedDiffPage(diff, modifiedFiles);
                 }
 
                 if (key.Equals(ConsoleKey.Escape) || key.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
@@ -684,48 +686,30 @@ namespace GitApp
             while (true);
         }
 
-        private void GetHighlightedDiffPage(Diff diff, List<string> leftSideElements)
+        private void DisplayHighlightedDiffPage(Diff diff, ModifiedFiles modifiedFiles)
         {
-            var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
+            var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
+            var menu = new HighlightedDiffMenu(consoleWrapper, diff, modifiedFiles);
+            var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
-            var rowSize = SetTextWidth(false);
-            var availableSpace = rowSize * (windowHeight - 4);
-            (var page, var pageSize) = diff.GetPageDataAndSize(availableSpace, rowSize, true);
-            var highlightedDiff = diff.GetHighlightedSide(windowHeight - 4, rowSize, availableSpace, true);
-            var keyInteractor = new KeyInteractor<IElement>(diff);
-            var toDisplay = windowHeight < 4
-                ? new List<string>()
-                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
-            toDisplay.Insert(0, MenuBar);
-            toDisplay.Add("\u001b[32m[Esc][←] Return\u001b[0m \u001b[36m[B] Branches");
-            UpdateWriter(toDisplay, windowHeight < 4);
+            WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+
             do
             {
                 key = consoleWrapper.ReadKey().Key;
-                keyInteractor.KeyInfo = key;
 
-                if (keyInteractor.KeyInfo == ConsoleKey.Escape || keyInteractor.KeyInfo == ConsoleKey.LeftArrow || menuKeys.Contains(key))
+                if (key.Equals(ConsoleKey.Escape) || key.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
                 {
                     break;
                 }
 
                 windowHeight = consoleWrapper.WindowHeight;
-                rowSize = SetTextWidth(false);
-                availableSpace = rowSize * (windowHeight - 4);
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                (diff.Index, diff.Current) = keyInteractor.KeySwitch(highlightedDiff, page[^1].Id, page[0].Id, pageSize > availableSpace, rowSize - 2, diff[diff.Current].GetElement().Length);
-                (page, pageSize) = diff.GetPageDataAndSize(availableSpace, rowSize, true);
-                highlightedDiff = diff.GetHighlightedSide(windowHeight - 4, rowSize, availableSpace, true);
-                toDisplay = windowHeight < 3
-                ? new List<string>()
-                : UpdateDiffPage(leftSideElements, highlightedDiff, rowSize + 2, keyInteractor, true);
-                toDisplay.Insert(0, MenuBar);
-                toDisplay.Add("\u001b[32m[Esc][←] Return\u001b[0m \u001b[36m[B] Branches");
-                UpdateWriter(toDisplay, windowHeight < 4);
+                WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }

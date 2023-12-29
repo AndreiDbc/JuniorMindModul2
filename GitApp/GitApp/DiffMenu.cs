@@ -21,19 +21,19 @@ namespace GitApp
         private List<string> leftSide;
         private int width;
 
-        public DiffMenu(IConsoleWrapper consoleWrapper, ModifiedFiles modifiedFiles, IElement previousCommit, IElement currentCommit, GitManager gitManager) : base(consoleWrapper)
+        public DiffMenu(IConsoleWrapper consoleWrapper, ModifiedFiles modifiedFiles, Diff diff, IElement previousCommit, IElement currentCommit, GitManager gitManager) : base(consoleWrapper)
         {
             this.modifiedFiles = modifiedFiles;
             this.gitManager = gitManager;
             this.previousCommit = previousCommit;
             this.currentCommit = currentCommit;
+            this.diff = diff;
             textWidthSetter = new TextWidthSetter(consoleWrapper);
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
             width = windowWidth < 50 && windowHeight < 15 ? windowWidth : textWidthSetter.SetTextWidth(true);
             page = modifiedFiles.GetPageDataAndSize(width * (consoleWrapper.WindowHeight - 4), width, true).list;
             leftSide = new List<string>();
-            diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, gitManager.GetRepoPath(), modifiedFiles[0].GetElement()));
         }
 
         public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
