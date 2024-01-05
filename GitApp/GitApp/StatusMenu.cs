@@ -9,6 +9,8 @@ namespace GitApp
     public class StatusMenu : Menu
     {
         private readonly GitManager gitManager;
+        private readonly TextWidthSetter textWidthSetter;
+        private bool isRightSideInUse;
         private ModifiedFiles unstaged;
         private ModifiedFiles staged;
         private List<IElement> unstagedElements;
@@ -19,7 +21,7 @@ namespace GitApp
         private bool isStagedInUse;
         private bool unstagedAvailability;
 
-        public StatusMenu(IConsoleWrapper consoleWrapper, GitManager gitManager, ModifiedFiles unstaged, ModifiedFiles staged, bool unstagedAvailability) : base(consoleWrapper)
+        public StatusMenu(IConsoleWrapper consoleWrapper, GitManager gitManager, ModifiedFiles unstaged, ModifiedFiles staged, bool unstagedAvailability, bool isRightSideInUse) : base(consoleWrapper)
         {
             this.gitManager = gitManager;
             this.unstaged = unstaged;
@@ -41,6 +43,8 @@ namespace GitApp
                     : staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedAvailableSpace);
             isUnstagedInUse = true;
             isStagedInUse = false;
+            textWidthSetter = new TextWidthSetter(consoleWrapper);
+            this.isRightSideInUse = isRightSideInUse;
         }
 
         public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
@@ -100,67 +104,70 @@ namespace GitApp
             var noOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branch);
             var shouldDisplayNoOfCommits = noOfCommitsToPush != "" && noOfCommitsToPull != "";
             Diff diff;
+            KeyInteractor<IElement> keyInteractor;
+            var rightSideTextSize = textWidthSetter.SetTextWidth(false);
+            var leftSideTextSize = textWidthSetter.SetTextWidth(true);
 
             if (isUnstagedInUse)
             {
-                var keyInteractor = new KeyInteractor<IElement>(unstaged);
+                keyInteractor = new KeyInteractor<IElement>(unstaged);
                 keyInteractor.KeyInfo = key;
                 (unstaged.Index, unstaged.Current) = keyInteractor
-                    .KeySwitch(unstagedPageList, unstagedElements[^1].Id, unstagedElements[0].Id, false, (int)(0.6 * windowWidth) - 2, unstaged[unstaged.Current].GetElement().Length);
-                stagedPageList = staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedHeight * (int)(0.6 * windowWidth) - 2);
+                    .KeySwitch(unstagedPageList, unstagedElements[^1].Id, unstagedElements[0].Id, false, leftSideTextSize, unstaged[unstaged.Current].GetElement().Length);
+                stagedPageList = staged.GetHighlightedSide(stagedHeight, leftSideTextSize, stagedHeight * leftSideTextSize);
                 stagedToString.AddRange(stagedPageList);
                 stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
                 stagedToString[^1] = stagedToString[^1].Replace("\x1b[7m", "");
-                var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
-                unstagedElements = unstaged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
+                var unstagedAvailableSpace = leftSideTextSize * unstagedHeight;
+                unstagedElements = unstaged.GetPageDataAndSize(unstagedAvailableSpace, leftSideTextSize).list;
                 unstagedPageList = unstaged[unstaged.Current].GetElement() == ""
                        ? new List<string>()
-                       : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
+                       : unstaged.GetHighlightedSide(unstagedHeight, leftSideTextSize, unstagedAvailableSpace);
                 var currentUnstaged = unstaged[unstaged.Current].GetElement();
                 diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, gitManager.GetRepoPath(), currentUnstaged != "" && unstaged.GetText().Count >= 1));
                 tempList.AddRange(new BoxDrawer(unstagedPageList, "Unstaged").DrawBox(
-                            (int)(0.6 * windowWidth),
+                            leftSideTextSize + 2,
                             unstagedHeight + 2,
                             false,
                             false,
                             shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
-                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), (windowHeight - 2) / 2, true);
+                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(leftSideTextSize + 2, (windowHeight - 2) / 2, true);
                 tempList.AddRange(stagedToString);
             }
             else
             {
-                var keyInteractor = new KeyInteractor<IElement>(staged);
+                keyInteractor = new KeyInteractor<IElement>(staged);
                 keyInteractor.KeyInfo = key;
                 (staged.Index, staged.Current) = keyInteractor
-                    .KeySwitch(stagedPageList, stagedElements[^1].Id, stagedElements[0].Id, false, (int)(0.6 * windowWidth) - 2, staged[staged.Current].GetElement().Length);
-                unstagedPageList = unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedHeight * (int)(0.6 * windowWidth) - 2);
+                    .KeySwitch(stagedPageList, stagedElements[^1].Id, stagedElements[0].Id, false, leftSideTextSize, staged[staged.Current].GetElement().Length);
+                unstagedPageList = unstaged.GetHighlightedSide(unstagedHeight, leftSideTextSize, unstagedHeight * leftSideTextSize);
                 unstagedToString.AddRange(unstagedPageList);
                 unstagedToString[0] = unstagedToString[0].Replace("\x1b[7m", "");
                 unstagedToString[^1] = unstagedToString[^1].Replace("\x1b[7m", "");
-                var stagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * stagedHeight;
-                stagedElements = staged.GetPageDataAndSize(stagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
+                var stagedAvailableSpace = leftSideTextSize * stagedHeight;
+                stagedElements = staged.GetPageDataAndSize(stagedAvailableSpace, leftSideTextSize).list;
                 stagedPageList = staged[staged.Current].GetElement() == ""
                        ? new List<string>()
-                       : staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedAvailableSpace);
+                       : staged.GetHighlightedSide(stagedHeight, leftSideTextSize, stagedAvailableSpace);
                 var currentStaged = staged[staged.Current].GetElement();
                 diff = new Diff(gitManager.GetStagedDiff(currentStaged, gitManager.GetRepoPath()));
                 tempList.AddRange(new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
-                            (int)(0.6 * windowWidth),
+                            leftSideTextSize + 2,
                             unstagedHeight + 2,
                             false,
                             false,
                             shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
-                stagedToString = new BoxDrawer(stagedPageList, "Staged").DrawBox((int)(0.6 * windowWidth), (windowHeight - 2) / 2, true);
+                stagedToString = new BoxDrawer(stagedPageList, "Staged").DrawBox(leftSideTextSize + 2, (windowHeight - 2) / 2, true);
                 tempList.AddRange(stagedToString);
             }
 
-            var diffAvailableSpace = (windowWidth - (int)(0.6 * windowWidth) - 2) * (windowHeight - 4);
+            var diffAvailableSpace = rightSideTextSize * (windowHeight - 4);
             var rightSide = new BoxDrawer(
                     diff[0].GetElement() == ""
                         ? new List<string>()
-                        : diff.GetHighlightedSide(windowHeight - 4, windowWidth - (int)(0.6 * windowWidth) - 2, diffAvailableSpace, false), "Diff")
-                            .DrawBox(windowWidth - (int)(0.6 * windowWidth), windowHeight - 2);
-            var result = new ScreenSelector(tempList, rightSide, consoleWrapper).MergeSides();
+                        : diff.GetHighlightedSide(windowHeight - 4, rightSideTextSize, diffAvailableSpace, false), "Diff")
+                            .DrawBox(rightSideTextSize + 2, windowHeight - 2);
+            var result = new ScreenSelector(tempList, rightSide, consoleWrapper).Select(ref isRightSideInUse, keyInteractor);
             var additionalMenuBar = SetMenuBarForStatus();
             result.Add(additionalMenuBar);
             return result;

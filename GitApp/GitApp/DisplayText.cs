@@ -148,7 +148,7 @@ namespace GitApp
             var windowSize = windowHeight * windowWidth;
             var isWindowToSmall = windowHeight < 6 && windowWidth < 35;
             const bool unstagedAvailability = true;
-            var menu = new StatusMenu(consoleWrapper, gitManager, unstaged, staged, unstagedAvailability);
+            var menu = new StatusMenu(consoleWrapper, gitManager, unstaged, staged, unstagedAvailability, IsRightSideInUse);
             WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
 
