@@ -141,56 +141,26 @@ namespace GitApp
 
         private void DisplayStatus()
         {
-            var repoPath = gitManager.GetRepoPath();
-            var windowHeight = consoleWrapper.WindowHeight;
-            var windowWidth = consoleWrapper.WindowWidth;
-            var windowSize = windowHeight * windowWidth;
-            var windowSizeTemp = windowSize;
-            var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
-            var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
             var unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
-            var unstagedElements = unstaged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
-            var unstagedPageList = unstaged[unstaged.Current].GetElement() == ""
-                   ? new List<string>()
-                   : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
-            var stagedHeight = windowHeight - unstagedHeight;
-            var stagedAvailableSpace = stagedHeight * ((int)(0.6 * windowWidth) - 2);
             var staged = new ModifiedFiles(gitManager.GetStagedFiles());
-            var stagedElements = staged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
-            var stagedPageList = staged[staged.Current].GetElement() == ""
-                    ? new List<string>()
-                    : staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedAvailableSpace);
-            var isUnstagedInUse = true;
-            var isStagedInUse = false;
-            var unstagedAvailability = GetUnstagedAvailability(ref staged, ref unstaged, ref isUnstagedInUse, ref isStagedInUse, true, stagedHeight, unstagedHeight);
-            var toDisplay = UpdateStatusPage(
-                ref unstagedElements,
-                ref stagedElements,
-                ref unstagedPageList,
-                ref stagedPageList,
-                ref unstaged,
-                ref staged,
-                unstagedAvailability);
-            UpdateWriter(toDisplay, consoleWrapper.WindowHeight < 7);
+            var windowWidth = consoleWrapper.WindowWidth;
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowSize = windowHeight * windowWidth;
+            var isWindowToSmall = windowHeight < 5 && windowWidth < 35;
+            const bool unstagedAvailability = true;
+            var menu = new StatusMenu(consoleWrapper, gitManager, unstaged, staged, unstagedAvailability);
+            WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+            var windowSizeTemp = windowSize;
 
             do
             {
-                key = consoleWrapper.ReadKey().Key;
+                key = consoleWrapper.ReadKey(true).Key;
+
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
-                    var currentFile = unstaged[unstaged.Current].GetElement();
-                    DisplayHighlightedHunksPage(
-                        new Diff(unstagedAvailability
-                            ? gitManager.GetUnstagedDiff(currentFile, repoPath, currentFile != "" && unstaged.GetText().Count >= 1)
-                            : gitManager.GetStagedDiff(staged[staged.Current].GetElement(), gitManager.GetRepoPath())),
-                        ref unstaged,
-                        ref staged,
-                        repoPath,
-                        currentFile,
-                        unstagedAvailability);
                 }
 
-                SelectStageOptionInLog(ref unstaged, ref staged, unstagedAvailability);
+                ApplyStageOrUnstageOption(ref unstaged, ref staged, unstagedAvailability);
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
@@ -198,41 +168,19 @@ namespace GitApp
                 }
                 else if (key.Equals(ConsoleKey.C))
                 {
-                    DisplayCommitPage(ref unstagedElements, ref stagedElements, ref unstagedPageList, ref stagedPageList, ref unstaged, ref staged, unstagedAvailability);
                 }
 
-                windowHeight = consoleWrapper.WindowHeight;
                 windowWidth = consoleWrapper.WindowWidth;
-                windowSize = windowHeight * windowWidth;
+                windowSize = consoleWrapper.WindowHeight * windowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                var unstagedTempIndex = unstaged.Index;
-                var unstagedTempCurrent = unstaged.Current;
-                unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
-                var unstagedCount = unstaged.ListCount;
-                unstaged.Index = Math.Min(unstagedTempIndex, unstagedCount - 1);
-                unstaged.Current = Math.Min(unstagedTempCurrent, unstagedCount - 1);
-                var stagedTempIndex = staged.Index;
-                var stagedTempCurrent = staged.Current;
-                staged = new ModifiedFiles(gitManager.GetStagedFiles());
-                var stagedCount = staged.ListCount;
-                staged.Index = Math.Min(stagedTempIndex, stagedCount - 1);
-                staged.Current = Math.Min(stagedTempCurrent, stagedCount - 1);
-                unstagedAvailability = GetUnstagedAvailability(ref staged, ref unstaged, ref isUnstagedInUse, ref isStagedInUse, unstagedAvailability, stagedHeight, unstagedHeight);
-                toDisplay = UpdateStatusPage(
-                    ref unstagedElements,
-                    ref stagedElements,
-                    ref unstagedPageList,
-                    ref stagedPageList,
-                    ref unstaged,
-                    ref staged,
-                    unstagedAvailability);
-                UpdateWriter(toDisplay, consoleWrapper.WindowHeight < 7);
+                isWindowToSmall = consoleWrapper.WindowHeight < 3;
+                WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }
 
-        private void SelectStageOptionInLog(ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
+        private void ApplyStageOrUnstageOption(ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
         {
             if (key.Equals(ConsoleKey.Enter) && unstagedAvailability)
             {
