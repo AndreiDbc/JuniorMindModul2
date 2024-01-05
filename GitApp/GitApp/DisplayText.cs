@@ -108,7 +108,7 @@ namespace GitApp
 
             do
             {
-                key = consoleWrapper.ReadKey().Key;
+                key = consoleWrapper.ReadKey(true).Key;
 
                 if (key.Equals(ConsoleKey.Escape))
                 {
@@ -146,7 +146,7 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
-            var isWindowToSmall = windowHeight < 5 && windowWidth < 35;
+            var isWindowToSmall = windowHeight < 6 && windowWidth < 35;
             const bool unstagedAvailability = true;
             var menu = new StatusMenu(consoleWrapper, gitManager, unstaged, staged, unstagedAvailability);
             WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
@@ -174,7 +174,7 @@ namespace GitApp
                 windowSize = consoleWrapper.WindowHeight * windowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                isWindowToSmall = consoleWrapper.WindowHeight < 3;
+                isWindowToSmall = windowHeight < 6 && windowWidth < 35;
                 WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
@@ -579,7 +579,7 @@ namespace GitApp
             WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             do
             {
-                key = consoleWrapper.ReadKey().Key;
+                key = consoleWrapper.ReadKey(true).Key;
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
@@ -617,7 +617,7 @@ namespace GitApp
 
             do
             {
-                key = consoleWrapper.ReadKey().Key;
+                key = consoleWrapper.ReadKey(true).Key;
 
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
@@ -653,7 +653,7 @@ namespace GitApp
 
             do
             {
-                key = consoleWrapper.ReadKey().Key;
+                key = consoleWrapper.ReadKey(true).Key;
 
                 if (key.Equals(ConsoleKey.B))
                 {
@@ -941,7 +941,7 @@ namespace GitApp
             do
             {
                 var windowSizeTemp = windowSize;
-                key = consoleWrapper.ReadKey().Key;
+                key = consoleWrapper.ReadKey(true).Key;
                 height = consoleWrapper.WindowHeight;
                 width = consoleWrapper.WindowWidth;
                 windowSize = height * width;
