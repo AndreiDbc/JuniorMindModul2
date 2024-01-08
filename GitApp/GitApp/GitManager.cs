@@ -146,6 +146,11 @@ namespace GitApp
             commandRunner.ApplyCommand(new GitCommand(fileName, "reset HEAD ."));
         }
 
+        public void Commit(string message)
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"commit -m \"{message}\""));
+        }
+
         private string GetLastFileCommitId(string currentFileName, string repoPath)
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"log -n 1 --pretty=format:%H -- {currentFileName}", repoPath))[..7];

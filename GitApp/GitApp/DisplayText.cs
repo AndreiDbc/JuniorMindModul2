@@ -171,6 +171,7 @@ namespace GitApp
                 }
                 else if (key.Equals(ConsoleKey.C))
                 {
+                    DisplayCommitPage(menu, staged);
                 }
                 else if (key.Equals(ConsoleKey.B))
                 {
@@ -292,6 +293,10 @@ namespace GitApp
                 else if (key.Equals(ConsoleKey.B))
                 {
                     DisplayBranchesMenu(menu, isWindowToSmall);
+                }
+                else if (key.Equals(ConsoleKey.C))
+                {
+                    DisplayCommitPage(menu, staged);
                 }
 
                 windowWidth = consoleWrapper.WindowWidth;
@@ -1002,53 +1007,52 @@ namespace GitApp
             UpdateWriter(mainPage, height < 3 && width < 50, box);
         }
 
-        private void DisplayCommitPage(
-            ref List<IElement> unstagedElements,
-            ref List<IElement> stagedElements,
-            ref List<string> unstagedPageList,
-            ref List<string> stagedPageList,
-            ref ModifiedFiles unstaged,
-            ref ModifiedFiles staged,
-            bool unstagedAvailability)
+        private void DisplayCommitPage(Menu backgroundMenu, ModifiedFiles staged)
         {
             if (staged[0].GetElement() == "")
             {
                 return;
             }
 
-            var mainPage = UpdateStatusPage(
-                    ref unstagedElements,
-                    ref stagedElements,
-                    ref unstagedPageList,
-                    ref stagedPageList,
-                    ref unstaged,
-                    ref staged,
-                    unstagedAvailability);
+            var isWindowToSmall = consoleWrapper.WindowHeight < 8 && consoleWrapper.WindowWidth < 35;
+            var mainPage = backgroundMenu.UpdateMenu(isWindowToSmall, ConsoleKey.NoName);
             var windowSize = 0;
             var windowSizeTemp = 0;
             var commitMessage = "";
             var keyInfo = new ConsoleKeyInfo((char)ConsoleKey.NoName, ConsoleKey.NoName, false, false, false);
-            UpdateCommitPage(ref commitMessage, mainPage, ref keyInfo);
+            var commitMenu = new CommitMenu(consoleWrapper);
+            var commitBox = commitMenu.UpdateMenu(isWindowToSmall, keyInfo.Key);
+            new MenuWriter(mainPage, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller, commitBox);
+
             do
             {
-                if (key == ConsoleKey.Escape || key == ConsoleKey.Enter)
+                if (key == ConsoleKey.Escape)
                 {
                     break;
                 }
+                else if (key == ConsoleKey.Enter)
+                {
+                    gitManager.Commit(commitMessage);
+                    commits = new FullCommits(gitManager.GetLog());
+                    break;
+                }
 
-                mainPage = UpdateStatusPage(
-                    ref unstagedElements,
-                    ref stagedElements,
-                    ref unstagedPageList,
-                    ref stagedPageList,
-                    ref unstaged,
-                    ref staged,
-                    unstagedAvailability);
-
-                UpdateCommitPage(ref commitMessage, mainPage, ref keyInfo);
-
+                mainPage = backgroundMenu.UpdateMenu(isWindowToSmall, ConsoleKey.NoName);
+                commitMenu = new CommitMenu(consoleWrapper);
+                commitBox = commitMenu.UpdateMenu(isWindowToSmall, keyInfo.Key);
+                commitMessage = commitMessage[..Math.Min((commitBox[0].Length - 13) * (commitBox.Count - 3), commitMessage.Length)];
+                new MenuWriter(mainPage, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller, commitBox);
                 var height = consoleWrapper.WindowHeight;
                 var width = consoleWrapper.WindowWidth;
+                var left = (int)(0.125 * width) + 1;
+                var top = (int)(0.125 * height) + 1;
+                if (height < 15 && width < 60)
+                {
+                    left = 1;
+                    top = 1;
+                }
+
+                (commitMessage, keyInfo) = new TextReader(left, top, commitBox[0].Length - 13, commitBox.Count - 2, consoleWrapper).GetText(ref commitMessage, keyInfo);
                 windowSize = height * width;
                 WasWindowResizedSmaller = windowSizeTemp > windowSize;
                 windowSizeTemp = windowSize;
