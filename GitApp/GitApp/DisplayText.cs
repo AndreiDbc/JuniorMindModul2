@@ -229,37 +229,6 @@ namespace GitApp
             return (modifiedFilesToSet.Index, modifiedFilesToSet.Current);
         }
 
-        private bool GetUnstagedAvailability(
-            ref ModifiedFiles staged,
-            ref ModifiedFiles unstaged,
-            ref bool isUnstagedInUse,
-            ref bool isStagedInUse,
-            bool unstagedAvailability,
-            int stagedHeight,
-            int unstagedHeight)
-        {
-            var conditionToUseUnstaged = (unstaged.Current == 0 && key == ConsoleKey.UpArrow) || (unstaged.Current == unstaged.ListCount - 1 && key == ConsoleKey.DownArrow);
-            var conditionToUseStaged = (staged.Current == 0 && key == ConsoleKey.UpArrow) || (staged.Current == staged.ListCount - 1 && key == ConsoleKey.DownArrow);
-            if (conditionToUseUnstaged && !isStagedInUse)
-            {
-                (staged.Index, staged.Current) = SetModifiedFileIndeexes(staged, unstaged, stagedHeight);
-                key = ConsoleKey.NoName;
-                isUnstagedInUse = false;
-                isStagedInUse = true;
-                return false;
-            }
-            else if (conditionToUseStaged && !isUnstagedInUse)
-            {
-                (unstaged.Index, unstaged.Current) = SetModifiedFileIndeexes(unstaged, staged, unstagedHeight);
-                key = ConsoleKey.NoName;
-                isUnstagedInUse = true;
-                isStagedInUse = false;
-                return true;
-            }
-
-            return unstagedAvailability;
-        }
-
         private void DisplayHighlightedHunksPage(ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
         {
             var windowWidth = consoleWrapper.WindowWidth;
