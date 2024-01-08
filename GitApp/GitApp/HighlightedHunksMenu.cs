@@ -8,11 +8,8 @@ namespace GitApp
 {
     public class HighlightedHunksMenu : Menu
     {
-        private readonly ModifiedFiles unstaged;
-        private readonly ModifiedFiles staged;
         private readonly GitManager gitManager;
         private readonly TextWidthSetter textWidthSetter;
-        private readonly Diff diff;
         private readonly bool unstagedAvailability;
         private List<IElement> page;
         private bool isRightSideInUse;
@@ -21,17 +18,12 @@ namespace GitApp
 
         public HighlightedHunksMenu(
             IConsoleWrapper consoleWrapper,
-            ModifiedFiles unstaged,
-            ModifiedFiles staged,
             GitManager gitManager,
             Diff diff,
             bool unstagedAvailability,
             bool isRightSideInUse) : base(consoleWrapper)
         {
-            this.staged = staged;
-            this.unstaged = unstaged;
             this.gitManager = gitManager;
-            this.diff = diff;
             this.unstagedAvailability = unstagedAvailability;
             this.isRightSideInUse = isRightSideInUse;
             textWidthSetter = new TextWidthSetter(consoleWrapper);
@@ -45,19 +37,25 @@ namespace GitApp
             pageSize = 0;
         }
 
+        public ModifiedFiles Unstaged { get; set; }
+
+        public ModifiedFiles Staged { get; set; }
+
+        public Diff Diff { get; set; }
+
         public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
-            var keyInteractor = new KeyInteractor<IElement>(diff);
+            var keyInteractor = new KeyInteractor<IElement>(Diff);
             keyInteractor.KeyInfo = key;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             var rightSideWidth = textWidthSetter.SetTextWidth(false);
             var availableSpace = rightSideWidth * (windowHeight - 4);
-            (diff.Index, diff.Current) = keyInteractor.KeySwitch(diffToString, page[^1].Id, page[0].Id, pageSize > availableSpace, rightSideWidth, diff[diff.Current].GetElement().Length);
-            (page, pageSize) = diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
-            diffToString = diff[diff.Current].GetElement() == ""
+            (Diff.Index, Diff.Current) = keyInteractor.KeySwitch(diffToString, page[^1].Id, page[0].Id, pageSize > availableSpace, rightSideWidth, Diff[Diff.Current].GetElement().Length);
+            (page, pageSize) = Diff.GetPageDataAndSize(availableSpace, rightSideWidth, true);
+            diffToString = Diff[Diff.Current].GetElement() == ""
                 ? new List<string>()
-                : diff.GetHighlightedSide(windowHeight - 4, rightSideWidth, availableSpace, true);
+                : Diff.GetHighlightedSide(windowHeight - 4, rightSideWidth, availableSpace, true);
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
             var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
             List<string> rightSide;
@@ -70,8 +68,8 @@ namespace GitApp
             {
                 rightSide = new BoxDrawer(diffToString, "Diff").DrawBox(windowWidth, windowHeight - 2, false, true);
 
-                var unstagedToString = unstaged.GetHighlightedSide(unstagedHeight, windowWidth - 2, (unstagedHeight - 3) * (windowWidth - 2));
-                var stagedToString = staged.GetHighlightedSide(
+                var unstagedToString = Unstaged.GetHighlightedSide(unstagedHeight, windowWidth - 2, (unstagedHeight - 3) * (windowWidth - 2));
+                var stagedToString = Staged.GetHighlightedSide(
                         windowHeight - ((windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2) - 2,
                         (int)(0.6 * windowWidth) - 2,
                         ((windowHeight - 2) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
@@ -101,8 +99,8 @@ namespace GitApp
                 var leftSideWidth = textwidth.SetTextWidth(true);
                 rightSide = new BoxDrawer(diffToString, "Diff").DrawBox(textwidth.SetTextWidth(false) + 2, windowHeight - 2, false, true);
 
-                var unstagedToString = unstaged.GetHighlightedSide(unstagedHeight, leftSideWidth, unstagedAvailableSpace);
-                var stagedToString = staged.GetHighlightedSide(
+                var unstagedToString = Unstaged.GetHighlightedSide(unstagedHeight, leftSideWidth, unstagedAvailableSpace);
+                var stagedToString = Staged.GetHighlightedSide(
                         windowHeight - ((windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2) - 2,
                         (int)(0.6 * windowWidth) - 2,
                         ((windowHeight - 2) / 2 - 2) * (int)(0.6 * windowWidth) - 2);

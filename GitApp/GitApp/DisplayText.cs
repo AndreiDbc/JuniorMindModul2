@@ -144,7 +144,7 @@ namespace GitApp
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
             var isWindowToSmall = windowHeight < 8 && windowWidth < 35;
-            const bool unstagedAvailability = true;
+            var unstagedAvailability = true;
             var menu = new StatusMenu(consoleWrapper, gitManager, unstaged, staged, unstagedAvailability, IsRightSideInUse);
             WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
@@ -155,10 +155,15 @@ namespace GitApp
 
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
+                    unstaged = menu.Unstaged;
+                    staged = menu.Staged;
+                    unstagedAvailability = menu.UnstagedAvailability;
                     DisplayHighlightedHunksPage(ref unstaged, ref staged, unstagedAvailability);
+                    menu.Unstaged = unstaged;
+                    menu.Staged = staged;
                 }
 
-                ApplyStageOrUnstageOption(ref unstaged, ref staged, unstagedAvailability);
+                ApplyStageOrUnstageOption(ref menu, ref unstaged, ref staged, unstagedAvailability);
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
@@ -182,8 +187,10 @@ namespace GitApp
             while (true);
         }
 
-        private void ApplyStageOrUnstageOption(ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
+        private void ApplyStageOrUnstageOption(ref StatusMenu menu, ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
         {
+            unstaged = menu.Unstaged;
+            staged = menu.Staged;
             if (key.Equals(ConsoleKey.Enter) && unstagedAvailability)
             {
                 gitManager.StageFile(unstaged[unstaged.Current].GetElement());
@@ -200,6 +207,9 @@ namespace GitApp
             {
                 gitManager.UnstageAllFiles();
             }
+
+            menu.Unstaged = unstaged;
+            menu.Staged = staged;
         }
 
         private (int index, int current) SetModifiedFileIndeexes(ModifiedFiles modifiedFilesToSet, ModifiedFiles modifiedFilesToUse, int height)
@@ -256,11 +266,16 @@ namespace GitApp
             var windowSize = windowHeight * windowWidth;
             var isWindowToSmall = windowHeight < 8 && windowWidth < 35;
             var currentElement = unstagedAvailability ? unstaged[unstaged.Current].GetElement() : staged[staged.Current].GetElement();
-            var diff = new Diff(gitManager.GetUnstagedDiff(
+            var diff = new Diff(unstagedAvailability
+                ? gitManager.GetUnstagedDiff(
                     currentElement,
                     gitManager.GetRepoPath(),
-                    currentElement != "" && (unstagedAvailability ? unstaged.GetText().Count >= 1 : staged.GetText().Count >= 1)));
-            var menu = new HighlightedHunksMenu(consoleWrapper, unstaged, staged, gitManager, diff, unstagedAvailability, IsRightSideInUse);
+                    currentElement != "" && (unstagedAvailability ? unstaged.GetText().Count >= 1 : staged.GetText().Count >= 1))
+                : gitManager.GetStagedDiff(staged[staged.Current].GetElement(), gitManager.GetRepoPath()));
+            var menu = new HighlightedHunksMenu(consoleWrapper, gitManager, diff, unstagedAvailability, IsRightSideInUse);
+            menu.Diff = diff;
+            menu.Unstaged = unstaged;
+            menu.Staged = staged;
             WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
 
@@ -268,9 +283,9 @@ namespace GitApp
             {
                 key = consoleWrapper.ReadKey(true).Key;
 
-                SelectStageOptionForDiffMenu(ref diff, ref unstaged, ref staged, unstagedAvailability);
+                SelectStageOptionForDiffMenu(ref menu, ref diff, ref unstaged, ref staged, unstagedAvailability);
 
-                if (GetExitConditionForHighlightedHunksPage(unstaged[unstaged.Current], diff[diff.Current]))
+                if (GetExitConditionForHighlightedHunksPage(unstagedAvailability ? unstaged[unstaged.Current] : staged[staged.Current], diff[diff.Current]))
                 {
                     break;
                 }
@@ -290,11 +305,15 @@ namespace GitApp
         }
 
         private void SelectStageOptionForDiffMenu(
+            ref HighlightedHunksMenu menu,
             ref Diff diff,
             ref ModifiedFiles unstaged,
             ref ModifiedFiles staged,
             bool unstagedAvailability)
         {
+            diff = menu.Diff;
+            unstaged = menu.Unstaged;
+            staged = menu.Staged;
             var currentFile = unstagedAvailability
                 ? unstaged[unstaged.Current].GetElement()
                 : staged[staged.Current].GetElement();
@@ -321,6 +340,10 @@ namespace GitApp
                 unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
                 staged = new ModifiedFiles(gitManager.GetStagedFiles());
             }
+
+            menu.Diff = diff;
+            menu.Unstaged = unstaged;
+            menu.Staged = staged;
         }
 
         private void UpdateVariablesWhenStagingOrUnstagingHunk(
@@ -375,7 +398,7 @@ namespace GitApp
             diff = unstagedAvailability
                 ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1))
                 : new Diff(gitManager.GetStagedDiff(currentStaged, repoPath));
-            diff.Current = Math.Min(diffCurrent, tempDiffElementsCount - 1);
+            diff.Current = Math.Min(diffCurrent, diff.GetText().Count - 1);
             diff.Index = diffIndex;
         }
 
@@ -438,7 +461,7 @@ namespace GitApp
             diff = unstagedAvailability
                 ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1))
                 : new Diff(gitManager.GetStagedDiff(currentStaged, repoPath));
-            diff.Current = Math.Min(diffCurrent, diffElements.Count - 1);
+            diff.Current = Math.Min(diffCurrent, diff.GetText().Count - 1);
             diff.Index = diffIndex;
         }
 
