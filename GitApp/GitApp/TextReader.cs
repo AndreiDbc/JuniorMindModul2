@@ -62,11 +62,11 @@ namespace GitApp
                 var resetCursorToEnd = result.Length == width * (height - 1) &&
                     key.Key != ConsoleKey.Backspace;
 
-                if (key.Equals(ConsoleKey.Enter))
+                if (key.Key.Equals(ConsoleKey.Enter))
                 {
                     return (result, key);
                 }
-                else if (key.Equals(ConsoleKey.Escape))
+                else if (key.Key.Equals(ConsoleKey.Escape))
                 {
                     break;
                 }

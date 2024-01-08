@@ -995,12 +995,13 @@ namespace GitApp
 
             do
             {
-                if (key == ConsoleKey.Escape)
+                if (keyInfo.Key == ConsoleKey.Escape)
                 {
                     break;
                 }
-                else if (key == ConsoleKey.Enter)
+                else if (keyInfo.Key == ConsoleKey.Enter)
                 {
+                    commitMessage = commitMessage.Replace("\n", "");
                     gitManager.Commit(commitMessage);
                     commits = new FullCommits(gitManager.GetLog());
                     break;
