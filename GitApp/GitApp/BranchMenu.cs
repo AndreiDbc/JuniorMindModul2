@@ -9,7 +9,6 @@ namespace GitApp
     public class BranchMenu : Menu
     {
         private readonly GitManager gitManager;
-        private readonly ModifiedFiles branches;
         private readonly string branchesNames;
         private List<string> leftSide;
 
@@ -17,13 +16,18 @@ namespace GitApp
         {
             this.gitManager = gitManager;
             this.branchesNames = branchesNames;
-            this.branches = branches;
             var height = consoleWrapper.WindowHeight;
             var width = consoleWrapper.WindowWidth;
             var boxHeight = (int)((height - 2) * 0.75);
             var boxWidth = (int)((width - 2) * 0.75);
             leftSide = branches.GetHighlightedSide(boxHeight - 2, (int)(0.4 * boxWidth - 1), (boxHeight - 2) * (int)(0.4 * boxWidth - 1));
+            Branches = branches;
+            BranchesNames = branchesNames;
         }
+
+        public ModifiedFiles Branches { get; set; }
+
+        public string BranchesNames { get; set; }
 
         public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
@@ -48,10 +52,10 @@ namespace GitApp
                 rightSide.Add(element + "\x1b[0m");
             }
 
-            var keyInteractor = new KeyInteractor<IElement>(branches);
+            var keyInteractor = new KeyInteractor<IElement>(Branches);
             keyInteractor.KeyInfo = key;
-            (branches.Index, branches.Current) = keyInteractor.KeySwitch(leftSide, leftSide[^1], leftSide[0], false, (int)(0.4 * boxWidth) - 2, branches[branches.Current].GetElement().Length);
-            leftSide = branches.GetHighlightedSide(boxHeight - 3, (int)(0.4 * boxWidth) - 2, (boxHeight - 2) * (int)(0.4 * boxWidth) - 2);
+            (Branches.Index, Branches.Current) = keyInteractor.KeySwitch(leftSide, leftSide[^1], leftSide[0], false, (int)(0.4 * boxWidth) - 2, Branches[Branches.Current].GetElement().Length);
+            leftSide = Branches.GetHighlightedSide(boxHeight - 3, (int)(0.4 * boxWidth) - 2, (boxHeight - 2) * (int)(0.4 * boxWidth) - 2);
             leftSideTemp = new PageUtilities(leftSide.ToArray()).PadElement((int)(0.4 * boxWidth) - 2);
             return new BoxDrawer(new ScreenSelector(leftSideTemp, rightSide, consoleWrapper).MergeSides(), "Branches").DrawBox(boxWidth, boxHeight, false, true);
         }

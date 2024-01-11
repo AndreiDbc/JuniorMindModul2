@@ -901,10 +901,7 @@ namespace GitApp
             var height = consoleWrapper.WindowHeight;
             var width = consoleWrapper.WindowWidth;
             var windowSize = height * width;
-            var boxHeight = (int)((height - 2) * 0.75);
-            var boxWidth = (int)((width - 2) * 0.75);
             var branches = new ModifiedFiles(branchesNames);
-            var leftSide = branches.GetHighlightedSide(boxHeight - 2, boxWidth - 2, (boxHeight - 2) * (boxWidth - 2));
             var keyInteractor = new KeyInteractor<IElement>(branches);
             keyInteractor.KeyInfo = ConsoleKey.NoName;
             var menu = new BranchMenu(consoleWrapper, gitManager, branchesNames, branches);
@@ -926,8 +923,11 @@ namespace GitApp
                 else if (keyInteractor.KeyInfo == ConsoleKey.Enter)
                 {
                     var currentBranchName = branches[branches.Current].GetElement();
-                    gitManager.ChangeBranch(currentBranchName.StartsWith("* ") ? currentBranchName[2..] : currentBranchName);
-                    branches = new ModifiedFiles(gitManager.GetBranchesNames());
+                    gitManager.ChangeBranch(currentBranchName.StartsWith("* ") ? currentBranchName[2..] : currentBranchName.Trim());
+                    branchesNames = gitManager.GetBranchesNames();
+                    branches = new ModifiedFiles(branchesNames);
+                    menu.Branches = branches;
+                    menu.BranchesNames = branchesNames;
                 }
 
                 WasWindowResizedSmaller = windowSizeTemp > windowSize;
