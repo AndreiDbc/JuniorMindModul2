@@ -201,9 +201,10 @@ namespace GitApp
 
             if (unstagedAvailability)
             {
-                if (key.Equals(ConsoleKey.Enter))
+                var current = unstaged[unstaged.Current].GetElement();
+                if (key.Equals(ConsoleKey.Enter) && current != "")
                 {
-                    gitManager.StageFile(unstaged[unstaged.Current].GetElement());
+                    gitManager.StageFile(current);
                 }
                 else if (key.Equals(ConsoleKey.A))
                 {
@@ -212,9 +213,10 @@ namespace GitApp
             }
             else
             {
-                if (key.Equals(ConsoleKey.Enter))
+                var current = unstaged[unstaged.Current].GetElement();
+                if (key.Equals(ConsoleKey.Enter) && current != "")
                 {
-                    gitManager.UnstageFile(staged[staged.Current].GetElement());
+                    gitManager.UnstageFile(current);
                 }
                 else if (key.Equals(ConsoleKey.A))
                 {
