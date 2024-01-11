@@ -161,8 +161,9 @@ namespace GitApp
                 : FormateHeaderForSingleLine(indeexes, lineCount, isLineReplaced, header);
 
             linesData = !interactWithHunk && !isLineReplaced && diff.Current - indeexes.currentHeaderEndIndex == indeexes.start ? linesData.Insert(1, "∩╗┐") : linesData;
-            toWrite += linesData + "\n";
             toWrite = toWrite.Contains("∩╗┐") ? toWrite.Replace("∩╗┐", "\ufeff") : toWrite;
+            toWrite += linesData;
+            toWrite += "\n";
             System.IO.File.Create(patchPath).Close();
             using (StreamWriter patchFileWriter = new StreamWriter(patchPath))
             {
@@ -263,7 +264,6 @@ namespace GitApp
 
                 if (count == previousLines + endLines)
                 {
-                    AddNoNewLineAtEndMessage(ref result);
                     break;
                 }
 
@@ -272,11 +272,6 @@ namespace GitApp
             }
 
             return result;
-        }
-
-        private void AddNoNewLineAtEndMessage(ref string text)
-        {
-            text += diff.Current == elements.Count - 2 && elements[^1].GetElement() == "\\ No newline at end of file" ? "\\ No newline at end of file" : "";
         }
 
         private (int previousLines, int nextLines) GetDiffPatchLineCount(bool isLineReplaced)
