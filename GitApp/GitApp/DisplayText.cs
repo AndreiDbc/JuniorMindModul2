@@ -190,14 +190,14 @@ namespace GitApp
 
         private void ApplyStageOrUnstageOption(ref StatusMenu menu, ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
         {
-            unstaged = menu.Unstaged;
-            staged = menu.Staged;
             var keys = new[] { ConsoleKey.A, ConsoleKey.Enter, ConsoleKey.S };
-
             if (!keys.Any(availableKey => availableKey.Equals(key)))
             {
                 return;
             }
+
+            unstaged = menu.Unstaged;
+            staged = menu.Staged;
 
             if (unstagedAvailability)
             {
