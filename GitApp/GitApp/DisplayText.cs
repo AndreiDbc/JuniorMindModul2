@@ -152,12 +152,12 @@ namespace GitApp
             do
             {
                 key = consoleWrapper.ReadKey(true).Key;
+                unstagedAvailability = menu.UnstagedAvailability;
 
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
                     unstaged = menu.Unstaged;
                     staged = menu.Staged;
-                    unstagedAvailability = menu.UnstagedAvailability;
                     DisplayHighlightedHunksPage(ref unstaged, ref staged, unstagedAvailability);
                     menu.Unstaged = unstaged;
                     menu.Staged = staged;
