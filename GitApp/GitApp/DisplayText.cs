@@ -192,21 +192,34 @@ namespace GitApp
         {
             unstaged = menu.Unstaged;
             staged = menu.Staged;
-            if (key.Equals(ConsoleKey.Enter) && unstagedAvailability)
+            var keys = new[] { ConsoleKey.A, ConsoleKey.Enter, ConsoleKey.S };
+
+            if (!keys.Any(availableKey => availableKey.Equals(key)))
             {
-                gitManager.StageFile(unstaged[unstaged.Current].GetElement());
+                return;
             }
-            else if (key.Equals(ConsoleKey.Enter))
+
+            if (unstagedAvailability)
             {
-                gitManager.UnstageFile(staged[staged.Current].GetElement());
+                if (key.Equals(ConsoleKey.Enter))
+                {
+                    gitManager.StageFile(unstaged[unstaged.Current].GetElement());
+                }
+                else if (key.Equals(ConsoleKey.A))
+                {
+                    gitManager.StageAllFiles();
+                }
             }
-            else if (key.Equals(ConsoleKey.A) && unstagedAvailability)
+            else
             {
-                gitManager.StageAllFiles();
-            }
-            else if (key.Equals(ConsoleKey.A))
-            {
-                gitManager.UnstageAllFiles();
+                if (key.Equals(ConsoleKey.Enter))
+                {
+                    gitManager.UnstageFile(staged[staged.Current].GetElement());
+                }
+                else if (key.Equals(ConsoleKey.A))
+                {
+                    gitManager.UnstageAllFiles();
+                }
             }
 
             menu.Unstaged = unstaged;
