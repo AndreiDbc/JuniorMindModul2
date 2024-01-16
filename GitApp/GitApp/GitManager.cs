@@ -78,7 +78,7 @@ namespace GitApp
 
         public string GetUnstagedFiles()
         {
-            return commandRunner.RunCommand(new GitCommand(fileName, "diff --name-only"));
+            return commandRunner.RunCommand(new GitCommand(fileName, "ls-files --others --modified --exclude-standard", GetRepoPath()));
         }
 
         public void UnstageFile(string filePath)
@@ -102,6 +102,7 @@ namespace GitApp
             if (doesFileExist && diff == "")
             {
                 commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"));
+                diff = commandRunner.RunCommand(new GitCommand(fileName, $"diff -- {filePath}", repositoryPath));
             }
 
             return diff;
