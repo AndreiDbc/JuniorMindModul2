@@ -213,7 +213,7 @@ namespace GitApp
             }
             else
             {
-                var current = unstaged[unstaged.Current].GetElement();
+                var current = staged[staged.Current].GetElement();
                 if (key.Equals(ConsoleKey.Enter) && current != "")
                 {
                     gitManager.UnstageFile(current);
