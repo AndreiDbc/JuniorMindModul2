@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace GitApp
 {
@@ -8,6 +9,7 @@ namespace GitApp
     {
         static void Main()
         {
+            Console.OutputEncoding = Encoding.UTF8;
             var processRunner = new GitProcessRunner();
             var manager = new GitManager("git", processRunner);
             var commits = new FullCommits(manager.GetLog());
