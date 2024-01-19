@@ -52,7 +52,7 @@ namespace GitApp
                 {
                     var temp = item.Split(" ");
                     var hhmmss = temp[6].Split(":");
-                    var monthNames = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames;
+                    var monthNames = CultureInfo.InvariantCulture.DateTimeFormat.AbbreviatedMonthNames;
                     var monthIndex = Array.IndexOf(monthNames, temp[4]) + 1;
                     var day = temp[5].Length == 1 ? "0" + temp[5] : temp[5];
                     var commitDate = new DateTime(int.Parse(temp[7]), monthIndex, int.Parse(day), int.Parse(hhmmss[0]), int.Parse(hhmmss[1]), int.Parse(hhmmss[2]));
