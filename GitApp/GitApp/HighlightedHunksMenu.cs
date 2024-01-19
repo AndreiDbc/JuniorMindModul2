@@ -20,6 +20,8 @@ namespace GitApp
             IConsoleWrapper consoleWrapper,
             GitManager gitManager,
             Diff diff,
+            ModifiedFiles unstaged,
+            ModifiedFiles staged,
             bool unstagedAvailability,
             bool isRightSideInUse) : base(consoleWrapper)
         {
@@ -35,6 +37,9 @@ namespace GitApp
                 ? new List<string>()
                 : diff.GetHighlightedSide(windowHeight - 4, rightSideWidth, availableSpace, true);
             pageSize = 0;
+            Diff = diff;
+            Unstaged = unstaged;
+            Staged = staged;
         }
 
         public ModifiedFiles Unstaged { get; set; }

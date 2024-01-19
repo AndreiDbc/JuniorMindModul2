@@ -257,10 +257,7 @@ namespace GitApp
                     gitManager.GetRepoPath(),
                     currentElement != "" && (unstagedAvailability ? unstaged.GetText().Count >= 1 : staged.GetText().Count >= 1))
                 : gitManager.GetStagedDiff(staged[staged.Current].GetElement(), gitManager.GetRepoPath()));
-            var menu = new HighlightedHunksMenu(consoleWrapper, gitManager, diff, unstagedAvailability, IsRightSideInUse);
-            menu.Diff = diff;
-            menu.Unstaged = unstaged;
-            menu.Staged = staged;
+            var menu = new HighlightedHunksMenu(consoleWrapper, gitManager, diff, unstaged, staged, unstagedAvailability, IsRightSideInUse);
             WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
 
