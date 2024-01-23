@@ -110,7 +110,7 @@ namespace GitApp
             var rightSideTextSize = textWidthSetter.SetTextWidth(false);
             var leftSideTextSize = textWidthSetter.SetTextWidth(true);
 
-            if (isUnstagedInUse)
+            if (UnstagedAvailability)
             {
                 keyInteractor = new KeyInteractor<IElement>(Unstaged);
                 keyInteractor.KeyInfo = key;
