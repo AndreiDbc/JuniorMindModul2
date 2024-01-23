@@ -205,10 +205,14 @@ namespace GitApp
                 if (key.Equals(ConsoleKey.Enter) && current != "")
                 {
                     gitManager.StageFile(current);
+                    menu.Unstaged.Current = Math.Max(0, menu.Unstaged.Current - 1);
+                    menu.Unstaged.Index = Math.Min(menu.Unstaged.Current, menu.Unstaged.Index);
                 }
                 else if (key.Equals(ConsoleKey.A))
                 {
                     gitManager.StageAllFiles();
+                    menu.Unstaged.Current = 0;
+                    menu.Unstaged.Index = 0;
                 }
             }
             else
@@ -217,13 +221,23 @@ namespace GitApp
                 if (key.Equals(ConsoleKey.Enter) && current != "")
                 {
                     gitManager.UnstageFile(current);
+                    menu.Staged.Current = Math.Max(0, menu.Unstaged.Current - 1);
+                    menu.Staged.Index = Math.Min(menu.Staged.Current, menu.Staged.Index);
                 }
                 else if (key.Equals(ConsoleKey.A))
                 {
                     gitManager.UnstageAllFiles();
+                    menu.Staged.Current = 0;
+                    menu.Staged.Index = 0;
                 }
             }
 
+            unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
+            unstaged.Index = menu.Unstaged.Index;
+            unstaged.Current = menu.Unstaged.Current;
+            staged = new ModifiedFiles(gitManager.GetStagedFiles());
+            staged.Index = menu.Staged.Index;
+            staged.Current = menu.Staged.Current;
             menu.Unstaged = unstaged;
             menu.Staged = staged;
         }

@@ -179,7 +179,9 @@ namespace GitApp
         {
             var conditionToUseUnstaged = (Unstaged.Current == 0 && key == ConsoleKey.UpArrow) || (Unstaged.Current == Unstaged.ListCount - 1 && key == ConsoleKey.DownArrow);
             var conditionToUseStaged = (Staged.Current == 0 && key == ConsoleKey.UpArrow) || (Staged.Current == Staged.ListCount - 1 && key == ConsoleKey.DownArrow);
-            if (conditionToUseUnstaged && !isStagedInUse)
+            var unstagedContainsElements = Unstaged[0].GetElement() != "";
+            var stagedContainsElements = Staged[0].GetElement() != "";
+            if (conditionToUseUnstaged && !isStagedInUse && stagedContainsElements)
             {
                 (Staged.Index, Staged.Current) = SetModifiedFileIndeexes(Staged, Unstaged, stagedHeight, key);
                 key = ConsoleKey.NoName;
@@ -187,7 +189,7 @@ namespace GitApp
                 isStagedInUse = true;
                 return false;
             }
-            else if (conditionToUseStaged && !isUnstagedInUse)
+            else if (conditionToUseStaged && !isUnstagedInUse && unstagedContainsElements)
             {
                 (Unstaged.Index, Unstaged.Current) = SetModifiedFileIndeexes(Unstaged, Staged, unstagedHeight, key);
                 key = ConsoleKey.NoName;
@@ -196,7 +198,7 @@ namespace GitApp
                 return true;
             }
 
-            return UnstagedAvailability;
+            return UnstagedAvailability ? unstagedContainsElements : stagedContainsElements && !unstagedContainsElements;
         }
     }
 }
