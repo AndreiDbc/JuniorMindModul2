@@ -109,7 +109,8 @@ namespace GitApp
             var tempHeader = diff[currentHeaderStartIndex].GetElement();
             var temp = tempHeader.Split("@@")[1].Trim().Split(" ");
             var start = int.Parse(temp[0].Split(",")[0][1..]);
-            var end = int.Parse(temp[temp.Length == 3 ? 2 : 1].Split(",")[1]);
+            var changesHeader = temp[temp.Length == 3 ? 2 : 1].Split(",");
+            var end = int.Parse(changesHeader.Length == 1 ? changesHeader[0] : changesHeader[1]);
             var currentHeaderEndIndex = headers[headers.Length - 1] == currentHeaderStartIndex ? elements.Count : headers.First(index => index > diff.Current);
             return (start, start + end, currentHeaderStartIndex, currentHeaderEndIndex);
         }
@@ -144,7 +145,7 @@ namespace GitApp
             var originalFile = new string[0];
             if (!interactWithHunk && isFileInTheStagingArea)
             {
-                originalFile = gitManager.GetStagedFileLines(fileName, repositoryPath).Split("\n");
+                originalFile = gitManager.GetStagedDiff(fileName, repositoryPath).Split("\n");
             }
             else if (indeexes.start == 0)
             {

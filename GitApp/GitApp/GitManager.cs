@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -132,11 +133,6 @@ namespace GitApp
                     repoPath));
         }
 
-        public string GetStagedFileLines(string currentFileName, string repoPath)
-        {
-            return commandRunner.RunCommand(new GitCommand(fileName, $"show :{currentFileName}", repoPath));
-        }
-
         public void StageAllFiles()
         {
             commandRunner.ApplyCommand(new GitCommand(fileName, "add ."));
@@ -150,6 +146,11 @@ namespace GitApp
         public void Commit(string message)
         {
             commandRunner.ApplyCommand(new GitCommand(fileName, $"commit -m \"{message}\""));
+        }
+
+        public void RestoreDeletedFile(string toRestore)
+        {
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"restore --source=HEAD --staged --worktree -- {toRestore}"));
         }
 
         private string GetLastFileCommitId(string currentFileName, string repoPath)

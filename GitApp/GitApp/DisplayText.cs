@@ -380,7 +380,6 @@ namespace GitApp
                 System.IO.File.Delete(patchPath);
             }
 
-            var tempDiffElementsCount = diff.GetText().Count;
             diff = unstagedAvailability
                 ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1))
                 : new Diff(gitManager.GetStagedDiff(currentStaged, repoPath));
@@ -410,16 +409,7 @@ namespace GitApp
                     isLineReplaced,
                     staged.GetText().Any(unstagedFile => unstagedFile.GetElement() == currentUnstaged),
                     currentFile);
-            var unstagedIndex = unstaged.Index;
-            var unstagedCurrent = unstaged.Current;
-            unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
-            unstaged.Current = unstagedCurrent;
-            unstaged.Index = unstagedIndex;
-            var stagedIndex = staged.Index;
-            var stagedCurrent = staged.Current;
-            staged = new ModifiedFiles(gitManager.GetStagedFiles());
-            staged.Index = stagedIndex;
-            staged.Current = stagedCurrent;
+
             if (unstagedAvailability)
             {
                 gitManager.Stage(patchPath);
@@ -427,8 +417,9 @@ namespace GitApp
             else
             {
                 var tempFilePath = Path.GetTempPath() + "tempFile" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+                string[] currentElementLines;
                 System.IO.File.Create(tempFilePath).Close();
-                var currentElementLines = System.IO.File.ReadAllLines(repoPath + "/" + currentFile);
+                currentElementLines = System.IO.File.ReadAllLines(repoPath + "/" + currentFile);
                 currentElementLines[0] = "﻿\ufeff" + currentElementLines[0];
                 System.IO.File.WriteAllLines(tempFilePath, currentElementLines);
                 gitManager.RestoreFileToMatchIndex(currentFile);
@@ -444,6 +435,16 @@ namespace GitApp
                 System.IO.File.Delete(patchPath);
             }
 
+            var unstagedIndex = unstaged.Index;
+            var unstagedCurrent = unstaged.Current;
+            unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
+            unstaged.Current = unstagedCurrent;
+            unstaged.Index = unstagedIndex;
+            var stagedIndex = staged.Index;
+            var stagedCurrent = staged.Current;
+            staged = new ModifiedFiles(gitManager.GetStagedFiles());
+            staged.Index = stagedIndex;
+            staged.Current = stagedCurrent;
             diff = unstagedAvailability
                 ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1))
                 : new Diff(gitManager.GetStagedDiff(currentStaged, repoPath));
