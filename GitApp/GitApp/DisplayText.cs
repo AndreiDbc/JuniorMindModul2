@@ -221,7 +221,7 @@ namespace GitApp
                 if (key.Equals(ConsoleKey.Enter) && current != "")
                 {
                     gitManager.UnstageFile(current);
-                    menu.Staged.Current = Math.Max(0, menu.Unstaged.Current - 1);
+                    menu.Staged.Current = Math.Max(0, menu.Staged.Current - 1);
                     menu.Staged.Index = Math.Min(menu.Staged.Current, menu.Staged.Index);
                 }
                 else if (key.Equals(ConsoleKey.A))
