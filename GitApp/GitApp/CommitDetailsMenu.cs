@@ -51,9 +51,10 @@ namespace GitApp
             page = commits.GetPageDataAndSize(windowWidth * (windowHeight - 4), windowWidth, true).list;
             leftSide = commits.GetHighlightedSide(windowHeight - 4, leftSideWidth, leftSideWidth * (windowHeight - 4), true);
             var rightSide = commits.FormateUnhighlightedSide(windowHeight - 2, textWidthSetter.SetTextWidth(false), gitManager);
-            var leftbox = new BoxDrawer(leftSide, "Commits").DrawBox(windowHeight < 15 && windowWidth < 50 ? windowWidth : leftSideWidth + 2, windowHeight - 2);
+            var leftBox = new BoxDrawer(leftSide, "Commits").DrawBox(windowHeight < 15 && windowWidth < 50 ? windowWidth : leftSideWidth + 2, windowHeight - 2);
+            leftBox.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] Next menu \u001b[36m[B] Branches \u001b[0m");
             return new ScreenSelector(
-                leftbox,
+                leftBox,
                 rightSide,
                 consoleWrapper).Select(ref isRightSideInUse, keyInteractor);
         }

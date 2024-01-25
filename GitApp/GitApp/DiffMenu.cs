@@ -61,7 +61,7 @@ namespace GitApp
             result.AddRange(leftSide);
             result = new BoxDrawer(result, "Files").DrawBox(width + 2, windowHeight - 2);
             rightSide = new BoxDrawer(rightSide, "Diff").DrawBox(textWidthSetter.SetTextWidth(false) + 2, windowHeight - 2);
-            result.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] \u001b[36m[B] Branches Next menu\u001b[0m");
+            result.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] Next menu \u001b[36m[B] Branches \u001b[0m");
             return new ScreenSelector(result, rightSide, consoleWrapper).MergeSides();
         }
     }

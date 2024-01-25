@@ -169,10 +169,10 @@ namespace GitApp
                         ? new List<string>()
                         : diff.GetHighlightedSide(windowHeight - 4, rightSideTextSize, diffAvailableSpace, false), "Diff")
                             .DrawBox(rightSideTextSize + 2, windowHeight - 2);
-            var result = new ScreenSelector(tempList, rightSide, consoleWrapper).Select(ref isRightSideInUse, keyInteractor);
             var additionalMenuBar = SetMenuBarForStatus();
-            result.Add(additionalMenuBar);
-            return result;
+            tempList.Add(additionalMenuBar);
+
+            return new ScreenSelector(tempList, rightSide, consoleWrapper).Select(ref isRightSideInUse, keyInteractor);
         }
 
         private bool GetUnstagedAvailability(ref ConsoleKey key, int stagedHeight, int unstagedHeight)
