@@ -198,7 +198,7 @@ namespace GitApp
                 return true;
             }
 
-            return UnstagedAvailability ? unstagedContainsElements : !stagedContainsElements;
+            return UnstagedAvailability;
         }
     }
 }
