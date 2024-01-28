@@ -260,16 +260,21 @@ namespace GitApp
 
         private void DisplayHighlightedHunksPage(ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
         {
+            var currentElement = unstagedAvailability ? unstaged[unstaged.Current].GetElement() : staged[staged.Current].GetElement();
+            if (currentElement == "")
+            {
+                return;
+            }
+
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
             var isWindowToSmall = windowHeight < 8 && windowWidth < 35;
-            var currentElement = unstagedAvailability ? unstaged[unstaged.Current].GetElement() : staged[staged.Current].GetElement();
             var diff = new Diff(unstagedAvailability
                 ? gitManager.GetUnstagedDiff(
                     currentElement,
                     gitManager.GetRepoPath(),
-                    currentElement != "" && (unstagedAvailability ? unstaged.GetText().Count >= 1 : staged.GetText().Count >= 1))
+                    unstaged.GetText().Count >= 1)
                 : gitManager.GetStagedDiff(staged[staged.Current].GetElement(), gitManager.GetRepoPath()));
             var menu = new HighlightedHunksMenu(consoleWrapper, gitManager, diff, unstaged, staged, unstagedAvailability, IsRightSideInUse);
             WasWindowResizedSmaller = new MenuWriter(menu.UpdateMenu(isWindowToSmall, key), isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
