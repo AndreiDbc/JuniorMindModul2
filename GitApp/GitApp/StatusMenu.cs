@@ -177,10 +177,11 @@ namespace GitApp
 
         private bool GetUnstagedAvailability(ref ConsoleKey key, int stagedHeight, int unstagedHeight)
         {
-            var conditionToUseUnstaged = (Unstaged.Current == 0 && key == ConsoleKey.UpArrow) || (Unstaged.Current == Unstaged.ListCount - 1 && key == ConsoleKey.DownArrow);
-            var conditionToUseStaged = (Staged.Current == 0 && key == ConsoleKey.UpArrow) || (Staged.Current == Staged.ListCount - 1 && key == ConsoleKey.DownArrow);
             var unstagedContainsElements = Unstaged[0].GetElement() != "";
             var stagedContainsElements = Staged[0].GetElement() != "";
+            var conditionToUseUnstaged = (Unstaged.Current == 0 && key == ConsoleKey.UpArrow) || (Unstaged.Current == Unstaged.ListCount - 1 && key == ConsoleKey.DownArrow);
+            var conditionToUseStaged = (Staged.Current == 0 && key == ConsoleKey.UpArrow) || (Staged.Current == Staged.ListCount - 1 && key == ConsoleKey.DownArrow);
+
             if (conditionToUseUnstaged && !isStagedInUse && stagedContainsElements)
             {
                 (Staged.Index, Staged.Current) = SetModifiedFileIndeexes(Staged, Unstaged, stagedHeight, key);
@@ -196,6 +197,14 @@ namespace GitApp
                 isUnstagedInUse = true;
                 isStagedInUse = false;
                 return true;
+            }
+            else if (!stagedContainsElements)
+            {
+                return true;
+            }
+            else if (!unstagedContainsElements)
+            {
+                return false;
             }
 
             return UnstagedAvailability;
