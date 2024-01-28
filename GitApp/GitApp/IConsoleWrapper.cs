@@ -16,6 +16,8 @@ namespace GitApp
 
         public void SetCursorPosition(int left, int top);
 
+        public void SetOutputEncodingToUTF8();
+
         public void Clear();
 
         public void WriteLine(string text);

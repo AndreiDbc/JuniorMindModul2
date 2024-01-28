@@ -39,7 +39,11 @@ namespace GitApp.Tests
             SetCursorPositionTop = top; 
         }
 
-        public ConsoleKeyInfo ReadKey()
+        public void SetOutputEncodingToUTF8()
+        {
+        }
+
+        public ConsoleKeyInfo ReadKey(bool intercept)
         {
             currentKeyIndex++;
             if (currentKeyIndex > keySequence.Length)

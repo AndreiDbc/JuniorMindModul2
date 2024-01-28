@@ -17,6 +17,11 @@ namespace GitApp
             Console.SetCursorPosition(left, top);
         }
 
+        public void SetOutputEncodingToUTF8()
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+        }
+
         public ConsoleKeyInfo ReadKey(bool intercept = false)
         {
             return Console.ReadKey(intercept);

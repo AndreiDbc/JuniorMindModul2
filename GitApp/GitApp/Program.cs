@@ -10,7 +10,7 @@ namespace GitApp
     {
         static void Main()
         {
-            Console.OutputEncoding = Encoding.UTF8;
+            new ConsoleWrapper().SetOutputEncodingToUTF8();
             var processRunner = new GitProcessRunner();
             var manager = new GitManager("git", processRunner);
             var commits = new FullCommits(manager.GetLog());
