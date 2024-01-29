@@ -41,7 +41,7 @@ namespace GitApp
             });
             (commits.Index, commits.Current) = page.Count == 0
                 ? (0, 0)
-                : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, windowWidth, commits[commits.Current].GetElement().Length - 41);
+                : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, windowWidth - 2, commits[commits.Current].GetElement().Length - 41);
             (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, windowWidth - 2);
             var toWrite = commits.GetHighlightedSide(windowHeight - 4, windowWidth - 2, availableSpace);
             result.AddRange(new BoxDrawer(toWrite, "Commits").DrawBox(windowWidth, windowHeight - 2, true));
