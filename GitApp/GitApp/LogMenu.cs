@@ -31,8 +31,7 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
-            var commitsAvailableSpace = windowSize - 4 * windowWidth;
-            var availableSpace = commitsAvailableSpace - commitsAvailableSpace / windowWidth * 2;
+            var availableSpace = (windowHeight - 4) * (windowWidth - 2);
             var isPageLargerThanWindow = commitOcupancyRate > availableSpace;
             var commitsToString = new List<string>();
             page.ForEach(line =>
@@ -42,7 +41,7 @@ namespace GitApp
             });
             (commits.Index, commits.Current) = page.Count == 0
                 ? (0, 0)
-                : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, windowWidth, commits[commits.Current].GetElement().Length - 40);
+                : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, windowWidth, commits[commits.Current].GetElement().Length - 41);
             (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, windowWidth);
             var toWrite = commits.GetHighlightedSide(windowHeight - 4, windowWidth - 2, availableSpace);
             result.AddRange(new BoxDrawer(toWrite, "Commits").DrawBox(windowWidth, windowHeight - 2, true));
