@@ -36,11 +36,11 @@ namespace GitApp
             leftSide = new List<string>();
         }
 
-        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
             if (isWindowToSmall)
             {
-                return new List<string>();
+                return;
             }
 
             var windowHeight = consoleWrapper.WindowHeight;
@@ -62,7 +62,7 @@ namespace GitApp
             result = new BoxDrawer(result, "Files").DrawBox(width + 2, windowHeight - 2);
             rightSide = new BoxDrawer(rightSide, "Diff").DrawBox(textWidthSetter.SetTextWidth(false) + 2, windowHeight - 2);
             result.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] Next menu \u001b[36m[B] Branches \u001b[0m");
-            return new ScreenSelector(result, rightSide, consoleWrapper).MergeSides();
+            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(result, rightSide, consoleWrapper).MergeSides());
         }
     }
 }

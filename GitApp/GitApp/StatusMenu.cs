@@ -50,8 +50,19 @@ namespace GitApp
 
         public bool UnstagedAvailability { get; set; }
 
-        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
+            var keyInteractor = ApplyInteractorChanges(key);
+            if (!WasInteractorModified)
+            {
+                WasInteractorModified = false;
+                return;
+            }
+            else if (isWindowToSmall)
+            {
+                return;
+            }
+
             var windowHeight = consoleWrapper.WindowHeight;
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
             var unstagedTempIndex = Unstaged.Index;
@@ -67,8 +78,7 @@ namespace GitApp
             Staged.Index = Math.Min(stagedTempIndex, stagedCount - 1);
             Staged.Current = Math.Min(stagedTempCurrent, stagedCount - 1);
             UnstagedAvailability = GetUnstagedAvailability(ref key, windowHeight - unstagedHeight, unstagedHeight);
-
-            return UpdateStatusMenu(key);
+            LastPageDisplayed = string.Join(Environment.NewLine, UpdateStatusMenu(keyInteractor));
         }
 
         private static (int index, int current) SetModifiedFileIndeexes(ModifiedFiles modifiedFilesToSet, ModifiedFiles modifiedFilesToUse, int height, ConsoleKey key)
@@ -93,7 +103,7 @@ namespace GitApp
                 + (UnstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m");
         }
 
-        private List<string> UpdateStatusMenu(ConsoleKey key)
+        private List<string> UpdateStatusMenu(KeyInteractor<IElement> keyInteractor)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
@@ -106,16 +116,11 @@ namespace GitApp
             var noOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branch);
             var shouldDisplayNoOfCommits = noOfCommitsToPush != "" && noOfCommitsToPull != "";
             Diff diff;
-            KeyInteractor<IElement> keyInteractor;
             var rightSideTextSize = textWidthSetter.SetTextWidth(false);
             var leftSideTextSize = textWidthSetter.SetTextWidth(true);
 
             if (UnstagedAvailability)
             {
-                keyInteractor = new KeyInteractor<IElement>(Unstaged);
-                keyInteractor.KeyInfo = key;
-                (Unstaged.Index, Unstaged.Current) = keyInteractor
-                    .KeySwitch(unstagedPageList, unstagedElements[^1].Id, unstagedElements[0].Id, false, leftSideTextSize, Unstaged[Unstaged.Current].GetElement().Length);
                 stagedPageList = Staged.GetHighlightedSide(stagedHeight, leftSideTextSize, stagedHeight * leftSideTextSize);
                 stagedToString.AddRange(stagedPageList);
                 stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
@@ -138,10 +143,6 @@ namespace GitApp
             }
             else
             {
-                keyInteractor = new KeyInteractor<IElement>(Staged);
-                keyInteractor.KeyInfo = key;
-                (Staged.Index, Staged.Current) = keyInteractor
-                    .KeySwitch(stagedPageList, stagedElements[^1].Id, stagedElements[0].Id, false, leftSideTextSize, Staged[Staged.Current].GetElement().Length);
                 unstagedPageList = Unstaged.GetHighlightedSide(unstagedHeight, leftSideTextSize, unstagedHeight * leftSideTextSize);
                 unstagedToString.AddRange(unstagedPageList);
                 unstagedToString[0] = unstagedToString[0].Replace("\x1b[7m", "");
@@ -208,6 +209,30 @@ namespace GitApp
             }
 
             return UnstagedAvailability;
+        }
+
+        private KeyInteractor<IElement> ApplyInteractorChanges(ConsoleKey key)
+        {
+            KeyInteractor<IElement> keyInteractor;
+            var tempCurrent = 0;
+            if (UnstagedAvailability)
+            {
+                tempCurrent = Unstaged.Current;
+                keyInteractor = new KeyInteractor<IElement>(Unstaged);
+                keyInteractor.KeyInfo = key;
+                (Unstaged.Index, Unstaged.Current) = keyInteractor
+                    .KeySwitch(unstagedPageList, unstagedElements[^1].Id, unstagedElements[0].Id, false, textWidthSetter.SetTextWidth(true), Unstaged[Unstaged.Current].GetElement().Length);
+                WasInteractorModified = tempCurrent != Unstaged.Current || keyInteractor.KeyInfo == ConsoleKey.NoName;
+                return keyInteractor;
+            }
+
+            tempCurrent = Staged.Current;
+            keyInteractor = new KeyInteractor<IElement>(Staged);
+            keyInteractor.KeyInfo = key;
+            (Staged.Index, Staged.Current) = keyInteractor
+                .KeySwitch(stagedPageList, stagedElements[^1].Id, stagedElements[0].Id, false, textWidthSetter.SetTextWidth(true), Staged[Staged.Current].GetElement().Length);
+            WasInteractorModified = tempCurrent != Staged.Current || keyInteractor.KeyInfo == ConsoleKey.NoName;
+            return keyInteractor;
         }
     }
 }

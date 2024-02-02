@@ -8,18 +8,18 @@ namespace GitApp
 {
     public class MenuWriter
     {
-        private readonly List<string> toWrite;
+        private readonly string toWrite;
         private readonly bool isWindowToSmall;
         private readonly IConsoleWrapper consoleWrapper;
 
-        public MenuWriter(List<string> toWrite, bool isWindowToSmall, IConsoleWrapper consoleWrapper)
+        public MenuWriter(string toWrite, bool isWindowToSmall, IConsoleWrapper consoleWrapper)
         {
             this.toWrite = toWrite;
             this.isWindowToSmall = isWindowToSmall;
             this.consoleWrapper = consoleWrapper;
         }
 
-        public bool UpdateDisplay(bool wasWindowResizedSmaller, List<string>? overlayMenu = null)
+        public bool UpdateDisplay(bool wasWindowResizedSmaller, string? overlayMenu = null)
         {
             var result = wasWindowResizedSmaller;
             if (isWindowToSmall)
@@ -29,7 +29,7 @@ namespace GitApp
             }
             else
             {
-                var paddedPage = new PageUtilities(toWrite.ToArray()).PadElement(consoleWrapper.WindowWidth);
+                var paddedPage = new PageUtilities(toWrite.Split(Environment.NewLine)).PadElement(consoleWrapper.WindowWidth);
                 paddedPage.Insert(0, "\u001b[0mStatus [1] | Log [2]");
                 if (wasWindowResizedSmaller)
                 {
@@ -55,11 +55,11 @@ namespace GitApp
 
         private void Write(List<string> paddedPage)
         {
-            var result = string.Join("\n", paddedPage);
+            var result = string.Join(Environment.NewLine, paddedPage);
             consoleWrapper.Write(result);
         }
 
-        private void WriteOverlay(List<string> overlayPage, ref int left, ref int top)
+        private void WriteOverlay(string overlayPage, ref int left, ref int top)
         {
             var width = consoleWrapper.WindowWidth;
             var height = consoleWrapper.WindowHeight;
@@ -70,7 +70,7 @@ namespace GitApp
                 top = 0;
             }
 
-            foreach (var line in overlayPage)
+            foreach (var line in overlayPage.Split(Environment.NewLine))
             {
                 consoleWrapper.SetCursorPosition(left, top);
                 consoleWrapper.Write(line);

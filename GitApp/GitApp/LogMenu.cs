@@ -18,11 +18,11 @@ namespace GitApp
             page = new List<IElement>();
         }
 
-        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
             if (isWindowToSmall)
             {
-                return new List<string>();
+                return;
             }
 
             var result = new List<string>();
@@ -47,7 +47,7 @@ namespace GitApp
             result.AddRange(new BoxDrawer(toWrite, "Commits").DrawBox(windowWidth, windowHeight - 2, true));
             result.Add("\u001b[32m[Esc] Exit \u001b[33m[⏎] Details \u001b[36m[B] Branches");
 
-            return result;
+            LastPageDisplayed = string.Join(Environment.NewLine, result);
         }
     }
 }

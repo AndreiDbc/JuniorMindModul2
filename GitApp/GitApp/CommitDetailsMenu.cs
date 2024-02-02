@@ -33,11 +33,11 @@ namespace GitApp
             leftSide = new List<string>();
         }
 
-        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
             if (isWindowToSmall)
             {
-                return new List<string>();
+                return;
             }
 
             textWidthSetter = new TextWidthSetter(consoleWrapper);
@@ -53,10 +53,12 @@ namespace GitApp
             var rightSide = commits.FormateUnhighlightedSide(windowHeight - 2, textWidthSetter.SetTextWidth(false), gitManager);
             var leftBox = new BoxDrawer(leftSide, "Commits").DrawBox(windowHeight < 15 && windowWidth < 50 ? windowWidth : leftSideWidth + 2, windowHeight - 2);
             leftBox.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] Next menu \u001b[36m[B] Branches \u001b[0m");
-            return new ScreenSelector(
-                leftBox,
-                rightSide,
-                consoleWrapper).Select(ref isRightSideInUse, keyInteractor);
+            LastPageDisplayed = string.Join(
+                Environment.NewLine,
+                new ScreenSelector(
+                    leftBox,
+                    rightSide,
+                    consoleWrapper).Select(ref isRightSideInUse, keyInteractor));
         }
     }
 }

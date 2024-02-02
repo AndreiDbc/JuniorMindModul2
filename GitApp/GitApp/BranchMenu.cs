@@ -29,7 +29,7 @@ namespace GitApp
 
         public string BranchesNames { get; set; }
 
-        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
             var height = consoleWrapper.WindowHeight;
             var width = consoleWrapper.WindowWidth;
@@ -54,10 +54,13 @@ namespace GitApp
 
             var keyInteractor = new KeyInteractor<IElement>(Branches);
             keyInteractor.KeyInfo = key;
-            (Branches.Index, Branches.Current) = keyInteractor.KeySwitch(leftSide, leftSide[^1], leftSide[0], false, (int)(0.4 * boxWidth) - 2, Branches[Branches.Current].GetElement().Length);
+            (Branches.Index, Branches.Current) = keyInteractor
+                .KeySwitch(leftSide, leftSide[^1], leftSide[0], false, (int)(0.4 * boxWidth) - 2, Branches[Branches.Current].GetElement().Length);
             leftSide = Branches.GetHighlightedSide(boxHeight - 3, (int)(0.4 * boxWidth) - 2, (boxHeight - 2) * (int)(0.4 * boxWidth) - 2);
             leftSideTemp = new PageUtilities(leftSide.ToArray()).PadElement((int)(0.4 * boxWidth) - 2);
-            return new BoxDrawer(new ScreenSelector(leftSideTemp, rightSide, consoleWrapper).MergeSides(), "Branches").DrawBox(boxWidth, boxHeight, false, true);
+            LastPageDisplayed = string.Join(
+                Environment.NewLine,
+                new BoxDrawer(new ScreenSelector(leftSideTemp, rightSide, consoleWrapper).MergeSides(), "Branches").DrawBox(boxWidth, boxHeight, false, true));
         }
     }
 }
