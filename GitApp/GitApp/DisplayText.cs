@@ -187,7 +187,6 @@ namespace GitApp
                     continue;
                 }
 
-
                 windowWidth = consoleWrapper.WindowWidth;
                 windowSize = consoleWrapper.WindowHeight * windowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
