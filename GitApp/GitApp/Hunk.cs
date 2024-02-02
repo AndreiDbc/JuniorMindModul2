@@ -11,7 +11,7 @@ namespace GitApp
         private readonly string rawData;
         private readonly string index;
 
-        public Hunk(string rawData, string index)//test
+        public Hunk(string rawData, string index)
         {
             this.rawData = rawData;
             this.index = index;
