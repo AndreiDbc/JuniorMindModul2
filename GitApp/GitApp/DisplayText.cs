@@ -1105,6 +1105,7 @@ namespace GitApp
 
                 (commitMessage, keyInfo) = new TextReader(left, top, commitBoxToArray[0].Length - 13, commitBoxToArray.Length - 2, consoleWrapper)
                     .GetText(ref commitMessage, keyInfo);
+                key = keyInfo.Key;
                 windowSize = height * width;
                 WasWindowResizedSmaller = windowSizeTemp > windowSize;
                 windowSizeTemp = windowSize;
