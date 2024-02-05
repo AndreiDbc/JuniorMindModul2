@@ -11,11 +11,12 @@ namespace GitApp
         private readonly TextWidthSetter textWidthSetter;
         private readonly Diff diff;
         private readonly ModifiedFiles modifiedFiles;
+        private bool isRightSideInUse;
         private List<IElement> diffPage;
         private List<string> rightSide;
         private int diffSize;
 
-        public HighlightedDiffMenu(IConsoleWrapper consoleWrapper, Diff diff, ModifiedFiles modifiedFiles) : base(consoleWrapper)
+        public HighlightedDiffMenu(IConsoleWrapper consoleWrapper, Diff diff, ModifiedFiles modifiedFiles, bool isRightSideInUse) : base(consoleWrapper)
         {
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
@@ -27,6 +28,7 @@ namespace GitApp
             this.diff = diff;
             rightSide = new List<string>();
             (diffPage, diffSize) = diff.GetPageDataAndSize(availableSpace, diffWidth, true);
+            this.isRightSideInUse = isRightSideInUse;
         }
 
         public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
@@ -52,7 +54,7 @@ namespace GitApp
                 modifiedFiles.GetHighlightedSide(windowHeight - 4, filesWidth, (windowHeight - 4) * filesWidth, true),
                 "Files").DrawBox((int)(0.6 * windowWidth), windowHeight - 2);
             leftSide.Add("\u001b[32m[Esc][←] Return\u001b[0m \u001b[36m[B] Branches");
-            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(leftSide, rightSideTemp, consoleWrapper).MergeSides());
+            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(leftSide, rightSideTemp, consoleWrapper).Select(ref isRightSideInUse, key));
         }
     }
 }

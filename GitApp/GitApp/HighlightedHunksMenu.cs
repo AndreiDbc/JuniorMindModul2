@@ -117,7 +117,7 @@ namespace GitApp
                 leftSide.AddRange(stagedToString);
             }
 
-            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(leftSide, rightSide, consoleWrapper).Select(ref isRightSideInUse, keyInteractor));
+            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(leftSide, rightSide, consoleWrapper).Select(ref isRightSideInUse, key));
         }
 
         private void RemoveSelection(ref List<string> unstagedToString, ref List<string> stagedToString)

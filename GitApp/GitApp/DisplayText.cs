@@ -154,6 +154,7 @@ namespace GitApp
             menu.UpdateMenu(isWindowToSmall, ConsoleKey.NoName);
             WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
+            var keys = new[] { ConsoleKey.A, ConsoleKey.Enter, ConsoleKey.S };
             do
             {
                 key = consoleWrapper.ReadKey(true).Key;
@@ -168,9 +169,12 @@ namespace GitApp
                     menu.Staged = staged;
                 }
 
-                var stageSuccesful = ApplyStageOrUnstageOption(ref menu, ref unstaged, ref staged, unstagedAvailability);
-                menu.UpdateMenu(isWindowToSmall, key);
-                if (key.Equals(ConsoleKey.C))
+                menu.WasStagingKeyPressed = keys.Any(necessaryKey => necessaryKey.Equals(key));
+                if (menu.WasStagingKeyPressed)
+                {
+                    ApplyStageOrUnstageOption(ref menu, ref unstaged, ref staged, unstagedAvailability);
+                }
+                else if (key.Equals(ConsoleKey.C))
                 {
                     DisplayCommitPage(menu, staged);
                 }
@@ -182,7 +186,10 @@ namespace GitApp
                 {
                     break;
                 }
-                else if (!menu.WasInteractorModified && !stageSuccesful)
+
+                menu.UpdateMenu(isWindowToSmall, key);
+
+                if (!menu.WasInteractorModified && !menu.WasStagingKeyPressed && key != ConsoleKey.Escape)
                 {
                     continue;
                 }
@@ -197,15 +204,8 @@ namespace GitApp
             while (true);
         }
 
-        private bool ApplyStageOrUnstageOption(ref StatusMenu menu, ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
+        private void ApplyStageOrUnstageOption(ref StatusMenu menu, ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
         {
-            var operationSuccesful = false;
-            var keys = new[] { ConsoleKey.A, ConsoleKey.Enter, ConsoleKey.S };
-            if (!keys.Any(availableKey => availableKey.Equals(key)))
-            {
-                return operationSuccesful;
-            }
-
             unstaged = menu.Unstaged;
             staged = menu.Staged;
 
@@ -217,14 +217,12 @@ namespace GitApp
                     gitManager.StageFile(current);
                     menu.Unstaged.Current = Math.Max(0, menu.Unstaged.Current - 1);
                     menu.Unstaged.Index = Math.Min(menu.Unstaged.Current, menu.Unstaged.Index);
-                    operationSuccesful = true;
                 }
                 else if (key.Equals(ConsoleKey.A))
                 {
                     gitManager.StageAllFiles();
                     menu.Unstaged.Current = 0;
                     menu.Unstaged.Index = 0;
-                    operationSuccesful = true;
                 }
             }
             else
@@ -235,14 +233,12 @@ namespace GitApp
                     gitManager.UnstageFile(current);
                     menu.Staged.Current = Math.Max(0, menu.Staged.Current - 1);
                     menu.Staged.Index = Math.Min(menu.Staged.Current, menu.Staged.Index);
-                    operationSuccesful = true;
                 }
                 else if (key.Equals(ConsoleKey.A))
                 {
                     gitManager.UnstageAllFiles();
                     menu.Staged.Current = 0;
                     menu.Staged.Index = 0;
-                    operationSuccesful = true;
                 }
             }
 
@@ -254,8 +250,6 @@ namespace GitApp
             staged.Current = menu.Staged.Current;
             menu.Unstaged = unstaged;
             menu.Staged = staged;
-
-            return operationSuccesful;
         }
 
         private (int index, int current) SetModifiedFileIndeexes(ModifiedFiles modifiedFilesToSet, ModifiedFiles modifiedFilesToUse, int height)
@@ -648,7 +642,7 @@ namespace GitApp
             var windowSize = windowHeight * windowWidth;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
             var diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, gitManager.GetRepoPath(), modifiedFiles[0].GetElement()));
-            var menu = new DiffMenu(consoleWrapper, modifiedFiles, diff, previousCommit, currentCommit, gitManager);
+            var menu = new DiffMenu(consoleWrapper, modifiedFiles, diff, previousCommit, currentCommit, gitManager, IsRightSideInUse);
             var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
             menu.UpdateMenu(isWindowToSmall, key);
@@ -689,7 +683,7 @@ namespace GitApp
             var windowWidth = consoleWrapper.WindowWidth;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
-            var menu = new HighlightedDiffMenu(consoleWrapper, diff, modifiedFiles);
+            var menu = new HighlightedDiffMenu(consoleWrapper, diff, modifiedFiles, IsRightSideInUse);
             var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
             menu.UpdateMenu(isWindowToSmall, key);

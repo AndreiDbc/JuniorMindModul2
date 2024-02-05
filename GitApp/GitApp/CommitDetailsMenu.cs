@@ -58,7 +58,7 @@ namespace GitApp
                 new ScreenSelector(
                     leftBox,
                     rightSide,
-                    consoleWrapper).Select(ref isRightSideInUse, keyInteractor));
+                    consoleWrapper).Select(ref isRightSideInUse, key));
         }
     }
 }

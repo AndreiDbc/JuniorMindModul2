@@ -16,13 +16,22 @@ namespace GitApp
         private readonly GitManager gitManager;
         private readonly IElement previousCommit;
         private readonly IElement currentCommit;
+        bool isRightSideInUse;
         private Diff diff;
         private List<IElement> page;
         private List<string> leftSide;
         private int width;
 
-        public DiffMenu(IConsoleWrapper consoleWrapper, ModifiedFiles modifiedFiles, Diff diff, IElement previousCommit, IElement currentCommit, GitManager gitManager) : base(consoleWrapper)
+        public DiffMenu(
+            IConsoleWrapper consoleWrapper,
+            ModifiedFiles modifiedFiles,
+            Diff diff,
+            IElement previousCommit,
+            IElement currentCommit,
+            GitManager gitManager,
+            bool isRightSideInUse) : base(consoleWrapper)
         {
+            this.isRightSideInUse = isRightSideInUse;
             this.modifiedFiles = modifiedFiles;
             this.gitManager = gitManager;
             this.previousCommit = previousCommit;
@@ -62,7 +71,7 @@ namespace GitApp
             result = new BoxDrawer(result, "Files").DrawBox(width + 2, windowHeight - 2);
             rightSide = new BoxDrawer(rightSide, "Diff").DrawBox(textWidthSetter.SetTextWidth(false) + 2, windowHeight - 2);
             result.Add("\u001b[32m[Esc][←] Return \u001b[33m[→] Next menu \u001b[36m[B] Branches \u001b[0m");
-            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(result, rightSide, consoleWrapper).MergeSides());
+            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(result, rightSide, consoleWrapper).Select(ref isRightSideInUse, key));
         }
     }
 }

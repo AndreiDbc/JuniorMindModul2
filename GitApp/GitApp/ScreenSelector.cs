@@ -19,13 +19,13 @@ namespace GitApp
             this.consoleWrapper = consoleWrapper;
         }
 
-        public List<string> Select(ref bool isRightSideInUse, KeyInteractor<IElement> keyInteractor)
+        public List<string> Select(ref bool isRightSideInUse, ConsoleKey key)
         {
             var height = consoleWrapper.WindowHeight;
             var width = consoleWrapper.WindowWidth;
             if (height < 15 && width < 50)
             {
-                return SelectSide(ref isRightSideInUse, keyInteractor);
+                return SelectSide(ref isRightSideInUse, key);
             }
 
             return MergeSides();
@@ -47,9 +47,9 @@ namespace GitApp
             return result;
         }
 
-        private List<string> SelectSide(ref bool isRightSideInUse, KeyInteractor<IElement> keyInteractor)
+        private List<string> SelectSide(ref bool isRightSideInUse, ConsoleKey key)
         {
-            isRightSideInUse = keyInteractor.KeyInfo.Equals(ConsoleKey.Spacebar) ? !isRightSideInUse : isRightSideInUse;
+            isRightSideInUse = key.Equals(ConsoleKey.Spacebar) ? !isRightSideInUse : isRightSideInUse;
             return isRightSideInUse ? rightSide : leftSide;
         }
     }
