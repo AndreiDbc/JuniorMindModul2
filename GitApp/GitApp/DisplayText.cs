@@ -177,6 +177,7 @@ namespace GitApp
                 else if (key.Equals(ConsoleKey.C))
                 {
                     DisplayCommitPage(menu, staged);
+                    menu.WasStagingKeyPressed = key.Equals(ConsoleKey.Enter);
                 }
                 else if (key.Equals(ConsoleKey.B))
                 {
