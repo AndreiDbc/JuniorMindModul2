@@ -65,7 +65,7 @@ namespace GitApp
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
             UnstagedAvailability = GetUnstagedAvailability(ref key, windowHeight - unstagedHeight, unstagedHeight);
             var exitCondition = !key.Equals(ConsoleKey.C) ^ !key.Equals(ConsoleKey.B);
-            exitCondition = exitCondition || (!WasInteractorModified && !WasStagingKeyPressed);
+            exitCondition = exitCondition && !WasInteractorModified && !WasStagingKeyPressed;
             if (exitCondition)
             {
                 WasInteractorModified = false;
