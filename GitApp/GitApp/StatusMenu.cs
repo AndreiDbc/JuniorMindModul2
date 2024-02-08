@@ -66,28 +66,11 @@ namespace GitApp
             UnstagedAvailability = GetUnstagedAvailability(ref key, windowHeight - unstagedHeight, unstagedHeight);
             var exitCondition = !key.Equals(ConsoleKey.C) ^ !key.Equals(ConsoleKey.B);
             exitCondition = exitCondition && !WasInteractorModified && !WasStagingKeyPressed;
-            if (exitCondition)
-            {
-                WasInteractorModified = false;
-                return;
-            }
-            else if (isWindowToSmall)
+            if (isWindowToSmall)
             {
                 return;
             }
 
-            var unstagedTempIndex = Unstaged.Index;
-            var unstagedTempCurrent = Unstaged.Current;
-            Unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
-            var unstagedCount = Unstaged.ListCount;
-            Unstaged.Index = Math.Min(unstagedTempIndex, unstagedCount - 1);
-            Unstaged.Current = Math.Min(unstagedTempCurrent, unstagedCount - 1);
-            var stagedTempIndex = Staged.Index;
-            var stagedTempCurrent = Staged.Current;
-            Staged = new ModifiedFiles(gitManager.GetStagedFiles());
-            var stagedCount = Staged.ListCount;
-            Staged.Index = Math.Min(stagedTempIndex, stagedCount - 1);
-            Staged.Current = Math.Min(stagedTempCurrent, stagedCount - 1);
             LastPageDisplayed = string.Join(Environment.NewLine, UpdateStatusMenu(key));
         }
 

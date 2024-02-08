@@ -159,7 +159,6 @@ namespace GitApp
             {
                 key = consoleWrapper.ReadKey(true).Key;
                 unstagedAvailability = menu.UnstagedAvailability;
-                var wasDiffExited = false;
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
                     unstaged = menu.Unstaged;
@@ -167,7 +166,6 @@ namespace GitApp
                     DisplayHighlightedHunksPage(ref unstaged, ref staged, unstagedAvailability);
                     menu.Unstaged = unstaged;
                     menu.Staged = staged;
-                    wasDiffExited = true;
                 }
 
                 menu.WasStagingKeyPressed = keys.Any(necessaryKey => necessaryKey.Equals(key));
@@ -190,11 +188,6 @@ namespace GitApp
                 }
 
                 menu.UpdateMenu(isWindowToSmall, key);
-
-                if (!menu.WasInteractorModified && !wasDiffExited && !menu.WasStagingKeyPressed && key != ConsoleKey.Escape)
-                {
-                    continue;
-                }
 
                 windowWidth = consoleWrapper.WindowWidth;
                 windowSize = consoleWrapper.WindowHeight * windowWidth;
