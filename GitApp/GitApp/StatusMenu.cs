@@ -197,7 +197,6 @@ namespace GitApp
             if (conditionToUseUnstaged && !isStagedInUse && stagedContainsElements)
             {
                 (Staged.Index, Staged.Current) = SetModifiedFileIndeexes(Staged, Unstaged, stagedHeight, key);
-                key = ConsoleKey.NoName;
                 isUnstagedInUse = false;
                 isStagedInUse = true;
                 WasInteractorModified = true;
@@ -206,7 +205,6 @@ namespace GitApp
             else if (conditionToUseStaged && !isUnstagedInUse && unstagedContainsElements)
             {
                 (Unstaged.Index, Unstaged.Current) = SetModifiedFileIndeexes(Unstaged, Staged, unstagedHeight, key);
-                key = ConsoleKey.NoName;
                 isUnstagedInUse = true;
                 isStagedInUse = false;
                 WasInteractorModified = true;
