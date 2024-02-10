@@ -10,6 +10,7 @@ namespace GitApp
     {
         private readonly GitManager gitManager;
         private readonly TextWidthSetter textWidthSetter;
+        private readonly RepositoryInfo repositoryInfo;
         private bool isRightSideInUse;
         private List<IElement> unstagedElements;
         private List<string> unstagedPageList;
@@ -23,10 +24,12 @@ namespace GitApp
             GitManager gitManager,
             ModifiedFiles unstaged,
             ModifiedFiles staged,
+            RepositoryInfo repositoryInfo,
             bool unstagedAvailability,
             bool isRightSideInUse) : base(consoleWrapper)
         {
             this.gitManager = gitManager;
+            this.repositoryInfo = repositoryInfo;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
@@ -105,8 +108,8 @@ namespace GitApp
             var stagedToString = new List<string>();
             var tempList = new List<string>();
             var branch = gitManager.GetCurrentGitBranch();
-            var noOfCommitsToPull = gitManager.GetNumberOfCommitsToPull(branch);
-            var noOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branch);
+            var noOfCommitsToPull = repositoryInfo.NoOfCommitsToPull;
+            var noOfCommitsToPush = repositoryInfo.NoOfCommitsToPush;
             var shouldDisplayNoOfCommits = noOfCommitsToPush != "" && noOfCommitsToPull != "";
             Diff diff;
             var rightSideTextSize = textWidthSetter.SetTextWidth(false);
@@ -124,7 +127,7 @@ namespace GitApp
                        ? new List<string>()
                        : Unstaged.GetHighlightedSide(unstagedHeight, leftSideTextSize, unstagedAvailableSpace);
                 var currentUnstaged = Unstaged[Unstaged.Current].GetElement();
-                diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, gitManager.GetRepoPath(), currentUnstaged != "" && Unstaged.GetText().Count >= 1));
+                diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repositoryInfo.RepositoryPath, currentUnstaged != "" && Unstaged.GetText().Count >= 1));
                 tempList.AddRange(new BoxDrawer(unstagedPageList, "Unstaged").DrawBox(
                             leftSideTextSize + 2,
                             unstagedHeight + 2,
@@ -146,7 +149,7 @@ namespace GitApp
                        ? new List<string>()
                        : Staged.GetHighlightedSide(stagedHeight, leftSideTextSize, stagedAvailableSpace);
                 var currentStaged = Staged[Staged.Current].GetElement();
-                diff = new Diff(gitManager.GetStagedDiff(currentStaged, gitManager.GetRepoPath()));
+                diff = new Diff(gitManager.GetStagedDiff(currentStaged, repositoryInfo.RepositoryPath));
                 tempList.AddRange(new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
                             leftSideTextSize + 2,
                             unstagedHeight + 2,
