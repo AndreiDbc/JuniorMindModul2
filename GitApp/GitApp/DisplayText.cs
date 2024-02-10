@@ -23,11 +23,12 @@ namespace GitApp
         private readonly GitManager gitManager;
         private readonly IConsoleWrapper consoleWrapper;
         private readonly ConsoleKey[] menuKeys;
+        private readonly RepositoryInfo repositoryInfo;
         private FullCommits commits;
         private TextWriter writer;
         ConsoleKey key;
 
-        public DisplayText(FullCommits commits, TextWriter writer, GitManager gitManager, IConsoleWrapper consoleWrapper)
+        public DisplayText(FullCommits commits, TextWriter writer, GitManager gitManager, IConsoleWrapper consoleWrapper, RepositoryInfo repositoryInfo)
         {
             this.commits = commits;
             this.writer = writer;
@@ -37,6 +38,7 @@ namespace GitApp
             WasWindowResizedSmaller = false;
             menuKeys = new[] { ConsoleKey.D1, ConsoleKey.D2 };
             key = ConsoleKey.NoName;
+            this.repositoryInfo = repositoryInfo;
         }
 
         private bool WasWindowResizedSmaller { get; set; }
