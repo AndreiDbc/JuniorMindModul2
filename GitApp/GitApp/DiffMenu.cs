@@ -62,7 +62,7 @@ namespace GitApp
             (modifiedFiles.Index, modifiedFiles.Current) = keyInteractor.KeySwitch(leftSide, page[^1].Id, page[0].Id, false, windowWidth, page[^1].GetElement().Length);
             page = modifiedFiles.GetPageDataAndSize(width * (windowHeight - 4), width, true).list;
             leftSide = modifiedFiles.GetHighlightedSide(windowHeight - 4, width, width * (windowHeight - 4), true);
-            diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, gitManager.GetRepoPath(), modifiedFiles[modifiedFiles.Current].GetElement()));
+            diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, modifiedFiles[modifiedFiles.Current].GetElement()));
             var rightSide = windowWidth < 50 && windowHeight < 15
                 ? diff.GetHighlightedSide(windowHeight - 4, windowWidth - 2, (windowHeight - 3) * (windowWidth - 2), false)
                 : diff.GetHighlightedSide(windowHeight - 4, windowWidth - (int)(0.6 * windowWidth) - 2, diffAvailableSpace, false);

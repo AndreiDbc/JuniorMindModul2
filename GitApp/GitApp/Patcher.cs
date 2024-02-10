@@ -145,7 +145,7 @@ namespace GitApp
             var originalFile = new string[0];
             if (!interactWithHunk && isFileInTheStagingArea)
             {
-                originalFile = gitManager.GetStagedDiff(fileName, repositoryPath).Split("\n");
+                originalFile = gitManager.GetStagedDiff(fileName).Split("\n");
             }
             else if (indeexes.start == 0)
             {

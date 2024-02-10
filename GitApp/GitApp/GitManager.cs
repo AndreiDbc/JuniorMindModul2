@@ -15,11 +15,13 @@ namespace GitApp
     {
         private readonly string fileName;
         private readonly IProcessRunner commandRunner;
+        private readonly string repositoryPath;
 
-        public GitManager(string fileName, IProcessRunner processRunner)
+        public GitManager(string fileName, IProcessRunner processRunner, string repositoryPath)
         {
             this.fileName = fileName;
             this.commandRunner = processRunner;
+            this.repositoryPath = repositoryPath;
         }
 
         public string GetCurrentGitBranch()
@@ -59,10 +61,10 @@ namespace GitApp
 
         public void ChangeBranch(string branchName)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"checkout {branchName}"));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"checkout {branchName}"), repositoryPath);
         }
 
-        public string GetDiffBetweenConsecutiveCommits(string oldId, string newId, string repositoryPath, string filePath)
+        public string GetDiffBetweenConsecutiveCommits(string oldId, string newId, string filePath)
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"diff {oldId} {newId} -- {filePath}", repositoryPath));
         }
@@ -79,49 +81,49 @@ namespace GitApp
 
         public string GetUnstagedFiles()
         {
-            return commandRunner.RunCommand(new GitCommand(fileName, "ls-files --others --modified --exclude-standard", GetRepoPath()));
+            return commandRunner.RunCommand(new GitCommand(fileName, "ls-files --others --modified --exclude-standard", repositoryPath));
         }
 
         public void UnstageFile(string filePath)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"reset HEAD {filePath}"));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"reset HEAD {filePath}"), repositoryPath);
         }
 
         public void ApplyPatchInReverse(string patchPath)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"apply --reverse {patchPath}"));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"apply --reverse {patchPath}"), repositoryPath);
         }
 
         public void RestoreFileToMatchIndex(string targetFile)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"checkout -- {targetFile}"));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"checkout -- {targetFile}"), repositoryPath);
         }
 
-        public string GetUnstagedDiff(string filePath, string repositoryPath, bool doesFileExist = false)
+        public string GetUnstagedDiff(string filePath, bool doesFileExist = false)
         {
             var diff = commandRunner.RunCommand(new GitCommand(fileName, $"diff -- {filePath}", repositoryPath));
             if (doesFileExist && diff == "")
             {
-                commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"));
+                commandRunner.ApplyCommand(new GitCommand(fileName, $"add -N {filePath}"), repositoryPath);
                 diff = commandRunner.RunCommand(new GitCommand(fileName, $"diff -- {filePath}", repositoryPath));
             }
 
             return diff;
         }
 
-        public string GetStagedDiff(string stagedFile, string repositoryPath)
+        public string GetStagedDiff(string stagedFile)
         {
             return commandRunner.RunCommand(new GitCommand(fileName, $"diff --staged -- {stagedFile}", repositoryPath));
         }
 
         public void Stage(string patchPath)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"apply --cached \"{patchPath}\""));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"apply --cached \"{patchPath}\""), repositoryPath);
         }
 
         public void StageFile(string toAdd)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {toAdd}"));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"add {toAdd}"), repositoryPath);
         }
 
         public string GetOriginalFileLines(string currentFileName, string repoPath)
@@ -129,33 +131,33 @@ namespace GitApp
             return commandRunner.RunCommand(
                 new GitCommand(
                     fileName,
-                    $"show {GetLastFileCommitId(currentFileName, repoPath)}:{currentFileName}",
+                    $"show {GetLastFileCommitId(currentFileName)}:{currentFileName}",
                     repoPath));
         }
 
         public void StageAllFiles()
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, "add ."));
+            commandRunner.ApplyCommand(new GitCommand(fileName, "add ."), repositoryPath);
         }
 
         public void UnstageAllFiles()
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, "reset HEAD ."));
+            commandRunner.ApplyCommand(new GitCommand(fileName, "reset HEAD ."), repositoryPath);
         }
 
         public void Commit(string message)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"commit -m \"{message}\""));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"commit -m \"{message}\""), repositoryPath);
         }
 
         public void RestoreDeletedFile(string toRestore)
         {
-            commandRunner.ApplyCommand(new GitCommand(fileName, $"restore --source=HEAD --staged --worktree -- {toRestore}"));
+            commandRunner.ApplyCommand(new GitCommand(fileName, $"restore --source=HEAD --staged --worktree -- {toRestore}"), repositoryPath);
         }
 
-        private string GetLastFileCommitId(string currentFileName, string repoPath)
+        private string GetLastFileCommitId(string currentFileName)
         {
-            return commandRunner.RunCommand(new GitCommand(fileName, $"log -n 1 --pretty=format:%H -- {currentFileName}", repoPath))[..7];
+            return commandRunner.RunCommand(new GitCommand(fileName, $"log -n 1 --pretty=format:%H -- {currentFileName}", repositoryPath))[..7];
         }
     }
 }

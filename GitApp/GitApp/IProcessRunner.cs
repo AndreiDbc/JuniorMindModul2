@@ -10,6 +10,6 @@ namespace GitApp
     {
         public string RunCommand(GitCommand command);
 
-        public void ApplyCommand(GitCommand command);
+        public void ApplyCommand(GitCommand command, string repositoryPath);
     }
 }

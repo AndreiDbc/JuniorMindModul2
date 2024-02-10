@@ -19,19 +19,16 @@ namespace GitApp
 {
     public class DisplayText
     {
-        private const string MenuBar = "\u001b[0mStatus [1] | Log [2]";
         private readonly GitManager gitManager;
         private readonly IConsoleWrapper consoleWrapper;
         private readonly ConsoleKey[] menuKeys;
         private readonly RepositoryInfo repositoryInfo;
         private FullCommits commits;
-        private TextWriter writer;
         ConsoleKey key;
 
-        public DisplayText(FullCommits commits, TextWriter writer, GitManager gitManager, IConsoleWrapper consoleWrapper, RepositoryInfo repositoryInfo)
+        public DisplayText(FullCommits commits, GitManager gitManager, IConsoleWrapper consoleWrapper, RepositoryInfo repositoryInfo)
         {
             this.commits = commits;
-            this.writer = writer;
             this.gitManager = gitManager;
             this.consoleWrapper = consoleWrapper;
             IsRightSideInUse = false;
@@ -43,7 +40,7 @@ namespace GitApp
 
         private bool WasWindowResizedSmaller { get; set; }
 
-        private bool IsRightSideInUse { get; set; }
+        private bool IsRightSideInUse { get; }
 
         public void Display()
         {
@@ -60,28 +57,6 @@ namespace GitApp
                 }
             }
             while (key != ConsoleKey.Escape);
-        }
-
-        private static List<string> MergeSides(List<string> leftSide, List<string> rightSide, bool overlayPage = false)
-        {
-            var result = new List<string>();
-
-            for (int i = 0; i < leftSide.Count; i++)
-            {
-                result.Add(i < rightSide.Count ? leftSide[i] : leftSide[i] + (overlayPage ? "" : "\n"));
-                if (i < rightSide.Count)
-                {
-                    result[i] += rightSide[i];
-                }
-            }
-
-            return result;
-        }
-
-        private static string SetMenuBarForStatus(bool unstagedAvailability)
-        {
-            return "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu \u001b[36m[B] Branches "
-                + (unstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m");
         }
 
         private bool GetExitConditionForHighlightedHunksPage(IElement currentUnstaged, IElement diffElement)
@@ -249,22 +224,6 @@ namespace GitApp
             menu.Staged = staged;
         }
 
-        private (int index, int current) SetModifiedFileIndeexes(ModifiedFiles modifiedFilesToSet, ModifiedFiles modifiedFilesToUse, int height)
-        {
-            if (modifiedFilesToUse.Current == 0 && key == ConsoleKey.UpArrow)
-            {
-                modifiedFilesToSet.Current = modifiedFilesToSet.ListCount - 1;
-                modifiedFilesToSet.Index = modifiedFilesToSet.ListCount - height < 0 ? 0 : modifiedFilesToSet.ListCount - height;
-            }
-            else
-            {
-                modifiedFilesToSet.Current = 0;
-                modifiedFilesToSet.Index = 0;
-            }
-
-            return (modifiedFilesToSet.Index, modifiedFilesToSet.Current);
-        }
-
         private void DisplayHighlightedHunksPage(ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
         {
             var currentElement = unstagedAvailability ? unstaged[unstaged.Current].GetElement() : staged[staged.Current].GetElement();
@@ -280,9 +239,8 @@ namespace GitApp
             var diff = new Diff(unstagedAvailability
                 ? gitManager.GetUnstagedDiff(
                     currentElement,
-                    gitManager.GetRepoPath(),
                     unstaged.GetText().Count >= 1)
-                : gitManager.GetStagedDiff(staged[staged.Current].GetElement(), gitManager.GetRepoPath()));
+                : gitManager.GetStagedDiff(staged[staged.Current].GetElement()));
             var menu = new HighlightedHunksMenu(consoleWrapper, gitManager, diff, unstaged, staged, unstagedAvailability, IsRightSideInUse);
             menu.UpdateMenu(isWindowToSmall, key);
             WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
@@ -335,10 +293,9 @@ namespace GitApp
             var currentFile = unstagedAvailability
                 ? unstaged[unstaged.Current].GetElement()
                 : staged[staged.Current].GetElement();
-            var repoPath = gitManager.GetRepoPath();
             if (key.Equals(ConsoleKey.Enter))
             {
-                UpdateVariablesWhenStagingOrUnstagingHunk(ref diff, ref unstaged, ref staged, repoPath, unstagedAvailability);
+                UpdateVariablesWhenStagingOrUnstagingHunk(ref diff, ref unstaged, ref staged, unstagedAvailability);
                 stageSuccesful = true;
             }
             else if (key.Equals(ConsoleKey.S))
@@ -374,7 +331,6 @@ namespace GitApp
             ref Diff diff,
             ref ModifiedFiles unstaged,
             ref ModifiedFiles staged,
-            string repoPath,
             bool unstagedAvailability)
         {
             var currentUnstaged = unstaged[unstaged.Current].GetElement();
@@ -382,7 +338,7 @@ namespace GitApp
             var diffIndex = diff.Index == 0 ? 0 : diff.Index;
             var diffCurrent = diff.Current == 0 ? 0 : diff.Current;
             var currentFile = unstagedAvailability ? currentUnstaged : currentStaged;
-            var patchPath = new Patcher(repoPath, gitManager, diff, currentFile != "").GetHunkPatchPath();
+            var patchPath = new Patcher(repositoryInfo.RepositoryPath, gitManager, diff, currentFile != "").GetHunkPatchPath();
             var unstagedIndex = unstaged.Index;
             var unstagedCurrent = unstaged.Current;
             unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
@@ -402,14 +358,14 @@ namespace GitApp
             {
                 var tempFilePath = Path.GetTempPath() + "tempFile" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
                 System.IO.File.Create(tempFilePath).Close();
-                var currentElementLines = System.IO.File.ReadAllLines(repoPath + "/" + currentFile);
+                var currentElementLines = System.IO.File.ReadAllLines(repositoryInfo.RepositoryPath + "/" + currentFile);
                 currentElementLines[0] = "﻿\ufeff" + currentElementLines[0];
                 System.IO.File.WriteAllLines(tempFilePath, currentElementLines);
                 gitManager.RestoreFileToMatchIndex(currentFile);
                 gitManager.UnstageFile(currentFile);
                 gitManager.ApplyPatchInReverse(patchPath);
                 gitManager.StageFile(currentFile);
-                System.IO.File.WriteAllLines(repoPath + "/" + currentFile, System.IO.File.ReadAllLines(tempFilePath));
+                System.IO.File.WriteAllLines(repositoryInfo.RepositoryPath + "/" + currentFile, System.IO.File.ReadAllLines(tempFilePath));
                 System.IO.File.Delete(tempFilePath);
             }
 
@@ -419,8 +375,8 @@ namespace GitApp
             }
 
             diff = unstagedAvailability
-                ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1))
-                : new Diff(gitManager.GetStagedDiff(currentStaged, repoPath));
+                ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, currentFile != "" && unstaged.GetText().Count >= 1))
+                : new Diff(gitManager.GetStagedDiff(currentStaged));
             diff.Current = Math.Min(diffCurrent, diff.GetText().Count - 1);
             diff.Index = diffIndex;
         }
@@ -434,7 +390,6 @@ namespace GitApp
             var diffElements = diff.GetText();
             var currentStaged = staged[staged.Current].GetElement();
             var currentUnstaged = unstaged[unstaged.Current].GetElement();
-            var repoPath = gitManager.GetRepoPath();
             var currentFile = unstagedAvailability ? currentUnstaged : currentStaged;
             var diffIndex = diff.Index == 0 ? 0 : diff.Index;
             var diffCurrent = diff.Current == 0 ? 0 : diff.Current - 1;
@@ -457,14 +412,14 @@ namespace GitApp
                 var tempFilePath = Path.GetTempPath() + "tempFile" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
                 string[] currentElementLines;
                 System.IO.File.Create(tempFilePath).Close();
-                currentElementLines = System.IO.File.ReadAllLines(repoPath + "/" + currentFile);
+                currentElementLines = System.IO.File.ReadAllLines(repositoryInfo.RepositoryPath + "/" + currentFile);
                 currentElementLines[0] = "﻿\ufeff" + currentElementLines[0];
                 System.IO.File.WriteAllLines(tempFilePath, currentElementLines);
                 gitManager.RestoreFileToMatchIndex(currentFile);
                 gitManager.UnstageFile(currentFile);
                 gitManager.ApplyPatchInReverse(patchPath);
                 gitManager.StageFile(currentFile);
-                System.IO.File.WriteAllLines(repoPath + "/" + currentFile, System.IO.File.ReadAllLines(tempFilePath));
+                System.IO.File.WriteAllLines(repositoryInfo.RepositoryPath + "/" + currentFile, System.IO.File.ReadAllLines(tempFilePath));
                 System.IO.File.Delete(tempFilePath);
             }
 
@@ -484,112 +439,10 @@ namespace GitApp
             staged.Index = stagedIndex;
             staged.Current = stagedCurrent;
             diff = unstagedAvailability
-                ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, repoPath, currentFile != "" && unstaged.GetText().Count >= 1))
-                : new Diff(gitManager.GetStagedDiff(currentStaged, repoPath));
+                ? new Diff(gitManager.GetUnstagedDiff(currentUnstaged, currentFile != "" && unstaged.GetText().Count >= 1))
+                : new Diff(gitManager.GetStagedDiff(currentStaged));
             diff.Current = Math.Min(diffCurrent, diff.GetText().Count - 1);
             diff.Index = diffIndex;
-        }
-
-        private List<string> SelectSide(List<string> leftSide, List<string> rightSide, KeyInteractor<IElement> keyInteractor)
-        {
-            IsRightSideInUse = keyInteractor.KeyInfo.Equals(ConsoleKey.Spacebar) ? !IsRightSideInUse : IsRightSideInUse;
-            return IsRightSideInUse ? rightSide : leftSide;
-        }
-
-        private List<string> SelectScreen(List<string> leftSide, List<string> rightSide, KeyInteractor<IElement> keyInteractor)
-        {
-            var height = consoleWrapper.WindowHeight;
-            var width = consoleWrapper.WindowWidth;
-            if (height < 15 && width < 50)
-            {
-                return SelectSide(leftSide, rightSide, keyInteractor);
-            }
-
-            return MergeSides(leftSide, rightSide);
-        }
-
-        private void UpdateWriter(List<string> toWrite, bool isWindowToSmall, List<string>? overlayPage = null)
-        {
-            if (isWindowToSmall)
-            {
-                writer = new StringWriter();
-                consoleWrapper.Clear();
-                consoleWrapper.Write("Increase window size!");
-            }
-            else
-            {
-                var paddedPage = new PageUtilities(toWrite.ToArray()).PadElement(consoleWrapper.WindowWidth);
-                if (WasWindowResizedSmaller)
-                {
-                    WasWindowResizedSmaller = false;
-                    consoleWrapper.Clear();
-                }
-
-                consoleWrapper.SetCursorPosition(0, 0);
-                Write(paddedPage);
-
-                if (overlayPage != null)
-                {
-                    var width = consoleWrapper.WindowWidth;
-                    var height = consoleWrapper.WindowHeight;
-                    var left = (int)(0.125 * width);
-                    var top = (int)(0.125 * height);
-                    WriteOverlay(overlayPage, ref left, ref top);
-                }
-            }
-        }
-
-        private void WriteOverlay(List<string> overlayPage, ref int left, ref int top)
-        {
-            var width = consoleWrapper.WindowWidth;
-            var height = consoleWrapper.WindowHeight;
-
-            if (height < 15 && width < 60)
-            {
-                left = 0;
-                top = 0;
-            }
-
-            foreach (var line in overlayPage)
-            {
-                Console.SetCursorPosition(left, top);
-                consoleWrapper.Write(line);
-                top++;
-            }
-        }
-
-        private void Write(List<string> paddedPage)
-        {
-            writer = new StringWriter();
-            paddedPage.ForEach(element => writer.WriteLine(element));
-            var result = writer.ToString();
-            consoleWrapper.Write(result == null ? "" : result[..^1].TrimStart());
-        }
-
-        private void UpdateLeftSideVariables(
-            ref List<IElement> elements,
-            ref List<string> leftSide,
-            bool isWindowToSmall,
-            IInteractor<IElement> interactor,
-            int width)
-        {
-            var windowWidth = consoleWrapper.WindowWidth;
-            var windowHeight = consoleWrapper.WindowHeight;
-            if (isWindowToSmall)
-            {
-                return;
-            }
-
-            if (windowWidth < 50 && windowHeight < 15)
-            {
-                elements = interactor.GetPageDataAndSize(width * (windowHeight - 4), width - 2).list;
-                leftSide = interactor.GetHighlightedSide(windowHeight - 4, width, width * (windowHeight - 4), true);
-            }
-            else
-            {
-                elements = interactor.GetPageDataAndSize(width * (windowHeight - 4), width, true).list;
-                leftSide = interactor.GetHighlightedSide(windowHeight - 4, width, width * (windowHeight - 4), true);
-            }
         }
 
         private void DisplayCommitDetailsMenu()
@@ -638,7 +491,7 @@ namespace GitApp
             var windowHeight = consoleWrapper.WindowHeight;
             var windowSize = windowHeight * windowWidth;
             var modifiedFiles = new ModifiedFiles(gitManager.GetCommitModifiedFileNames(currentCommit.Id));
-            var diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, gitManager.GetRepoPath(), modifiedFiles[0].GetElement()));
+            var diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, modifiedFiles[0].GetElement()));
             var menu = new DiffMenu(consoleWrapper, modifiedFiles, diff, previousCommit, currentCommit, gitManager, IsRightSideInUse);
             var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
@@ -708,250 +561,6 @@ namespace GitApp
             while (true);
         }
 
-        private int SetTextWidth(bool forLeftSide)
-        {
-            var windowWidth = consoleWrapper.WindowWidth;
-            var result = forLeftSide ? (int)(0.6 * windowWidth) - 2 : windowWidth - (int)(0.6 * windowWidth) - 2;
-            var windowHeight = consoleWrapper.WindowHeight;
-            return windowWidth < 50 && windowHeight < 15
-                ? windowWidth - 2
-                : result;
-        }
-
-        private List<string> UpdateDiffPage(
-            List<string> leftSide,
-            List<string> diff,
-            int rowSize,
-            KeyInteractor<IElement> keyInteractor,
-            bool shouldColorBoxLines = false)
-        {
-            var windowHeight = consoleWrapper.WindowHeight;
-            var windowWidth = consoleWrapper.WindowWidth;
-            List<string> rightSide;
-            if (windowHeight < 15 && windowWidth < 50)
-            {
-                rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight - 2, false, shouldColorBoxLines);
-                leftSide = new BoxDrawer(leftSide, "Files").DrawBox(windowWidth, windowHeight - 2);
-            }
-            else
-            {
-                rightSide = new BoxDrawer(diff, "Diff").DrawBox(rowSize, windowHeight - 2, false, shouldColorBoxLines);
-                leftSide = new BoxDrawer(leftSide, "Files").DrawBox((int)(0.6 * windowWidth), windowHeight - 2);
-            }
-
-            return SelectScreen(leftSide, rightSide, keyInteractor);
-        }
-
-        private List<string> UpdateHighlightedHunksPage(
-            List<string> diff,
-            ModifiedFiles unstaged,
-            ModifiedFiles staged,
-            KeyInteractor<IElement> keyInteractor,
-            bool unstagedAvailability)
-        {
-            var windowHeight = consoleWrapper.WindowHeight;
-            var windowWidth = consoleWrapper.WindowWidth;
-            var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
-            var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
-            List<string> rightSide;
-            List<string> leftSide;
-            var branch = gitManager.GetCurrentGitBranch();
-            var noOfCommitsToPull = gitManager.GetNumberOfCommitsToPull(branch);
-            var noOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branch);
-            var shouldDisplayNoOfCommits = noOfCommitsToPull != "" && noOfCommitsToPush != "";
-            if (windowHeight < 15 && windowWidth < 50)
-            {
-                rightSide = new BoxDrawer(diff, "Diff").DrawBox(windowWidth, windowHeight - 2, false, true);
-
-                var unstagedToString = unstaged.GetHighlightedSide(unstagedHeight, windowWidth - 2, (unstagedHeight - 3) * (windowWidth - 2));
-                var stagedToString = staged.GetHighlightedSide(
-                        windowHeight - ((windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2) - 2,
-                        (int)(0.6 * windowWidth) - 2,
-                        ((windowHeight - 2) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
-                if (unstagedAvailability)
-                {
-                    stagedToString[0] = stagedToString[0].Replace("\u001b[7m", "");
-                    stagedToString[^1] = stagedToString[^1].Replace("\u001b[7m", "");
-                }
-                else
-                {
-                    unstagedToString[0] = unstagedToString[0].Replace("\u001b[7m", "");
-                    unstagedToString[^1] = unstagedToString[^1].Replace("\u001b[7m", "");
-                }
-
-                leftSide = new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
-                            (int)(0.6 * windowWidth),
-                            unstagedHeight + 2,
-                            false,
-                            false,
-                            shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}");
-                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(windowWidth, windowHeight - unstagedHeight - 4, true);
-                leftSide.AddRange(stagedToString);
-            }
-            else
-            {
-                var textwidth = new TextWidthSetter(consoleWrapper);
-                var leftSideWidth = textwidth.SetTextWidth(true);
-                rightSide = new BoxDrawer(diff, "Diff").DrawBox(textwidth.SetTextWidth(false) + 2, windowHeight - 2, false, true);
-
-                var unstagedToString = unstaged.GetHighlightedSide(unstagedHeight, leftSideWidth, unstagedAvailableSpace);
-                var stagedToString = staged.GetHighlightedSide(
-                        windowHeight - ((windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2) - 2,
-                        (int)(0.6 * windowWidth) - 2,
-                        ((windowHeight - 2) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
-                if (unstagedAvailability)
-                {
-                    stagedToString[0] = stagedToString[0].Replace("\u001b[7m", "");
-                    stagedToString[^1] = stagedToString[^1].Replace("\u001b[7m", "");
-                }
-                else
-                {
-                    unstagedToString[0] = unstagedToString[0].Replace("\u001b[7m", "");
-                    unstagedToString[^1] = unstagedToString[^1].Replace("\u001b[7m", "");
-                }
-
-                leftSide = new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
-                            (int)(0.6 * windowWidth),
-                            unstagedHeight + 2,
-                            false,
-                            false,
-                            shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}");
-                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), windowHeight - unstagedHeight - 4, true);
-                leftSide.AddRange(stagedToString);
-            }
-
-            return SelectScreen(leftSide, rightSide, keyInteractor);
-        }
-
-        private List<string> UpdateExtendedPage(List<string> leftSideCommits, KeyInteractor<IElement> keyInteractor)
-        {
-            var width = consoleWrapper.WindowWidth;
-            var height = consoleWrapper.WindowHeight;
-            var rightSide = consoleWrapper.WindowHeight < 15 && consoleWrapper.WindowWidth < 50
-                ? commits.FormateUnhighlightedSide(height - 2, width, gitManager)
-                : commits.FormateUnhighlightedSide(height - 2, width - (int)(0.6 * width), gitManager);
-
-            return SelectScreen(
-                new BoxDrawer(leftSideCommits, "Commits").DrawBox(height < 15 && width < 50 ? width : (int)(0.6 * width), height - 2),
-                rightSide,
-                keyInteractor);
-        }
-
-        private List<string> UpdatePage(ref int commitOcupancyRate, ref List<IElement> page)
-        {
-            var keyInteractor = new KeyInteractor<IElement>(commits)
-            {
-                KeyInfo = key
-            };
-
-            var windowWidth = consoleWrapper.WindowWidth;
-            var windowHeight = consoleWrapper.WindowHeight;
-            var windowSize = windowHeight * windowWidth;
-            var commitsAvailableSpace = windowSize - 4 * windowWidth;
-            var availableSpace = commitsAvailableSpace - commitsAvailableSpace / windowWidth * 2;
-            var isPageLargerThanWindow = commitOcupancyRate > availableSpace;
-            var commitsToString = new List<string>();
-            page.ForEach(line =>
-            {
-                var commitDetails = line.GetElement().Split("\n");
-                commitsToString.Add(commitDetails[0] + " " + commitDetails[1] + " " + commitDetails[2] + " " + commitDetails[3]);
-            });
-            (commits.Index, commits.Current) = page.Count == 0
-                ? (0, 0)
-                : keyInteractor.KeySwitch(commitsToString, page[^1].Id, page[0].Id, isPageLargerThanWindow, windowWidth, commits[commits.Current].GetElement().Length - 40);
-            (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, windowWidth);
-            var toWrite = commits.GetHighlightedSide(windowHeight - 4, windowWidth - 2, availableSpace);
-            return new BoxDrawer(toWrite, "Commits").DrawBox(windowWidth, windowHeight - 2, true);
-        }
-
-        private List<string> UpdateStatusPage(
-            ref List<IElement> unstagedElements,
-            ref List<IElement> stagedElements,
-            ref List<string> unstagedPageList,
-            ref List<string> stagedPageList,
-            ref ModifiedFiles unstaged,
-            ref ModifiedFiles staged,
-            bool isUnstagedInUse)
-        {
-            var windowHeight = consoleWrapper.WindowHeight;
-            var windowWidth = consoleWrapper.WindowWidth;
-            var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
-            var stagedHeight = windowHeight - unstagedHeight;
-            var unstagedToString = new List<string>();
-            var stagedToString = new List<string>();
-            var tempList = new List<string>();
-            var branch = gitManager.GetCurrentGitBranch();
-            var noOfCommitsToPull = gitManager.GetNumberOfCommitsToPull(branch);
-            var noOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branch);
-            var shouldDisplayNoOfCommits = noOfCommitsToPush != "" && noOfCommitsToPull != "";
-            Diff diff;
-
-            if (isUnstagedInUse)
-            {
-                var keyInteractor = new KeyInteractor<IElement>(unstaged);
-                keyInteractor.KeyInfo = key;
-                (unstaged.Index, unstaged.Current) = keyInteractor
-                    .KeySwitch(unstagedPageList, unstagedElements[^1].Id, unstagedElements[0].Id, false, (int)(0.6 * windowWidth) - 2, unstaged[unstaged.Current].GetElement().Length);
-                stagedPageList = staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedHeight * (int)(0.6 * windowWidth) - 2);
-                stagedToString.AddRange(stagedPageList);
-                stagedToString[0] = stagedToString[0].Replace("\x1b[7m", "");
-                stagedToString[^1] = stagedToString[^1].Replace("\x1b[7m", "");
-                var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
-                unstagedElements = unstaged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
-                unstagedPageList = unstaged[unstaged.Current].GetElement() == ""
-                       ? new List<string>()
-                       : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
-                var currentUnstaged = unstaged[unstaged.Current].GetElement();
-                diff = new Diff(gitManager.GetUnstagedDiff(currentUnstaged, gitManager.GetRepoPath(), currentUnstaged != "" && unstaged.GetText().Count >= 1));
-                tempList.AddRange(new BoxDrawer(unstagedPageList, "Unstaged").DrawBox(
-                            (int)(0.6 * windowWidth),
-                            unstagedHeight + 2,
-                            false,
-                            false,
-                            shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
-                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), (windowHeight - 2) / 2, true);
-                tempList.AddRange(stagedToString);
-            }
-            else
-            {
-                var keyInteractor = new KeyInteractor<IElement>(staged);
-                keyInteractor.KeyInfo = key;
-                (staged.Index, staged.Current) = keyInteractor
-                    .KeySwitch(stagedPageList, stagedElements[^1].Id, stagedElements[0].Id, false, (int)(0.6 * windowWidth) - 2, staged[staged.Current].GetElement().Length);
-                unstagedPageList = unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedHeight * (int)(0.6 * windowWidth) - 2);
-                unstagedToString.AddRange(unstagedPageList);
-                unstagedToString[0] = unstagedToString[0].Replace("\x1b[7m", "");
-                unstagedToString[^1] = unstagedToString[^1].Replace("\x1b[7m", "");
-                var stagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * stagedHeight;
-                stagedElements = staged.GetPageDataAndSize(stagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
-                stagedPageList = staged[staged.Current].GetElement() == ""
-                       ? new List<string>()
-                       : staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedAvailableSpace);
-                var currentStaged = staged[staged.Current].GetElement();
-                diff = new Diff(gitManager.GetStagedDiff(currentStaged, gitManager.GetRepoPath()));
-                tempList.AddRange(new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
-                            (int)(0.6 * windowWidth),
-                            unstagedHeight + 2,
-                            false,
-                            false,
-                            shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
-                stagedToString = new BoxDrawer(stagedPageList, "Staged").DrawBox((int)(0.6 * windowWidth), (windowHeight - 2) / 2, true);
-                tempList.AddRange(stagedToString);
-            }
-
-            var diffAvailableSpace = (windowWidth - (int)(0.6 * windowWidth) - 2) * (windowHeight - 4);
-            var rightSide = new BoxDrawer(
-                    diff[0].GetElement() == ""
-                        ? new List<string>()
-                        : diff.GetHighlightedSide(windowHeight - 4, windowWidth - (int)(0.6 * windowWidth) - 2, diffAvailableSpace, false), "Diff")
-                            .DrawBox(windowWidth - (int)(0.6 * windowWidth), windowHeight - 2);
-            var result = MergeSides(tempList, rightSide);
-            var additionalMenuBar = SetMenuBarForStatus(isUnstagedInUse);
-            result.Insert(0, MenuBar);
-            result.Add(additionalMenuBar);
-            return result;
-        }
-
         private void DisplayBranchesMenu(Menu background, bool isWindowToSmall)
         {
             var branchesNames = gitManager.GetBranchesNames();
@@ -1004,45 +613,6 @@ namespace GitApp
                     .UpdateDisplay(WasWindowResizedSmaller, menu.LastPageDisplayed);
             }
             while (true);
-        }
-
-        private void UpdateBranchMenu(
-            ref ModifiedFiles branches,
-            ref List<string> leftSide,
-            KeyInteractor<IElement> keyInteractor,
-            List<string> mainPage,
-            string branchesNames)
-        {
-            var height = consoleWrapper.WindowHeight;
-            var width = consoleWrapper.WindowWidth;
-            var boxHeight = (int)((height - 2) * 0.75);
-            var boxWidth = (int)((width - 2) * 0.75);
-            List<string> leftSideTemp;
-            List<string> box;
-            var commitList = new List<Commit>();
-            var rightSide = new List<string>();
-            foreach (var branch in branchesNames.Split("\n"))
-            {
-                commitList.Add(new Commit(gitManager.GetLastCommitMadeInBranch(branch.StartsWith("*") ? branch[2..] : branch)));
-                var commit = commitList[^1].GetElement().Split("\n");
-                rightSide.Add(new PageUtilities(commit[0] + " " + commit[3]).TruncateText((int)(0.6 * (height < 15 && width < 60 ? width - 1 : boxWidth))) + "\x1b[0m");
-            }
-
-            if (height < 15 && width < 60)
-            {
-                (branches.Index, branches.Current) = keyInteractor.KeySwitch(leftSide, leftSide[^1], leftSide[0], false, (int)(0.4 * width - 1), branches[branches.Current].GetElement().Length);
-                leftSide = branches.GetHighlightedSide(height - 2, (int)(0.4 * width - 1), (height - 2) * (int)(0.4 * width - 2));
-                leftSideTemp = new PageUtilities(leftSide.ToArray()).PadElement((int)(0.4 * width - 1));
-                box = new BoxDrawer(MergeSides(leftSideTemp, rightSide, true), "Branches").DrawBox(width, height, false, true);
-                UpdateWriter(box, height < 3 && width < 50);
-                return;
-            }
-
-            (branches.Index, branches.Current) = keyInteractor.KeySwitch(leftSide, leftSide[^1], leftSide[0], false, (int)(0.4 * boxWidth - 1), branches[branches.Current].GetElement().Length);
-            leftSide = branches.GetHighlightedSide(boxHeight - 2, (int)(0.4 * boxWidth - 1), (boxHeight - 2) * (int)(0.4 * boxWidth - 1));
-            leftSideTemp = new PageUtilities(leftSide.ToArray()).PadElement((int)(0.4 * boxWidth - 1));
-            box = new BoxDrawer(MergeSides(leftSideTemp, rightSide, true), "Branches").DrawBox(boxWidth, boxHeight, false, true);
-            UpdateWriter(mainPage, height < 3 && width < 50, box);
         }
 
         private void DisplayCommitPage(Menu backgroundMenu, ModifiedFiles staged)
@@ -1108,31 +678,6 @@ namespace GitApp
                 windowSizeTemp = windowSize;
             }
             while (true);
-        }
-
-        private void UpdateCommitPage(ref string commitMessage, List<string> mainPage, ref ConsoleKeyInfo keyInfo)
-        {
-            const string commitMenu = "\u001b[37m'Esc' Return \u001b[38[←] Commit";
-            var height = consoleWrapper.WindowHeight;
-            var width = consoleWrapper.WindowWidth;
-            if (height < 15 && width < 60)
-            {
-                var box = new BoxDrawer(new List<string>(), "Commit").DrawBox(width, height, false, true, "", commitMenu);
-                commitMessage = commitMessage[..Math.Min((box[0].Length - 13) * (box.Count - 2), commitMessage.Length)];
-                UpdateWriter(box, consoleWrapper.WindowHeight < 3, box);
-                (commitMessage, keyInfo) = new TextReader(1, 1, box[0].Length - 13, box.Count - 2, consoleWrapper).GetText(ref commitMessage, keyInfo);
-            }
-            else
-            {
-                var left = (int)(0.125 * width) + 1;
-                var top = (int)(0.125 * height) + 1;
-                var boxHeight = (int)(height * 0.75 - 2);
-                var boxWidth = (int)(width * 0.75 - 2);
-                var box = new BoxDrawer(new List<string>(), "Commit").DrawBox(boxWidth, boxHeight, false, true, "", commitMenu);
-                commitMessage = commitMessage[..Math.Min((box[0].Length - 13) * (box.Count - 3), commitMessage.Length)];
-                UpdateWriter(mainPage, consoleWrapper.WindowHeight < 3, box);
-                (commitMessage, keyInfo) = new TextReader(left, top, box[0].Length - 13, box.Count - 2, consoleWrapper).GetText(ref commitMessage, keyInfo);
-            }
         }
     }
 }

@@ -15,9 +15,9 @@ namespace GitApp
             return GetCommandOutput(command);
         }
 
-        public void ApplyCommand(GitCommand command)
+        public void ApplyCommand(GitCommand command, string repositoryPath)
         {
-            AddData(command);
+            AddData(command, repositoryPath);
         }
 
         private static string GetCommandOutput(GitCommand command)
@@ -45,7 +45,7 @@ namespace GitApp
             return result.TrimEnd();
         }
 
-        private static void AddData(GitCommand command)
+        private static void AddData(GitCommand command, string repositoryPath)
         {
             var process = new Process
             {
@@ -53,7 +53,7 @@ namespace GitApp
                 {
                     FileName = command.FileName,
                     Arguments = command.Argument,
-                    WorkingDirectory = GetCommandOutput(new GitCommand("git", "rev-parse --show-toplevel")),
+                    WorkingDirectory = repositoryPath,
                     RedirectStandardInput = false,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,

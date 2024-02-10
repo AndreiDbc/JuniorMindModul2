@@ -9,12 +9,12 @@ namespace GitApp
 {
     public class RepositoryInfo
     {
-        public RepositoryInfo(GitManager gitManager)
+        public RepositoryInfo(GitManager gitManager, string repositoryPath)
         {
             var branchName = gitManager.GetCurrentGitBranch();
             NoOfCommitsToPull = gitManager.GetNumberOfCommitsToPull(branchName);
             NoOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branchName);
-            RepositoryPath = gitManager.GetRepoPath();
+            RepositoryPath = repositoryPath;
         }
 
         public string NoOfCommitsToPull { get; set; }

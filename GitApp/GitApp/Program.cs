@@ -12,13 +12,11 @@ namespace GitApp
         {
             new ConsoleWrapper().SetOutputEncodingToUTF8();
             var processRunner = new GitProcessRunner();
-            var manager = new GitManager("git", processRunner);
+            var repositoryPath = processRunner.RunCommand(new GitCommand("git", "rev-parse --show-toplevel"));
+            var manager = new GitManager("git", processRunner, repositoryPath);
             var commits = new FullCommits(manager.GetLog());
-            TextWriter writer = new StringWriter();
-            var display = new DisplayText(commits, writer, manager, new ConsoleWrapper(), new RepositoryInfo(manager));
+            var display = new DisplayText(commits, manager, new ConsoleWrapper(), new RepositoryInfo(manager, repositoryPath));
             display.Display();
-            writer.Flush();
-            writer.Close();
         }
     }
 }
