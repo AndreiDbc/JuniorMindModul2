@@ -22,6 +22,11 @@ namespace GitApp
             Console.OutputEncoding = Encoding.UTF8;
         }
 
+        public void Flush()
+        {
+            Console.Out.Flush();
+        }
+
         public ConsoleKeyInfo ReadKey(bool intercept = false)
         {
             return Console.ReadKey(intercept);

@@ -18,6 +18,8 @@ namespace GitApp
 
         public void SetOutputEncodingToUTF8();
 
+        public void Flush();
+
         public void Clear();
 
         public void WriteLine(string text);

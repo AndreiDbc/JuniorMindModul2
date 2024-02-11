@@ -41,7 +41,7 @@ namespace GitApp
 
                 consoleWrapper.SetCursorPosition(0, 0);
                 Write(paddedPage);
-
+                consoleWrapper.Flush();
                 if (overlayMenu != null)
                 {
                     var width = consoleWrapper.WindowWidth;
@@ -49,6 +49,7 @@ namespace GitApp
                     var left = (int)(0.125 * width);
                     var top = (int)(0.125 * height);
                     WriteOverlay(overlayMenu, ref left, ref top);
+                    consoleWrapper.Flush();
                 }
             }
 
