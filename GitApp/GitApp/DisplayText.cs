@@ -498,6 +498,7 @@ namespace GitApp
                 menu.UpdateMenu(isWindowToSmall, key);
                 if (key.Equals(ConsoleKey.RightArrow))
                 {
+                    diff = new Diff(gitManager.GetDiffBetweenConsecutiveCommits(previousCommit.Id, currentCommit.Id, modifiedFiles[modifiedFiles.Current].GetElement()));
                     DisplayHighlightedDiffMenu(diff, modifiedFiles);
                 }
                 else if (key.Equals(ConsoleKey.B))
