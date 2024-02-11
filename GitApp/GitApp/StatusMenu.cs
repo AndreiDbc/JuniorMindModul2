@@ -68,7 +68,6 @@ namespace GitApp
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
             UnstagedAvailability = GetUnstagedAvailability(ref key, windowHeight - unstagedHeight, unstagedHeight);
             var exitCondition = !key.Equals(ConsoleKey.C) ^ !key.Equals(ConsoleKey.B);
-            exitCondition = exitCondition && !WasInteractorModified && !WasStagingKeyPressed;
             if (isWindowToSmall)
             {
                 return;
@@ -178,14 +177,12 @@ namespace GitApp
             var stagedContainsElements = Staged[0].GetElement() != "";
             (var conditionToUseUnstaged, var conditionToUseStaged) = GetConditionsToUseInteractor(key);
             KeyInteractor<IElement> keyInteractor;
-            var tempCurrent = 0;
 
             if (conditionToUseUnstaged && !isStagedInUse && stagedContainsElements)
             {
                 (Staged.Index, Staged.Current) = SetModifiedFileIndeexes(Staged, Unstaged, stagedHeight, key);
                 isUnstagedInUse = false;
                 isStagedInUse = true;
-                WasInteractorModified = true;
                 return false;
             }
             else if (conditionToUseStaged && !isUnstagedInUse && unstagedContainsElements)
@@ -193,41 +190,34 @@ namespace GitApp
                 (Unstaged.Index, Unstaged.Current) = SetModifiedFileIndeexes(Unstaged, Staged, unstagedHeight, key);
                 isUnstagedInUse = true;
                 isStagedInUse = false;
-                WasInteractorModified = true;
                 return true;
             }
             else if (UnstagedAvailability && unstagedContainsElements)
             {
-                tempCurrent = Unstaged.Current;
                 keyInteractor = new KeyInteractor<IElement>(Unstaged);
                 keyInteractor.KeyInfo = key;
                 (Unstaged.Index, Unstaged.Current) = keyInteractor
                     .KeySwitch(unstagedPageList, unstagedElements[^1].Id, unstagedElements[0].Id, false, textWidthSetter.SetTextWidth(true), Unstaged[Unstaged.Current].GetElement().Length);
-                WasInteractorModified = tempCurrent != Unstaged.Current || keyInteractor.KeyInfo == ConsoleKey.NoName;
                 return true;
             }
             else if (!UnstagedAvailability && stagedContainsElements)
             {
-                tempCurrent = Staged.Current;
                 keyInteractor = new KeyInteractor<IElement>(Staged);
                 keyInteractor.KeyInfo = key;
                 (Staged.Index, Staged.Current) = keyInteractor
                     .KeySwitch(stagedPageList, stagedElements[^1].Id, stagedElements[0].Id, false, textWidthSetter.SetTextWidth(true), Staged[Staged.Current].GetElement().Length);
-                WasInteractorModified = tempCurrent != Staged.Current || keyInteractor.KeyInfo == ConsoleKey.NoName;
                 return false;
             }
             else if (!stagedContainsElements)
             {
                 isStagedInUse = false;
                 isUnstagedInUse = true;
-                WasInteractorModified = false;
                 return true;
             }
             else if (!unstagedContainsElements)
             {
                 isStagedInUse = true;
                 isUnstagedInUse = false;
-                WasInteractorModified = false;
                 return false;
             }
 

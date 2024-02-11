@@ -18,8 +18,6 @@ namespace GitApp
 
         public string LastPageDisplayed { get; protected set; }
 
-        public bool WasInteractorModified { get; protected set; }
-
         public virtual void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
         }

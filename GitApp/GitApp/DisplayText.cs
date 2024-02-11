@@ -98,10 +98,6 @@ namespace GitApp
                 {
                     DisplayBranchesMenu(menu, isWindowToSmall);
                 }
-                else if (menu.WasInteractorModified)
-                {
-                    continue;
-                }
 
                 if (menuKeys.Contains(key))
                 {
@@ -140,6 +136,15 @@ namespace GitApp
                 {
                     break;
                 }
+                else if (key.Equals(ConsoleKey.C))
+                {
+                    DisplayCommitPage(menu, staged);
+                    menu.WasStagingKeyPressed = key.Equals(ConsoleKey.Enter);
+                }
+                else if (key.Equals(ConsoleKey.B))
+                {
+                    DisplayBranchesMenu(menu, isWindowToSmall);
+                }
 
                 Task.Run(() =>
                 {
@@ -157,15 +162,6 @@ namespace GitApp
                     if (menu.WasStagingKeyPressed)
                     {
                         ApplyStageOrUnstageOption(ref menu, ref unstaged, ref staged, unstagedAvailability);
-                    }
-                    else if (key.Equals(ConsoleKey.C))
-                    {
-                        DisplayCommitPage(menu, staged);
-                        menu.WasStagingKeyPressed = key.Equals(ConsoleKey.Enter);
-                    }
-                    else if (key.Equals(ConsoleKey.B))
-                    {
-                        DisplayBranchesMenu(menu, isWindowToSmall);
                     }
 
                     menu.UpdateMenu(isWindowToSmall, key);
@@ -269,10 +265,6 @@ namespace GitApp
                 else if (key.Equals(ConsoleKey.C))
                 {
                     DisplayCommitPage(menu, staged);
-                }
-                else if (!menu.WasInteractorModified && !stageSuccesful)
-                {
-                    continue;
                 }
 
                 windowWidth = consoleWrapper.WindowWidth;
@@ -477,10 +469,6 @@ namespace GitApp
                 {
                     DisplayBranchesMenu(menu, isWindowToSmall);
                 }
-                else if (!menu.WasInteractorModified)
-                {
-                    continue;
-                }
 
                 windowHeight = consoleWrapper.WindowHeight;
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
@@ -519,10 +507,6 @@ namespace GitApp
                 else if (key.Equals(ConsoleKey.Escape) || key.Equals(ConsoleKey.LeftArrow) || menuKeys.Contains(key))
                 {
                     break;
-                }
-                else if (!menu.WasInteractorModified)
-                {
-                    continue;
                 }
 
                 windowHeight = consoleWrapper.WindowHeight;
