@@ -107,7 +107,7 @@ namespace GitApp
             var unstagedToString = new List<string>();
             var stagedToString = new List<string>();
             var tempList = new List<string>();
-            var branch = gitManager.GetCurrentGitBranch();
+            var branch = repositoryInfo.CurrentBranchName;
             var noOfCommitsToPull = repositoryInfo.NoOfCommitsToPull;
             var noOfCommitsToPush = repositoryInfo.NoOfCommitsToPush;
             var shouldDisplayNoOfCommits = noOfCommitsToPush != "" && noOfCommitsToPull != "";

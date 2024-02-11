@@ -15,6 +15,7 @@ namespace GitApp
             NoOfCommitsToPull = gitManager.GetNumberOfCommitsToPull(branchName);
             NoOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(branchName);
             RepositoryPath = repositoryPath;
+            CurrentBranchName = gitManager.GetCurrentGitBranch();
         }
 
         public string NoOfCommitsToPull { get; set; }
@@ -22,5 +23,7 @@ namespace GitApp
         public string NoOfCommitsToPush { get; set; }
 
         public string RepositoryPath { get; }
+
+        public string CurrentBranchName { get; set; }
     }
 }
