@@ -607,6 +607,7 @@ namespace GitApp
                     branches = new ModifiedFiles(branchesNames);
                     menu.Branches = branches;
                     menu.BranchesNames = branchesNames;
+                    repositoryInfo.CurrentBranchName = gitManager.GetCurrentGitBranch();
                 }
 
                 WasWindowResizedSmaller = windowSizeTemp > windowSize;
@@ -651,6 +652,7 @@ namespace GitApp
                     commitMessage = commitMessage.Replace("\n", "");
                     gitManager.Commit(commitMessage);
                     commits = new FullCommits(gitManager.GetLog());
+                    repositoryInfo.NoOfCommitsToPush = gitManager.GetNumberOfCommitsToPush(repositoryInfo.CurrentBranchName);
                     break;
                 }
 
