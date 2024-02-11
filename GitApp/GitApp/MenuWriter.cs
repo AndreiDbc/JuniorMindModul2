@@ -29,8 +29,10 @@ namespace GitApp
             }
             else
             {
-                var paddedPage = new PageUtilities(toWrite.Split(Environment.NewLine)).PadElement(consoleWrapper.WindowWidth);
-                paddedPage.Insert(0, "\u001b[0mStatus [1] | Log [2]");
+                var windowWidth = consoleWrapper.WindowWidth;
+                var paddedPage = new PageUtilities(toWrite.Split(Environment.NewLine)).PadElement(windowWidth);
+                var menuBar = new PageUtilities(new[] { "\u001b[0mStatus [1] | Log [2]" }).PadElement(windowWidth)[0];
+                paddedPage.Insert(0, menuBar);
                 if (wasWindowResizedSmaller)
                 {
                     result = false;
