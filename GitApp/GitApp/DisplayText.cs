@@ -135,43 +135,49 @@ namespace GitApp
             do
             {
                 key = consoleWrapper.ReadKey(true).Key;
-                unstagedAvailability = menu.UnstagedAvailability;
-                if (key.Equals(ConsoleKey.RightArrow))
-                {
-                    unstaged = menu.Unstaged;
-                    staged = menu.Staged;
-                    DisplayHighlightedHunksPage(ref unstaged, ref staged, unstagedAvailability);
-                    menu.Unstaged = unstaged;
-                    menu.Staged = staged;
-                }
 
-                menu.WasStagingKeyPressed = keys.Any(necessaryKey => necessaryKey.Equals(key));
-                if (menu.WasStagingKeyPressed)
-                {
-                    ApplyStageOrUnstageOption(ref menu, ref unstaged, ref staged, unstagedAvailability);
-                }
-                else if (key.Equals(ConsoleKey.C))
-                {
-                    DisplayCommitPage(menu, staged);
-                    menu.WasStagingKeyPressed = key.Equals(ConsoleKey.Enter);
-                }
-                else if (key.Equals(ConsoleKey.B))
-                {
-                    DisplayBranchesMenu(menu, isWindowToSmall);
-                }
-                else if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
+                if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
                     break;
                 }
 
-                menu.UpdateMenu(isWindowToSmall, key);
+                Task.Run(() =>
+                {
+                    unstagedAvailability = menu.UnstagedAvailability;
+                    if (key.Equals(ConsoleKey.RightArrow))
+                    {
+                        unstaged = menu.Unstaged;
+                        staged = menu.Staged;
+                        DisplayHighlightedHunksPage(ref unstaged, ref staged, unstagedAvailability);
+                        menu.Unstaged = unstaged;
+                        menu.Staged = staged;
+                    }
 
-                windowWidth = consoleWrapper.WindowWidth;
-                windowSize = consoleWrapper.WindowHeight * windowWidth;
-                WasWindowResizedSmaller = windowSize < windowSizeTemp;
-                windowSizeTemp = windowSize;
-                isWindowToSmall = windowHeight < 8 && windowWidth < 35;
-                WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+                    menu.WasStagingKeyPressed = keys.Any(necessaryKey => necessaryKey.Equals(key));
+                    if (menu.WasStagingKeyPressed)
+                    {
+                        ApplyStageOrUnstageOption(ref menu, ref unstaged, ref staged, unstagedAvailability);
+                    }
+                    else if (key.Equals(ConsoleKey.C))
+                    {
+                        DisplayCommitPage(menu, staged);
+                        menu.WasStagingKeyPressed = key.Equals(ConsoleKey.Enter);
+                    }
+                    else if (key.Equals(ConsoleKey.B))
+                    {
+                        DisplayBranchesMenu(menu, isWindowToSmall);
+                    }
+
+                    menu.UpdateMenu(isWindowToSmall, key);
+
+                    windowWidth = consoleWrapper.WindowWidth;
+                    windowSize = consoleWrapper.WindowHeight * windowWidth;
+                    WasWindowResizedSmaller = windowSize < windowSizeTemp;
+                    windowSizeTemp = windowSize;
+                    isWindowToSmall = windowHeight < 8 && windowWidth < 35;
+                    WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+                });
+                Task.WaitAll();
             }
             while (true);
         }
