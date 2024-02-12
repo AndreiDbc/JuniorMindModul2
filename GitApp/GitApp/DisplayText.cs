@@ -128,6 +128,7 @@ namespace GitApp
             WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
             var keys = new[] { ConsoleKey.A, ConsoleKey.Enter, ConsoleKey.S };
+
             do
             {
                 key = consoleWrapper.ReadKey(true).Key;
@@ -145,19 +146,18 @@ namespace GitApp
                 {
                     DisplayBranchesMenu(menu, isWindowToSmall);
                 }
+                else if (key.Equals(ConsoleKey.RightArrow))
+                {
+                    unstaged = menu.Unstaged;
+                    staged = menu.Staged;
+                    DisplayHighlightedHunksPage(ref unstaged, ref staged, unstagedAvailability);
+                    menu.Unstaged = unstaged;
+                    menu.Staged = staged;
+                }
 
                 Task.Run(() =>
                 {
                     unstagedAvailability = menu.UnstagedAvailability;
-                    if (key.Equals(ConsoleKey.RightArrow))
-                    {
-                        unstaged = menu.Unstaged;
-                        staged = menu.Staged;
-                        DisplayHighlightedHunksPage(ref unstaged, ref staged, unstagedAvailability);
-                        menu.Unstaged = unstaged;
-                        menu.Staged = staged;
-                    }
-
                     menu.WasStagingKeyPressed = keys.Any(necessaryKey => necessaryKey.Equals(key));
                     if (menu.WasStagingKeyPressed)
                     {
@@ -169,7 +169,6 @@ namespace GitApp
                     windowWidth = consoleWrapper.WindowWidth;
                     windowSize = consoleWrapper.WindowHeight * windowWidth;
                     WasWindowResizedSmaller = windowSize < windowSizeTemp;
-                    windowSizeTemp = windowSize;
                     isWindowToSmall = windowHeight < 8 && windowWidth < 35;
                     WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
                 });
