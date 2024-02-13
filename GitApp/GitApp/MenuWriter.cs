@@ -19,9 +19,8 @@ namespace GitApp
             this.consoleWrapper = consoleWrapper;
         }
 
-        public bool UpdateDisplay(bool wasWindowResizedSmaller, string? overlayMenu = null)
+        public void UpdateDisplay(bool wasWindowResizedSmaller, string? overlayMenu = null)
         {
-            var result = wasWindowResizedSmaller;
             if (isWindowToSmall)
             {
                 consoleWrapper.Clear();
@@ -35,7 +34,6 @@ namespace GitApp
                 paddedPage.Insert(0, menuBar);
                 if (wasWindowResizedSmaller)
                 {
-                    result = false;
                     consoleWrapper.Clear();
                 }
 
@@ -52,8 +50,6 @@ namespace GitApp
                     consoleWrapper.Flush();
                 }
             }
-
-            return result;
         }
 
         private void Write(List<string> paddedPage)
