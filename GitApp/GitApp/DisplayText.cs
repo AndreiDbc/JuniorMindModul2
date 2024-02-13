@@ -132,7 +132,11 @@ namespace GitApp
 
             do
             {
-                ReadKey(windowWidth, windowHeight);
+                var sourceCancelaionForReadKey = new CancellationTokenSource();
+                var readKey = Task.Run(() => ReadKeyAsync(windowWidth, windowHeight), sourceCancelaionForReadKey.Token);
+                readKey.Wait();
+                sourceCancelaionForReadKey.Cancel();
+                sourceCancelaionForReadKey.Dispose();
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
@@ -155,6 +159,8 @@ namespace GitApp
                     menu.Staged = staged;
                 }
 
+                windowWidth = consoleWrapper.WindowWidth;
+                windowHeight = consoleWrapper.WindowHeight;
                 var cancellationTokenSource = new CancellationTokenSource();
                 var updateMenu = Task.Run(
                     () =>
@@ -167,8 +173,6 @@ namespace GitApp
                     }
 
                     menu.UpdateMenu(isWindowToSmall, key);
-                    windowWidth = consoleWrapper.WindowWidth;
-                    windowSize = consoleWrapper.WindowHeight * windowWidth;
                     isWindowToSmall = windowHeight < 8 && windowWidth < 35;
                     new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
                 }, cancellationTokenSource.Token);
@@ -180,34 +184,24 @@ namespace GitApp
             while (true);
         }
 
-        private void ReadKey(int windowWidth, int windowHeight)
+        private async Task ReadKeyAsync(int windowWidth, int windowHeight)
         {
-            var cancellationTokenSource = new CancellationTokenSource();
-            var readKey = Task.Run(
-                () =>
+            while (true)
             {
-                while (true)
+                if (Console.KeyAvailable)
                 {
-                    if (Console.KeyAvailable)
-                    {
-                        key = consoleWrapper.ReadKey(true).Key;
-                        break;
-                    }
-                    else if (windowHeight != consoleWrapper.WindowHeight || windowWidth != consoleWrapper.WindowWidth)
-                    {
-                        key = ConsoleKey.NoName;
-                        WasWindowResizedSmaller = true;
-                        break;
-                    }
-
-                    Thread.Sleep(100);
+                    key = consoleWrapper.ReadKey(true).Key;
+                    break;
                 }
-            }, cancellationTokenSource.Token);
+                else if (windowHeight != consoleWrapper.WindowHeight || windowWidth != consoleWrapper.WindowWidth)
+                {
+                    key = ConsoleKey.NoName;
+                    WasWindowResizedSmaller = true;
+                    break;
+                }
 
-            readKey.Wait();
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource.Dispose();
-            readKey.Dispose();
+                await Task.Delay(100);
+            }
         }
 
         private void ApplyStageOrUnstageOption(ref StatusMenu menu, ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
