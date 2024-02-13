@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -78,7 +79,7 @@ namespace GitApp
             var isWindowToSmall = windowHeight < 5 && windowWidth < 35;
             var menu = new LogMenu(consoleWrapper, commits);
             menu.UpdateMenu(isWindowToSmall, ConsoleKey.NoName);
-            WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+            new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
 
             do
@@ -109,7 +110,7 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 isWindowToSmall = consoleWrapper.WindowHeight < 3;
-                WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+                new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }
@@ -125,13 +126,13 @@ namespace GitApp
             var unstagedAvailability = true;
             var menu = new StatusMenu(consoleWrapper, gitManager, unstaged, staged, repositoryInfo, unstagedAvailability, IsRightSideInUse);
             menu.UpdateMenu(isWindowToSmall, ConsoleKey.NoName);
-            WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+            new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
             var keys = new[] { ConsoleKey.A, ConsoleKey.Enter, ConsoleKey.S };
 
             do
             {
-                key = consoleWrapper.ReadKey(true).Key;
+                ReadKey(windowWidth, windowHeight);
 
                 if (key.Equals(ConsoleKey.Escape) || menuKeys.Contains(key))
                 {
@@ -140,7 +141,6 @@ namespace GitApp
                 else if (key.Equals(ConsoleKey.C))
                 {
                     DisplayCommitPage(menu, staged);
-                    menu.WasStagingKeyPressed = key.Equals(ConsoleKey.Enter);
                 }
                 else if (key.Equals(ConsoleKey.B))
                 {
@@ -155,7 +155,9 @@ namespace GitApp
                     menu.Staged = staged;
                 }
 
-                Task.Run(() =>
+                var cancellationTokenSource = new CancellationTokenSource();
+                var updateMenu = Task.Run(
+                    () =>
                 {
                     unstagedAvailability = menu.UnstagedAvailability;
                     menu.WasStagingKeyPressed = keys.Any(necessaryKey => necessaryKey.Equals(key));
@@ -165,16 +167,47 @@ namespace GitApp
                     }
 
                     menu.UpdateMenu(isWindowToSmall, key);
-
                     windowWidth = consoleWrapper.WindowWidth;
                     windowSize = consoleWrapper.WindowHeight * windowWidth;
-                    WasWindowResizedSmaller = windowSize < windowSizeTemp;
                     isWindowToSmall = windowHeight < 8 && windowWidth < 35;
-                    WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
-                });
-                Task.WaitAll();
+                    new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+                }, cancellationTokenSource.Token);
+                updateMenu.Wait();
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                updateMenu.Dispose();
             }
             while (true);
+        }
+
+        private void ReadKey(int windowWidth, int windowHeight)
+        {
+            var cancellationTokenSource = new CancellationTokenSource();
+            var readKey = Task.Run(
+                () =>
+            {
+                while (true)
+                {
+                    if (Console.KeyAvailable)
+                    {
+                        key = consoleWrapper.ReadKey(true).Key;
+                        break;
+                    }
+                    else if (windowHeight != consoleWrapper.WindowHeight || windowWidth != consoleWrapper.WindowWidth)
+                    {
+                        key = ConsoleKey.NoName;
+                        WasWindowResizedSmaller = true;
+                        break;
+                    }
+
+                    Thread.Sleep(100);
+                }
+            }, cancellationTokenSource.Token);
+
+            readKey.Wait();
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            readKey.Dispose();
         }
 
         private void ApplyStageOrUnstageOption(ref StatusMenu menu, ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
@@ -244,7 +277,7 @@ namespace GitApp
                 : gitManager.GetStagedDiff(staged[staged.Current].GetElement()));
             var menu = new HighlightedHunksMenu(consoleWrapper, gitManager, diff, unstaged, staged, unstagedAvailability, IsRightSideInUse);
             menu.UpdateMenu(isWindowToSmall, key);
-            WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+            new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             var windowSizeTemp = windowSize;
 
             do
@@ -271,7 +304,7 @@ namespace GitApp
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
                 isWindowToSmall = windowHeight < 8 && windowWidth < 35;
-                WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+                new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }
@@ -451,7 +484,7 @@ namespace GitApp
             var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
             menu.UpdateMenu(isWindowToSmall, key);
-            WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+            new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             do
             {
                 key = consoleWrapper.ReadKey(true).Key;
@@ -473,7 +506,7 @@ namespace GitApp
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+                new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }
@@ -489,7 +522,7 @@ namespace GitApp
             var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
             menu.UpdateMenu(isWindowToSmall, key);
-            WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+            new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
 
             do
             {
@@ -513,7 +546,7 @@ namespace GitApp
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+                new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }
@@ -527,7 +560,7 @@ namespace GitApp
             var isWindowToSmall = consoleWrapper.WindowHeight < 11 && consoleWrapper.WindowWidth < 20;
             var windowSizeTemp = windowSize;
             menu.UpdateMenu(isWindowToSmall, key);
-            WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+            new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
 
             do
             {
@@ -546,7 +579,7 @@ namespace GitApp
                 windowSize = windowHeight * consoleWrapper.WindowWidth;
                 WasWindowResizedSmaller = windowSize < windowSizeTemp;
                 windowSizeTemp = windowSize;
-                WasWindowResizedSmaller = new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
+                new MenuWriter(menu.LastPageDisplayed, isWindowToSmall, consoleWrapper).UpdateDisplay(WasWindowResizedSmaller);
             }
             while (true);
         }
@@ -567,7 +600,7 @@ namespace GitApp
             keyInteractor.KeyInfo = ConsoleKey.NoName;
             var menu = new BranchMenu(consoleWrapper, gitManager, branchesNames, branches);
             menu.UpdateMenu(isWindowToSmall, key);
-            WasWindowResizedSmaller = new MenuWriter(background.LastPageDisplayed, isWindowToSmall, consoleWrapper)
+            new MenuWriter(background.LastPageDisplayed, isWindowToSmall, consoleWrapper)
                 .UpdateDisplay(WasWindowResizedSmaller, menu.LastPageDisplayed);
 
             do
@@ -581,10 +614,12 @@ namespace GitApp
                 keyInteractor.KeyInfo = key;
                 if (keyInteractor.KeyInfo == ConsoleKey.Escape)
                 {
+                    key = ConsoleKey.NoName;
                     break;
                 }
                 else if (keyInteractor.KeyInfo == ConsoleKey.Enter)
                 {
+                    key = ConsoleKey.NoName;
                     var currentBranchName = branches[branches.Current].GetElement();
                     gitManager.ChangeBranch(currentBranchName.StartsWith("* ") ? currentBranchName[2..] : currentBranchName.Trim());
                     branchesNames = gitManager.GetBranchesNames();
@@ -600,7 +635,7 @@ namespace GitApp
                     background.UpdateMenu(isWindowToSmall, key);
                 }
 
-                WasWindowResizedSmaller = new MenuWriter(background.LastPageDisplayed, isWindowToSmall, consoleWrapper)
+                new MenuWriter(background.LastPageDisplayed, isWindowToSmall, consoleWrapper)
                     .UpdateDisplay(WasWindowResizedSmaller, menu.LastPageDisplayed);
             }
             while (true);
@@ -629,10 +664,12 @@ namespace GitApp
             {
                 if (keyInfo.Key == ConsoleKey.Escape)
                 {
+                    key = ConsoleKey.NoName;
                     break;
                 }
                 else if (keyInfo.Key == ConsoleKey.Enter)
                 {
+                    key = ConsoleKey.NoName;
                     commitMessage = commitMessage.Replace("\n", "");
                     gitManager.Commit(commitMessage);
                     commits = new FullCommits(gitManager.GetLog());
