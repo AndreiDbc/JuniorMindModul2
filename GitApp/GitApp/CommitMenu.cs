@@ -12,7 +12,7 @@ namespace GitApp
         {
         }
 
-        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
             const string commitMenu = "\u001b[37m'Esc' Return \u001b[38[←] Commit";
             var height = consoleWrapper.WindowHeight;
@@ -24,7 +24,7 @@ namespace GitApp
                 width = (int)(width * 0.75 - 2);
             }
 
-            LastPageDisplayed = string.Join(Environment.NewLine, new BoxDrawer(new List<string>(), "Commit").DrawBox(width, height, false, true, "", commitMenu));
+            return new BoxDrawer(new List<string>(), "Commit").DrawBox(width, height, false, true, "", commitMenu);
         }
     }
 }

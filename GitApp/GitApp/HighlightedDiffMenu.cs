@@ -31,11 +31,11 @@ namespace GitApp
             this.isRightSideInUse = isRightSideInUse;
         }
 
-        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
             if (isWindowToSmall)
             {
-                return;
+                return new List<string>();
             }
 
             var keyInteractor = new KeyInteractor<IElement>(diff);
@@ -53,8 +53,8 @@ namespace GitApp
             var leftSide = new BoxDrawer(
                 modifiedFiles.GetHighlightedSide(windowHeight - 4, filesWidth, (windowHeight - 4) * filesWidth, true),
                 "Files").DrawBox((int)(0.6 * windowWidth), windowHeight - 2);
-            leftSide.Add("\u001b[32m[Esc][←] Return\u001b[0m \u001b[36m[B] Branches");
-            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(leftSide, rightSideTemp, consoleWrapper).Select(ref isRightSideInUse, key));
+            leftSide.Add(new PageUtilities(new[] { "\u001b[32m[Esc][←] Return\u001b[0m \u001b[36m[B] Branches" }).PadElement(windowWidth)[0]);
+            return new ScreenSelector(leftSide, rightSideTemp, consoleWrapper).Select(ref isRightSideInUse, key);
         }
     }
 }

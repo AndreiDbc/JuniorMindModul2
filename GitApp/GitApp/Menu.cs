@@ -13,13 +13,11 @@ namespace GitApp
         public Menu(IConsoleWrapper consoleWrapper)
         {
             this.consoleWrapper = consoleWrapper;
-            LastPageDisplayed = "";
         }
 
-        public string LastPageDisplayed { get; protected set; }
-
-        public virtual void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public virtual List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
+            return new List<string>();
         }
     }
 }

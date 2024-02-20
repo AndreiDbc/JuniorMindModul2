@@ -48,11 +48,11 @@ namespace GitApp
 
         public Diff Diff { get; set; }
 
-        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
             if (isWindowToSmall)
             {
-                return;
+                return new List<string>();
             }
 
             var keyInteractor = new KeyInteractor<IElement>(Diff);
@@ -84,7 +84,6 @@ namespace GitApp
                         (int)(0.6 * windowWidth) - 2,
                         ((windowHeight - 2) / 2 - 2) * (int)(0.6 * windowWidth) - 2);
                 RemoveSelection(ref unstagedToString, ref stagedToString);
-
                 leftSide = new BoxDrawer(unstagedToString, "Unstaged").DrawBox(
                             (int)(0.6 * windowWidth),
                             unstagedHeight + 2,
@@ -92,6 +91,7 @@ namespace GitApp
                             false,
                             shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}");
                 stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(windowWidth, windowHeight - unstagedHeight - 4, true);
+                leftSide.Add(SetMenuBar());
                 leftSide.AddRange(stagedToString);
             }
             else
@@ -115,9 +115,10 @@ namespace GitApp
                             shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}");
                 stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox((int)(0.6 * windowWidth), windowHeight - unstagedHeight - 4, true);
                 leftSide.AddRange(stagedToString);
+                leftSide.Add(SetMenuBar());
             }
 
-            LastPageDisplayed = string.Join(Environment.NewLine, new ScreenSelector(leftSide, rightSide, consoleWrapper).Select(ref isRightSideInUse, key));
+            return new ScreenSelector(leftSide, rightSide, consoleWrapper).Select(ref isRightSideInUse, key);
         }
 
         private void RemoveSelection(ref List<string> unstagedToString, ref List<string> stagedToString)
@@ -132,6 +133,16 @@ namespace GitApp
                 unstagedToString[0] = unstagedToString[0].Replace("\u001b[7m", "");
                 unstagedToString[^1] = unstagedToString[^1].Replace("\u001b[7m", "");
             }
+        }
+
+        private string SetMenuBar()
+        {
+            return new PageUtilities(new[]
+            {
+                "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu \u001b[36m[B] Branches "
+                + (unstagedAvailability ? "\u001b[34m[⏎] Stage hunk \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m")
+            })
+                    .PadElement(consoleWrapper.WindowWidth)[0];
         }
     }
 }

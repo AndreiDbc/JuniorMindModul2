@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace GitApp
 {
@@ -20,15 +19,13 @@ namespace GitApp
             this.boxName = boxName;
         }
 
-        public List<string> DrawBox(int boxWidth, int windowHeight, bool shouldFitText = false, bool shouldColorLines = false, string branchInfo = "", string overlayMenu = "")
+        public List<string> DrawBox(int boxWidth, int boxHeight, bool shouldFitText = false, bool shouldColorLines = false, string branchInfo = "", string overlayMenu = "")
         {
-            const int lengthToSubstract = 2;
             var result = new List<string>();
             result.AddRange(text);
-            result = shouldFitText ? FitTextInsideBox((boxWidth - 2) * (windowHeight - 2), boxWidth - 2) : result;
+            result = shouldFitText ? FitTextInsideBox((boxWidth - 2) * (boxHeight - 2), boxWidth - 2) : result;
             var lineColor = shouldColorLines ? "\x1b[38;5;166m" : "\u001b[0m";
-            result.Insert(0, lineColor + "┌" + boxName + new string('─', boxWidth - boxName.Length - lengthToSubstract) + "┐");
-            var index = 1;
+            var index = 0;
 
             do
             {
@@ -45,10 +42,10 @@ namespace GitApp
 
                 index++;
             }
-            while (result.Count <= windowHeight - 2 - (overlayMenu == "" ? 0 : 1) || !result[^1].StartsWith(lineColor + "│"));
+            while (index < boxHeight - 2 - (overlayMenu == "" ? 0 : 1));
 
+            result.Insert(0, lineColor + "┌" + boxName + new string('─', boxWidth - boxName.Length - 2) + "┐");
             AddOverlayMenu(ref result, overlayMenu, boxWidth, lineColor);
-
             result.Add(branchInfo == ""
                 ? lineColor + "└" + new string('─', boxWidth - 2) + "┘"
                 : lineColor + "└" + new string('─', boxWidth - 2 - branchInfo.Length) + $"{branchInfo}┘");

@@ -62,18 +62,17 @@ namespace GitApp
 
         public bool WasStagingKeyPressed { get; set; }
 
-        public override void UpdateMenu(bool isWindowToSmall, ConsoleKey key)
+        public override List<string> UpdateMenu(bool isWindowToSmall, ConsoleKey key)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
-            UnstagedAvailability = GetUnstagedAvailability(ref key, windowHeight - unstagedHeight, unstagedHeight);
-            var exitCondition = !key.Equals(ConsoleKey.C) ^ !key.Equals(ConsoleKey.B);
+            UnstagedAvailability = GetUnstagedAvailability(key, windowHeight - unstagedHeight, unstagedHeight);
             if (isWindowToSmall)
             {
-                return;
+                return new List<string>();
             }
 
-            LastPageDisplayed = string.Join(Environment.NewLine, UpdateStatusMenu(key));
+            return UpdateStatusMenu(key);
         }
 
         private static (int index, int current) SetModifiedFileIndeexes(ModifiedFiles modifiedFilesToSet, ModifiedFiles modifiedFilesToUse, int height, ConsoleKey key)
@@ -94,8 +93,12 @@ namespace GitApp
 
         private string SetMenuBarForStatus()
         {
-            return "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu \u001b[36m[B] Branches "
-                + (UnstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m");
+            return new PageUtilities(new[]
+            {
+                "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu \u001b[36m[B] Branches "
+                + (UnstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m")
+            })
+                    .PadElement(consoleWrapper.WindowWidth)[0];
         }
 
         private List<string> UpdateStatusMenu(ConsoleKey key)
@@ -171,7 +174,7 @@ namespace GitApp
             return new ScreenSelector(tempList, rightSide, consoleWrapper).Select(ref isRightSideInUse, key);
         }
 
-        private bool GetUnstagedAvailability(ref ConsoleKey key, int stagedHeight, int unstagedHeight)
+        private bool GetUnstagedAvailability(ConsoleKey key, int stagedHeight, int unstagedHeight)
         {
             var unstagedContainsElements = Unstaged[0].GetElement() != "";
             var stagedContainsElements = Staged[0].GetElement() != "";

@@ -8,18 +8,18 @@ namespace GitApp
 {
     public class MenuWriter
     {
-        private readonly string toWrite;
+        private readonly List<string> toWrite;
         private readonly bool isWindowToSmall;
         private readonly IConsoleWrapper consoleWrapper;
 
-        public MenuWriter(string toWrite, bool isWindowToSmall, IConsoleWrapper consoleWrapper)
+        public MenuWriter(List<string> toWrite, bool isWindowToSmall, IConsoleWrapper consoleWrapper)
         {
             this.toWrite = toWrite;
             this.isWindowToSmall = isWindowToSmall;
             this.consoleWrapper = consoleWrapper;
         }
 
-        public void UpdateDisplay(bool wasWindowResizedSmaller, string? overlayMenu = null)
+        public void UpdateDisplay(bool wasWindowResizedSmaller, List<string>? overlayMenu = null)
         {
             if (isWindowToSmall)
             {
@@ -29,16 +29,15 @@ namespace GitApp
             else
             {
                 var windowWidth = consoleWrapper.WindowWidth;
-                var paddedPage = new PageUtilities(toWrite.Split(Environment.NewLine)).PadElement(windowWidth);
                 var menuBar = new PageUtilities(new[] { "\u001b[0mStatus [1] | Log [2]" }).PadElement(windowWidth)[0];
-                paddedPage.Insert(0, menuBar);
+                toWrite.Insert(0, menuBar);
                 if (wasWindowResizedSmaller)
                 {
                     consoleWrapper.Clear();
                 }
 
                 consoleWrapper.SetCursorPosition(0, 0);
-                Write(paddedPage);
+                Write(toWrite);
                 consoleWrapper.Flush();
                 if (overlayMenu != null)
                 {
@@ -58,7 +57,7 @@ namespace GitApp
             consoleWrapper.Write(result);
         }
 
-        private void WriteOverlay(string overlayPage, ref int left, ref int top)
+        private void WriteOverlay(List<string> overlayPage, ref int left, ref int top)
         {
             var width = consoleWrapper.WindowWidth;
             var height = consoleWrapper.WindowHeight;
@@ -69,7 +68,7 @@ namespace GitApp
                 top = 0;
             }
 
-            foreach (var line in overlayPage.Split(Environment.NewLine))
+            foreach (var line in overlayPage)
             {
                 consoleWrapper.SetCursorPosition(left, top);
                 consoleWrapper.Write(line);
