@@ -93,12 +93,9 @@ namespace GitApp
 
         private string SetMenuBarForStatus()
         {
-            return new PageUtilities(new[]
-            {
-                "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu \u001b[36m[B] Branches "
-                + (UnstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m")
-            })
-                    .PadElement(consoleWrapper.WindowWidth)[0];
+            var menuBar = "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu \u001b[36m[B] Branches "
+                + (UnstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m");
+            return menuBar + new string(' ', consoleWrapper.WindowWidth - menuBar.Length + 24);
         }
 
         private List<string> UpdateStatusMenu(ConsoleKey key)
@@ -136,7 +133,7 @@ namespace GitApp
                             false,
                             false,
                             shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
-                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(leftSideTextSize + 2, (windowHeight - 2) / 2, true);
+                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(leftSideTextSize + 2, (windowHeight - 2) / 2);
                 tempList.AddRange(stagedToString);
             }
             else
@@ -158,7 +155,7 @@ namespace GitApp
                             false,
                             false,
                             shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
-                stagedToString = new BoxDrawer(stagedPageList, "Staged").DrawBox(leftSideTextSize + 2, (windowHeight - 2) / 2, true);
+                stagedToString = new BoxDrawer(stagedPageList, "Staged").DrawBox(leftSideTextSize + 2, (windowHeight - 2) / 2);
                 tempList.AddRange(stagedToString);
             }
 

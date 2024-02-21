@@ -33,17 +33,8 @@ namespace GitApp
 
         public List<string> MergeSides()
         {
-            var result = new List<string>();
-
-            for (int i = 0; i < leftSide.Count; i++)
-            {
-                result.Add(leftSide[i]);
-                if (i < rightSide.Count)
-                {
-                    result[i] += rightSide[i];
-                }
-            }
-
+            var result = leftSide.Zip(rightSide, (x, y) => x + y).ToList();
+            result.Add(leftSide[^1]);
             return result;
         }
 

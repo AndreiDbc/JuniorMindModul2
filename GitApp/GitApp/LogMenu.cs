@@ -45,7 +45,8 @@ namespace GitApp
             (page, commitOcupancyRate) = commits.GetPageDataAndSize(availableSpace, windowWidth - 2);
             var toWrite = commits.GetHighlightedSide(windowHeight - 4, windowWidth - 2, availableSpace);
             result.AddRange(new BoxDrawer(toWrite, "Commits").DrawBox(windowWidth, windowHeight - 2, true));
-            result.Add(new PageUtilities(new[] { "\u001b[32m[Esc] Exit \u001b[33m[⏎] Details \u001b[36m[B] Branches" }).PadElement(windowWidth)[0]);
+            const string menuBar = "\u001b[32m[Esc] Exit \u001b[33m[⏎] Details \u001b[36m[B] Branches\u001b[0m";
+            result.Add(menuBar + new string(' ', windowWidth - menuBar.Length + 19));
 
             return result;
         }

@@ -112,6 +112,25 @@ namespace GitApp
             while (true);
         }
 
+        private void ReadKey(int windowHeight, int windowWidth)
+        {
+            while (true)
+            {
+                if (Console.KeyAvailable)
+                {
+                    key = consoleWrapper.ReadKey().Key;
+                    break;
+                }
+                else if (windowHeight != consoleWrapper.WindowHeight || windowWidth != consoleWrapper.WindowWidth)
+                {
+                    key = ConsoleKey.NoName;
+                    break;
+                }
+
+                Thread.Sleep(100);
+            }
+        }
+
         private void DisplayStatus()
         {
             var unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
@@ -136,6 +155,10 @@ namespace GitApp
                 else if (key.Equals(ConsoleKey.C))
                 {
                     DisplayCommitPage(menu, staged);
+                    unstaged = new ModifiedFiles(gitManager.GetUnstagedFiles());
+                    staged = new ModifiedFiles(gitManager.GetStagedFiles());
+                    menu.Staged = staged;
+                    menu.Unstaged = unstaged;
                 }
                 else if (key.Equals(ConsoleKey.B))
                 {
@@ -157,6 +180,8 @@ namespace GitApp
 
                 windowWidth = consoleWrapper.WindowWidth;
                 windowHeight = consoleWrapper.WindowHeight;
+                WasWindowResizedSmaller = windowSize < windowSizeTemp;
+                windowSizeTemp = windowSize;
                 unstagedAvailability = menu.UnstagedAvailability;
                 menu.WasStagingKeyPressed = keys.Any(necessaryKey => necessaryKey.Equals(key));
                 if (menu.WasStagingKeyPressed)
@@ -241,7 +266,7 @@ namespace GitApp
 
             do
             {
-                key = consoleWrapper.ReadKey(true).Key;
+                key = consoleWrapper.ReadKey().Key;
                 SelectStageOptionForDiffMenu(ref menu, ref diff, ref unstaged, ref staged, unstagedAvailability);
                 if (GetExitConditionForHighlightedHunksPage(unstagedAvailability ? unstaged[unstaged.Current] : staged[staged.Current], diff[diff.Current]))
                 {
