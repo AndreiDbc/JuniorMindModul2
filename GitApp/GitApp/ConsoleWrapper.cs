@@ -22,6 +22,11 @@ namespace GitApp
             Console.OutputEncoding = Encoding.UTF8;
         }
 
+        public bool KeyAvailable()
+        {
+            return Console.KeyAvailable;
+        }
+
         public void Flush()
         {
             Console.Out.Flush();

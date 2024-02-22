@@ -13,10 +13,11 @@ namespace GitApp
         private readonly int width;
         private readonly int height;
         private readonly IConsoleWrapper consoleWrapper;
+        private readonly KeyReader keyReader;
         private int currentWidth;
         private int currentHeight;
 
-        public TextReader(int leftCursorPosition, int topCursorPosition, int width, int height, IConsoleWrapper consoleWrapper)
+        public TextReader(int leftCursorPosition, int topCursorPosition, int width, int height, IConsoleWrapper consoleWrapper, KeyReader keyReader)
         {
             this.leftCursorPosition = leftCursorPosition;
             this.topCursorPosition = topCursorPosition;
@@ -25,9 +26,10 @@ namespace GitApp
             this.consoleWrapper = consoleWrapper;
             currentWidth = leftCursorPosition;
             currentHeight = topCursorPosition;
+            this.keyReader = keyReader;
         }
 
-        public (string text, ConsoleKeyInfo key) GetText(ref string result, ConsoleKeyInfo key)
+        public (string text, ConsoleKeyInfo key) GetText(ref string result, ConsoleKeyInfo keyInfo)
         {
             consoleWrapper.SetCursorPosition(leftCursorPosition, topCursorPosition);
             consoleWrapper.Write("\x1b[0m");
@@ -42,31 +44,36 @@ namespace GitApp
                 });
                 currentHeight--;
                 currentWidth = leftCursorPosition + result.Length % width;
-                AddKeyValue(ref result, key);
+                AddKeyValue(ref result, keyInfo);
             }
 
-            var windowSize = consoleWrapper.WindowWidth * consoleWrapper.WindowHeight;
+            var windowWidth = consoleWrapper.WindowWidth;
+            var windowHeight = consoleWrapper.WindowHeight;
+            var windowSize = windowWidth * windowHeight;
             var tempWindowSize = 0;
+
             do
             {
                 tempWindowSize = windowSize;
-                key = consoleWrapper.ReadKey(true);
-                windowSize = consoleWrapper.WindowWidth * consoleWrapper.WindowHeight;
+                keyInfo = keyReader.SetKeyValue(windowHeight, windowWidth, true);
+                windowHeight = consoleWrapper.WindowHeight;
+                windowWidth = consoleWrapper.WindowWidth;
+                windowSize = windowWidth * windowHeight;
                 if (tempWindowSize != windowSize)
                 {
-                    return (result, key);
+                    return (result, keyInfo);
                 }
 
                 var resetCursorToBegining = result.Length == 0 &&
-                    key.Key == ConsoleKey.Backspace;
+                    keyInfo.Key == ConsoleKey.Backspace;
                 var resetCursorToEnd = result.Length == width * (height - 1) &&
-                    key.Key != ConsoleKey.Backspace;
+                    keyInfo.Key != ConsoleKey.Backspace;
 
-                if (key.Key.Equals(ConsoleKey.Enter))
+                if (keyInfo.Key.Equals(ConsoleKey.Enter))
                 {
-                    return (result, key);
+                    return (result, keyInfo);
                 }
-                else if (key.Key.Equals(ConsoleKey.Escape))
+                else if (keyInfo.Key.Equals(ConsoleKey.Escape))
                 {
                     break;
                 }
@@ -81,12 +88,12 @@ namespace GitApp
                 }
                 else
                 {
-                    AddKeyValue(ref result, key);
+                    AddKeyValue(ref result, keyInfo);
                 }
             }
             while (true);
 
-            return ("", key);
+            return ("", keyInfo);
         }
 
         private void AddKeyValue(ref string result, ConsoleKeyInfo key)
