@@ -131,7 +131,8 @@ namespace GitApp
 
             do
             {
-                key = keyReader.SetKeyValue(windowHeight, windowWidth).Key;
+                consoleWrapper.SetCursorPosition(0, 0);
+                key = keyReader.SetKeyValue(windowHeight, windowWidth, true).Key;
 
                 if (key.Equals(ConsoleKey.Escape))
                 {
@@ -170,6 +171,7 @@ namespace GitApp
                 windowSizeTemp = windowSize;
                 unstagedAvailability = menu.UnstagedAvailability;
                 menu.WasStagingKeyPressed = keys.Any(necessaryKey => necessaryKey.Equals(key));
+
                 if (menu.WasStagingKeyPressed)
                 {
                     ApplyStageOrUnstageOption(ref menu, ref unstaged, ref staged, unstagedAvailability);
@@ -183,13 +185,20 @@ namespace GitApp
 
         private void ApplyStageOrUnstageOption(ref StatusMenu menu, ref ModifiedFiles unstaged, ref ModifiedFiles staged, bool unstagedAvailability)
         {
+            var current = unstagedAvailability
+                ? unstaged[unstaged.Current].GetElement()
+                : staged[staged.Current].GetElement();
+            if (current == "")
+            {
+                return;
+            }
+
             unstaged = menu.Unstaged;
             staged = menu.Staged;
 
             if (unstagedAvailability)
             {
-                var current = unstaged[unstaged.Current].GetElement();
-                if (key.Equals(ConsoleKey.Enter) && current != "")
+                if (key.Equals(ConsoleKey.Enter))
                 {
                     gitManager.StageFile(current);
                     menu.Unstaged.Current = Math.Max(0, menu.Unstaged.Current - 1);
@@ -204,8 +213,7 @@ namespace GitApp
             }
             else
             {
-                var current = staged[staged.Current].GetElement();
-                if (key.Equals(ConsoleKey.Enter) && current != "")
+                if (key.Equals(ConsoleKey.Enter))
                 {
                     gitManager.UnstageFile(current);
                     menu.Staged.Current = Math.Max(0, menu.Staged.Current - 1);
@@ -252,7 +260,8 @@ namespace GitApp
 
             do
             {
-                key = keyReader.SetKeyValue(windowHeight, windowWidth).Key;
+                consoleWrapper.SetCursorPosition(0, 0);
+                key = keyReader.SetKeyValue(windowHeight, windowWidth, true).Key;
                 SelectStageOptionForDiffMenu(ref menu, ref diff, ref unstaged, ref staged, unstagedAvailability);
                 if (GetExitConditionForHighlightedHunksPage(unstagedAvailability ? unstaged[unstaged.Current] : staged[staged.Current], diff[diff.Current]))
                 {

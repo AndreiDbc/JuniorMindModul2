@@ -12,6 +12,8 @@ namespace GitApp
 
         public int WindowHeight { get => Console.WindowHeight; set => Console.WindowHeight = value; }
 
+        public bool CursorVisible { get => Console.CursorVisible; set => Console.CursorVisible = value; }
+
         public void SetCursorPosition(int left, int top)
         {
             Console.SetCursorPosition(left, top);

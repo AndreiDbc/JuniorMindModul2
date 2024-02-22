@@ -48,6 +48,8 @@ namespace GitApp
                     WriteOverlay(overlayMenu, ref left, ref top);
                     consoleWrapper.Flush();
                 }
+
+                consoleWrapper.SetCursorPosition(windowWidth, consoleWrapper.WindowHeight);
             }
         }
 

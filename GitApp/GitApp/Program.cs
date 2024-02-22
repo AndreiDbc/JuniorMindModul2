@@ -10,12 +10,14 @@ namespace GitApp
     {
         static void Main()
         {
-            new ConsoleWrapper().SetOutputEncodingToUTF8();
+            var consoleWrapper = new ConsoleWrapper();
+            consoleWrapper.CursorVisible = false;
+            consoleWrapper.SetOutputEncodingToUTF8();
             var processRunner = new GitProcessRunner();
             var repositoryPath = processRunner.RunCommand(new GitCommand("git", "rev-parse --show-toplevel"));
             var manager = new GitManager("git", processRunner, repositoryPath);
             var commits = new FullCommits(manager.GetLog());
-            var display = new DisplayText(commits, manager, new ConsoleWrapper(), new RepositoryInfo(manager, repositoryPath));
+            var display = new DisplayText(commits, manager, consoleWrapper, new RepositoryInfo(manager, repositoryPath));
             display.Display();
         }
     }
