@@ -29,7 +29,7 @@ namespace GitApp
             else
             {
                 var windowWidth = consoleWrapper.WindowWidth;
-                var menuBar = "\u001b[0mStatus [1] | Log [2]" + new string(' ', windowWidth - "\u001b[0mStatus [1] | Log [2]".Length + 4);
+                var menuBar = "\u001b[0mStatus [1] | Log [2] | \x1b[0;31mTest [3]\u001b[0m" + new string(' ', windowWidth - "\u001b[0mStatus [1] | Log [2] | \x1b[0;31mTest [3]\u001b[0m".Length + 15);
                 toWrite.Insert(0, menuBar);
                 if (wasWindowResizedSmaller)
                 {

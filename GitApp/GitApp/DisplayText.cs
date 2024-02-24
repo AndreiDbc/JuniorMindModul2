@@ -35,7 +35,7 @@ namespace GitApp
             this.consoleWrapper = consoleWrapper;
             IsRightSideInUse = false;
             WasWindowResizedSmaller = false;
-            menuKeys = new[] { ConsoleKey.D1, ConsoleKey.D2 };
+            menuKeys = new[] { ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.D3 };
             key = ConsoleKey.NoName;
             this.repositoryInfo = repositoryInfo;
             this.keyReader = new KeyReader(consoleWrapper);
@@ -57,6 +57,10 @@ namespace GitApp
                 else if (key.Equals(ConsoleKey.D2))
                 {
                     DisplayLogMenu();
+                }
+                else if (key.Equals(ConsoleKey.D3))
+                {
+                    new TestClass(repositoryInfo.RepositoryPath, consoleWrapper).DisplayTestMenu(ref key);
                 }
             }
             while (key != ConsoleKey.Escape);
