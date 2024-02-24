@@ -47,7 +47,7 @@ namespace GitApp
             var keyInteractor = new KeyInteractor<IElement>(commits);
             keyInteractor.KeyInfo = key;
             (commits.Index, commits.Current) = keyInteractor
-                .KeySwitch(leftSide, page[^1].Id, page[0].Id, false, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 40);
+                .KeySwitch(leftSide, page[^1].Id, page[0].Id, false, consoleWrapper.WindowWidth, commits[commits.Current].GetElement().Length - 41);
             page = commits.GetPageDataAndSize(windowWidth * (windowHeight - 4), windowWidth, true).list;
             leftSide = commits.GetHighlightedSide(windowHeight - 4, leftSideWidth, leftSideWidth * (windowHeight - 4), true);
             var rightSide = commits.FormateUnhighlightedSide(windowHeight - 2, textWidthSetter.SetTextWidth(false), gitManager);

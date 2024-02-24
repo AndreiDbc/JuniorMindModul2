@@ -58,7 +58,7 @@ namespace GitApp
             var i = 0;
             do
             {
-                if (size <= 3 || i == element.Length)
+                if (toAdd.Length > size - 4)
                 {
                     break;
                 }
@@ -66,7 +66,7 @@ namespace GitApp
                 toAdd += element[i];
                 i++;
             }
-            while (toAdd.Length != size - 3);
+            while (i < element.Length);
             return toAdd + "...";
         }
 

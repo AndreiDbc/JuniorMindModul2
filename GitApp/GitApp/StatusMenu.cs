@@ -32,21 +32,23 @@ namespace GitApp
             this.repositoryInfo = repositoryInfo;
             var windowHeight = consoleWrapper.WindowHeight;
             var windowWidth = consoleWrapper.WindowWidth;
+            textWidthSetter = new TextWidthSetter(consoleWrapper);
+            var rightSideTextSize = textWidthSetter.SetTextWidth(false);
+            var leftSideTextSize = textWidthSetter.SetTextWidth(true);
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
-            var unstagedAvailableSpace = ((int)(0.6 * windowWidth) - 2) * unstagedHeight;
-            unstagedElements = unstaged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
+            var unstagedAvailableSpace = leftSideTextSize * unstagedHeight;
+            unstagedElements = unstaged.GetPageDataAndSize(unstagedAvailableSpace, leftSideTextSize).list;
             unstagedPageList = unstaged[unstaged.Current].GetElement() == ""
                    ? new List<string>()
-                   : unstaged.GetHighlightedSide(unstagedHeight, (int)(0.6 * windowWidth) - 2, unstagedAvailableSpace);
-            var stagedHeight = windowHeight - unstagedHeight;
-            var stagedAvailableSpace = stagedHeight * ((int)(0.6 * windowWidth) - 2);
-            stagedElements = staged.GetPageDataAndSize(unstagedAvailableSpace, (int)(0.6 * windowWidth) - 2).list;
+                   : unstaged.GetHighlightedSide(unstagedHeight, leftSideTextSize, unstagedAvailableSpace);
+            var stagedHeight = windowHeight - unstagedHeight - 6;
+            var stagedAvailableSpace = stagedHeight * leftSideTextSize;
+            stagedElements = staged.GetPageDataAndSize(unstagedAvailableSpace, leftSideTextSize).list;
             stagedPageList = staged[staged.Current].GetElement() == ""
                     ? new List<string>()
-                    : staged.GetHighlightedSide(stagedHeight, (int)(0.6 * windowWidth) - 2, stagedAvailableSpace);
+                    : staged.GetHighlightedSide(stagedHeight, leftSideTextSize, stagedAvailableSpace);
             isUnstagedInUse = true;
             isStagedInUse = false;
-            textWidthSetter = new TextWidthSetter(consoleWrapper);
             this.isRightSideInUse = isRightSideInUse;
             Unstaged = unstaged;
             Staged = staged;
@@ -94,15 +96,15 @@ namespace GitApp
         private string SetMenuBarForStatus()
         {
             var menuBar = "\u001b[32m[Esc] Exit \u001b[33m[→] Next menu \u001b[36m[B] Branches "
-                + (UnstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all\u001b[0m");
-            return menuBar + new string(' ', consoleWrapper.WindowWidth - menuBar.Length + 24);
+                + (UnstagedAvailability ? "\u001b[34m[⏎] Stage file \u001b[35m[A] Stage all" : "\u001b[34m[⏎] Unstage file \u001b[35m[A] Unstage all") + "\u001b[0m";
+            return menuBar + new string(' ', consoleWrapper.WindowWidth - menuBar.Length + 29);
         }
 
         private List<string> UpdateStatusMenu(ConsoleKey key)
         {
             var windowHeight = consoleWrapper.WindowHeight;
             var unstagedHeight = (windowHeight - 2) / 2 + (windowHeight - 2) % 2 - 2;
-            var stagedHeight = windowHeight - unstagedHeight;
+            var stagedHeight = windowHeight - unstagedHeight - 6;
             var unstagedToString = new List<string>();
             var stagedToString = new List<string>();
             var tempList = new List<string>();
@@ -133,7 +135,7 @@ namespace GitApp
                             false,
                             false,
                             shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
-                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(leftSideTextSize + 2, (windowHeight - 2) / 2);
+                stagedToString = new BoxDrawer(stagedToString, "Staged").DrawBox(leftSideTextSize + 2, stagedHeight + 2);
                 tempList.AddRange(stagedToString);
             }
             else
@@ -155,7 +157,7 @@ namespace GitApp
                             false,
                             false,
                             shouldDisplayNoOfCommits ? $"↑{noOfCommitsToPush} ↓{noOfCommitsToPull}" + " {" + branch + "}" : "{" + branch + "}"));
-                stagedToString = new BoxDrawer(stagedPageList, "Staged").DrawBox(leftSideTextSize + 2, (windowHeight - 2) / 2);
+                stagedToString = new BoxDrawer(stagedPageList, "Staged").DrawBox(leftSideTextSize + 2, stagedHeight + 2);
                 tempList.AddRange(stagedToString);
             }
 
@@ -167,7 +169,6 @@ namespace GitApp
                             .DrawBox(rightSideTextSize + 2, windowHeight - 2);
             var additionalMenuBar = SetMenuBarForStatus();
             tempList.Add(additionalMenuBar);
-
             return new ScreenSelector(tempList, rightSide, consoleWrapper).Select(ref isRightSideInUse, key);
         }
 
