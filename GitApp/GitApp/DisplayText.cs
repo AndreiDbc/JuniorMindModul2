@@ -47,7 +47,7 @@ namespace GitApp
 
         public void Display()
         {
-            DisplayStatus();
+            Test();
             do
             {
                 if (key.Equals(ConsoleKey.D1))
@@ -64,6 +64,45 @@ namespace GitApp
                 }
             }
             while (key != ConsoleKey.Escape);
+        }
+
+        private static void DrawLine(int x, int y, int length, char c)
+        {
+            Console.SetCursorPosition(x, y);
+            Console.Write(new string(c, length));
+        }
+
+        private static void GitDiff()
+        {
+            using var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "git",
+                    Arguments = "diff -- Program.cs",
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private static void Test()
+        {
+            Console.CursorVisible = false;
+            do
+            {
+                GitDiff();
+                GitDiff();
+                GitDiff();
+                DrawLine(0, 0, Console.WindowWidth, '-');
+                DrawLine(0, Console.WindowHeight - 1, Console.WindowWidth, '-');
+            }
+            while (Console.ReadKey(true).Key != ConsoleKey.Escape);
+            Console.Clear();
+            Console.CursorVisible = true;
         }
 
         private bool GetExitConditionForHighlightedHunksPage(IElement currentUnstaged, IElement diffElement)
